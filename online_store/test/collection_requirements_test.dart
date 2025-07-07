@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print, print required for testing
+
 import 'dart:io';
 
 import 'package:online_store/online_store.dart';

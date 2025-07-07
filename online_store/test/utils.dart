@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print, print required for testing
+
 import 'dart:io';
 import 'dart:math';
 
@@ -295,7 +297,6 @@ void generateRandomPatternImage(String outputFileName,
   }
 
   File(finalOutputFileName).writeAsBytesSync(bytes);
-  print('Image saved as $finalOutputFileName');
 }
 
 // Helper function to get the minimum of two integers
