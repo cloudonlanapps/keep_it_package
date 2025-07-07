@@ -61,7 +61,7 @@ void main() async {
           fail('$error');
         },
       );
-      await server.deleteEntity(reference);
+      //FIXME: await server.deleteEntity(reference);
     });
     test('try creating Collection: same label, same description', () async {
       final label = randomString(8, prefix: 'test_');
@@ -114,7 +114,7 @@ void main() async {
           },
         );
       }
-      await server.deleteEntity(reference);
+      //FIXME: await server.deleteEntity(reference);
     });
 
     test('try creating Collection: same label, different description',
@@ -172,7 +172,7 @@ void main() async {
           },
         );
       }
-      await server.deleteEntity(reference);
+      //FIXME: await server.deleteEntity(reference);
     });
   });
 }

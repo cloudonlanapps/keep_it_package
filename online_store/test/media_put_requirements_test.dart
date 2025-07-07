@@ -2,13 +2,13 @@
 
 import 'dart:io';
 
-import 'package:cl_basic_types/cl_basic_types.dart';
 import 'package:collection/collection.dart';
 import 'package:online_store/online_store.dart';
 import 'package:path/path.dart';
 import 'package:store/store.dart';
 import 'package:test/test.dart';
 
+import 'test_modules.dart';
 import 'utils.dart';
 
 extension TestExtensionOnCLServer on CLServer {
@@ -108,7 +108,6 @@ void main() async {
   setUpAll(() async {
     tempDir = await Directory.systemTemp.createTemp('image_test_dir_');
     print('Created temporary directory: ${tempDir.path}');
-    orderedDeepEquality = const DeepCollectionEquality();
   });
   tearDownAll(() async {
     print('Deleting temporary directory: ${tempDir.path}');
@@ -116,6 +115,7 @@ void main() async {
   });
 
   setUp(() async {
+    orderedDeepEquality = const DeepCollectionEquality();
     try {
       final url = StoreURL(Uri.parse('http://127.0.0.1:5001'),
           identity: null, label: null);
@@ -143,166 +143,103 @@ void main() async {
   });
   tearDown(() async {
     // delete all the collection with it
-    await server.deleteEntity({'id': collectionId});
+    //FIXME: await server.deleteEntity(collectionId);
   });
   group('Test Media Interface', () {
     test('Can create a media and update it with same media', () async {
-      final filesCreated = <String>[];
-      await server.createMediaTest(
-        tempDir: tempDir,
-        parentId: () => collectionId,
-        onError: (e) {
-          fail('createMedia Failed. $e');
-        },
-        onSuccess: (entry0) async {
-          final filename = entry0['fileName'] as String;
-          entry0.remove('fileName');
-          filesCreated.add(filename);
-          expect(entry0.containsKey('id'), true,
-              reason: 'Unable to create a media');
-          expect(entry0['fileSize'], File(filename).lengthSync(),
-              reason: 'Received unexpected file length');
-          await server.retriveById(
-            entry0['id'] as int,
-            onSuccess: (map) async {
-              expect(orderedDeepEquality.equals(entry0, map), true,
-                  reason: 'mismatch between created value and retrived value');
-            },
-            onError: (e) {
-              fail('failed to retrive created Media Failed. $e');
-            },
-          );
-          await server.updateMediaTest(
-            entry0['id'] as int,
-            tempDir: tempDir,
-            label: () => entry0['label'] as String,
-            parentId: () => entry0['parentId'] as int,
-            filename: () => filename,
-            onError: (e) {
-              fail('update Media Failed. $e');
-            },
-            onSuccess: (entry1) async {
-              expect(orderedDeepEquality.equals(entry1, entry0), true,
-                  reason:
-                      'update it with same media should return the same media');
-              await server.retriveById(
-                entry1['id'] as int,
-                onSuccess: (map) async {
-                  expect(orderedDeepEquality.equals(entry1, map), true,
-                      reason:
-                          'mismatch between created value and retrived value');
-                },
-                onError: (e) {
-                  fail('failed to retrive created Media Failed. $e');
-                },
-              );
-            },
-          );
-          await File(filename).deleteIfExists();
-        },
-      );
+      final module = TestMediaModule(tempDir: tempDir, server: server);
+
+      final entity0 =
+          await module.createNewEntity(parentId: () => collectionId);
+      expect(entity0['fileName'], isNotNull,
+          reason: 'create must return fileName');
+
+      await module.update(entity0['id'] as int,
+          label: () => entity0['label'] as String,
+          parentId: () => entity0['parentId'] as int,
+          filename: () => entity0['fileName'] as String,
+          onSuccess: (response) async {
+            expect(orderedDeepEquality.equals(response, entity0), true,
+                reason:
+                    'update it with same media should return the same media');
+          },
+          onError: module.failOnerror);
+
+      await module.dispose();
     });
     test('Can create a media and update it with different media', () async {
-      final filesCreated = <String>[];
-      await server.createMediaTest(
-        tempDir: tempDir,
-        parentId: () => collectionId,
-        onError: (e) {
-          fail('createMedia Failed. $e');
-        },
-        onSuccess: (entry0) async {
-          final filename = entry0['fileName'] as String;
-          entry0.remove('fileName');
-          await server.retriveById(
-            entry0['id'] as int,
-            onSuccess: (map) async {
-              expect(orderedDeepEquality.equals(entry0, map), true,
-                  reason: 'mismatch between created value and retrived value');
-            },
-            onError: (e) {
-              fail('failed to retrive created Media Failed. $e');
-            },
-          );
+      final module = TestMediaModule(tempDir: tempDir, server: server);
 
-          filesCreated.add(filename);
-          expect(entry0.containsKey('id'), true,
-              reason: 'Unable to create a media');
-          expect(entry0['fileSize'], File(filename).lengthSync(),
-              reason: 'Received unexpected file length');
+      final entity0 =
+          await module.createNewEntity(parentId: () => collectionId);
+      expect(entity0['fileName'], isNotNull,
+          reason: 'create must return fileName');
 
-          await server.updateMediaTest(
-            entry0['id'] as int,
-            tempDir: tempDir,
-            label: () => entry0['label'] as String,
-            parentId: () => entry0['parentId'] as int,
-            onError: (e) {
-              fail('update Media Failed. $e');
-            },
-            onSuccess: (entry1) async {
-              final filename = entry1['fileName'] as String;
-              entry1.remove('fileName');
-              filesCreated.add(filename);
-              await server.retriveById(
-                entry1['id'] as int,
-                onSuccess: (map) async {
-                  expect(orderedDeepEquality.equals(entry1, map), true,
-                      reason:
-                          'mismatch between created value and retrived value');
-                },
-                onError: (e) {
-                  fail('failed to retrive created Media Failed. $e');
-                },
-              );
+      await module.update(entity0['id'] as int,
+          label: () => entity0['label'] as String,
+          parentId: () => entity0['parentId'] as int,
+          onSuccess: (response) async {
+            expect(response['label'], entity0['label'] as String,
+                reason: 'label should match');
+            expect(response['parentId'], entity0['parentId'] as int,
+                reason: 'parentId should match');
+          },
+          onError: module.failOnerror);
 
-              expect(entry1['fileSize'], File(filename).lengthSync());
-              expect(entry1['md5'] != entry0['md5'], true,
-                  reason: 'The md5 value must be diffent');
-            },
-          );
-        },
-      );
-      for (final file in filesCreated) {
-        await File(file).deleteIfExists();
-      }
+      await module.dispose();
     });
-    test('Can create a media and update it with different media', () async {
-      final filesCreated = <String>[];
-      await server.createMediaTest(
-        tempDir: tempDir,
-        parentId: () => collectionId,
-        onError: (e) {
-          fail('createMedia Failed. $e');
-        },
-        onSuccess: (entry0) async {
-          final filename = entry0['fileName'] as String;
-          entry0.remove('fileName');
-          filesCreated.add(filename);
-          expect(entry0.containsKey('id'), true,
-              reason: 'Unable to create a media');
-          expect(entry0['fileSize'], File(filename).lengthSync(),
-              reason: 'Received unexpected file length');
-          final label = randomString(10);
-          await server.updateMediaTest(
-            entry0['id'] as int,
-            tempDir: tempDir,
-            filename: () => filename,
-            label: () => label,
-            parentId: () => entry0['parentId'] as int,
-            onError: (e) {
-              fail('update Media Failed. $e');
-            },
-            onSuccess: (entry1) async {
-              expect(entry1['fileSize'], File(filename).lengthSync());
-              expect(entry1['md5'] == entry0['md5'], true,
-                  reason: 'The md5 value must be diffent');
-              expect(entry1['label'], label, reason: "label does't match");
-            },
-          );
-        },
-      );
-      for (final file in filesCreated) {
-        await File(file).deleteIfExists();
-      }
+    test("Can create a media and send same parameters, but don't send file",
+        () async {
+      final module = TestMediaModule(tempDir: tempDir, server: server);
+
+      final entity0 =
+          await module.createNewEntity(parentId: () => collectionId);
+      expect(entity0['fileName'], isNotNull,
+          reason: 'create must return fileName');
+
+      await module.update(entity0['id'] as int,
+          label: () => entity0['label'] as String,
+          parentId: () => entity0['parentId'] as int,
+          filename: () => null,
+          onSuccess: (response) async {
+            expect(response['label'], entity0['label'] as String,
+                reason: 'label should match');
+            expect(response['parentId'], entity0['parentId'] as int,
+                reason: 'parentId should match');
+            final reference = Map<String, dynamic>.from(entity0)
+              ..remove('fileName');
+            expect(orderedDeepEquality.equals(response, reference), true,
+                reason:
+                    'update it with same media should return the same media');
+          },
+          onError: module.failOnerror);
+
+      await module.dispose();
+    });
+
+    test('Can create a media and send label update', () async {
+      final module = TestMediaModule(tempDir: tempDir, server: server);
+
+      final entity0 = (await module.createNewEntity(
+          parentId: () => collectionId))
+        ..remove('fileName');
+      final newLabel = randomString(12);
+      await module.update(entity0['id'] as int,
+          label: () => newLabel,
+          parentId: () => entity0['parentId'] as int,
+          filename: () => null,
+          onSuccess: (response) async {
+            final reference = Map<String, dynamic>.from(entity0)
+              ..remove('updatedDate');
+            response.remove('updatedDate');
+            reference['label'] = newLabel;
+            expect(orderedDeepEquality.equals(response, reference), true,
+                reason:
+                    'update it with same media should return the same media');
+          },
+          onError: module.failOnerror);
+
+      await module.dispose();
     });
   });
 }

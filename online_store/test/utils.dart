@@ -215,7 +215,7 @@ void generateRandomPatternImage(String outputFileName,
       : random.nextInt(maxDimension - minDimension + 1) +
           minDimension; // Random between minDimension and maxDimension
 
-  print('Generating an image of size: ${imgWidth}x$imgHeight');
+  // print('Generating an image of size: ${imgWidth}x$imgHeight');
 
   // Determine output file name and format
   final finalOutputFileName = outputFileName;
@@ -224,10 +224,10 @@ void generateRandomPatternImage(String outputFileName,
 
   if (fileExtension == 'jpg' || fileExtension == 'jpeg') {
     format = img.ImageFormat.jpg;
-    print('Output format will be JPEG.');
+    //  print('Output format will be JPEG.');
   } else {
     format = img.ImageFormat.png;
-    print('Output format will be PNG.');
+    //print('Output format will be PNG.');
   }
 
   // Initialize Image

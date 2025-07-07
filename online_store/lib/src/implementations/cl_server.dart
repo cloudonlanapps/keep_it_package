@@ -298,11 +298,52 @@ class CLServer {
             return StoreError(e, st: st);
           });
     } catch (e) {
-      return StoreError(const {'error': 'exception when creating a media'});
+      return StoreError({'error': 'update failed \n $e'});
     }
   }
 
-  Future<void> deleteEntity(Map<String, dynamic> map) async {
-    // FIXME: Implement delete entity
+  Future<StoreReply<Map<String, dynamic>>> softDeleteEntity(int id) async {
+    try {
+      final form = {'isDeleted': '1'};
+      final response = await put('/entity/$id', form: form);
+      return response.when(
+          validResponse: (data) async =>
+              StoreResult(jsonDecode(data) as Map<String, dynamic>),
+          errorResponse: (e, {st}) async {
+            return StoreError(e, st: st);
+          });
+    } catch (e) {
+      return StoreError({'error': 'soft delete failed \n$e'});
+    }
+  }
+
+  Future<StoreReply<Map<String, dynamic>>> restoreEntity(int id) async {
+    try {
+      final form = {'isDeleted': '0'};
+      final response = await put('/entity/$id', form: form);
+      return response.when(
+          validResponse: (data) async =>
+              StoreResult(jsonDecode(data) as Map<String, dynamic>),
+          errorResponse: (e, {st}) async {
+            return StoreError(e, st: st);
+          });
+    } catch (e) {
+      return StoreError({'error': 'soft delete failed \n$e'});
+    }
+  }
+
+  Future<StoreReply<Map<String, dynamic>>> deleteEntity(int id) async {
+    try {
+      final response = await delete('/entity/$id');
+
+      return response.when(
+          validResponse: (data) async =>
+              StoreResult(jsonDecode(data) as Map<String, dynamic>),
+          errorResponse: (e, {st}) async {
+            return StoreError(e, st: st);
+          });
+    } catch (e) {
+      return StoreError(const {'error': 'exception when creating a media'});
+    }
   }
 }
