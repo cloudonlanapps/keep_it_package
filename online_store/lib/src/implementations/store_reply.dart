@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:cl_basic_types/cl_basic_types.dart';
 import 'package:collection/collection.dart';
 import 'package:meta/meta.dart';
 
@@ -85,4 +86,19 @@ class StoreError<T> extends StoreReply<T> {
 
   @override
   int get hashCode => errorResponse.hashCode ^ st.hashCode;
+
+  StoreError<T> appendFields(Map<String, dynamic> fields) {
+    final map = {...errorResponse, ...fields};
+    return copyWith(errorResponse: map);
+  }
+
+  StoreError<T> copyWith({
+    Map<String, dynamic>? errorResponse,
+    ValueGetter<StackTrace?>? st,
+  }) {
+    return StoreError<T>(
+      errorResponse ?? this.errorResponse,
+      st: st != null ? st.call() : this.st,
+    );
+  }
 }
