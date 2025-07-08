@@ -137,12 +137,6 @@ class CLServer {
     return Uri.parse('$baseURL$endPoint');
   }
 
-  Future<StoreReply<String>> getEndpoint(
-    String endPoint, {
-    http.Client? client,
-  }) async =>
-      RestApi(baseURL, client: client).get(endPoint);
-
   Future<StoreReply<String>> post(
     String endPoint, {
     required Map<String, dynamic>? form,
@@ -218,9 +212,10 @@ class CLServer {
 
   // Entity APIs
 
-  Future<StoreReply<Map<String, dynamic>?>> getEntity(String endPoint) async {
+  Future<StoreReply<Map<String, dynamic>?>> getEntity(String endPoint,
+      {http.Client? client}) async {
     try {
-      final reply = await getEndpoint(endPoint);
+      final reply = await RestApi(baseURL, client: client).get(endPoint);
       return reply.when(
           validResponse: (data) async {
             final map = jsonDecode(data) as Map<String, dynamic>;
@@ -233,9 +228,11 @@ class CLServer {
   }
 
   Future<StoreReply<List<Map<String, dynamic>>>> getEntities(
-      String endPoint) async {
+    String endPoint, {
+    http.Client? client,
+  }) async {
     try {
-      final reply = await getEndpoint(endPoint);
+      final reply = await RestApi(baseURL, client: client).get(endPoint);
       return reply.when(validResponse: (response) async {
         final map = jsonDecode(response);
         final items = ((map as Map<String, dynamic>)['items']) as List<dynamic>;
