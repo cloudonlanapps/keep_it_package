@@ -91,7 +91,7 @@ class GetEntities extends ConsumerWidget {
       if (isDeleted != null) 'isDeleted': isDeleted! ? 1 : 0,
       if (parentId != 0) 'parentId': parentId,
       if (isCollection != null) 'isCollection': isCollection! ? 1 : 0,
-      if (hasPin != null) 'pin': hasPin! ? NotNullValues : null,
+      if (hasPin != null) 'pin': hasPin! ? NotNullValue : null,
     }, store: store);
 
     final dataAsync = ref.watch(entitiesProvider(query));

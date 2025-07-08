@@ -1,17 +1,16 @@
+import 'package:cl_basic_types/cl_basic_types.dart';
 import 'package:meta/meta.dart';
-import 'package:store/store.dart';
 
 @immutable
 class ServerQuery<T> {
-  const ServerQuery(this.requestTarget);
+  const ServerQuery(this.query);
   factory ServerQuery.fromStoreQuery(
-    String path,
     Set<String> validKeys, [
-    StoreQuery<T>? storeQuery,
+    Map<String, dynamic>? map,
   ]) {
     final keyValuePair = <String, String>{};
-    if (storeQuery != null) {
-      for (final query in storeQuery.map.entries) {
+    if (map != null) {
+      for (final query in map.entries) {
         final key = query.key;
         final value = query.value;
         if (validKeys.contains(key)) {
@@ -23,7 +22,7 @@ class ServerQuery<T> {
             case (final List<dynamic> _) when value.isNotEmpty:
               keyValuePair[key] = value.join(',');
 
-            case (final NotNullValues _):
+            case (final NotNullValue _):
               keyValuePair[key] = 'Unset';
             default:
               keyValuePair[key] = value.toString();
@@ -32,16 +31,10 @@ class ServerQuery<T> {
       }
     }
 
-    final queryString =
+    final query =
         keyValuePair.entries.map((e) => '${e.key}=${e.value}').join('&');
-    final String requestTarget;
-    if (queryString.isEmpty) {
-      requestTarget = path;
-    } else {
-      requestTarget = '$path?$queryString';
-    }
 
-    return ServerQuery(requestTarget);
+    return ServerQuery(query);
   }
-  final String requestTarget;
+  final String query;
 }

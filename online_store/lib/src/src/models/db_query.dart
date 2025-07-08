@@ -1,5 +1,5 @@
+import 'package:cl_basic_types/cl_basic_types.dart';
 import 'package:meta/meta.dart';
-import 'package:store/store.dart';
 
 @immutable
 class DBQuery<T> {
@@ -8,10 +8,10 @@ class DBQuery<T> {
     // ignore: avoid_unused_constructor_parameters will be used later
     String path,
     Set<String> validKeys, [
-    StoreQuery<T>? query,
+    Map<String, dynamic>? map,
   ]) {
-    if (query != null) {
-      for (final query in query.map.entries) {
+    if (map != null) {
+      for (final query in map.entries) {
         final key = query.key;
         final value = query.value;
         if (validKeys.contains(key)) {
@@ -20,7 +20,7 @@ class DBQuery<T> {
               throw UnimplementedError();
             case (final List<dynamic> _) when value.isNotEmpty:
               throw UnimplementedError();
-            case (final NotNullValues _):
+            case (final NotNullValue _):
               throw UnimplementedError();
             default:
               throw UnimplementedError();

@@ -1,3 +1,4 @@
+import 'package:cl_basic_types/cl_basic_types.dart';
 import 'package:meta/meta.dart';
 import 'package:store/store.dart';
 
@@ -28,7 +29,7 @@ class DBQuery<T> {
               whereParts
                   .add('$key IN (${List.filled(e.length, '?').join(', ')})');
               params.addAll(e);
-            case (final NotNullValues _):
+            case (final NotNullValue _):
               whereParts.add('$key IS NOT NULL');
             default:
               whereParts.add('$key IS ?');
