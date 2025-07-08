@@ -2,7 +2,7 @@
 
 import 'dart:io';
 
-import 'package:online_store/online_store.dart';
+import 'package:online_store/src/implementations/cl_server.dart';
 import 'package:store/store.dart';
 import 'package:test/test.dart';
 
@@ -39,21 +39,17 @@ void main() async {
     }
   });
   group('Test Collection Interface', () {
-    test('Create Collection', () async {
+    test('C1 can create a collection with label', () async {
       final label = randomString(8, prefix: 'test_');
-      final desc = generateLoremIpsum();
-      final reply = await server.createEntity(
-          isCollection: true, label: label, description: desc);
+      final reply =
+          await server.upsert(isCollection: () => true, label: () => label);
       final reference = await reply.when(
         validResponse: (result) async {
-          expect(result.containsKey('id'), true,
-              reason: "response doesn't contains id");
-          expect(result.containsKey('label'), true,
+          expect(result.id, isNotNull, reason: "response doesn't contains id");
+          expect(result.label, label,
               reason: "response doesn't contains label");
-          expect(result.containsKey('description'), true,
-              reason: "response doesn't contains description");
-          expect(result['label'], label, reason: 'label is not matching');
-          expect(result['description'], desc,
+
+          expect(result.description, isNull,
               reason: 'description is not matching');
           return result;
         },
@@ -61,118 +57,7 @@ void main() async {
           fail('$error');
         },
       );
-      //FIXME: await server.deleteEntity(reference);
-    });
-    test('try creating Collection: same label, same description', () async {
-      final label = randomString(8, prefix: 'test_');
-      final desc = generateLoremIpsum();
-      final Map<String, dynamic> reference;
-      {
-        final reply = await server.createEntity(
-            isCollection: true, label: label, description: desc);
-        reference = await reply.when(
-          validResponse: (result) async {
-            expect(result.containsKey('id'), true,
-                reason: "response doesn't contains id");
-            expect(result.containsKey('label'), true,
-                reason: "response doesn't contains label");
-            expect(result.containsKey('description'), true,
-                reason: "response doesn't contains description");
-            expect(result['label'], label, reason: 'label is not matching');
-            expect(result['description'], desc,
-                reason: 'description is not matching');
-            return result;
-          },
-          errorResponse: (error, {st}) async {
-            fail('$error');
-          },
-        );
-      }
-      // Post again
-      {
-        final reply = await server.createEntity(
-            isCollection: true, label: label, description: desc);
-        await reply.when(
-          validResponse: (result) async {
-            expect(result.containsKey('id'), true,
-                reason: "response doesn't contains id");
-            expect(result.containsKey('label'), true,
-                reason: "response doesn't contains label");
-            expect(result.containsKey('description'), true,
-                reason: "response doesn't contains description");
-            expect(result['label'], label, reason: 'label is not matching');
-            expect(result['description'], desc,
-                reason: 'description is not matching');
-
-            expect(result['id'], reference['id']);
-            expect(result['label'], reference['label']);
-            expect(result['description'], reference['description']);
-            return result;
-          },
-          errorResponse: (error, {st}) {
-            fail('$error');
-          },
-        );
-      }
-      //FIXME: await server.deleteEntity(reference);
-    });
-
-    test('try creating Collection: same label, different description',
-        () async {
-      final label = randomString(8, prefix: 'test_');
-
-      final Map<String, dynamic> reference;
-      {
-        final desc = generateLoremIpsum();
-        final reply = await server.createEntity(
-            isCollection: true, label: label, description: desc);
-
-        reference = await reply.when(
-          validResponse: (result) async {
-            expect(result.containsKey('id'), true,
-                reason: "response doesn't contains id");
-            expect(result.containsKey('label'), true,
-                reason: "response doesn't contains label");
-            expect(result.containsKey('description'), true,
-                reason: "response doesn't contains description");
-            expect(result['label'], label, reason: 'label is not matching');
-            expect(result['description'], desc,
-                reason: 'description is not matching');
-            return result;
-          },
-          errorResponse: (error, {st}) {
-            fail('$error');
-          },
-        );
-      }
-      // Post again
-      {
-        final desc = generateLoremIpsum();
-        final reply = await server.createEntity(
-            isCollection: true, label: label, description: desc);
-
-        await reply.when(
-          validResponse: (result) async {
-            expect(result.containsKey('id'), true,
-                reason: "response doesn't contains id");
-            expect(result.containsKey('label'), true,
-                reason: "response doesn't contains label");
-            expect(result.containsKey('description'), true,
-                reason: "response doesn't contains description");
-            expect(result['label'], label, reason: 'label is not matching');
-
-            /// Note, we should get the original description
-            /// server should reject the description send now.
-            /// This will ensure that post accidentally modify the description
-
-            expect(result, reference, reason: 'response must match reference');
-          },
-          errorResponse: (error, {st}) {
-            fail('$error');
-          },
-        );
-      }
-      //FIXME: await server.deleteEntity(reference);
+      await server.toBin(reference.id!);
     });
   });
 }
