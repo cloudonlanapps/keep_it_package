@@ -77,7 +77,9 @@ class CLStore with CLLogger {
     return store.delete(entity);
   }
 
-  Future<StoreEntity?> get([StoreQuery<CLEntity>? query]) async {
+  // This function should not be exposed, and its only to detect
+  // if we have duplicate.
+  Future<StoreEntity?> _get([StoreQuery<CLEntity>? query]) async {
     final entityFromDB = await store.get(query);
     if (entityFromDB == null) {
       return null;
@@ -218,7 +220,7 @@ class CLStore with CLLogger {
       }
     }
     final mediaInDB = await store.get(
-      StoreQuery<CLEntity>({'md5': mediaFile.md5}),
+      StoreQuery<CLEntity>({'md5': mediaFile.md5, 'isCollection': 0}),
     );
     final CLEntity parent;
 
@@ -303,10 +305,7 @@ class CLStore with CLLogger {
       }
       if (parentIdValue != null) {
         /// FIXME: Handle failure due to network
-        final parent = (await get(
-          StoreQuery<CLEntity>({'id': parentIdValue}),
-        ))
-            ?.data;
+        final parent = await store.getByID(parentIdValue);
         if (parent == null) {
           throw Exception('Parent entity does not exist.');
         }
@@ -457,7 +456,7 @@ class CLStore with CLLogger {
           Future<bool> processSupportedMediaContent() async {
             if ([CLMediaType.image, CLMediaType.video].contains(item.type)) {
               /// FIXME: Handle failure due to network
-              final mediaInDB = await get(
+              final mediaInDB = await _get(
                 StoreQuery<CLEntity>({'md5': item.md5, 'isCollection': 0}),
               );
               if (mediaInDB != null) {
