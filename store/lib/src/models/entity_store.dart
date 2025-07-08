@@ -12,6 +12,7 @@ abstract class EntityStore {
 
   bool get isAlive;
   Future<CLEntity?> get([StoreQuery<CLEntity>? query]);
+  Future<CLEntity?> getByID(int id);
   Future<List<CLEntity>> getAll([StoreQuery<CLEntity>? query]);
   Future<CLEntity?> upsert(
     CLEntity curr, {

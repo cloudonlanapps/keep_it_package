@@ -54,6 +54,11 @@ class LocalSQLiteEntityStore extends EntityStore
   }
 
   @override
+  Future<CLEntity?> getByID(int id) async {
+    return get(StoreQuery<CLEntity>({'id': id}));
+  }
+
+  @override
   Future<List<CLEntity>> getAll([StoreQuery<CLEntity>? query]) async {
     Future<List<CLEntity>> cb(SqliteWriteContext tx) async {
       return dbGetAll(tx, agent, query);

@@ -68,8 +68,8 @@ class CLStore with CLLogger {
     return StoreEntity(entity: saved, store: this);
   }
 
-  Future<bool> delete(int entityId) async {
-    final entity = await store.get(StoreQuery<CLEntity>({'id': entityId}));
+  Future<bool> delete(int id) async {
+    final entity = await store.getByID(id);
 
     if (entity == null) {
       return false;
@@ -218,7 +218,7 @@ class CLStore with CLLogger {
       }
     }
     final mediaInDB = await store.get(
-      StoreQuery<CLEntity>({'md5': mediaFile.md5, 'isCollection': 1}),
+      StoreQuery<CLEntity>({'md5': mediaFile.md5}),
     );
     final CLEntity parent;
 
@@ -279,8 +279,7 @@ class CLStore with CLLogger {
     }
 
     if (entity.id != null) {
-      final entityInDB =
-          await store.get(StoreQuery<CLEntity>({'id': entity.id}));
+      final entityInDB = await store.getByID(entity.id!);
       if (entityInDB == null) {
         throw Exception('entity with id ${entity.id} not found');
       }
@@ -355,8 +354,7 @@ class CLStore with CLLogger {
     }
 
     if (entity.id != null) {
-      final entityInDB =
-          await store.get(StoreQuery<CLEntity>({'id': entity.id}));
+      final entityInDB = await store.getByID(entity.id!);
       if (entityInDB == null) {
         throw Exception('entity with id ${entity.id} not found');
       }
@@ -381,8 +379,7 @@ class CLStore with CLLogger {
         );
       }
       if (parentIdValue != null) {
-        final parent =
-            await store.get(StoreQuery<CLEntity>({'id': parentIdValue}));
+        final parent = await store.getByID(parentIdValue);
         if (parent == null) {
           throw Exception('Parent entity does not exist.');
         }

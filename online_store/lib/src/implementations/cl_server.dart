@@ -142,7 +142,6 @@ class CLServer {
 }
 
 extension EntityServer on CLServer {
-  //FIXME: Add Query Parameters
   Future<StoreReply<List<CLEntity>>> getAll(
       {String queryString = '', http.Client? client}) async {
     final endPoint = EntityEndPoint.getAll();

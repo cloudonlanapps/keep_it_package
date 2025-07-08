@@ -4,7 +4,7 @@ import 'package:online_store/src/implementations/cl_server.dart';
 import 'package:online_store/src/implementations/store_reply.dart';
 import 'package:store/store.dart';
 
-import 'server_query.dart';
+import '../implementations/server_query.dart';
 
 @immutable
 class OnlineEntityStore extends EntityStore {
@@ -59,6 +59,19 @@ class OnlineEntityStore extends EntityStore {
     final serverQuery = ServerQuery.fromStoreQuery(validQueryKeys, query?.map);
 
     final reply = await server.get(queryString: serverQuery.query);
+    return reply.when(
+      validResponse: (result) async {
+        return result;
+      },
+      errorResponse: (error, {st}) async {
+        return null;
+      },
+    );
+  }
+
+  @override
+  Future<CLEntity?> getByID(int id) async {
+    final reply = await server.getById(id);
     return reply.when(
       validResponse: (result) async {
         return result;
