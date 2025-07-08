@@ -4,8 +4,6 @@ import 'package:meta/meta.dart';
 
 import 'cl_store.dart';
 
-class NotNullValues {}
-
 @immutable
 class StoreQuery<T> {
   const StoreQuery(this.map, {this.store});

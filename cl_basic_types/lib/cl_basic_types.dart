@@ -31,3 +31,4 @@ export 'src/gallery_group.dart' show GalleryGroup;
 export 'src/extensions/on_double.dart' show UtilExtensionOnDouble;
 export 'src/extensions/on_duration.dart' show UtilExtensionOnDuration;
 export 'src/extensions/on_map.dart' show UtilExtensionOnMap;
+export 'src/not_null_value.dart' show NotNullValue;
