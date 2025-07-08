@@ -31,12 +31,19 @@ class OnlineEntityStore extends EntityStore {
       'type',
       'extension',
     };
+    validQueryKeysUnique = {
+      'id',
+      'isCollection',
+      'label',
+      'md5',
+    };
   }
 
   final CLServer server;
 
   late final String path;
   late final Set<String> validQueryKeys;
+  late final Set<String> validQueryKeysUnique;
 
   @override
   bool get isAlive => server.hasID;
@@ -49,12 +56,12 @@ class OnlineEntityStore extends EntityStore {
       // Servers don't support isHidden
       return null;
     }
-    final serverQuery = ServerQuery.fromStoreQuery(path, validQueryKeys, query);
+    final serverQuery = ServerQuery.fromStoreQuery(validQueryKeys, query?.map);
 
-    final reply = await server.getEntity(serverQuery.requestTarget);
+    final reply = await server.get(queryString: serverQuery.query);
     return reply.when(
       validResponse: (result) async {
-        return result == null ? null : CLEntity.fromMap(result);
+        return result;
       },
       errorResponse: (error, {st}) async {
         return null;
@@ -70,54 +77,48 @@ class OnlineEntityStore extends EntityStore {
       // Servers don't support isHidden
       return [];
     }
-    final serverQuery = ServerQuery.fromStoreQuery(path, validQueryKeys, query);
-    final reply = await server.getEntities(serverQuery.requestTarget);
+    final serverQuery = ServerQuery.fromStoreQuery(validQueryKeys, query?.map);
+    final reply = await server.getAll(queryString: serverQuery.query);
     return reply.when(
-        validResponse: (result) async => result.map(CLEntity.fromMap).toList(),
-        errorResponse: (e, {st}) => throw Exception(e));
+        validResponse: (result) async => result,
+        errorResponse: (e, {st}) async => <CLEntity>[]);
   }
 
   @override
-  Future<bool> delete(CLEntity item) {
-    // TODO(anandas): implement delete
-    throw UnimplementedError();
+  Future<bool> delete(CLEntity item) async {
+    if (item.id == null) return false;
+    final reply = await server.deletePermanent(item.id!);
+    return reply.when(
+      validResponse: (response) async => response,
+      errorResponse: (error, {st}) async {
+        return false;
+      },
+    );
   }
 
   @override
-  Uri? mediaUri(CLEntity media) {
-    return Uri.parse('${server.baseURL}/entity/${media.id}/download');
+  Uri? mediaUri(CLEntity item) {
+    if (item.id == null) return null;
+    return server.mediaFilePath(item.id!);
   }
 
   @override
-  Uri? previewUri(CLEntity media) {
-    return Uri.parse('${server.baseURL}/entity/${media.id}/preview');
+  Uri? previewUri(CLEntity item) {
+    if (item.id == null) return null;
+    return server.previewFilePath(item.id!);
   }
 
   Future<StoreReply<CLEntity?>> upsert0(CLEntity curr, {String? path}) async {
     try {
-      final StoreReply<String> reply;
-      if (curr.id == null) {
-        final form = {
-          'isCollection': curr.isCollection ? '1' : '0',
-          if (curr.label != null) 'label': curr.label,
-          if (curr.description != null) 'description': curr.description,
-          if (curr.parentId != null) 'parentId': curr.parentId
-        };
-
-        reply = await server.post('/entity', fileName: path, form: form);
-      } else {
-        final form = {
-          'isCollection': curr.isCollection ? '1' : '0',
-          if (curr.label != null) 'label': curr.label,
-          if (curr.description != null) 'description': curr.description,
-          if (curr.parentId != null) 'parentId': curr.parentId
-        };
-
-        reply = await server.put('/${curr.id}', fileName: path, form: form);
-      }
+      final reply = await server.upsert(
+          id: curr.id,
+          fileName: path,
+          isCollection: () => curr.isCollection,
+          label: () => curr.label,
+          description: () => curr.description,
+          parentId: () => curr.parentId);
       return reply.when(
-          validResponse: (result) async =>
-              StoreResult(CLEntity.fromJson(result)),
+          validResponse: (result) async => StoreResult(result),
           errorResponse: (e, {st}) async => StoreError(e, st: st));
     } catch (e, st) {
       return StoreError({'error': e.toString()}, st: st);

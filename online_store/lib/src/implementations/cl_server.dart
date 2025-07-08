@@ -8,6 +8,7 @@ import 'package:store/store.dart';
 
 import 'cl_server_status.dart';
 
+import 'entity_endpoint.dart';
 import 'rest_api.dart';
 import 'store_reply.dart';
 
@@ -137,100 +138,14 @@ class CLServer {
     return Uri.parse('$baseURL$endPoint');
   }
 
-  Future<StoreReply<String>> post(
-    String endPoint, {
-    required Map<String, dynamic>? form,
-    required String? fileName,
-    http.Client? client,
-    String? json,
-  }) async =>
-      RestApi(baseURL, client: client)
-          .post(endPoint, json: json ?? '', form: form, fileName: fileName);
-
-  Future<StoreReply<String>> put(
-    String endPoint, {
-    http.Client? client,
-    String? json,
-    Map<String, dynamic>? form,
-    String? fileName,
-  }) async =>
-      RestApi(baseURL, client: client)
-          .put(endPoint, json: json ?? '', form: form, fileName: fileName);
-
-  Future<StoreReply<String>> delete(
-    String endPoint, {
-    http.Client? client,
-  }) async =>
-      RestApi(baseURL, client: client).delete(endPoint);
-
-  Future<StoreReply<String?>> download(
-    String endPoint,
-    String targetFilePath, {
-    http.Client? client,
-  }) async {
-    return RestApi(baseURL, client: client).download(endPoint, targetFilePath);
-  }
-
-  /* Future<List<Map<String, dynamic>>> downloadMediaInfo({
-    http.Client? client,
-    List<String>? types,
-  }) async {
-    try {
-      return [
-        for (final mediaType in types ?? ['image', 'video'])
-          ...switch (
-              await getEndpoint('/media?type=$mediaType', client: client)) {
-            (final ServerResponse<String> reply) => [
-                ...(jsonDecode(reply.result) as List<dynamic>),
-              ].map((e) => e as Map<String, dynamic>).toList(),
-            _ => []
-          }
-      ];
-    } catch (e) {
-      log('error when downloading $e');
-      return [];
-    }
-  }
-
-  Future<List<Map<String, dynamic>>> downloadCollectionInfo({
-    http.Client? client,
-  }) async {
-    try {
-      return switch (await getEndpoint('/collection', client: client)) {
-        (final ServerResponse<String> reply) => [
-            ...(jsonDecode(reply.result) as List<dynamic>),
-          ].map((e) => e as Map<String, dynamic>).toList(),
-        _ => []
-      };
-    } catch (e) {
-      log('error when downloading $e');
-      return [];
-    }
-  } */
-
   String get baseURL => '${storeURL.uri}';
+}
 
-  // Entity APIs
-
-  Future<StoreReply<Map<String, dynamic>?>> getEntity(String endPoint,
-      {http.Client? client}) async {
-    try {
-      final reply = await RestApi(baseURL, client: client).get(endPoint);
-      return reply.when(
-          validResponse: (data) async {
-            final map = jsonDecode(data) as Map<String, dynamic>;
-            return StoreResult(map);
-          },
-          errorResponse: (e, {st}) async => StoreError(e, st: st));
-    } catch (e) {
-      return StoreError({'error': e.toString()});
-    }
-  }
-
-  Future<StoreReply<List<Map<String, dynamic>>>> getEntities(
-    String endPoint, {
-    http.Client? client,
-  }) async {
+extension EntityServer on CLServer {
+  //FIXME: Add Query Parameters
+  Future<StoreReply<List<CLEntity>>> getAll(
+      {String queryString = '', http.Client? client}) async {
+    final endPoint = EntityEndPoint.getAll();
     try {
       final reply = await RestApi(baseURL, client: client).get(endPoint);
       return reply.when(validResponse: (response) async {
@@ -238,59 +153,70 @@ class CLServer {
         final items = ((map as Map<String, dynamic>)['items']) as List<dynamic>;
 
         final mediaMapList =
-            items.map((e) => e as Map<String, dynamic>).toList();
+            items.cast<String>().map(CLEntity.fromJson).toList();
         return StoreResult(mediaMapList);
       }, errorResponse: (e, {st}) async {
         return StoreError(e, st: st);
       });
     } catch (e, st) {
-      return StoreError<List<Map<String, dynamic>>>.fromString(e.toString(),
-          st: st);
+      return StoreError<List<CLEntity>>.fromString(e.toString(), st: st);
     }
   }
 
-  Future<StoreReply<Map<String, dynamic>>> createEntity(
-      {required bool isCollection,
-      String? fileName,
-      String? label,
-      String? description,
-      int? parentId}) async {
+  // Server don't support single query, hence use getAll for now.
+
+  Future<StoreReply<CLEntity?>> get(
+      {String queryString = '', http.Client? client}) async {
+    final all = await getAll(queryString: queryString);
+    return all.when(
+      validResponse: (list) async => StoreResult<CLEntity?>(list.firstOrNull),
+      errorResponse: (error, {st}) async {
+        return StoreError<CLEntity?>(error, st: st);
+      },
+    );
+  }
+
+  Future<StoreReply<CLEntity?>> getById(int id,
+      {String queryString = '', http.Client? client}) async {
+    final endPoint = EntityEndPoint.getById(id);
     try {
-      final form = {
-        'isCollection': isCollection ? '1' : '0',
-        if (label != null) 'label': label,
-        if (description != null) 'description': description,
-        if (parentId != null) 'parentId': parentId.toString()
-      };
-      final response = await post('/entity', fileName: fileName, form: form);
-      return response.when(
-          validResponse: (data) async =>
-              StoreResult(jsonDecode(data) as Map<String, dynamic>),
-          errorResponse: (e, {st}) async {
-            return StoreError(e, st: st);
-          });
+      final reply = await RestApi(baseURL, client: client).get(endPoint);
+      return reply.when(
+          validResponse: (data) async {
+            return StoreResult(CLEntity.fromJson(data));
+          },
+          errorResponse: (e, {st}) async => StoreError(e, st: st));
     } catch (e) {
-      return StoreError(const {'error': 'exception when creating a media'});
+      return StoreError({'error': e.toString()});
     }
   }
 
-  Future<StoreReply<Map<String, dynamic>>> updateEntity(int id,
-      {required bool isCollection,
+  Future<StoreReply<CLEntity>> upsert(
+      {int? id,
       String? fileName,
-      String? label,
-      String? description,
-      int? parentId}) async {
+      bool Function()? isCollection,
+      String? Function()? label,
+      String? Function()? description,
+      int? Function()? parentId,
+      http.Client? client}) async {
     try {
       final form = {
-        'isCollection': isCollection ? '1' : '0',
-        if (label != null) 'label': label,
-        if (description != null) 'description': description,
-        if (parentId != null) 'parentId': parentId.toString()
+        if (isCollection != null) 'isCollection': isCollection() ? '1' : '0',
+        if (label != null) 'label': label(),
+        if (description != null) 'description': description(),
+        if (parentId != null) 'parentId': parentId().toString()
       };
-      final response = await put('/entity/$id', fileName: fileName, form: form);
+      final StoreReply<String> response;
+      if (id != null) {
+        response = await RestApi(baseURL, client: client)
+            .put(EntityEndPoint.update(id), fileName: fileName, form: form);
+      } else {
+        response = await RestApi(baseURL, client: client)
+            .post(EntityEndPoint.create(), fileName: fileName, form: form);
+      }
+
       return response.when(
-          validResponse: (data) async =>
-              StoreResult(jsonDecode(data) as Map<String, dynamic>),
+          validResponse: (data) async => StoreResult(CLEntity.fromJson(data)),
           errorResponse: (e, {st}) async {
             return StoreError(e, st: st);
           });
@@ -299,13 +225,12 @@ class CLServer {
     }
   }
 
-  Future<StoreReply<Map<String, dynamic>>> softDeleteEntity(int id) async {
+  Future<StoreReply<bool>> toBin(int id, {http.Client? client}) async {
     try {
-      final form = {'isDeleted': '1'};
-      final response = await put('/entity/$id', form: form);
+      final response =
+          await RestApi(baseURL, client: client).put(EntityEndPoint.toBin(id));
       return response.when(
-          validResponse: (data) async =>
-              StoreResult(jsonDecode(data) as Map<String, dynamic>),
+          validResponse: (data) async => StoreResult(true),
           errorResponse: (e, {st}) async {
             return StoreError(e, st: st);
           });
@@ -314,33 +239,49 @@ class CLServer {
     }
   }
 
-  Future<StoreReply<Map<String, dynamic>>> restoreEntity(int id) async {
+  Future<StoreReply<CLEntity>> restore(int id, {http.Client? client}) async {
     try {
-      final form = {'isDeleted': '0'};
-      final response = await put('/entity/$id', form: form);
+      final response =
+          await RestApi(baseURL, client: client).put(EntityEndPoint.toBin(id));
       return response.when(
-          validResponse: (data) async =>
-              StoreResult(jsonDecode(data) as Map<String, dynamic>),
+          validResponse: (data) async => StoreResult(CLEntity.fromJson(data)),
           errorResponse: (e, {st}) async {
             return StoreError(e, st: st);
           });
     } catch (e) {
-      return StoreError({'error': 'soft delete failed \n$e'});
+      return StoreError({'error': 'restore failed  \n$e'});
     }
   }
 
-  Future<StoreReply<Map<String, dynamic>>> deleteEntity(int id) async {
+  Future<StoreReply<bool>> deletePermanent(int id,
+      {http.Client? client}) async {
     try {
-      final response = await delete('/entity/$id');
-
+      final response = await RestApi(baseURL, client: client)
+          .put(EntityEndPoint.deletePermanent(id));
       return response.when(
-          validResponse: (data) async =>
-              StoreResult(jsonDecode(data) as Map<String, dynamic>),
+          validResponse: (data) async => StoreResult(true),
           errorResponse: (e, {st}) async {
             return StoreError(e, st: st);
           });
     } catch (e) {
-      return StoreError(const {'error': 'exception when creating a media'});
+      return StoreError({'error': 'delete failed \n$e'});
     }
+  }
+
+  // BLOB paths
+  Uri mediaFilePath(int id, {http.Client? client}) {
+    return getEndpointURI(EntityEndPoint.downloadMedia(id));
+  }
+
+  Uri previewFilePath(int id, {http.Client? client}) {
+    return getEndpointURI(EntityEndPoint.downloadPreview(id));
+  }
+
+  Uri streamM3U8FilePath(int id, {http.Client? client}) {
+    return getEndpointURI(EntityEndPoint.streamM3U8(id));
+  }
+
+  Uri streamSegmentFilePath(int id, String seg, {http.Client? client}) {
+    return getEndpointURI(EntityEndPoint.streamSegment(id, seg));
   }
 }

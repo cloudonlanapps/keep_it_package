@@ -2,7 +2,7 @@ import 'package:cl_basic_types/cl_basic_types.dart';
 import 'package:meta/meta.dart';
 
 @immutable
-class ServerQuery<T> {
+class ServerQuery {
   const ServerQuery(this.query);
   factory ServerQuery.fromStoreQuery(
     Set<String> validKeys, [
