@@ -182,8 +182,7 @@ class RestApi {
           return StoreResult(response.body);
         }
 
-        return StoreError<dynamic>.fromString(response.body)
-            .appendFields({'statusCode': response.statusCode});
+        return StoreError<dynamic>.fromString(response.body);
       }
       return StoreError({
         'error': 'Unknown http method $method expected get, post, put or delete'
