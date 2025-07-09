@@ -1,7 +1,4 @@
-// ignore_for_file: avoid_print
-
 import 'dart:io';
-import 'dart:math';
 
 import 'package:online_store/src/implementations/cl_server.dart';
 import 'package:test/test.dart';
@@ -9,10 +6,6 @@ import 'package:test/test.dart';
 import 'test_modules.dart';
 import 'text_ext_on_cl_server.dart';
 import 'utils.dart';
-
-/// Add Tests for
-/// Creating a collection with file
-/// Creating a collection with parentId
 
 void main() async {
   late CLServer server;
@@ -89,6 +82,29 @@ void main() async {
           fileSize: equals(File(fileName1).lengthSync()));
     });
     test("M5 can't create media with same file, returns the same object",
+        () async {
+      final fileName1 = testContext.createImage();
+      final entity1 = await server.validCreate(
+        testContext,
+        fileName: fileName1,
+      );
+      testContext.validate(entity1,
+          id: isNotNull,
+          md5: isNotNull,
+          label: isNull,
+          fileSize: equals(File(fileName1).lengthSync()));
+
+      final entity2 = await server.validCreate(
+        testContext,
+        fileName: fileName1,
+      );
+      expect(entity2, entity1,
+          reason:
+              "M5 can't create media with same file, can't return return different object");
+
+      //final fileName2 = testContext.createImage();
+    });
+    test("M6 Can't create duplicate to existing item, even by updating",
         () async {
       final fileName1 = testContext.createImage();
       final fileName2 = testContext.createImage();
