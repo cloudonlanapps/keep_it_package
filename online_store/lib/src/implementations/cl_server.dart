@@ -175,8 +175,7 @@ extension EntityServer on CLServer {
     );
   }
 
-  Future<StoreReply<CLEntity?>> getById(int id,
-      {String queryString = '', http.Client? client}) async {
+  Future<StoreReply<CLEntity?>> getById(int id, {http.Client? client}) async {
     final endPoint = EntityEndPoint.getById(id);
     try {
       final reply = await RestApi(baseURL, client: client).get(endPoint);
@@ -256,7 +255,7 @@ extension EntityServer on CLServer {
       {http.Client? client}) async {
     try {
       final response = await RestApi(baseURL, client: client)
-          .put(EntityEndPoint.deletePermanent(id));
+          .delete(EntityEndPoint.deletePermanent(id));
       return response.when(
           validResponse: (data) async => StoreResult(true),
           errorResponse: (e, {st}) async {

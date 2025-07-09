@@ -44,7 +44,7 @@ class RestApi {
           .timeout(const Duration(seconds: 5));
       if (response.statusCode == 200) {
         final info = jsonDecode(response.body) as Map<String, dynamic>;
-        if ((info['name'] as String) == 'colan_server') {
+        if ((info['name'] as String) == 'CoLAN server') {
           return StoreResult(info);
         }
         log("Error: ${info['name']}");
