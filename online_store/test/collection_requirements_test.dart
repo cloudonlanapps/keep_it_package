@@ -1,5 +1,3 @@
-// ignore_for_file: avoid_print test requires print
-
 import 'package:online_store/src/implementations/cl_server.dart';
 import 'package:test/test.dart';
 
@@ -13,15 +11,15 @@ import 'utils.dart';
 
 void main() async {
   late CLServer server;
-  late TestArtifacts testArtifacts;
+  late TestContext testContext;
 
   setUpAll(() async {
     server = await TextExtOnCLServer.establishConnection();
-    testArtifacts = TestArtifacts(
+    testContext = TestContext(
         tempDir: 'image_test_dir_${randomString(5)}', server: server);
   });
   tearDownAll(() async {
-    await testArtifacts.dispose();
+    await testContext.dispose();
   });
 
   setUp(() async {});
@@ -29,48 +27,37 @@ void main() async {
   group('Test Collection Interface', () {
     test('C1 can create a collection with label', () async {
       final label1 = randomString(8, prefix: 'test_');
-      final entity1 = await server.validCreate(
+      final entity1 = await server.validCreate(testContext,
           isCollection: () => true, label: () => label1);
-
-      testArtifacts.validate(entity1,
+      testContext.validate(entity1,
           id: isNotNull, label: isIn(label1), description: isNull);
-      final id1 = entity1.id!;
-      testArtifacts.entities.add(id1);
-      print('created a new collection with id $id1');
     });
     test('C2 can create a collection with label and description', () async {
       final label1 = randomString(8, prefix: 'test_');
       const description1 = 'description1';
-      final entity1 = await server.validCreate(
+      final entity1 = await server.validCreate(testContext,
           isCollection: () => true,
           label: () => label1,
           description: () => description1);
-      testArtifacts.validate(entity1,
+      testContext.validate(entity1,
           id: isNotNull, label: isIn(label1), description: isIn(description1));
-      final id1 = entity1.id!;
-      testArtifacts.entities.add(id1);
-      print('created a new collection with id $id1');
     });
     test("C3 can't create collection with same label, returns the same object",
         () async {
       final label1 = randomString(8, prefix: 'test_');
       const description1 = 'description1';
-      final entity1 = await server.validCreate(
+      final entity1 = await server.validCreate(testContext,
           isCollection: () => true,
           label: () => label1,
           description: () => description1);
-      testArtifacts.validate(entity1,
+      testContext.validate(entity1,
           id: isNotNull, label: isIn(label1), description: isIn(description1));
-      final id1 = entity1.id!;
-      testArtifacts.entities.add(id1);
-      print('created a new collection with id $id1');
-      final entity2 = await server.validCreate(
+
+      final entity2 = await server.validCreate(testContext,
           isCollection: () => true,
           label: () => label1,
           description: () => description1);
-      if (entity2 != entity1) {
-        testArtifacts.entities.add(entity2.id!);
-      }
+
       expect(entity2, entity1, reason: 'must return the original');
     });
     test(
@@ -78,26 +65,27 @@ void main() async {
         () async {
       final label1 = randomString(8, prefix: 'test_');
       const description1 = 'description1';
-      final entity1 = await server.validCreate(
+      final entity1 = await server.validCreate(testContext,
           isCollection: () => true,
           label: () => label1,
           description: () => description1);
-      testArtifacts.validate(entity1,
+      testContext.validate(entity1,
           id: isNotNull, label: isIn(label1), description: isIn(description1));
-      final id1 = entity1.id!;
-      testArtifacts.entities.add(id1);
-      print('created a new collection with id $id1');
       const description2 = 'description2';
-      final entity2 = await server.validCreate(
+      final entity2 = await server.validCreate(testContext,
           isCollection: () => true,
           label: () => label1,
           description: () => description2);
-      if (entity2 != entity1) {
-        final id2 = entity2.id!;
-        testArtifacts.entities.add(id2);
-        print('created a new collection with id $id2');
-      }
+
       expect(entity2, entity1, reason: 'must return the original');
+    });
+
+    test("C5 can't create a collection with a file", () async {
+      final file = testContext.createImage();
+      final label1 = randomString(8, prefix: 'test_');
+      final error = await server.invalidCreate(testContext,
+          isCollection: () => true, label: () => label1, fileName: file);
+      expect(error['code'], 422);
     });
   });
 }

@@ -1,7 +1,4 @@
-// ignore_for_file: avoid_print  test requires print
-
 import 'dart:io';
-import 'dart:math';
 
 import 'package:cl_basic_types/cl_basic_types.dart';
 import 'package:online_store/online_store.dart';
@@ -11,21 +8,21 @@ import 'package:test/test.dart';
 import 'text_ext_on_cl_server.dart';
 import 'utils.dart';
 
-class TestArtifacts {
-  TestArtifacts({required this.tempDir, required this.server}) {
+class TestContext {
+  TestContext({required this.tempDir, required this.server}) {
     Directory(tempDir).createSync(recursive: true);
-    print('Artifacts will be saved into the directory : $tempDir');
+    //print('Artifacts will be saved into the directory : $tempDir');
   }
 
   final String tempDir;
   final CLServer server;
   final List<String> fileArtifacts = [];
-  final List<int> entities = [];
+  final Set<int> entities = {};
 
   Future<void> dispose() async {
     await server.cleanupEntity(entities);
     Directory(tempDir).deleteSync(recursive: true);
-    print('Artifacts directory $tempDir removed');
+    //print('Artifacts directory $tempDir removed');
   }
 
   String generateFile(Directory tempDir) {

@@ -5,6 +5,8 @@ import 'package:online_store/src/implementations/cl_server.dart';
 import 'package:store/store.dart';
 import 'package:test/test.dart';
 
+import 'test_modules.dart';
+
 extension TextExtOnCLServer on CLServer {
   static Future<CLServer> establishConnection() async {
     try {
@@ -22,13 +24,26 @@ extension TextExtOnCLServer on CLServer {
   }
 
   Future<CLEntity> validCreate(
-      {bool Function()? isCollection,
-      String? Function()? label,
-      String? Function()? description}) async {
+    TestContext context, {
+    int? id,
+    String? fileName,
+    bool Function()? isCollection,
+    String? Function()? label,
+    String? Function()? description,
+    int? Function()? parentId,
+  }) async {
     final reply = await upsert(
-        isCollection: isCollection, label: label, description: description);
+        id: id,
+        fileName: fileName,
+        isCollection: isCollection,
+        label: label,
+        description: description,
+        parentId: parentId);
     final reference = await reply.when(
       validResponse: (result) async {
+        if (result.id != null) {
+          context.entities.add(result.id!);
+        }
         return result;
       },
       errorResponse: (error, {st}) async {
@@ -38,7 +53,37 @@ extension TextExtOnCLServer on CLServer {
     return reference;
   }
 
-  Future<void> cleanupEntity(List<int> ids) async {
+  Future<Map<String, dynamic>> invalidCreate(
+    TestContext context, {
+    int? id,
+    String? fileName,
+    bool Function()? isCollection,
+    String? Function()? label,
+    String? Function()? description,
+    int? Function()? parentId,
+  }) async {
+    final reply = await upsert(
+        id: id,
+        fileName: fileName,
+        isCollection: isCollection,
+        label: label,
+        description: description,
+        parentId: parentId);
+    final reference = await reply.when<Map<String, dynamic>>(
+      validResponse: (result) async {
+        if (result.id != null) {
+          context.entities.add(result.id!);
+        }
+        fail('Expected not to succeed');
+      },
+      errorResponse: (error, {st}) async {
+        return error;
+      },
+    );
+    return reference;
+  }
+
+  Future<void> cleanupEntity(Set<int> ids) async {
     for (final id in ids) {
       final prefix = 'id: $id, ';
       await (await toBin(id)).when(
@@ -69,7 +114,7 @@ extension TextExtOnCLServer on CLServer {
         return null;
       });
       expect(item, null, reason: '$prefix not deleted properly');
-      print('$prefix test artifacts cleaned');
+      //print('$prefix test artifacts cleaned');
     }
   }
 
