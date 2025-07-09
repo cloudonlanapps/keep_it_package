@@ -1,12 +1,9 @@
-// ignore_for_file: avoid_print, print required for testing
-
-import 'dart:io';
-
 import 'package:cl_basic_types/cl_basic_types.dart';
 import 'package:online_store/src/implementations/cl_server.dart';
 import 'package:store/store.dart';
 import 'package:test/test.dart';
 
+import 'test_modules.dart';
 import 'text_ext_on_cl_server.dart';
 import 'utils.dart';
 
@@ -16,35 +13,20 @@ import 'utils.dart';
 
 void main() async {
   late CLServer server;
-  late Directory tempDir;
+  late TestArtifacts testArtifacts;
   late List<int> ids2Delete;
 
   setUpAll(() async {
-    tempDir = await Directory.systemTemp.createTemp('image_test_dir_');
-    print('Created temporary directory: ${tempDir.path}');
+    server = await TextExtOnCLServer.establishConnection();
+    testArtifacts = TestArtifacts(
+        tempDir: 'image_test_dir_${randomString(5)}', server: server);
   });
   tearDownAll(() async {
-    print('Deleting temporary directory: ${tempDir.path}');
-    await tempDir.delete(recursive: true);
+    await testArtifacts.dispose();
   });
 
-  setUp(() async {
-    try {
-      final url = StoreURL(Uri.parse('http://127.0.0.1:5001/'),
-          identity: null, label: null);
-
-      server = await CLServer(storeURL: url).withId();
-      if (!server.hasID) {
-        fail('Connection Failed, could not get the server Id');
-      }
-    } catch (e) {
-      fail('Failed: $e');
-    }
-    ids2Delete = [];
-  });
-  tearDown(() async {
-    await server.cleanupEntity(ids2Delete);
-  });
+  setUp(() async {});
+  tearDown(() async {});
   group('Test Collection Interface', () {
     test('C1 can create a collection with label', () async {
       final label1 = randomString(8, prefix: 'test_');
@@ -53,7 +35,7 @@ void main() async {
 
       validate(entity1, isNotNull, isIn(label1), isNull);
       final id1 = entity1.id!;
-      ids2Delete.add(id1);
+      testArtifacts.entities.add(id1);
       print('created a new collection with id $id1');
     });
     test('C2 can create a collection with label and description', () async {
@@ -65,7 +47,7 @@ void main() async {
           description: () => description1);
       validate(entity1, isNotNull, isIn(label1), isIn(description1));
       final id1 = entity1.id!;
-      ids2Delete.add(id1);
+      testArtifacts.entities.add(id1);
       print('created a new collection with id $id1');
     });
     test("C3 can't create collection with same label, returns the same object",
@@ -78,14 +60,14 @@ void main() async {
           description: () => description1);
       validate(entity1, isNotNull, isIn(label1), isIn(description1));
       final id1 = entity1.id!;
-      ids2Delete.add(id1);
+      testArtifacts.entities.add(id1);
       print('created a new collection with id $id1');
       final entity2 = await server.validCreate(
           isCollection: () => true,
           label: () => label1,
           description: () => description1);
       if (entity2 != entity1) {
-        ids2Delete.add(entity2.id!);
+        testArtifacts.entities.add(entity2.id!);
       }
       expect(entity2, entity1, reason: 'must return the original');
     });
@@ -100,7 +82,7 @@ void main() async {
           description: () => description1);
       validate(entity1, isNotNull, isIn(label1), isIn(description1));
       final id1 = entity1.id!;
-      ids2Delete.add(id1);
+      testArtifacts.entities.add(id1);
       print('created a new collection with id $id1');
       const description2 = 'description2';
       final entity2 = await server.validCreate(
@@ -109,7 +91,7 @@ void main() async {
           description: () => description2);
       if (entity2 != entity1) {
         final id2 = entity2.id!;
-        ids2Delete.add(id2);
+        testArtifacts.entities.add(id2);
         print('created a new collection with id $id2');
       }
       expect(entity2, entity1, reason: 'must return the original');

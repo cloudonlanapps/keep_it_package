@@ -2,9 +2,25 @@
 
 import 'package:cl_basic_types/cl_basic_types.dart';
 import 'package:online_store/src/implementations/cl_server.dart';
+import 'package:store/store.dart';
 import 'package:test/test.dart';
 
 extension TextExtOnCLServer on CLServer {
+  static Future<CLServer> establishConnection() async {
+    try {
+      final url = StoreURL(Uri.parse('http://127.0.0.1:5001/'),
+          identity: null, label: null);
+
+      final server = await CLServer(storeURL: url).withId();
+      if (!server.hasID) {
+        fail('Connection Failed, could not get the server Id');
+      }
+      return server;
+    } catch (e) {
+      fail('Failed: $e');
+    }
+  }
+
   Future<CLEntity> validCreate(
       {bool Function()? isCollection,
       String? Function()? label,
