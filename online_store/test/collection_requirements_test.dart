@@ -5,10 +5,6 @@ import 'test_modules.dart';
 import 'text_ext_on_cl_server.dart';
 import 'utils.dart';
 
-/// Add Tests for
-/// Creating a collection with file
-/// Creating a collection with parentId
-
 void main() async {
   late CLServer server;
   late TestContext testContext;
