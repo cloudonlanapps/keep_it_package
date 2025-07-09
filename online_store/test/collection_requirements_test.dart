@@ -1,6 +1,6 @@
-import 'package:cl_basic_types/cl_basic_types.dart';
+// ignore_for_file: avoid_print test requires print
+
 import 'package:online_store/src/implementations/cl_server.dart';
-import 'package:store/store.dart';
 import 'package:test/test.dart';
 
 import 'test_modules.dart';
@@ -14,7 +14,6 @@ import 'utils.dart';
 void main() async {
   late CLServer server;
   late TestArtifacts testArtifacts;
-  late List<int> ids2Delete;
 
   setUpAll(() async {
     server = await TextExtOnCLServer.establishConnection();
@@ -33,7 +32,8 @@ void main() async {
       final entity1 = await server.validCreate(
           isCollection: () => true, label: () => label1);
 
-      validate(entity1, isNotNull, isIn(label1), isNull);
+      testArtifacts.validate(entity1,
+          id: isNotNull, label: isIn(label1), description: isNull);
       final id1 = entity1.id!;
       testArtifacts.entities.add(id1);
       print('created a new collection with id $id1');
@@ -45,7 +45,8 @@ void main() async {
           isCollection: () => true,
           label: () => label1,
           description: () => description1);
-      validate(entity1, isNotNull, isIn(label1), isIn(description1));
+      testArtifacts.validate(entity1,
+          id: isNotNull, label: isIn(label1), description: isIn(description1));
       final id1 = entity1.id!;
       testArtifacts.entities.add(id1);
       print('created a new collection with id $id1');
@@ -58,7 +59,8 @@ void main() async {
           isCollection: () => true,
           label: () => label1,
           description: () => description1);
-      validate(entity1, isNotNull, isIn(label1), isIn(description1));
+      testArtifacts.validate(entity1,
+          id: isNotNull, label: isIn(label1), description: isIn(description1));
       final id1 = entity1.id!;
       testArtifacts.entities.add(id1);
       print('created a new collection with id $id1');
@@ -80,7 +82,8 @@ void main() async {
           isCollection: () => true,
           label: () => label1,
           description: () => description1);
-      validate(entity1, isNotNull, isIn(label1), isIn(description1));
+      testArtifacts.validate(entity1,
+          id: isNotNull, label: isIn(label1), description: isIn(description1));
       final id1 = entity1.id!;
       testArtifacts.entities.add(id1);
       print('created a new collection with id $id1');
@@ -97,11 +100,4 @@ void main() async {
       expect(entity2, entity1, reason: 'must return the original');
     });
   });
-}
-
-void validate(CLEntity entity, Matcher id, Matcher label, Matcher description) {
-  expect(entity.id, id, reason: "response doesn't contains id");
-  expect(entity.label, label, reason: "response doesn't contains label");
-  expect(entity.description, description,
-      reason: 'description is not matching');
 }
