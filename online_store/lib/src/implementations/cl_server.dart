@@ -149,10 +149,10 @@ extension EntityServer on CLServer {
       final reply = await RestApi(baseURL, client: client).get(endPoint);
       return reply.when(validResponse: (response) async {
         final map = jsonDecode(response);
-        final items = ((map as Map<String, dynamic>)['items']) as List<dynamic>;
-
+        final items = (((map as Map<String, dynamic>)['items']) ?? <CLEntity>[])
+            as List<dynamic>;
         final mediaMapList =
-            items.cast<String>().map(CLEntity.fromJson).toList();
+            items.cast<Map<String, dynamic>>().map(CLEntity.fromMap).toList();
         return StoreResult(mediaMapList);
       }, errorResponse: (e, {st}) async {
         return StoreError(e, st: st);
