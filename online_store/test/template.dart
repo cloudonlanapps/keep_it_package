@@ -14,15 +14,15 @@ import 'utils.dart';
 
 void main() async {
   late CLServer server;
-  late TestContext testArtifacts;
+  late TestContext testContext;
 
   setUpAll(() async {
     server = await TextExtOnCLServer.establishConnection();
-    testArtifacts = TestContext(
+    testContext = TestContext(
         tempDir: 'image_test_dir_${randomString(5)}', server: server);
   });
   tearDownAll(() async {
-    await testArtifacts.dispose();
+    await testContext.dispose();
   });
 
   setUp(() async {});
