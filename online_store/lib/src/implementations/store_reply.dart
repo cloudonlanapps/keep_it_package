@@ -61,7 +61,7 @@ class StoreError<T> extends StoreReply<T> {
     try {
       map = jsonDecode(errorString) as Map<String, dynamic>;
     } catch (e) {
-      map = {'error': errorString};
+      map = {'error': errorString, 'type': 'MissingPageError'};
     }
     return StoreError(map, st: st);
   }

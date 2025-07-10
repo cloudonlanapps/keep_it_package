@@ -162,17 +162,20 @@ extension EntityServer on CLServer {
     }
   }
 
-  // Server don't support single query, hence use getAll for now.
-
   Future<StoreReply<CLEntity?>> get(
       {String queryString = '', http.Client? client}) async {
-    final all = await getAll(queryString: queryString);
-    return all.when(
-      validResponse: (list) async => StoreResult<CLEntity?>(list.firstOrNull),
-      errorResponse: (error, {st}) async {
-        return StoreError<CLEntity?>(error, st: st);
-      },
-    );
+    final endPoint = EntityEndPoint.get();
+    try {
+      final reply =
+          await RestApi(baseURL, client: client).get('$endPoint?$queryString');
+      return reply.when(validResponse: (response) async {
+        return StoreResult(CLEntity.fromJson(response));
+      }, errorResponse: (e, {st}) async {
+        return StoreError(e, st: st);
+      });
+    } catch (e, st) {
+      return StoreError<CLEntity?>.fromString(e.toString(), st: st);
+    }
   }
 
   Future<StoreReply<CLEntity?>> getById(int id, {http.Client? client}) async {

@@ -4,6 +4,7 @@ library;
 
 class EntityEndPoint {
   static String getAll() => '/entity/all';
+  static String get() => '/entity/match';
   static String create() => '/entity/create';
   static String getById(int id) => '/entity/$id';
   static String downloadMedia(int id) => '/entity/$id/download/media';
