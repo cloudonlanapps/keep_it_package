@@ -23,10 +23,15 @@
 - [ ] M10 updating a media same label  don't update anything
 - [ ] M11 can create with description and update
 - [ ] M12 can update createDate for a media
+- [ ] M13 can create multiple media with same label
 
 ## Read or Query
 
-- [ ] R1 test getAll, and confirm all the items recently created present in it
+- [ ] R1 test `getAll`, and confirm all the items recently created present in it, wihtout any filter. This should exclude permanently deleted, and fetch from the latest version
+- [ ] R2 `getByID` returns valid entity if found
+- [ ] R3 `getByID` returns NotFound error when the item is not present
+- [ ] R4 `get` with id / label returns valid entity if found for collection
+- [ ] R5 `get` with id / md5 returns valid entity if found for media
 
 ## Known issues
 

@@ -65,5 +65,118 @@ void main() async {
         }
       }
     });
+    test('R2 `getByID` returns valid entity if found', () async {
+      final collectionLabels = List<String>.generate(1, (i) {
+        return randomString(8);
+      });
+      final collections = <String, CLEntity>{};
+      for (final label in collectionLabels) {
+        collections[label] = await server.validCreate(testContext,
+            isCollection: () => true, label: () => label);
+      }
+
+      for (final entry in collections.entries) {
+        {
+          final retrieved = await (await server.getById(entry.value.id!)).when(
+              validResponse: (result) async {
+            return result;
+          }, errorResponse: (e, {st}) async {
+            fail('failed to get collection with id ${entry.value.id}');
+          });
+          expect(retrieved, entry.value,
+              reason: 'Retrived item must match the original item');
+        }
+      }
+    });
+    test('R3 `getByID` returns NotFound error when the item is not present',
+        () async {
+      for (final invalidId in [0, -1, 2000000000]) {
+        await (await server.getById(invalidId)).when(
+            validResponse: (result) async {
+          fail('Expected not to succeed');
+        }, errorResponse: (e, {st}) async {
+          {
+            expect(
+              e['type'],
+              anyOf('MissingPageError', 'MissingMediaError'),
+              reason: 'must get MissingMediaError error',
+            );
+          }
+        });
+      }
+    });
+    test(
+        'R4 `get` with id / label returns valid entity if found for collection',
+        () async {
+      final collectionLabels = List<String>.generate(4, (i) {
+        return randomString(8);
+      });
+      final collections = <String, CLEntity>{};
+      for (final label in collectionLabels) {
+        collections[label] = await server.validCreate(testContext,
+            isCollection: () => true, label: () => label);
+      }
+
+      for (final entry in collections.entries) {
+        {
+          final retrieved =
+              await (await server.get(queryString: 'id=${entry.value.id!}'))
+                  .when(validResponse: (result) async {
+            return result;
+          }, errorResponse: (e, {st}) async {
+            fail('failed to get collection with id ${entry.value.id} $e');
+          });
+          expect(retrieved, entry.value,
+              reason: 'Retrived item must match the original item');
+        }
+        {
+          final retrieved = await (await server.get(
+                  queryString: 'label=${entry.value.label!}'))
+              .when(validResponse: (result) async {
+            return result;
+          }, errorResponse: (e, {st}) async {
+            fail('failed to get collection with id ${entry.value.id} $e');
+          });
+          expect(retrieved, entry.value,
+              reason: 'Retrived item must match the original item');
+        }
+      }
+    });
+    test('R5 `get` with id / md5 returns valid entity if found for media',
+        () async {
+      final images = List<String>.generate(4, (i) {
+        return testContext.createImage();
+      });
+      final media = <String, CLEntity>{};
+      for (final fileName in images) {
+        media[fileName] =
+            await server.validCreate(testContext, fileName: fileName);
+      }
+
+      for (final entry in media.entries) {
+        {
+          final retrieved =
+              await (await server.get(queryString: 'id=${entry.value.id!}'))
+                  .when(validResponse: (result) async {
+            return result;
+          }, errorResponse: (e, {st}) async {
+            fail('failed to get collection with id ${entry.value.id} $e');
+          });
+          expect(retrieved, entry.value,
+              reason: 'Retrived item must match the original item');
+        }
+        {
+          final retrieved =
+              await (await server.get(queryString: 'md5=${entry.value.md5!}'))
+                  .when(validResponse: (result) async {
+            return result;
+          }, errorResponse: (e, {st}) async {
+            fail('failed to get collection with id ${entry.value.id} $e');
+          });
+          expect(retrieved, entry.value,
+              reason: 'Retrived item must match the original item');
+        }
+      }
+    });
   });
 }
