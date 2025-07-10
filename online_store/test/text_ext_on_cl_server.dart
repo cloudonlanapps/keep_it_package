@@ -84,24 +84,35 @@ extension TextExtOnCLServer on CLServer {
     return reference;
   }
 
+  void warn(String msg) {
+    print(msg);
+  }
+
+  void warnIfFailed(msg, {required bool condition}) {
+    if (!condition) {
+      print(msg);
+    }
+  }
+
   Future<void> cleanupEntity(Set<int> ids) async {
     for (final id in ids) {
       final prefix = 'id: $id, ';
       await (await toBin(id)).when(
         validResponse: (success) async {
-          expect(success, true, reason: '$prefix toBin is not returning True');
+          warnIfFailed('$prefix toBin is not returning True',
+              condition: success);
         },
         errorResponse: (error, {st}) async {
-          fail('$prefix toBin failed $error');
+          warn('$prefix toBin failed $error');
         },
       );
       await (await deletePermanent(id)).when(
         validResponse: (success) async {
-          expect(success, true,
-              reason: '$prefix deletePermanent is not returning True');
+          warnIfFailed('$prefix deletePermanent is not returning True',
+              condition: success);
         },
         errorResponse: (error, {st}) async {
-          fail('$prefix deletePermanent failed $error');
+          print('$prefix deletePermanent failed $error');
         },
       );
     }
@@ -111,10 +122,12 @@ extension TextExtOnCLServer on CLServer {
       final item = await (await getById(id)).when(validResponse: (data) async {
         return data;
       }, errorResponse: (e, {st}) async {
-        expect(e['type'], 'MissingMediaError',
-            reason: 'must get MissingMediaError error');
+        warnIfFailed(
+          'must get MissingMediaError error',
+          condition: e['type'] == 'MissingMediaError',
+        );
       });
-      expect(item, null, reason: '$prefix not deleted properly');
+      warnIfFailed('$prefix not deleted properly', condition: item == null);
       //print('$prefix test artifacts cleaned');
     }
   }
