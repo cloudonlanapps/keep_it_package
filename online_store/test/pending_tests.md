@@ -32,7 +32,7 @@
 - [ ] R3 `getByID` returns NotFound error when the item is not present
 - [ ] R4 `get` with id / label returns valid entity if found for collection
 - [ ] R5 `get` with id / md5 returns valid entity if found for media
-- [ ] R6 `get` with both id and md5 returns media with id, not by md5
+
 
 ## Known issues
 

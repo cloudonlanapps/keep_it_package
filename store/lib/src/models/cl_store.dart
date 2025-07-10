@@ -79,8 +79,8 @@ class CLStore with CLLogger {
 
   // This function should not be exposed, and its only to detect
   // if we have duplicate.
-  Future<StoreEntity?> _get([StoreQuery<CLEntity>? query]) async {
-    final entityFromDB = await store.get(query);
+  Future<StoreEntity?> get({String? md5, String? label}) async {
+    final entityFromDB = await store.get(md5: md5, label: label);
     if (entityFromDB == null) {
       return null;
     }
@@ -111,8 +111,7 @@ class CLStore with CLLogger {
     ValueGetter<int?>? parentId,
     UpdateStrategy strategy = UpdateStrategy.skip,
   }) async {
-    final collectionInDB = await store
-        .get(StoreQuery<CLEntity>({'label': label, 'isCollection': 1}));
+    final collectionInDB = await store.get(label: label);
 
     if (collectionInDB != null && collectionInDB.id != null) {
       if (!collectionInDB.isCollection) {
@@ -219,9 +218,8 @@ class CLStore with CLLogger {
         throw Exception("media can't be stored without valid parentId");
       }
     }
-    final mediaInDB = await store.get(
-      StoreQuery<CLEntity>({'md5': mediaFile.md5, 'isCollection': 0}),
-    );
+    final mediaInDB = await store.get(md5: mediaFile.md5);
+
     final CLEntity parent;
 
     if (parentCollection == null) {
@@ -456,9 +454,7 @@ class CLStore with CLLogger {
           Future<bool> processSupportedMediaContent() async {
             if ([CLMediaType.image, CLMediaType.video].contains(item.type)) {
               /// FIXME: Handle failure due to network
-              final mediaInDB = await _get(
-                StoreQuery<CLEntity>({'md5': item.md5, 'isCollection': 0}),
-              );
+              final mediaInDB = await get(md5: item.md5);
               if (mediaInDB != null) {
                 existingEntities.add(mediaInDB);
                 return true;

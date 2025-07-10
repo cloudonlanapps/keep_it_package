@@ -81,7 +81,7 @@ void main() async {
       final label1 = randomString(8, prefix: 'test_');
       final error = await server.invalidCreate(testContext,
           isCollection: () => true, label: () => label1, fileName: file);
-      expect(error['code'], 422);
+      expect(error['type'], 'CannotAttachFileWithCollectionError');
     });
   });
 }

@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:cl_basic_types/cl_basic_types.dart';
 import 'package:http/http.dart' as http;
 import 'package:meta/meta.dart';
+import 'package:path/path.dart';
 import 'package:store/store.dart';
 
 import 'cl_server_status.dart';
@@ -163,8 +164,12 @@ extension EntityServer on CLServer {
   }
 
   Future<StoreReply<CLEntity?>> get(
-      {String queryString = '', http.Client? client}) async {
+      {String? md5, String? label, http.Client? client}) async {
     final endPoint = EntityEndPoint.get();
+    final queryString = [
+      if (md5 != null) 'md5=$md5',
+      if (label != null) 'label=$label'
+    ].join('&'); // FIXME asddfsdf
     try {
       final reply =
           await RestApi(baseURL, client: client).get('$endPoint?$queryString');

@@ -49,16 +49,8 @@ class OnlineEntityStore extends EntityStore {
   bool get isAlive => server.hasID;
 
   @override
-  Future<CLEntity?> get([StoreQuery<CLEntity>? query]) async {
-    if (query != null &&
-        query.map.keys.contains('isHidden') &&
-        query.map['isHidden'] == 1) {
-      // Servers don't support isHidden
-      return null;
-    }
-    final serverQuery = ServerQuery.fromStoreQuery(validQueryKeys, query?.map);
-
-    final reply = await server.get(queryString: serverQuery.query);
+  Future<CLEntity?> get({String? md5, String? label}) async {
+    final reply = await server.get(md5: md5, label: label);
     return reply.when(
       validResponse: (result) async {
         return result;

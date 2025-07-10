@@ -95,8 +95,7 @@ void main() async {
         });
       }
     });
-    test(
-        'R4 `get` with id / label returns valid entity if found for collection',
+    test('R4 `get` with  label returns valid entity if found for collection',
         () async {
       final collectionLabels = List<String>.generate(4, (i) {
         return randomString(8);
@@ -109,19 +108,7 @@ void main() async {
 
       for (final entry in collections.entries) {
         {
-          final retrieved =
-              await (await server.get(queryString: 'id=${entry.value.id!}'))
-                  .when(validResponse: (result) async {
-            return result;
-          }, errorResponse: (e, {st}) async {
-            fail('failed to get collection with id ${entry.value.id} $e');
-          });
-          expect(retrieved, entry.value,
-              reason: 'Retrived item must match the original item');
-        }
-        {
-          final retrieved = await (await server.get(
-                  queryString: 'label=${entry.value.label!}'))
+          final retrieved = await (await server.get(label: entry.value.label))
               .when(validResponse: (result) async {
             return result;
           }, errorResponse: (e, {st}) async {
@@ -132,7 +119,7 @@ void main() async {
         }
       }
     });
-    test('R5 `get` with id / md5 returns valid entity if found for media',
+    test('R5 `get` with  md5 returns valid entity if found for media',
         () async {
       final images = List<String>.generate(4, (i) {
         return testContext.createImage();
@@ -145,20 +132,8 @@ void main() async {
 
       for (final entry in media.entries) {
         {
-          final retrieved =
-              await (await server.get(queryString: 'id=${entry.value.id!}'))
-                  .when(validResponse: (result) async {
-            return result;
-          }, errorResponse: (e, {st}) async {
-            fail('failed to get media with id ${entry.value.id} $e');
-          });
-          expect(retrieved, entry.value,
-              reason: 'Retrived item must match the original item');
-        }
-        {
-          final retrieved =
-              await (await server.get(queryString: 'md5=${entry.value.md5!}'))
-                  .when(validResponse: (result) async {
+          final retrieved = await (await server.get(md5: entry.value.md5)).when(
+              validResponse: (result) async {
             return result;
           }, errorResponse: (e, {st}) async {
             fail('failed to get media with id ${entry.value.id} $e');
@@ -167,31 +142,6 @@ void main() async {
               reason: 'Retrived item must match the original item');
         }
       }
-    });
-
-    test('R6 `get` with both id and md5 returns media with id, not by md5',
-        () async {
-      final images = List<String>.generate(2, (i) {
-        return testContext.createImage();
-      });
-      final mediaList = <CLEntity>[];
-      for (final fileName in images) {
-        final media = await server.validCreate(testContext, fileName: fileName);
-        mediaList.add(media);
-      }
-      final id = mediaList[0].id!;
-      final md5 = mediaList[1].md5;
-
-      final queryString = ['id=$id', 'md5=$md5'].join('&');
-
-      final retrieved = await (await server.get(queryString: queryString)).when(
-          validResponse: (result) async {
-        return result;
-      }, errorResponse: (e, {st}) async {
-        fail('failed to get media $e');
-      });
-      expect(retrieved, mediaList[0],
-          reason: 'Retrived item must match the original item');
     });
   });
 }

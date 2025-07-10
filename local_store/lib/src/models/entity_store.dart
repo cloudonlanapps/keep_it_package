@@ -45,8 +45,13 @@ class LocalSQLiteEntityStore extends EntityStore
   }
 
   @override
-  Future<CLEntity?> get([StoreQuery<CLEntity>? query]) async {
+  Future<CLEntity?> get({int? id, String? md5, String? label}) async {
     Future<CLEntity?> cb(SqliteWriteContext tx) async {
+      final query = StoreQuery<CLEntity>({
+        if (id != null) 'id': id,
+        if (md5 != null) 'md5': md5,
+        if (label != null) ...{'label': label, 'isCollection': 1}
+      });
       return dbGet(tx, agent, query);
     }
 
@@ -55,7 +60,7 @@ class LocalSQLiteEntityStore extends EntityStore
 
   @override
   Future<CLEntity?> getByID(int id) async {
-    return get(StoreQuery<CLEntity>({'id': id}));
+    return get(id: id);
   }
 
   @override
@@ -141,7 +146,7 @@ class LocalSQLiteEntityStore extends EntityStore
         final timeNow = DateTime.now();
         updated = curr.copyWith(addedDate: timeNow, updatedDate: timeNow);
       } else {
-        prev = await get(StoreQuery<CLEntity>({'id': curr.id}));
+        prev = await getByID(curr.id!);
         if (prev == null) {
           throw Exception('media with id ${curr.id} not found');
         }

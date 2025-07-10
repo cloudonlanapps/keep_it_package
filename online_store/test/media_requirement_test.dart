@@ -28,8 +28,7 @@ void main() async {
       final error = await server.invalidCreate(testContext,
           isCollection: () => false, label: () => label1);
 
-      expect((error['error'] as Map<String, dynamic>).containsKey('mediaFile'),
-          true,
+      expect(error['type'], 'MediaMustHaveMediaFile',
           reason: 'mediaFile is not present in the returned error');
     });
     test('M2 can create a media with only file', () async {

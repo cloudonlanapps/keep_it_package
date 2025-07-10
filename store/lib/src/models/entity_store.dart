@@ -11,7 +11,7 @@ abstract class EntityStore {
   final StoreURL storeURL;
 
   bool get isAlive;
-  Future<CLEntity?> get([StoreQuery<CLEntity>? query]);
+  Future<CLEntity?> get({String? md5, String? label});
   Future<CLEntity?> getByID(int id);
   Future<List<CLEntity>> getAll([StoreQuery<CLEntity>? query]);
   Future<CLEntity?> upsert(
