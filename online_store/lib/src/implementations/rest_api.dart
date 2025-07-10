@@ -3,9 +3,8 @@ import 'dart:convert' show jsonDecode, jsonEncode;
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:cl_basic_types/cl_basic_types.dart';
 import 'package:http/http.dart' as http;
-
-import 'store_reply.dart';
 
 class RestApi {
   RestApi(this._server, {this.connectViaMobile = true, this.client});

@@ -1,10 +1,10 @@
 import 'package:cl_basic_types/cl_basic_types.dart';
 import 'package:meta/meta.dart';
-import 'package:online_store/src/implementations/cl_server.dart';
-import 'package:online_store/src/implementations/store_reply.dart';
 import 'package:store/store.dart';
 
+import '../implementations/cl_server.dart';
 import '../implementations/server_query.dart';
+import 'entity_server.dart';
 
 @immutable
 class OnlineEntityStore extends EntityStore {
