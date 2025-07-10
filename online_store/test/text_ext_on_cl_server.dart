@@ -111,8 +111,8 @@ extension TextExtOnCLServer on CLServer {
       final item = await (await getById(id)).when(validResponse: (data) async {
         return data;
       }, errorResponse: (e, {st}) async {
-        expect(e['status_code'], 404, reason: 'got status code other than 404');
-        return null;
+        expect(e['type'], 'MissingMediaError',
+            reason: 'must get MissingMediaError error');
       });
       expect(item, null, reason: '$prefix not deleted properly');
       //print('$prefix test artifacts cleaned');
