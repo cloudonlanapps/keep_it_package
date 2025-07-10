@@ -25,14 +25,6 @@ void main() async {
     test(
         'R1 test getAll, and confirm all the items recently created present in it',
         () async {
-      final itemsBefore = await (await server.getAll()).when(
-          validResponse: (items) async => items,
-          errorResponse: (e, {st}) async {
-            fail('getAll Failed');
-          });
-      print('There are ${itemsBefore.length} items before this test');
-      itemsBefore.forEach(print);
-
       final collectionLabel = randomString(8);
       final collection = await server.validCreate(testContext,
           isCollection: () => true, label: () => collectionLabel);
@@ -53,10 +45,8 @@ void main() async {
           errorResponse: (e, {st}) async {
             fail('getAll Failed');
           });
-      print('There are ${items.length} items after this test');
-      itemsBefore.forEach(print);
+
       for (final item in items) {
-        print('checking item ${item.id}');
         expect(item.id, isNotNull); // assertion
         final expected =
             testMediaList.where((e) => e.id == item.id).firstOrNull;
