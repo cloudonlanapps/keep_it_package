@@ -31,14 +31,17 @@ class CLEntity {
     return CLEntity(
       id: map['id'] != null ? map['id'] as int : null,
       isCollection: (map['isCollection'] ?? 0) != 0,
-      addedDate:
-          DateTime.fromMillisecondsSinceEpoch((map['addedDate'] ?? 0) as int),
-      updatedDate:
-          DateTime.fromMillisecondsSinceEpoch((map['updatedDate'] ?? 0) as int),
+      addedDate: DateTime.fromMillisecondsSinceEpoch(
+        (map['addedDate'] ?? 0) as int,
+      ),
+      updatedDate: DateTime.fromMillisecondsSinceEpoch(
+        (map['updatedDate'] ?? 0) as int,
+      ),
       isDeleted: (map['isDeleted'] ?? 0) != 0,
       label: map['label'] != null ? map['label'] as String : null,
-      description:
-          map['description'] != null ? map['description'] as String : null,
+      description: map['description'] != null
+          ? map['description'] as String
+          : null,
       parentId: map['parentId'] != null ? map['parentId'] as int : null,
       md5: map['md5'] != null ? map['md5'] as String : null,
       fileSize: map['fileSize'] != null ? map['fileSize'] as int : null,
@@ -261,9 +264,7 @@ class CLEntity {
       ? CLMediaType.collection
       : CLMediaType.values.asNameMap()[type]!;
 
-  CLEntity clone({
-    ValueGetter<int?>? id,
-  }) {
+  CLEntity clone({ValueGetter<int?>? id}) {
     final addedDate = DateTime.now();
     final updatedDate = addedDate;
     return CLEntity(

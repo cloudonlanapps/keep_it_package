@@ -49,8 +49,8 @@ class DuplicatePageState extends State<DuplicatePage> {
         debugMessage: 'GetAllCollection',
       ),
       builder: (newCollection) {
-        final collectionLablel = newCollection?.data.label != null
-            ? '"${newCollection?.data.label}"'
+        final collectionLablel = newCollection?.label != null
+            ? '"${newCollection?.label}"'
             : 'a new collection';
         return Padding(
           padding: const EdgeInsets.all(8),

@@ -57,16 +57,16 @@ class ExistInDifferentCollection extends StatelessWidget {
                         .firstOrNull; */
                     final String currCollectionLabel;
 
-                    if (m.data.isDeleted) {
+                    if (m.isDeleted) {
                       currCollectionLabel = 'Deleted Items';
                     } else {
                       currCollectionLabel =
-                          currCollection?.data.label ?? 'somethig wrong';
+                          currCollection?.label ?? 'somethig wrong';
                     }
                     return SizedBox(
                       height: 80,
                       child: Dismissible(
-                        key: Key(m.data.md5!),
+                        key: Key(m.md5!),
                         direction: DismissDirection.endToStart,
                         onDismissed: (direction) {
                           onRemove(m);

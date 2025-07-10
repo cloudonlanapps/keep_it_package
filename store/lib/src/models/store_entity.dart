@@ -190,4 +190,15 @@ class StoreEntity implements ViewerEntity {
 
   @override
   bool get isHidden => data.isHidden;
+
+  String? get description => data.extension;
+  String? get md5 => data.md5;
+  int? get fileSize => data.fileSize;
+  String? get type => data.type;
+  String? get extension => data.extension;
+  bool get isDeleted => data.isDeleted;
+
+  int? get height => data.height;
+  int? get width => data.width;
+  double? get duration => data.duration;
 }

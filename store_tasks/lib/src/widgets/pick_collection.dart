@@ -34,7 +34,7 @@ class _PickCollectionState extends State<PickCollection> {
   void initState() {
     collection = widget.collection;
     viewController = TextEditingController();
-    viewController.text = widget.collection?.data.label ?? '';
+    viewController.text = widget.collection?.label ?? '';
     super.initState();
   }
 

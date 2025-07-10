@@ -79,9 +79,9 @@ class DialogService {
         title: 'Confirm Delete',
         message: entity.isCollection
             ? 'Are you sure you want to delete '
-                '"${entity.data.label}" and its content?'
+                '"${entity.label}" and its content?'
             : 'Are you sure you want to delete '
-                'this ${entity.data.mediaType}?',
+                'this ${entity.mediaType}?',
         entity: ViewerEntities([entity]),
       );
 
@@ -124,7 +124,7 @@ class DialogService {
         serverId: serverId,
         title: 'Confirm Delete',
         message: 'Are you sure you want to PERMANENTLY delete '
-            'this ${media.data.mediaType}?',
+            'this ${media.mediaType}?',
       );
 
   static Future<bool?> permanentlyDeleteMediaMultiple(
@@ -165,7 +165,7 @@ class DialogService {
         serverId: serverId,
         title: 'Confirm Restore',
         message: 'Are you sure you want to restore '
-            'this ${media.data.type}?',
+            'this ${media.type}?',
       );
 
   static Future<bool?> restoreMediaMultiple(

@@ -70,9 +70,9 @@ class DialogService {
         title: 'Confirm Delete',
         message: entity.isCollection
             ? 'Are you sure you want to delete '
-                '"${entity.data.label}" and its content?'
+                '"${entity.label}" and its content?'
             : 'Are you sure you want to delete '
-                'this ${entity.data.mediaType}?',
+                'this ${entity.mediaType}?',
         entity: ViewerEntities([entity]),
       );
 
@@ -110,7 +110,7 @@ class DialogService {
         context,
         title: 'Confirm Delete',
         message: 'Are you sure you want to PERMANENTLY delete '
-            'this ${media.data.mediaType}?',
+            'this ${media.mediaType}?',
       );
 
   static Future<bool?> permanentlyDeleteMediaMultiple(

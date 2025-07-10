@@ -112,7 +112,7 @@ class PageManager {
     required String serverId,
     bool canDuplicateMedia = true,
   }) async {
-    if (media.data.pin != null) {
+    if (media.pin != null) {
       return media;
     } else {
       final queryMap = [

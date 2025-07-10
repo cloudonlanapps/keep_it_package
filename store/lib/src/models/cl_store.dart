@@ -171,20 +171,20 @@ class CLStore with CLLogger {
       final targetStore = targetCollection.store;
 
       updated = await (await targetStore.createMedia(
-              label: () => entity.data.label,
-              description: () => entity.data.description,
+              label: () => entity.label,
+              description: () => entity.description,
               parentCollection: targetCollection.data,
               mediaFile: CLMediaFile(
                   path: entity.mediaUri!.toFilePath(),
-                  md5: entity.data.md5!,
-                  fileSize: entity.data.fileSize!,
-                  mimeType: entity.data.mimeType!,
-                  type: CLMediaType.fromMIMEType(entity.data.type!),
-                  fileSuffix: entity.data.extension!,
-                  createDate: entity.data.createDate,
-                  height: entity.data.height,
-                  width: entity.data.width,
-                  duration: entity.data.duration),
+                  md5: entity.md5!,
+                  fileSize: entity.fileSize!,
+                  mimeType: entity.mimeType!,
+                  type: CLMediaType.fromMIMEType(entity.type!),
+                  fileSuffix: entity.extension!,
+                  createDate: entity.createDate,
+                  height: entity.height,
+                  width: entity.width,
+                  duration: entity.duration),
               strategy: UpdateStrategy.mergeAppend))
           ?.dbSave(entity.mediaUri!.toFilePath());
       if (updated != null) {

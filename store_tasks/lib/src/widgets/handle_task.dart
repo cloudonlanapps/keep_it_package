@@ -51,7 +51,7 @@ class HandleTask extends ConsumerWidget {
       } else if (activeTask.targetConfirmed == null) {
         wizard = PickCollection(
             collection: activeTask.collection,
-            isValidSuggestion: (collection) => !collection.data.isDeleted,
+            isValidSuggestion: (collection) => !collection.isDeleted,
             onDone: (collection) async {
               if (collection.id != null) {
                 ref.read(activeTaskProvider.notifier).target = collection;

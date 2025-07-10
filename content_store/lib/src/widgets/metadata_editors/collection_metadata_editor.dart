@@ -173,7 +173,7 @@ class _CollectionMetadataEditorState
                   title: Text(
                     collection == null
                         ? 'Create Collection'
-                        : 'Edit Collection "${collection.data.label!.capitalizeFirstLetter()}"',
+                        : 'Edit Collection "${collection.label!.capitalizeFirstLetter()}"',
                   ),
                   description: const Text(
                     'Change the label and add/update description here',
@@ -222,11 +222,11 @@ class _CollectionMetadataEditorState
                           // prefix: const Icon(LucideIcons.tag),
                           label: const Text(' Collection Name'),
                           initialValue:
-                              widget.suggestedLabel ?? collection?.data.label,
+                              widget.suggestedLabel ?? collection?.label,
                           placeholder: const Text('Enter collection name'),
                           validator: (value) => validateName(
                             newLabel: value,
-                            existingLabel: collection?.data.label,
+                            existingLabel: collection?.label,
                             collections: allCollections,
                           ),
                           showCursor: true,
@@ -239,8 +239,8 @@ class _CollectionMetadataEditorState
                           id: 'description',
                           // prefix: const Icon(LucideIcons.tag),
                           label: const Text(' About'),
-                          initialValue: widget.description ??
-                              collection?.data.description,
+                          initialValue:
+                              widget.description ?? collection?.description,
                           placeholder:
                               const Text('Describe about this collection'),
                           maxLines: 4,
@@ -293,7 +293,7 @@ class _CollectionMetadataEditorState
       }
       if (collections.entities
           .cast<StoreEntity>()
-          .map((e) => e.data.label!.trim().toLowerCase())
+          .map((e) => e.label!.trim().toLowerCase())
           .contains(newLabel0.toLowerCase())) {
         return '$newLabel0 already exists';
       }

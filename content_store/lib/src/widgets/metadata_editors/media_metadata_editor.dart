@@ -144,8 +144,8 @@ class _StatefulMediaEditorState extends ConsumerState<StatefulMediaEditor> {
   void initState() {
     labelController = TextEditingController();
     descriptionController = TextEditingController();
-    labelController.text = widget.media.data.label ?? '';
-    descriptionController.text = widget.media.data.description ?? '';
+    labelController.text = widget.media.label ?? '';
+    descriptionController.text = widget.media.description ?? '';
     super.initState();
   }
 
@@ -183,7 +183,7 @@ class _StatefulMediaEditorState extends ConsumerState<StatefulMediaEditor> {
             ),
             Flexible(
               child: Text(
-                widget.media.data.label?.capitalizeFirstLetter() ??
+                widget.media.label?.capitalizeFirstLetter() ??
                     'Media #${widget.media.id}',
               ),
             ),
@@ -230,7 +230,7 @@ class _StatefulMediaEditorState extends ConsumerState<StatefulMediaEditor> {
                       placeholder: Text('Media #${widget.media.id}'),
                       validator: (value) => validateName(
                         newLabel: value,
-                        existingLabel: widget.media.data.label,
+                        existingLabel: widget.media.label,
                       ),
                       showCursor: true,
                       inputFormatters: [

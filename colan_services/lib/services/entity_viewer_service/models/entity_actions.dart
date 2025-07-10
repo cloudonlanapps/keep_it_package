@@ -37,7 +37,7 @@ class EntityActions extends CLContextMenu {
     return switch (entities) {
       final ViewerEntities e
           when e.entities.every(
-            (e) => e is StoreEntity && e.data.isCollection == false,
+            (e) => e is StoreEntity && e.isCollection == false,
           ) =>
         () {
           return EntityActions.ofMultipleMedia(
@@ -50,7 +50,7 @@ class EntityActions extends CLContextMenu {
         }(),
       final ViewerEntities e
           when e.entities.every(
-            (e) => e is StoreEntity && e.data.isCollection == true,
+            (e) => e is StoreEntity && e.isCollection == true,
           ) =>
         () {
           return EntityActions.empty(serverId: serverId);
@@ -89,7 +89,7 @@ class EntityActions extends CLContextMenu {
       return true;
     }
 
-    final cropSupported = switch (entity.data.mediaType) {
+    final cropSupported = switch (entity.mediaType) {
       CLMediaType.text => false,
       CLMediaType.image => true,
       CLMediaType.video => ColanPlatformSupport.isMobilePlatform,
@@ -141,7 +141,7 @@ class EntityActions extends CLContextMenu {
     return EntityActions.template(
       serverId: serverId,
       moveTaskManager: moveTaskManager,
-      name: entity.data.label ?? 'Unnamed',
+      name: entity.label ?? 'Unnamed',
       logoImageAsset: 'assets/icon/not_on_server.png',
       onCrop: cropSupported ? () => onCrop(serverId: serverId) : null,
       onEdit: onEdit,
@@ -283,9 +283,8 @@ class EntityActions extends CLContextMenu {
       onPin: onPin != null ? onPin() : onPin0,
       onDelete: onDelete != null ? onDelete() : onDelete0,
       infoMap: const {},
-      isPinned: items.entities
-          .cast<StoreEntity>()
-          .any((media) => media.data.pin != null),
+      isPinned:
+          items.entities.cast<StoreEntity>().any((media) => media.pin != null),
     );
   }
   final String serverId;
