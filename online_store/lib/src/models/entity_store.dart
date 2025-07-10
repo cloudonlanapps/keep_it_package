@@ -12,7 +12,6 @@ class OnlineEntityStore extends EntityStore {
       {required super.identity,
       required super.storeURL,
       required this.server}) {
-    path = '/entity';
     validQueryKeys = const <String>{
       'id',
       'isCollection',
@@ -31,19 +30,11 @@ class OnlineEntityStore extends EntityStore {
       'type',
       'extension',
     };
-    validQueryKeysUnique = {
-      'id',
-      'isCollection',
-      'label',
-      'md5',
-    };
   }
 
   final CLServer server;
 
-  late final String path;
   late final Set<String> validQueryKeys;
-  late final Set<String> validQueryKeysUnique;
 
   @override
   bool get isAlive => server.hasID;
