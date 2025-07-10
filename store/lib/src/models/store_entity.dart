@@ -97,10 +97,7 @@ class StoreEntity implements ViewerEntity {
       return null;
     }
 
-    return StoreEntity(
-      entity: updated.data.clone(id: () => null),
-      store: store,
-    ).dbSave(mediaFile.path);
+    return clone(id: () => null).dbSave(mediaFile.path);
   }
 
   Future<StoreEntity?> dbSave([String? path]) {
@@ -201,4 +198,8 @@ class StoreEntity implements ViewerEntity {
   int? get height => data.height;
   int? get width => data.width;
   double? get duration => data.duration;
+
+  Map<String, dynamic> toMapForDisplay() => data.toMapForDisplay();
+  StoreEntity clone({ValueGetter<int?>? id}) =>
+      StoreEntity(entity: data.clone(id: id), store: store);
 }

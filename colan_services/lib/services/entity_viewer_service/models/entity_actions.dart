@@ -151,7 +151,7 @@ class EntityActions extends CLContextMenu {
           ? onPin
           : null,
       onDelete: onDelete,
-      infoMap: entity.data.toMapForDisplay(),
+      infoMap: entity.toMapForDisplay(),
       isPinned: false,
     );
   }

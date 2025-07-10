@@ -248,8 +248,7 @@ class _StatefulMediaEditorState extends ConsumerState<StatefulMediaEditor> {
                       placeholder: const Text('Write description'),
                       maxLines: 3,
                     ),
-                    if (kDebugMode)
-                      MapInfo(widget.media.data.toMapForDisplay()),
+                    if (kDebugMode) MapInfo(widget.media.toMapForDisplay()),
                     if (formValue.isNotEmpty)
                       Padding(
                         padding: const EdgeInsets.only(top: 24, left: 12),
