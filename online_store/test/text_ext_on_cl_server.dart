@@ -88,7 +88,7 @@ extension TextExtOnCLServer on CLServer {
     print(msg);
   }
 
-  void warnIfFailed(msg, {required bool condition}) {
+  void warnIfFailed(String msg, {required bool condition}) {
     if (!condition) {
       print(msg);
     }
