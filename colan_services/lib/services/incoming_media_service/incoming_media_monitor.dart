@@ -24,7 +24,7 @@ class IncomingMediaMonitor extends ConsumerWidget {
   static Future<bool> onPickFiles(
     BuildContext context,
     WidgetRef ref, {
-    ViewerEntity? collection,
+    StoreEntity? collection,
   }) async {
     final picker = ImagePicker();
     final pickedFileList = await picker.pickMultipleMedia();
@@ -37,7 +37,7 @@ class IncomingMediaMonitor extends ConsumerWidget {
           .toList();
       final sharedMedia = CLMediaFileGroup(
         entries: items,
-        collection: collection as StoreEntity?,
+        collection: collection,
         contentOrigin: ContentOrigin.filePick,
       );
 

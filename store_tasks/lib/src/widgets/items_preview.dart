@@ -44,7 +44,7 @@ class _WizardPreviewState extends ConsumerState<WizardPreview> {
                 contextMenuBuilder: null,
                 onSelectionChanged: (items) => ref
                     .read(activeTaskProvider.notifier)
-                    .selectedMedia = items.entities,
+                    .selectedMedia = items.entities.cast(),
                 itemBuilder: (context, item, entities) {
                   final Widget widget;
                   if (item.isCollection) {

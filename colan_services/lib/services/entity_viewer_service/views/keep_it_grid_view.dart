@@ -3,6 +3,7 @@ import 'package:cl_entity_viewers/cl_entity_viewers.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:store/store.dart';
 import 'package:store_tasks/store_tasks.dart';
 
 import '../models/entity_actions.dart';
@@ -21,7 +22,7 @@ class KeepItGridView extends StatelessWidget {
       required this.children,
       super.key});
 
-  final ViewerEntity? parent;
+  final StoreEntity? parent;
   final ViewerEntities children;
   final String serverId;
 
@@ -47,7 +48,7 @@ class KeepItGridView0 extends ConsumerWidget {
     super.key,
   });
 
-  final ViewerEntity? parent;
+  final StoreEntity? parent;
   final ViewerEntities children;
   final String serverId;
 
@@ -90,7 +91,7 @@ class KeepItGridView0 extends ConsumerWidget {
                             serverId: serverId),
                     itemBuilder: (context, item, entities) => EntityPreview(
                       serverId: serverId,
-                      item: item,
+                      item: item as StoreEntity,
                       entities: entities,
                       parentId: parent?.id,
                     ),

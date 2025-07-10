@@ -1,9 +1,9 @@
-import 'package:cl_basic_types/cl_basic_types.dart';
 import 'package:cl_entity_viewers/cl_entity_viewers.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:store/store.dart';
 import 'package:store_tasks/src/providers/target_store_provider.dart';
 import 'package:store_tasks/src/widgets/search_collection/create_new_collection.dart';
 import 'package:store_tasks/src/widgets/search_collection/suggested_collection.dart';
@@ -19,7 +19,7 @@ class SearchView extends ConsumerStatefulWidget {
   });
 
   final VoidCallback onClose;
-  final void Function(ViewerEntity) onSelect;
+  final void Function(StoreEntity) onSelect;
   final TextEditingController controller;
 
   @override
@@ -56,11 +56,12 @@ class _SearchViewState extends ConsumerState<SearchView> {
         errorBuilder: (e, st) =>
             WizardError.show(context, e: e, st: st, onClose: widget.onClose),
         builder: (entries) {
-          final List<ViewerEntity> items;
+          final List<StoreEntity> items;
           if (searchText.isEmpty) {
-            items = entries.entities;
+            items = entries.entities.cast<StoreEntity>();
           } else {
             items = entries.entities
+                .cast<StoreEntity>()
                 .where((item) => item.label!.startsWith(searchText))
                 .toList();
           }

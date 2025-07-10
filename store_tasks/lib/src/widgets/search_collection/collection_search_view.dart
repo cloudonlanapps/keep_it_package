@@ -1,4 +1,3 @@
-import 'package:cl_basic_types/cl_basic_types.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
@@ -15,7 +14,7 @@ import 'search_view.dart';
 class CollectionSearchView extends StatefulWidget {
   const CollectionSearchView({required this.collection, super.key});
 
-  final ViewerEntity? collection;
+  final StoreEntity? collection;
 
   @override
   State<StatefulWidget> createState() => _CollectionSearchViewState();
@@ -44,7 +43,7 @@ class _CollectionSearchViewState extends State<CollectionSearchView> {
     Navigator.of(context).pop();
   }
 
-  void onSelect(ViewerEntity entity) => Navigator.of(context).pop(entity);
+  void onSelect(StoreEntity entity) => Navigator.of(context).pop(entity);
 
   @override
   Widget build(BuildContext context) {
@@ -61,8 +60,8 @@ class _CollectionSearchViewState extends State<CollectionSearchView> {
           builder: (activeStore) {
             return ProviderScope(
               overrides: [
-                targetStoreProvider.overrideWith((ref) =>
-                    (widget.collection as StoreEntity?)?.store ?? activeStore)
+                targetStoreProvider.overrideWith(
+                    (ref) => widget.collection?.store ?? activeStore)
               ],
               child: Column(
                 spacing: 8,

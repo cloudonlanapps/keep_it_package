@@ -1,9 +1,9 @@
-import 'package:cl_basic_types/cl_basic_types.dart';
 import 'package:cl_entity_viewers/cl_entity_viewers.dart';
 import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
+import 'package:store/store.dart';
 
 import '../../providers/target_store_provider.dart';
 
@@ -15,7 +15,7 @@ class CreateNewCollection extends ConsumerWidget {
   });
 
   final String suggestedName;
-  final void Function(ViewerEntity) onSelect;
+  final void Function(StoreEntity) onSelect;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

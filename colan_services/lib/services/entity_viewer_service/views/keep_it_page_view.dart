@@ -3,6 +3,7 @@ import 'package:cl_entity_viewers/cl_entity_viewers.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:store/store.dart';
 
 import '../widgets/on_swipe.dart';
 import 'bottom_bar_page_view.dart';
@@ -15,7 +16,7 @@ class KeepItPageView extends StatelessWidget {
       required this.siblings,
       super.key});
 
-  final ViewerEntity entity;
+  final StoreEntity entity;
   final ViewerEntities siblings;
   final String serverId;
 
@@ -28,7 +29,7 @@ class KeepItPageView extends StatelessWidget {
         child: CLEntitiesPageView(
           topMenuBuilder: (currentEntity) => TopBar(
             serverId: serverId,
-            entityAsync: AsyncData(currentEntity),
+            entityAsync: AsyncData(currentEntity as StoreEntity?),
             children: const ViewerEntities([]),
           ),
           bottomMenu: BottomBarPageView(

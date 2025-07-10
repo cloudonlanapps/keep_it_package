@@ -1,6 +1,7 @@
 import 'package:cl_basic_types/cl_basic_types.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart' hide ValueGetter;
+import 'package:store/store.dart';
 
 import 'content_origin.dart';
 
@@ -12,14 +13,14 @@ class StoreTask {
     this.collection,
   });
 
-  final List<ViewerEntity> items;
+  final List<StoreEntity> items;
   final ContentOrigin contentOrigin;
-  final ViewerEntity? collection;
+  final StoreEntity? collection;
 
   StoreTask copyWith({
-    List<ViewerEntity>? items,
+    List<StoreEntity>? items,
     ContentOrigin? contentOrigin,
-    ValueGetter<ViewerEntity?>? collection,
+    ValueGetter<StoreEntity?>? collection,
   }) {
     return StoreTask(
       items: items ?? this.items,

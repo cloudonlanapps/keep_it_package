@@ -19,14 +19,14 @@ class EntityPreview extends ConsumerWidget {
     super.key,
   });
 
-  final ViewerEntity item;
+  final StoreEntity item;
   final ViewerEntities entities;
   final int? parentId;
   final String serverId;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final entity = item as StoreEntity;
+    final entity = item;
 
     return GetStoreTaskManager(
         contentOrigin: ContentOrigin.move,

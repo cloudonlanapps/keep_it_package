@@ -3,7 +3,6 @@ import 'package:cl_entity_viewers/cl_entity_viewers.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:store/store.dart';
 
 import '../providers/active_task.dart';
 import 'items_preview.dart';
@@ -51,7 +50,7 @@ class HandleTask extends ConsumerWidget {
         wizard = WizardDialog(option1: menu.option1, option2: menu.option2);
       } else if (activeTask.targetConfirmed == null) {
         wizard = PickCollection(
-            collection: activeTask.collection as StoreEntity?,
+            collection: activeTask.collection,
             isValidSuggestion: (collection) => !collection.data.isDeleted,
             onDone: (collection) async {
               if (collection.id != null) {
@@ -64,7 +63,7 @@ class HandleTask extends ConsumerWidget {
         wizard = KeepWithProgress(
             media2Move: ViewerEntities(
                 activeTask.currEntities(selectionMode: selectionMode)),
-            newParent: activeTask.collection! as StoreEntity,
+            newParent: activeTask.collection!,
             onDone: onDone);
       }
 

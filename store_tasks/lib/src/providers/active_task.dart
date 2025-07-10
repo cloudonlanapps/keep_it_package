@@ -1,7 +1,7 @@
-import 'package:cl_basic_types/cl_basic_types.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:store/store.dart';
 
 import '../models/content_origin.dart';
 import '../models/store_task.dart';
@@ -15,16 +15,16 @@ class ActiveStoreTask {
       required this.targetConfirmed});
 
   final StoreTask task;
-  final List<ViewerEntity> selectedMedia;
+  final List<StoreEntity> selectedMedia;
   final bool? itemsConfirmed;
   final bool? targetConfirmed;
 
   ActiveStoreTask copyWith(
-      {List<ViewerEntity>? selectedMedia,
+      {List<StoreEntity>? selectedMedia,
       bool? Function()? itemsConfirmed,
       bool? Function()? targetConfirmed,
-      ViewerEntity? Function()? collection,
-      List<ViewerEntity>? items,
+      StoreEntity? Function()? collection,
+      List<StoreEntity>? items,
       ContentOrigin? contentOrigin}) {
     return ActiveStoreTask(
       task: (items != null) || (contentOrigin != null) || (collection != null)
@@ -65,9 +65,9 @@ class ActiveStoreTask {
         targetConfirmed.hashCode;
   }
 
-  List<ViewerEntity> get items => task.items;
+  List<StoreEntity> get items => task.items;
   ContentOrigin get contentOrigin => task.contentOrigin;
-  ViewerEntity? get collection => task.collection;
+  StoreEntity? get collection => task.collection;
 
   bool get selectable => (itemsConfirmed == null) && items.length > 1;
 
@@ -80,7 +80,7 @@ class ActiveStoreTask {
         if (selectionMode) 'Selected' else items.length > 1 ? 'All' : '',
       ].join(' ');
 
-  List<ViewerEntity> currEntities({required bool selectionMode}) =>
+  List<StoreEntity> currEntities({required bool selectionMode}) =>
       (selectionMode ? selectedMedia : items);
 }
 
@@ -90,19 +90,19 @@ class ActiveTaskNotifier extends StateNotifier<ActiveStoreTask> {
   set task(ActiveStoreTask task) => state = task;
   ActiveStoreTask get task => state;
 
-  set selectedMedia(List<ViewerEntity> items) =>
+  set selectedMedia(List<StoreEntity> items) =>
       state = state.copyWith(selectedMedia: items);
-  List<ViewerEntity> get selectedMedia => state.selectedMedia;
+  List<StoreEntity> get selectedMedia => state.selectedMedia;
 
-  ActiveStoreTask? remove(List<ViewerEntity> items) {
+  ActiveStoreTask? remove(List<StoreEntity> items) {
     final items = [...state.items.where((e) => !state.task.items.contains(e))];
     state = state.copyWith(items: items);
     return state;
   }
 
-  set target(ViewerEntity? collection) => state =
+  set target(StoreEntity? collection) => state =
       state.copyWith(targetConfirmed: () => true, collection: () => collection);
-  ViewerEntity? get target => state.collection;
+  StoreEntity? get target => state.collection;
 
   set itemsConfirmed(bool? value) =>
       state = state.copyWith(itemsConfirmed: () => value);

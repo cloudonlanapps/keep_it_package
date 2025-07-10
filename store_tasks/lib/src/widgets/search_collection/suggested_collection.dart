@@ -1,4 +1,3 @@
-import 'package:cl_basic_types/cl_basic_types.dart';
 import 'package:cl_entity_viewers/cl_entity_viewers.dart';
 import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
@@ -8,12 +7,12 @@ class SuggestedCollection extends StatelessWidget {
   const SuggestedCollection(
       {required this.item, required this.onSelect, super.key});
 
-  final ViewerEntity item;
-  final void Function(ViewerEntity) onSelect;
+  final StoreEntity item;
+  final void Function(StoreEntity) onSelect;
 
   @override
   Widget build(BuildContext context) {
-    final targetStore = (item as StoreEntity).store;
+    final targetStore = item.store;
     return Center(
       child: GestureDetector(
         onTap: () => onSelect(item),

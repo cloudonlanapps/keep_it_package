@@ -5,6 +5,7 @@ import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
+import 'package:store/store.dart';
 
 import '../../../models/platform_support.dart';
 import '../../app_start_service/views/on_dark_mode.dart';
@@ -21,7 +22,7 @@ class TopBar extends ConsumerWidget implements PreferredSizeWidget {
     super.key,
   });
   final String? serverId;
-  final AsyncValue<ViewerEntity?> entityAsync;
+  final AsyncValue<StoreEntity?> entityAsync;
   final ViewerEntities? children;
 
   @override
