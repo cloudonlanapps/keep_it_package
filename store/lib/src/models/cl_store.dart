@@ -302,7 +302,6 @@ class CLStore with CLLogger {
         );
       }
       if (parentIdValue != null) {
-        /// FIXME: Handle failure due to network
         final parent = await store.getByID(parentIdValue);
         if (parent == null) {
           throw Exception('Parent entity does not exist.');
@@ -453,7 +452,6 @@ class CLStore with CLLogger {
         if (item != null) {
           Future<bool> processSupportedMediaContent() async {
             if ([CLMediaType.image, CLMediaType.video].contains(item.type)) {
-              /// FIXME: Handle failure due to network
               final mediaInDB = await get(md5: item.md5);
               if (mediaInDB != null) {
                 existingEntities.add(mediaInDB);
