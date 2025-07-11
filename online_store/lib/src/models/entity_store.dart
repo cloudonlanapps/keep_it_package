@@ -3,7 +3,6 @@ import 'package:meta/meta.dart';
 import 'package:store/store.dart';
 
 import '../implementations/cl_server.dart';
-import '../implementations/server_query.dart';
 import 'entity_server.dart';
 import 'server_enitity_query.dart';
 
