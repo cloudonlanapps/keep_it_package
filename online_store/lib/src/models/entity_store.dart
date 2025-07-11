@@ -5,36 +5,14 @@ import 'package:store/store.dart';
 import '../implementations/cl_server.dart';
 import '../implementations/server_query.dart';
 import 'entity_server.dart';
+import 'server_enitity_query.dart';
 
 @immutable
 class OnlineEntityStore extends EntityStore {
-  OnlineEntityStore(
-      {required super.identity,
-      required super.storeURL,
-      required this.server}) {
-    validQueryKeys = const <String>{
-      'id',
-      'isCollection',
-      'label',
-      'parentId',
-      'addedDate',
-      'updatedDate',
-      'isDeleted',
-      'CreateDate',
-      'FileSize',
-      'ImageHeight',
-      'ImageWidth',
-      'Duration',
-      'MIMEType',
-      'md5',
-      'type',
-      'extension',
-    };
-  }
+  const OnlineEntityStore(
+      {required super.identity, required super.storeURL, required this.server});
 
   final CLServer server;
-
-  late final Set<String> validQueryKeys;
 
   @override
   bool get isAlive => server.hasID;
@@ -73,8 +51,8 @@ class OnlineEntityStore extends EntityStore {
       // Servers don't support isHidden
       return [];
     }
-    final serverQuery = ServerQuery.fromStoreQuery(validQueryKeys, query?.map);
-    final reply = await server.getAll(queryString: serverQuery.query);
+    final serverQuery = ServerCLEntityQuery().getQueryString(map: query?.map);
+    final reply = await server.getAll(queryString: serverQuery);
     return reply.when(
         validResponse: (result) async => result,
         errorResponse: (e, {st}) async => <CLEntity>[]);

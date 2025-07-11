@@ -12,7 +12,9 @@ extension EntityServer on CLServer {
       {String queryString = '', http.Client? client}) async {
     final endPoint = EntityEndPoint.getAll();
     try {
-      final reply = await RestApi(baseURL, client: client).get(endPoint);
+      final query = queryString.isEmpty ? '' : '?$queryString';
+      final reply =
+          await RestApi(baseURL, client: client).get('$endPoint$query');
       return reply.when(validResponse: (response) async {
         final map = jsonDecode(response);
         final items = (((map as Map<String, dynamic>)['items']) ?? <CLEntity>[])
@@ -154,5 +156,23 @@ extension EntityServer on CLServer {
 
   Uri streamSegmentFilePath(int id, String seg, {http.Client? client}) {
     return getEndpointURI(EntityEndPoint.streamSegment(id, seg));
+  }
+
+  Future<StoreReply<Map<String, dynamic>>> filterLoopBack(
+      {String queryString = '', http.Client? client}) async {
+    final endPoint = EntityEndPoint.getAll();
+    try {
+      final query = queryString.isEmpty ? '' : '?$queryString';
+      final reply =
+          await RestApi(baseURL, client: client).get('$endPoint$query');
+      return reply.when(validResponse: (response) async {
+        final map = jsonDecode(response);
+        return StoreResult(map as Map<String, dynamic>);
+      }, errorResponse: (e, {st}) async {
+        return StoreError(e, st: st);
+      });
+    } catch (e, st) {
+      return StoreError<Map<String, dynamic>>.fromString(e.toString(), st: st);
+    }
   }
 }

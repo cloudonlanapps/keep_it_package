@@ -33,7 +33,12 @@
 - [ ] R4 `get` with id / label returns valid entity if found for collection
 - [ ] R5 `get` with id / md5 returns valid entity if found for media
 
+## Filters
+
+- [ ] F1 can fetch items with valid parentId
+- [ ] F2 parentId==null, returns all items without parentId
+- [ ]
 
 ## Known issues
 
-- [ ] there is no way to differentiate soft delete and hard delete.
+- [X] there is no way to differentiate soft delete and hard delete. fixed by adding a new flag isDeletePermanet

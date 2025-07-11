@@ -15,4 +15,5 @@ class EntityEndPoint {
   static String toBin(int id) => '/entity/$id/to_bin';
   static String restore(int id) => '/entity/$id/restore';
   static String deletePermanent(int id) => '/entity/$id/delete';
+  static String filterloopback(int id) => '/filter/loopback';
 }

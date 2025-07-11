@@ -1,0 +1,72 @@
+import 'package:online_store/src/implementations/cl_server.dart';
+import 'package:test/test.dart';
+
+import 'framework/framework.dart';
+import 'implementations/test_filters.dart';
+import 'implementations/test_get_apis.dart';
+import 'implementations/test_upsert_api_for_collection.dart';
+import 'implementations/test_upsert_api_for_media.dart';
+
+void main() async {
+  late CLServer server;
+  late TestContext testContext;
+
+  setUpAll(() async {
+    server = await TextExtOnCLServer.establishConnection();
+    testContext = TestContext(
+        tempDir: 'image_test_dir_${randomString(5)}', server: server);
+  });
+  tearDownAll(() async {
+    await testContext.dispose();
+  });
+
+  setUp(() async {});
+  tearDown(() async {});
+  group('TestUpsertAPIForCollection', () {
+    test('C1 can create a collection with label',
+        () => TestUpsertAPIForCollection.testC1(testContext));
+    test('C2 can create a collection with label and description',
+        () => TestUpsertAPIForCollection.testC2(testContext));
+    test("C3 can't create collection with same label, returns the same object",
+        () => TestUpsertAPIForCollection.testC3(testContext));
+    test(
+        "C4 can't create collection with same label and different descripton, the new descripton is ignored",
+        () => TestUpsertAPIForCollection.testC4(testContext));
+
+    test("C5 can't create a collection with a file",
+        () => TestUpsertAPIForCollection.testC5(testContext));
+  });
+  group('TestUpsertAPIForMedia', () {
+    test("M1 can't create a media without file",
+        () => TestUpsertAPIForMedia.testM1(testContext));
+    test('M2 can create a media with only file',
+        () => TestUpsertAPIForMedia.testM2(testContext));
+    test('M3 can replace a media ',
+        () => TestUpsertAPIForMedia.testM3(testContext));
+    test('M4 can create with label and update it ',
+        () => TestUpsertAPIForMedia.testM4(testContext));
+    test("M5 can't create media with same file, returns the same object",
+        () => TestUpsertAPIForMedia.testM5(testContext));
+    test("M6 Can't create duplicate to existing item, even by updating",
+        () => TestUpsertAPIForMedia.testM6(testContext));
+  });
+  group('TestGetAPIs', () {
+    test(
+        'R1 test getAll, and confirm all the items recently created present in it',
+        () async => TestGetAPIs.testR1(testContext));
+    test('R2 `getByID` returns valid entity if found',
+        () => TestGetAPIs.testR2(testContext));
+    test('R3 `getByID` returns NotFound error when the item is not present',
+        () => TestGetAPIs.testR3(testContext));
+    test('R4 `get` with  label returns valid entity if found for collection',
+        () => TestGetAPIs.testR4(testContext));
+    test('R5 `get` with  md5 returns valid entity if found for media',
+        () => TestGetAPIs.testR5(testContext));
+  });
+  group('TestFilters', () {
+    test('F1 can fetch items with valid parentId',
+        () => TestFilters.testF1(testContext));
+    test('F2 parentId==null, returns all items without parentId',
+        () => TestFilters.testF2(testContext));
+  });
+}

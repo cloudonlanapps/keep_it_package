@@ -6,12 +6,12 @@ import 'package:online_store/src/models/entity_server.dart';
 import 'package:store/store.dart';
 import 'package:test/test.dart';
 
-import 'test_modules.dart';
+import 'test_context.dart';
 
 extension TextExtOnCLServer on CLServer {
   static Future<CLServer> establishConnection() async {
     // const serverAddr = 'http://192.168.0.225:5000'; RaspPi
-    const serverAddr = 'http://192.168.0.110:5001'; //Mac
+    const serverAddr = 'http://192.168.0.162:5001'; //Mac
     try {
       final url = StoreURL(Uri.parse(serverAddr), identity: null, label: null);
 
