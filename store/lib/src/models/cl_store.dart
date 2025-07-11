@@ -65,7 +65,7 @@ class CLStore with CLLogger {
     if (saved == null) {
       return null;
     }
-    return StoreEntity(entity: saved, store: this);
+    return StoreEntity(entity: saved, clStore: this);
   }
 
   Future<bool> delete(int id) async {
@@ -86,7 +86,7 @@ class CLStore with CLLogger {
     }
     return StoreEntity(
       entity: entityFromDB,
-      store: this,
+      clStore: this,
     );
   }
 
@@ -96,7 +96,7 @@ class CLStore with CLLogger {
       return ViewerEntities(entititesFromDB
           .cast<CLEntity>()
           .map(
-            (entityFromDB) => StoreEntity(entity: entityFromDB, store: this),
+            (entityFromDB) => StoreEntity(entity: entityFromDB, clStore: this),
           )
           .toList());
     } catch (e, st) {
@@ -120,7 +120,7 @@ class CLStore with CLLogger {
         );
       }
       if (strategy == UpdateStrategy.skip) {
-        return StoreEntity(entity: collectionInDB, store: this);
+        return StoreEntity(entity: collectionInDB, clStore: this);
       } else {
         return updateCollection(
           collectionInDB,
@@ -137,7 +137,7 @@ class CLStore with CLLogger {
         description: description?.call(),
         parentId: parentId?.call(),
       ),
-      store: this,
+      clStore: this,
     );
   }
 
@@ -230,7 +230,7 @@ class CLStore with CLLogger {
 
     if (mediaInDB != null && mediaInDB.id != null) {
       if (strategy == UpdateStrategy.skip) {
-        return StoreEntity(entity: mediaInDB, store: this);
+        return StoreEntity(entity: mediaInDB, clStore: this);
       } else {
         return updateMedia(
           mediaInDB,
@@ -258,7 +258,7 @@ class CLStore with CLLogger {
         duration: mediaFile.duration,
         isDeleted: false,
       ),
-      store: this,
+      clStore: this,
       // path: mediaFile.path,
     );
   }
@@ -328,7 +328,7 @@ class CLStore with CLLogger {
         isDeleted: isDeleted?.call(),
         isHidden: isHidden?.call(),
       ),
-      store: this,
+      clStore: this,
     );
   }
 
@@ -411,7 +411,7 @@ class CLStore with CLLogger {
         width: mediaFile == null ? null : () => mediaFile.width,
         duration: mediaFile == null ? null : () => mediaFile.duration,
       ),
-      store: this,
+      clStore: this,
       // path: mediaFile?.path,
     );
   }

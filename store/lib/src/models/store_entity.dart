@@ -7,12 +7,12 @@ import 'package:store/src/models/cl_store.dart';
 class StoreEntity implements ViewerEntity {
   factory StoreEntity({
     required CLEntity entity,
-    required CLStore store,
+    required CLStore clStore,
     //   String? path,
   }) {
     return StoreEntity._(
       clEntity: entity,
-      store: store,
+      store: clStore,
       //    path: path,
     );
   }
@@ -65,7 +65,7 @@ class StoreEntity implements ViewerEntity {
     if (updated != null && autoSave) {
       return StoreEntity(
         entity: updated.clEntity,
-        store: store,
+        clStore: store,
       ).dbSave(mediaFile?.path);
     }
     return updated;
@@ -201,5 +201,5 @@ class StoreEntity implements ViewerEntity {
 
   Map<String, dynamic> toMapForDisplay() => clEntity.toMapForDisplay();
   StoreEntity clone({ValueGetter<int?>? id}) =>
-      StoreEntity(entity: clEntity.clone(id: id), store: store);
+      StoreEntity(entity: clEntity.clone(id: id), clStore: store);
 }
