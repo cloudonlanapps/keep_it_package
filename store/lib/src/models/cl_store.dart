@@ -65,7 +65,7 @@ class CLStore with CLLogger {
     if (saved == null) {
       return null;
     }
-    return StoreEntity(entity: saved, clStore: this);
+    return StoreEntity(clEntity: saved, clStore: this);
   }
 
   Future<bool> delete(int id) async {
@@ -85,7 +85,7 @@ class CLStore with CLLogger {
       return null;
     }
     return StoreEntity(
-      entity: entityFromDB,
+      clEntity: entityFromDB,
       clStore: this,
     );
   }
@@ -96,7 +96,8 @@ class CLStore with CLLogger {
       return ViewerEntities(entititesFromDB
           .cast<CLEntity>()
           .map(
-            (entityFromDB) => StoreEntity(entity: entityFromDB, clStore: this),
+            (entityFromDB) =>
+                StoreEntity(clEntity: entityFromDB, clStore: this),
           )
           .toList());
     } catch (e, st) {
@@ -120,7 +121,7 @@ class CLStore with CLLogger {
         );
       }
       if (strategy == UpdateStrategy.skip) {
-        return StoreEntity(entity: collectionInDB, clStore: this);
+        return StoreEntity(clEntity: collectionInDB, clStore: this);
       } else {
         return updateCollection(
           collectionInDB,
@@ -132,7 +133,7 @@ class CLStore with CLLogger {
     }
 
     return StoreEntity(
-      entity: CLEntity.collection(
+      clEntity: CLEntity.collection(
         label: label,
         description: description?.call(),
         parentId: parentId?.call(),
@@ -230,7 +231,7 @@ class CLStore with CLLogger {
 
     if (mediaInDB != null && mediaInDB.id != null) {
       if (strategy == UpdateStrategy.skip) {
-        return StoreEntity(entity: mediaInDB, clStore: this);
+        return StoreEntity(clEntity: mediaInDB, clStore: this);
       } else {
         return updateMedia(
           mediaInDB,
@@ -243,7 +244,7 @@ class CLStore with CLLogger {
     }
 
     return StoreEntity(
-      entity: CLEntity.media(
+      clEntity: CLEntity.media(
         label: label != null ? label() : null,
         description: description != null ? description() : null,
         parentId: parent.id,
@@ -313,7 +314,7 @@ class CLStore with CLLogger {
     }
 
     return StoreEntity(
-      entity: entity.copyWith(
+      clEntity: entity.copyWith(
         label: label,
         description: description != null
             ? () => switch (strategy) {
@@ -386,7 +387,7 @@ class CLStore with CLLogger {
     }
 
     return StoreEntity(
-      entity: entity.copyWith(
+      clEntity: entity.copyWith(
         label: label,
         description: description != null
             ? () => switch (strategy) {

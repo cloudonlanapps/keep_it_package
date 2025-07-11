@@ -6,25 +6,21 @@ import 'package:store/src/models/cl_store.dart';
 @immutable
 class StoreEntity implements ViewerEntity {
   factory StoreEntity({
-    required CLEntity entity,
+    required CLEntity clEntity,
     required CLStore clStore,
-    //   String? path,
   }) {
     return StoreEntity._(
-      clEntity: entity,
+      clEntity: clEntity,
       store: clStore,
-      //    path: path,
     );
   }
   const StoreEntity._({
     required this.clEntity,
     required this.store,
-    //   this.path,
   });
 
   final CLEntity clEntity;
   final CLStore store;
-//  final String? path;
 
   @override
   Future<StoreEntity?> updateWith({
@@ -64,7 +60,7 @@ class StoreEntity implements ViewerEntity {
     }
     if (updated != null && autoSave) {
       return StoreEntity(
-        entity: updated.clEntity,
+        clEntity: updated.clEntity,
         clStore: store,
       ).dbSave(mediaFile?.path);
     }
@@ -201,5 +197,5 @@ class StoreEntity implements ViewerEntity {
 
   Map<String, dynamic> toMapForDisplay() => clEntity.toMapForDisplay();
   StoreEntity clone({ValueGetter<int?>? id}) =>
-      StoreEntity(entity: clEntity.clone(id: id), clStore: store);
+      StoreEntity(clEntity: clEntity.clone(id: id), clStore: store);
 }
