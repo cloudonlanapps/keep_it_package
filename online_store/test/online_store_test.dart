@@ -2,7 +2,7 @@ import 'package:online_store/src/implementations/cl_server.dart';
 import 'package:test/test.dart';
 
 import 'framework/framework.dart';
-import 'implementations/test_filters.dart';
+import 'implementations/test_filters_loopback.dart';
 import 'implementations/test_get_apis.dart';
 import 'implementations/test_upsert_api_for_collection.dart';
 import 'implementations/test_upsert_api_for_media.dart';
@@ -63,10 +63,11 @@ void main() async {
     test('R5 `get` with  md5 returns valid entity if found for media',
         () => TestGetAPIs.testR5(testContext));
   });
-  group('TestFilters', () {
-    test('F1 can fetch items with valid parentId',
-        () => TestFilters.testF1(testContext));
-    test('F2 parentId==null, returns all items without parentId',
-        () => TestFilters.testF2(testContext));
+
+  group('TestFiltersLoopBack', () {
+    test('LB1 valid query filters ',
+        () => TestFiltersLoopback.testLB1(testContext));
+    test('LB1 invalid query filters ',
+        () => TestFiltersLoopback.testLB2(testContext));
   });
 }

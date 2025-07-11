@@ -160,7 +160,7 @@ extension EntityServer on CLServer {
 
   Future<StoreReply<Map<String, dynamic>>> filterLoopBack(
       {String queryString = '', http.Client? client}) async {
-    final endPoint = EntityEndPoint.getAll();
+    final endPoint = EntityEndPoint.filterloopback();
     try {
       final query = queryString.isEmpty ? '' : '?$queryString';
       final reply =

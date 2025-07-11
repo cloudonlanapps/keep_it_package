@@ -4,7 +4,7 @@ import 'package:online_store/src/implementations/server_query.dart';
 class ServerCLEntityQuery extends ServerQuery {
   @override
   String getQueryString({Map<String, dynamic>? map}) {
-    final keyValuePair = <String, String>{};
+    final queryList = <String>[];
     if (map != null) {
       for (final query in map.entries) {
         final key = query.key;
@@ -12,25 +12,22 @@ class ServerCLEntityQuery extends ServerQuery {
         if (_validQueryKeys.contains(key)) {
           switch (value) {
             case null:
-              keyValuePair[key] = '__null__';
+              queryList.add('$key=__null__');
 
             case (final NotNullValue _):
-              keyValuePair[key] = '__notnull__';
+              queryList.add('$key=__notnull__');
 
             case (final List<dynamic> _) when value.isNotEmpty:
-              keyValuePair[key] = value.join(',');
+              queryList.add(value.map((e) => '$key=$e').join('&'));
 
             default:
-              keyValuePair[key] = value.toString();
+              queryList.add('$key=$value');
           }
         }
       }
     }
 
-    final query =
-        keyValuePair.entries.map((e) => '${e.key}=${e.value}').join('&');
-
-    return query;
+    return queryList.join('&');
   }
 
   @override
