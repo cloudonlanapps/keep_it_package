@@ -146,7 +146,7 @@ class DialogService {
         context,
         title: 'Confirm Restore',
         message: 'Are you sure you want to restore '
-            'this ${media.data.type}?',
+            'this ${media.type}?',
       );
 
   static Future<bool?> restoreMediaMultiple(

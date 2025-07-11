@@ -11,18 +11,18 @@ class StoreEntity implements ViewerEntity {
     //   String? path,
   }) {
     return StoreEntity._(
-      data: entity,
+      clEntity: entity,
       store: store,
       //    path: path,
     );
   }
   const StoreEntity._({
-    required this.data,
+    required this.clEntity,
     required this.store,
     //   this.path,
   });
 
-  final CLEntity data;
+  final CLEntity clEntity;
   final CLStore store;
 //  final String? path;
 
@@ -39,9 +39,9 @@ class StoreEntity implements ViewerEntity {
     bool autoSave = false,
   }) async {
     StoreEntity? updated;
-    if (data.isCollection) {
+    if (isCollection) {
       updated = await store.updateCollection(
-        data,
+        clEntity,
         label: label,
         description: description,
         parentId: parentId,
@@ -51,7 +51,7 @@ class StoreEntity implements ViewerEntity {
       );
     } else {
       updated = await store.updateMedia(
-        data,
+        clEntity,
         mediaFile: mediaFile,
         label: label,
         description: description,
@@ -64,7 +64,7 @@ class StoreEntity implements ViewerEntity {
     }
     if (updated != null && autoSave) {
       return StoreEntity(
-        entity: updated.data,
+        entity: updated.clEntity,
         store: store,
       ).dbSave(mediaFile?.path);
     }
@@ -83,7 +83,7 @@ class StoreEntity implements ViewerEntity {
     bool autoSave = false,
   }) async {
     final updated = await store.updateMedia(
-      data,
+      clEntity,
       mediaFile: mediaFile,
       label: label,
       description: description,
@@ -105,10 +105,10 @@ class StoreEntity implements ViewerEntity {
   }
 
   Future<void> delete() async {
-    if (data.id == null) {
+    if (clEntity.id == null) {
       throw Exception("id can't be null");
     }
-    await store.delete(data.id!);
+    await store.delete(clEntity.id!);
   }
 
   Future<StoreEntity> accept(StoreEntity entity) async {
@@ -133,73 +133,73 @@ class StoreEntity implements ViewerEntity {
   }
 
   @override
-  int? get id => data.id;
+  int? get id => clEntity.id;
 
   @override
-  bool get isCollection => data.isCollection;
+  bool get isCollection => clEntity.isCollection;
 
   @override
-  DateTime? get createDate => data.createDate;
+  DateTime? get createDate => clEntity.createDate;
   @override
-  DateTime get updatedDate => data.updatedDate;
+  DateTime get updatedDate => clEntity.updatedDate;
 
   @override
-  int? get parentId => data.parentId;
+  int? get parentId => clEntity.parentId;
 
   @override
-  Uri? get mediaUri => store.store.mediaUri(data);
+  Uri? get mediaUri => store.store.mediaUri(clEntity);
   @override
-  Uri? get previewUri => store.store.previewUri(data);
+  Uri? get previewUri => store.store.previewUri(clEntity);
 
   @override
-  String toString() => 'StoreEntity(entity: $data, store: $store';
+  String toString() => 'StoreEntity(entity: $clEntity, store: $store';
 
   @override
   bool operator ==(covariant StoreEntity other) {
     if (identical(this, other)) return true;
 
-    return other.data == data && other.store == store;
+    return other.clEntity == clEntity && other.store == store;
   }
 
   @override
-  int get hashCode => data.hashCode ^ store.hashCode;
+  int get hashCode => clEntity.hashCode ^ store.hashCode;
 
   @override
   CLMediaType get mediaType =>
-      data.isCollection ? CLMediaType.collection : data.mediaType;
+      clEntity.isCollection ? CLMediaType.collection : clEntity.mediaType;
 
   @override
   String get searchableTexts =>
-      [data.label, data.description].join(' ').toLowerCase();
+      [clEntity.label, clEntity.description].join(' ').toLowerCase();
 
   @override
-  String? get label => data.label;
+  String? get label => clEntity.label;
 
   @override
-  String? get mimeType => data.mimeType;
+  String? get mimeType => clEntity.mimeType;
 
   @override
-  String? get pin => data.pin;
+  String? get pin => clEntity.pin;
 
   @override
   String? get dateString =>
       DateFormat('dd MMM, yyyy').format(createDate ?? updatedDate);
 
   @override
-  bool get isHidden => data.isHidden;
+  bool get isHidden => clEntity.isHidden;
 
-  String? get description => data.extension;
-  String? get md5 => data.md5;
-  int? get fileSize => data.fileSize;
-  String? get type => data.type;
-  String? get extension => data.extension;
-  bool get isDeleted => data.isDeleted;
+  String? get description => clEntity.extension;
+  String? get md5 => clEntity.md5;
+  int? get fileSize => clEntity.fileSize;
+  String? get type => clEntity.type;
+  String? get extension => clEntity.extension;
+  bool get isDeleted => clEntity.isDeleted;
 
-  int? get height => data.height;
-  int? get width => data.width;
-  double? get duration => data.duration;
+  int? get height => clEntity.height;
+  int? get width => clEntity.width;
+  double? get duration => clEntity.duration;
 
-  Map<String, dynamic> toMapForDisplay() => data.toMapForDisplay();
+  Map<String, dynamic> toMapForDisplay() => clEntity.toMapForDisplay();
   StoreEntity clone({ValueGetter<int?>? id}) =>
-      StoreEntity(entity: data.clone(id: id), store: store);
+      StoreEntity(entity: clEntity.clone(id: id), store: store);
 }

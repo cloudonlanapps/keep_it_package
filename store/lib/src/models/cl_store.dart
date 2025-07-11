@@ -61,7 +61,7 @@ class CLStore with CLLogger {
     StoreEntity entity, {
     String? path,
   }) async {
-    final saved = await store.upsert(entity.data, path: path);
+    final saved = await store.upsert(entity.clEntity, path: path);
     if (saved == null) {
       return null;
     }
@@ -145,8 +145,8 @@ class CLStore with CLLogger {
     final CLEntity? item;
     final temp = await createCollection(label: tempCollectionName);
 
-    item =
-        (await (await temp?.updateWith(isHidden: () => true))?.dbSave())?.data;
+    item = (await (await temp?.updateWith(isHidden: () => true))?.dbSave())
+        ?.clEntity;
     if (item == null) {
       throw Exception(
         'missing parent; failed to create a default collection',
@@ -173,7 +173,7 @@ class CLStore with CLLogger {
       updated = await (await targetStore.createMedia(
               label: () => entity.label,
               description: () => entity.description,
-              parentCollection: targetCollection.data,
+              parentCollection: targetCollection.clEntity,
               mediaFile: CLMediaFile(
                   path: entity.mediaUri!.toFilePath(),
                   md5: entity.md5!,
