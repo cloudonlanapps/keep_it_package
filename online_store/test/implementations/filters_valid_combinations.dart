@@ -123,4 +123,10 @@ List<Map<String, dynamic>> filterValidTestCases = [
   {'isDeleted': '0'},
   {'id': '123'},
   {'FileSizeMin': '1024'},
+  {'parentId': <int>[]},
+  {'isCollection': null},
+  {'label': null},
+  {
+    'parentId': ['__null__']
+  },
 ];
