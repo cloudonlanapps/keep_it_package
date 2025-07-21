@@ -1,28 +1,24 @@
-import 'package:cl_basic_types/cl_basic_types.dart';
 import 'package:online_store/src/implementations/server_query.dart';
 
 class ServerCLEntityQuery extends ServerQuery {
   @override
   String getQueryString({Map<String, dynamic>? map}) {
+    if (map == null) return '';
     final queryList = <String>[];
-    if (map != null) {
-      for (final query in map.entries) {
-        final key = query.key;
-        final value = query.value;
-        if (_validQueryKeys.contains(key)) {
-          switch (value) {
-            case null:
-              queryList.add('$key=__null__');
+    for (final query in map.entries) {
+      final key = query.key;
+      final value = query.value;
+      if (_validQueryKeys.contains(key)) {
+        switch (value) {
+          case null:
+          case []:
+          case (final List<dynamic> _) when value.isEmpty:
+            break;
+          case (final List<dynamic> _) when value.isNotEmpty:
+            queryList.add(value.map((e) => '$key=$e').join('&'));
 
-            case (final NotNullValue _):
-              queryList.add('$key=__notnull__');
-
-            case (final List<dynamic> _) when value.isNotEmpty:
-              queryList.add(value.map((e) => '$key=$e').join('&'));
-
-            default:
-              queryList.add('$key=$value');
-          }
+          default:
+            queryList.add('$key=$value');
         }
       }
     }
@@ -34,21 +30,30 @@ class ServerCLEntityQuery extends ServerQuery {
   List<String> getValidQueryFields() => _validQueryKeys.toList();
 
   static const _validQueryKeys = <String>{
-    'id',
     'isCollection',
-    'label',
-    'parentId',
-    'addedDate',
-    'updatedDate',
     'isDeleted',
-    'CreateDate',
-    'FileSize',
+    'label',
+    'md5',
+    'MIMEType',
+    'extension',
+    'label_starts_with',
+    'id',
+    'parentId',
     'ImageHeight',
     'ImageWidth',
     'Duration',
-    'MIMEType',
-    'md5',
-    'type',
-    'extension',
+    'FileSizeMin',
+    'FileSizeMax',
+    'addedDate_from',
+    'updatedDate_from',
+    'CreateDate_from',
+    'addedDate_till',
+    'updatedDate_till',
+    'CreateDate_till',
+    'Duration_min',
+    'Duration_max',
+    'CreateDate_day',
+    'CreateDate_month',
+    'CreateDate_year'
   };
 }
