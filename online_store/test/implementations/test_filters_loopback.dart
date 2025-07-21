@@ -88,12 +88,13 @@ class TestFiltersLoopback {
 
       final reply = await (await testContext.server
               .filterLoopBack(queryString: queryString))
-          .when(
-              validResponse: (items) async =>
-                  items['loopback'] as Map<String, dynamic>,
-              errorResponse: (e, {st}) async {
-                fail('filterLoopBack Failed $e');
-              });
+          .when(validResponse: (items) async {
+        // the where clause will be retured, currently we don't test it
+        // print(items['rawQuery']);
+        return items['loopback'] as Map<String, dynamic>;
+      }, errorResponse: (e, {st}) async {
+        fail('filterLoopBack Failed $e');
+      });
 
       final mapEquals = const DeepCollectionEquality().equals;
       expect(mapEquals(testCombination.normalized, reply), true,
@@ -117,7 +118,7 @@ class TestFiltersLoopback {
       }, errorResponse: (e, {st}) async {
         return e;
       });
-      print(errorReply);
+      //print(errorReply);
       expect(errorReply['type'], 'ValidationError',
           reason: 'invalid cases should return ValidationError');
     }
