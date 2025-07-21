@@ -8,22 +8,25 @@ class ServerCLEntityQuery extends ServerQuery {
     for (final query in map.entries) {
       final key = query.key;
       final value = query.value;
-      if (_validQueryKeys.contains(key)) {
-        switch (value) {
-          case null:
-          case []:
-          case (final List<dynamic> _) when value.isEmpty:
-            break;
-          case (final List<dynamic> _) when value.isNotEmpty:
-            queryList.add(value.map((e) => '$key=$e').join('&'));
 
-          default:
-            queryList.add('$key=$value');
-        }
+      switch (value) {
+        case null:
+        case []:
+        case (final List<dynamic> _) when value.isEmpty:
+          break;
+        case (final List<dynamic> _) when value.isNotEmpty:
+          queryList.add(value.map((e) => '$key=$e').join('&'));
+
+        default:
+          queryList.add('$key=$value');
       }
     }
-
-    return queryList.join('&');
+    final result = queryList.join('&');
+    if (map.isNotEmpty && result.isEmpty) {
+      // If this happens, all the entried will be returned.
+      // Should we allow?
+    }
+    return result;
   }
 
   @override
