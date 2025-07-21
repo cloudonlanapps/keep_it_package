@@ -12,7 +12,7 @@ class RestApi {
   final bool connectViaMobile;
   final http.Client? client;
 
-  static const timeout = 15;
+  static const timeout = 3600; // FIXME: For debug, reduce later
 
   void log(
     String message, {
