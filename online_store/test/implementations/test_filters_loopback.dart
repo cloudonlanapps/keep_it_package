@@ -28,6 +28,7 @@ extension Normalize on Map<String, dynamic> {
     return switch (val) {
       T() => val, // Already the target numeric type
       final bool valBool => valBool ? 1 : 0,
+      final DateTime valDateTime => valDateTime.millisecondsSinceEpoch,
       final String valString =>
         parser(valString) ?? valString, // Try parsing, else keep as string
       final List<dynamic> valList =>
@@ -54,7 +55,8 @@ extension Normalize on Map<String, dynamic> {
               'FileSizeMax',
               'CreateDate_day',
               'CreateDate_month',
-              'CreateDate_year'
+              'CreateDate_year',
+              'CreateDate'
             ].contains(entry.key) =>
           normalizeValue<int>(entry.value, int.tryParse),
         (String _)

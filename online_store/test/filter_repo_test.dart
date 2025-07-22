@@ -59,19 +59,22 @@ void main() {
   });
 
   group('filterTest', () {
-    test('F1 without any filter, getAll retrives all the items in the repo',
+    test('F1 without any filter',
         () async => testFiltersContext.testF1(testContext),
         timeout: const Timeout(Duration(hours: 1)));
     test('F2 isCollection - helps to fiter out collections from media',
         () async => testFiltersContext.testF2(testContext),
         timeout: const Timeout(Duration(hours: 1)));
-    test(
-        'F3 parentId helps to filter out items based on parentID (null or any valid collectionId)',
-        () async => testFiltersContext.testF3(testContext),
+    test('F3 parentId', () async => testFiltersContext.testF3(testContext),
         timeout: const Timeout(Duration(hours: 1)));
 
-    test('F4 CreateDate __null__ and __nonnull__',
-        () async => testFiltersContext.testF4(testContext),
+    test('F4 CreateDate', () async => testFiltersContext.testF4(testContext),
+        timeout: const Timeout(Duration(hours: 1)));
+    test('F5 CreateDate_year & CreateDate_month',
+        () async => testFiltersContext.testF5(testContext),
+        timeout: const Timeout(Duration(hours: 1)));
+    test('F6 CreateDate_month & CreateDate_day',
+        () async => testFiltersContext.testF6(testContext),
         timeout: const Timeout(Duration(hours: 1)));
   });
 }

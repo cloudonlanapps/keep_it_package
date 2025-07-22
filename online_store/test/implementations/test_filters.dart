@@ -131,8 +131,58 @@ class TestFilters {
           allEntities.where((e) => e.createDate == null).toList());
       await testContext.queryandMatch({'CreateDate': '__notnull__'},
           allEntities.where((e) => e.createDate != null).toList());
+
+      for (final date in createDates) {
+        await testContext.queryandMatch({'CreateDate': date},
+            allEntities.where((e) => e.createDate == date).toList());
+      }
     }
   }
+
+  Future<void> testF5(
+    TestContext testContext,
+  ) async {
+    for (final yearEntry in yearMonth.entries) {
+      for (final month in yearEntry.value) {
+        await testContext.queryandMatch(
+            {'CreateDate_year': yearEntry.key, 'CreateDate_month': month},
+            allEntities
+                .where((e) =>
+                    e.createDate != null &&
+                    e.createDate!.year == yearEntry.key &&
+                    e.createDate!.month == month)
+                .toList());
+      }
+    }
+  }
+
+  Future<void> testF6(
+    TestContext testContext,
+  ) async {
+    for (final monthEntry in monthDay.entries) {
+      for (final day in monthEntry.value) {
+        await testContext.queryandMatch(
+            {'CreateDate_month': monthEntry.key, 'CreateDate_day': day},
+            allEntities
+                .where((e) =>
+                    e.createDate != null &&
+                    e.createDate!.month == monthEntry.key &&
+                    e.createDate!.day == day)
+                .toList());
+      }
+    }
+  }
+
+  Map<int, Set<int>> get monthDay => <int, Set<int>>{}
+    ..addEntries(createDates.map((date) => MapEntry(date.month, {date.day})));
+
+  Map<int, Set<int>> get yearMonth => <int, Set<int>>{}
+    ..addEntries(createDates.map((date) => MapEntry(date.year, {date.month})));
+
+  Set<DateTime> get createDates => allEntities
+      .where((e) => e.createDate != null)
+      .map((e) => e.createDate!)
+      .toSet();
 
   List<CLEntity> get allEntities => [...collections, ...media]
       .where((e) => e != null)

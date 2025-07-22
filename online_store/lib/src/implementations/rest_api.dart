@@ -69,6 +69,7 @@ class RestApi {
     Map<String, String>? extraHeaders,
     Map<String, dynamic>? form,
   }) async {
+    print(endPoint);
     try {
       if (form != null && json.isNotEmpty) {
         throw Exception("can't use form and json together");
