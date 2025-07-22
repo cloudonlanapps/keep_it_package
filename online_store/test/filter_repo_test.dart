@@ -1,4 +1,4 @@
-// ignore_for_file: avoid_print
+// ignore_for_file: avoid_print, print required for testing
 
 import 'package:online_store/src/implementations/cl_server.dart';
 import 'package:online_store/src/models/entity_server.dart';
@@ -28,7 +28,7 @@ void main() {
     testContext = TestContext(
         tempDir: 'image_test_dir_${randomString(5)}', server: server);
     const resetDB = false;
-    // ignore: dead_code
+    // ignore: dead_code enable only when regeneration is required
     if (resetDB) {
       await server.reset();
       testFiltersContext = await TestFilters.setupRepo(testContext);

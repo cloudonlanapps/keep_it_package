@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print, print required for testing
+
 import 'package:collection/collection.dart';
 import 'package:online_store/src/models/entity_server.dart';
 import 'package:online_store/src/models/server_enitity_query.dart';
