@@ -25,6 +25,7 @@ extension Normalize on Map<String, dynamic> {
       dynamic val, NumParser<T> parser) {
     return switch (val) {
       T() => val, // Already the target numeric type
+      final bool valBool => valBool ? 1 : 0,
       final String valString =>
         parser(valString) ?? valString, // Try parsing, else keep as string
       final List<dynamic> valList =>
@@ -122,5 +123,27 @@ class TestFiltersLoopback {
       expect(errorReply['type'], 'ValidationError',
           reason: 'invalid cases should return ValidationError');
     }
+  }
+
+  static Future<void> testLBRandomMap(
+      TestContext testContext, Map<String, dynamic> map) async {
+    final queryString = ServerCLEntityQuery().getQueryString(map: map);
+
+    final reply = await (await testContext.server
+            .filterLoopBack(queryString: queryString))
+        .when(validResponse: (items) async {
+      // the where clause will be retured, currently we don't test it
+      print("rawQuery: ${items['rawQuery']}");
+      return items['loopback'] as Map<String, dynamic>;
+    }, errorResponse: (e, {st}) async {
+      fail('filterLoopBack Failed $e');
+    });
+
+    final mapEquals = const DeepCollectionEquality().equals;
+    expect(mapEquals(map.normalized, reply), true,
+        reason: 'loopback must return same value\n'
+            'input:$map '
+            '[normalized: ${map.normalized}] \n'
+            'loopback:$reply [normalized: $reply] ');
   }
 }

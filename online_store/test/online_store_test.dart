@@ -65,13 +65,6 @@ void main() async {
         () async => TestGetAPIs.testR5(testContext));
   });
 
-  group('TestFiltersLoopBack', () {
-    test('LB1 valid query filters ',
-        () async => TestFiltersLoopback.testLB1(testContext));
-    test('LB1 invalid query filters ',
-        () async => TestFiltersLoopback.testLB2(testContext));
-  });
-
   group('exif', () {
     test('DateTimeOriginal',
         () async => TestDateTimeOriginal.testDT1(testContext),

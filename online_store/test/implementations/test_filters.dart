@@ -123,6 +123,17 @@ class TestFilters {
     }
   }
 
+  Future<void> testF4(
+    TestContext testContext,
+  ) async {
+    {
+      await testContext.queryandMatch({'CreateDate': '__null__'},
+          allEntities.where((e) => e.createDate == null).toList());
+      await testContext.queryandMatch({'CreateDate': '__notnull__'},
+          allEntities.where((e) => e.createDate != null).toList());
+    }
+  }
+
   List<CLEntity> get allEntities => [...collections, ...media]
       .where((e) => e != null)
       .toList()

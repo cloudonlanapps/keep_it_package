@@ -42,10 +42,14 @@
 - [X] F1 without any filter, getAll retrives all the items in the repo
 - [X] F2 isCollection - helps to fiter out collections from media
 - [X] F3 parentId helps to filter out items based on parentID (null or any valid collectionId)
-- [ ] F2 From a collection, can return images from a specific date based on CreateDate
+- [ ] F4 CreateDate __null__ returns all media without CreateDate, including collections
+            and __notnull__ returns all media with CreateDate, including collections
+
+- [ ]
 - [ ] F3 From a collection, can return images from a specific (month, day) (ignoring year)
 - [ ] F4 From a collection, can return images from a specific month, given (year, month)
 
 ## Known issues
 
 - [X] there is no way to differentiate soft delete and hard delete. fixed by adding a new flag isDeletePermanet
+- [ ] ensure createDate can't be set to collections

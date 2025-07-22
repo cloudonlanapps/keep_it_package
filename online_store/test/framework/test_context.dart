@@ -10,6 +10,7 @@ import 'package:online_store/src/models/server_enitity_query.dart';
 import 'package:path/path.dart';
 import 'package:test/test.dart';
 
+import '../implementations/test_filters_loopback.dart';
 import 'test_ext_on_cl_server.dart';
 import 'utils.dart';
 
@@ -153,6 +154,7 @@ class TestContext {
 
   Future<void> queryandMatch(
       Map<String, dynamic>? queryMap, List<CLEntity> expected) async {
+    await TestFiltersLoopback.testLBRandomMap(this, queryMap ?? {});
     final queryString = ServerCLEntityQuery().getQueryString(map: queryMap);
     final items = (await (await server.getAll(queryString: queryString)).when(
         validResponse: (items) async => items,

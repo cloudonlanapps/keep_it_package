@@ -1,8 +1,12 @@
+// ignore_for_file: avoid_print
+
 import 'package:online_store/src/implementations/cl_server.dart';
+import 'package:online_store/src/models/entity_server.dart';
 import 'package:test/test.dart';
 
 import 'framework/framework.dart';
 import 'implementations/test_filters.dart';
+import 'implementations/test_filters_loopback.dart';
 
 void main() {
   late final CLServer server;
@@ -23,10 +27,23 @@ void main() {
     server = await TestExtOnCLServer.establishConnection();
     testContext = TestContext(
         tempDir: 'image_test_dir_${randomString(5)}', server: server);
+    const resetDB = false;
+    // ignore: dead_code
+    if (resetDB) {
+      await server.reset();
+      testFiltersContext = await TestFilters.setupRepo(testContext);
+    } else {
+      final items = await (await server.getAll()).when(
+          validResponse: (items) async => items,
+          errorResponse: (e, {st}) async {
+            fail('getAll Failed');
+          });
+      testFiltersContext = TestFilters(
+          media: items.where((e) => e.isCollection == false).toList(),
+          collections: items.where((e) => e.isCollection == true).toList());
+    }
 
-    await server.reset();
-    testFiltersContext = await TestFilters.setupRepo(testContext);
-    //testFiltersContext = TestFilters(media: [], collections: []);
+    //
   });
   tearDownAll(() async {
     await testContext.dispose(serverCleanup: false);
@@ -34,6 +51,12 @@ void main() {
   });
   setUp(() async {});
   tearDown(() async {});
+  group('TestFiltersLoopBack', () {
+    test('LB1 valid query filters ',
+        () async => TestFiltersLoopback.testLB1(testContext));
+    test('LB1 invalid query filters ',
+        () async => TestFiltersLoopback.testLB2(testContext));
+  });
 
   group('filterTest', () {
     test('F1 without any filter, getAll retrives all the items in the repo',
@@ -45,6 +68,10 @@ void main() {
     test(
         'F3 parentId helps to filter out items based on parentID (null or any valid collectionId)',
         () async => testFiltersContext.testF3(testContext),
+        timeout: const Timeout(Duration(hours: 1)));
+
+    test('F4 CreateDate __null__ and __nonnull__',
+        () async => testFiltersContext.testF4(testContext),
         timeout: const Timeout(Duration(hours: 1)));
   });
 }
