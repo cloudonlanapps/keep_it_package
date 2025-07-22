@@ -39,11 +39,10 @@
 
 ## Filters
 
-- [ ] F1 can fetch items with valid parentId
-- [ ] F2 parentId==null, returns all items without parentId
-- [ ] F3 From a collection, can return images from a specific date based on CreateDate
-- [ ] F4 From a collection, can return images from a specific (month, day) (ignoring year)
-- [ ] F5 From a collection, can return images from a specific month, given (year, month)
+- [ ] F1 can fetch items with valid parentId (null or any valid collectionId)
+- [ ] F2 From a collection, can return images from a specific date based on CreateDate
+- [ ] F3 From a collection, can return images from a specific (month, day) (ignoring year)
+- [ ] F4 From a collection, can return images from a specific month, given (year, month)
 
 ## Known issues
 

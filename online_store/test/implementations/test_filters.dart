@@ -9,87 +9,110 @@ import 'package:test/test.dart';
 
 import '../framework/framework.dart';
 
+class DeterministicRandomString {
+  DeterministicRandomString(this.seed) : random = Random(seed);
+
+  final int seed;
+  final chars =
+      'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  final Random random;
+
+  String nextString({String prefix = '', String suffix = ''}) {
+    final randString = String.fromCharCodes(Iterable.generate(
+      8,
+      (_) => chars.codeUnitAt(random.nextInt(chars.length)),
+    ));
+
+    return '$prefix$randString$suffix';
+  }
+}
+
 class TestFilters {
-  static Future<void> setupRepo(TestContext testContext) async {
+  TestFilters({required this.media, required this.collections});
+  final List<CLEntity> media;
+  final List<CLEntity?> collections;
+
+  static Future<TestFilters> setupRepo(TestContext testContext) async {
     final random = Random(0x12345);
+    final random2 = DeterministicRandomString(0x54321);
+
     final now = DateTime(2024, 12, 31, 23, 59, 59);
     final start = DateTime(2020);
     final difference = now.difference(start).inSeconds;
 
+    final collections = <CLEntity?>[null];
+    for (var i = 0; i < 10; i++) {
+      final label1 = random2.nextString(prefix: 'test_');
+      final entity1 = await testContext.server.validCreate(testContext,
+          isCollection: () => true, label: () => label1);
+      testContext.validate(entity1,
+          id: isNotNull, label: equals(label1), description: isNull);
+      collections.add(entity1);
+    }
+    final entitites = <CLEntity>[];
+    // add jpg images with CreateDate
     for (var i = 0; i < 300; i++) {
+      final parentId = collections[random.nextInt(collections.length)]?.id;
       final randomSeconds = random.nextInt(difference);
       final randomDate = start.add(Duration(seconds: randomSeconds));
 
       final imageFile = await testContext.createImageWithDateTime(randomDate);
-      final entity1 = await testContext.server
-          .validCreate(testContext, fileName: imageFile);
+      final entity1 = await testContext.server.validCreate(testContext,
+          fileName: imageFile,
+          parentId: parentId == null ? null : () => parentId);
 
       testContext.validate(entity1,
           id: isNotNull, md5: isNotNull, createDate: isNotNull);
       expect(entity1.createDate, randomDate,
           reason:
               "${entity1.id} createDate didn't match: set: $randomDate, got: ${entity1.createDate}");
+      entitites.add(entity1);
     }
-  }
+    // add few jpg images without any createDate
+    for (var i = 0; i < 40; i++) {
+      final parentId = collections[random.nextInt(collections.length)]?.id;
+      final imageFile = testContext.createImage();
+      final entity1 = await testContext.server.validCreate(testContext,
+          fileName: imageFile,
+          parentId: parentId == null ? null : () => parentId);
 
-  static Future<void> testF1(TestContext testContext) async {
-    final collectionLabel = randomString(8);
-    final collection = await testContext.server.validCreate(testContext,
-        isCollection: () => true, label: () => collectionLabel);
-
-    final testMediaList = <CLEntity>[];
-
-    for (var i = 0; i < 10; i++) {
-      final fileName = testContext.createImage();
-      final entity = await testContext.server.validCreate(
-        testContext,
-        fileName: fileName,
-        parentId: () => collection.id,
+      testContext.validate(
+        entity1,
+        id: isNotNull,
+        md5: isNotNull,
       );
-      testMediaList.add(entity);
+
+      entitites.add(entity1);
     }
+    return TestFilters(collections: collections, media: entitites);
+  }
 
-    final queryString =
-        ServerCLEntityQuery().getQueryString(map: {'parentId': collection.id});
+  Future<void> testF1(TestContext testContext) async {
+    for (final collection in collections) {
+      final queryString = ServerCLEntityQuery()
+          .getQueryString(map: {'parentId': collection?.id});
 
-    final items =
-        await (await testContext.server.getAll(queryString: queryString)).when(
-            validResponse: (items) async => items,
-            errorResponse: (e, {st}) async {
-              fail('getAll Failed');
-            });
-    expect(items.length, 10,
-        reason:
-            'Must return exact same number of items uploaded into the specific collection');
-    for (final item in items) {
-      expect(item.id, isNotNull); // assertion
-      final expected = testMediaList.where((e) => e.id == item.id).firstOrNull;
-      if (expected != null) {
-        expect(item, expected, reason: "item retrived didn't match original");
-      }
+      final items = (await (await testContext.server
+              .getAll(queryString: queryString))
+          .when(
+              validResponse: (items) async => items,
+              errorResponse: (e, {st}) async {
+                fail('getAll Failed');
+              }))
+        ..sort(sorter);
+      final expected = media.where((e) => e.parentId == collection?.id).toList()
+        ..sort(sorter);
+
+      final listEquals = const ListEquality<CLEntity>().equals;
+
+      expect(listEquals(items, expected), isTrue);
     }
   }
 
-  static Future<void> testF2(TestContext testContext) async {
-    final queryString =
-        ServerCLEntityQuery().getQueryString(map: {'parentId': null});
-    final itemsFilterred =
-        await (await testContext.server.getAll(queryString: queryString)).when(
-            validResponse: (items) async => items,
-            errorResponse: (e, {st}) async {
-              fail('getAll with Filter Failed  $e');
-            });
-    final itemsAll = await (await testContext.server.getAll()).when(
-        validResponse: (items) async => items,
-        errorResponse: (e, {st}) async {
-          fail('getAll Failed $e');
-        });
-    final itemsWithoutParent = itemsAll.where((e) => e.parentId == null);
-    final itemsRetrieved = itemsFilterred
-      ..sort((e1, e2) => e1.id!.compareTo(e2.id!));
-    final mapEquals = const DeepCollectionEquality().equals;
-
-    expect(mapEquals(itemsWithoutParent, itemsRetrieved), true,
-        reason: 'Retried items should include all items without parent');
+  int sorter(CLEntity a, CLEntity b) {
+    if (a.id == null && b.id == null) return 0;
+    if (a.id == null) return 1; // a goes after b
+    if (b.id == null) return -1; // b goes after a
+    return a.id!.compareTo(b.id!);
   }
 }

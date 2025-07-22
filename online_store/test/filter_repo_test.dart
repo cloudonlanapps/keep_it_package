@@ -5,8 +5,9 @@ import 'framework/framework.dart';
 import 'implementations/test_filters.dart';
 
 void main() {
-  late CLServer server;
-  late TestContext testContext;
+  late final CLServer server;
+  late final TestContext testContext;
+  late final TestFilters testFiltersContext;
   setUpAll(() async {
     print('${'''
   ******************************************************************************
@@ -24,7 +25,7 @@ void main() {
         tempDir: 'image_test_dir_${randomString(5)}', server: server);
 
     await server.reset();
-    await TestFilters.setupRepo(testContext);
+    testFiltersContext = await TestFilters.setupRepo(testContext);
   });
   tearDownAll(() async {
     await testContext.dispose();
@@ -33,5 +34,8 @@ void main() {
   setUp(() async {});
   tearDown(() async {});
 
-  group('filterTest', () {});
+  group('filterTest', () {
+    test('F1 can fetch items with valid parentId',
+        () async => testFiltersContext.testF1(testContext));
+  });
 }
