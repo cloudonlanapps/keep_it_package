@@ -49,6 +49,7 @@ class ServerCLEntityQuery extends ServerQuery {
     'FileSizeMax',
     'addedDate_from',
     'updatedDate_from',
+    'CreateDate',
     'CreateDate_from',
     'addedDate_till',
     'updatedDate_till',
