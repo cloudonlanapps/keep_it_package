@@ -1,9 +1,8 @@
+// ignore_for_file: avoid_print
+
 import 'dart:math';
 
 import 'package:cl_basic_types/cl_basic_types.dart';
-import 'package:collection/collection.dart';
-import 'package:online_store/src/models/entity_server.dart';
-import 'package:online_store/src/models/server_enitity_query.dart';
 
 import 'package:test/test.dart';
 
@@ -41,7 +40,8 @@ class TestFilters {
     final difference = now.difference(start).inSeconds;
 
     final collections = <CLEntity?>[null];
-    for (var i = 0; i < 10; i++) {
+    for (var i = 0; i < 4; i++) {
+      print('\rGenerating Collections: $i'.padRight(60));
       final label1 = random2.nextString(prefix: 'test_');
       final entity1 = await testContext.server.validCreate(testContext,
           isCollection: () => true, label: () => label1);
@@ -51,30 +51,38 @@ class TestFilters {
     }
     final entitites = <CLEntity>[];
     // add jpg images with CreateDate
-    for (var i = 0; i < 300; i++) {
+    for (var i = 0; i < 40; i++) {
       final parentId = collections[random.nextInt(collections.length)]?.id;
       final randomSeconds = random.nextInt(difference);
       final randomDate = start.add(Duration(seconds: randomSeconds));
+      final dateOnly =
+          DateTime(randomDate.year, randomDate.month, randomDate.day);
 
-      final imageFile = await testContext.createImageWithDateTime(randomDate);
-      final entity1 = await testContext.server.validCreate(testContext,
-          fileName: imageFile,
-          parentId: parentId == null ? null : () => parentId);
+      for (var j = 0; j < random.nextInt(20); j++) {
+        final randomSeconds = random.nextInt(24 * 60 * 60);
+        final date = dateOnly.add(Duration(seconds: randomSeconds));
+        print('\rGenerating JPG Media with CreateDate: $date'.padRight(60));
+        final imageFile = await testContext.createImageWithDateTime(date);
+        final entity1 = await testContext.server.validCreate(testContext,
+            fileName: imageFile,
+            parentId: parentId == null ? () => 0 : () => parentId);
 
-      testContext.validate(entity1,
-          id: isNotNull, md5: isNotNull, createDate: isNotNull);
-      expect(entity1.createDate, randomDate,
-          reason:
-              "${entity1.id} createDate didn't match: set: $randomDate, got: ${entity1.createDate}");
-      entitites.add(entity1);
+        testContext.validate(entity1,
+            id: isNotNull, md5: isNotNull, createDate: isNotNull);
+        expect(entity1.createDate, date,
+            reason:
+                "${entity1.id} createDate didn't match: set: $date, got: ${entity1.createDate}");
+        entitites.add(entity1);
+      }
     }
     // add few jpg images without any createDate
-    for (var i = 0; i < 40; i++) {
+    for (var i = 0; i < 5; i++) {
+      print('\rGenerating JPG Media without CreateDate: $i'.padRight(60));
       final parentId = collections[random.nextInt(collections.length)]?.id;
       final imageFile = testContext.createImage();
       final entity1 = await testContext.server.validCreate(testContext,
           fileName: imageFile,
-          parentId: parentId == null ? null : () => parentId);
+          parentId: parentId == null ? () => 0 : () => parentId);
 
       testContext.validate(
         entity1,
@@ -84,35 +92,41 @@ class TestFilters {
 
       entitites.add(entity1);
     }
+    print('Generated ${collections.length + entitites.length} items}');
     return TestFilters(collections: collections, media: entitites);
   }
 
-  Future<void> testF1(TestContext testContext) async {
-    for (final collection in collections) {
-      final queryString = ServerCLEntityQuery()
-          .getQueryString(map: {'parentId': collection?.id});
+  Future<void> testF1(
+    TestContext testContext,
+  ) async {
+    await testContext.queryandMatch({}, allEntities);
+  }
 
-      final items = (await (await testContext.server
-              .getAll(queryString: queryString))
-          .when(
-              validResponse: (items) async => items,
-              errorResponse: (e, {st}) async {
-                fail('getAll Failed');
-              }))
-        ..sort(sorter);
-      final expected = media.where((e) => e.parentId == collection?.id).toList()
-        ..sort(sorter);
-
-      final listEquals = const ListEquality<CLEntity>().equals;
-
-      expect(listEquals(items, expected), isTrue);
+  Future<void> testF2(
+    TestContext testContext,
+  ) async {
+    {
+      await testContext.queryandMatch({'isCollection': true}, validCollections);
+      await testContext.queryandMatch({'isCollection': false}, media);
     }
   }
 
-  int sorter(CLEntity a, CLEntity b) {
-    if (a.id == null && b.id == null) return 0;
-    if (a.id == null) return 1; // a goes after b
-    if (b.id == null) return -1; // b goes after a
-    return a.id!.compareTo(b.id!);
+  Future<void> testF3(
+    TestContext testContext,
+  ) async {
+    {
+      for (final collection in collections) {
+        await testContext.queryandMatch(
+            {'parentId': collection?.id ?? '__null__'},
+            allEntities.where((e) => e.parentId == collection?.id).toList());
+      }
+    }
   }
+
+  List<CLEntity> get allEntities => [...collections, ...media]
+      .where((e) => e != null)
+      .toList()
+      .cast<CLEntity>();
+  List<CLEntity> get validCollections =>
+      collections.where((e) => e != null).toList().cast<CLEntity>();
 }

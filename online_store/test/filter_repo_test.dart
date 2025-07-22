@@ -26,16 +26,25 @@ void main() {
 
     await server.reset();
     testFiltersContext = await TestFilters.setupRepo(testContext);
+    //testFiltersContext = TestFilters(media: [], collections: []);
   });
   tearDownAll(() async {
-    await testContext.dispose();
-    await server.reset();
+    await testContext.dispose(serverCleanup: false);
+    // await server.reset();
   });
   setUp(() async {});
   tearDown(() async {});
 
   group('filterTest', () {
-    test('F1 can fetch items with valid parentId',
-        () async => testFiltersContext.testF1(testContext));
+    test('F1 without any filter, getAll retrives all the items in the repo',
+        () async => testFiltersContext.testF1(testContext),
+        timeout: const Timeout(Duration(hours: 1)));
+    test('F2 isCollection - helps to fiter out collections from media',
+        () async => testFiltersContext.testF2(testContext),
+        timeout: const Timeout(Duration(hours: 1)));
+    test(
+        'F3 parentId helps to filter out items based on parentID (null or any valid collectionId)',
+        () async => testFiltersContext.testF3(testContext),
+        timeout: const Timeout(Duration(hours: 1)));
   });
 }

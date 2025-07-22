@@ -35,11 +35,13 @@
 
 ## CreateDate
 
-- [ ] DT1 Server can recognize DateTimeOriginal as CreateDate
+- [X] DT1 Server can recognize DateTimeOriginal as CreateDate
 
 ## Filters
 
-- [ ] F1 can fetch items with valid parentId (null or any valid collectionId)
+- [X] F1 without any filter, getAll retrives all the items in the repo
+- [X] F2 isCollection - helps to fiter out collections from media
+- [X] F3 parentId helps to filter out items based on parentID (null or any valid collectionId)
 - [ ] F2 From a collection, can return images from a specific date based on CreateDate
 - [ ] F3 From a collection, can return images from a specific (month, day) (ignoring year)
 - [ ] F4 From a collection, can return images from a specific month, given (year, month)

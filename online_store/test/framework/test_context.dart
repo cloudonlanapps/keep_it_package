@@ -1,9 +1,12 @@
 import 'dart:io';
 
 import 'package:cl_basic_types/cl_basic_types.dart';
+import 'package:collection/collection.dart';
 import 'package:image/image.dart' as img;
 import 'package:intl/intl.dart';
 import 'package:online_store/online_store.dart';
+import 'package:online_store/src/models/entity_server.dart';
+import 'package:online_store/src/models/server_enitity_query.dart';
 import 'package:path/path.dart';
 import 'package:test/test.dart';
 
@@ -139,5 +142,43 @@ class TestContext {
         expect(actual, expected, reason: message);
       }
     }
+  }
+
+  int sorter(CLEntity a, CLEntity b) {
+    if (a.id == null && b.id == null) return 0;
+    if (a.id == null) return 1; // a goes after b
+    if (b.id == null) return -1; // b goes after a
+    return a.id!.compareTo(b.id!);
+  }
+
+  Future<void> queryandMatch(
+      Map<String, dynamic>? queryMap, List<CLEntity> expected) async {
+    final queryString = ServerCLEntityQuery().getQueryString(map: queryMap);
+    final items = (await (await server.getAll(queryString: queryString)).when(
+        validResponse: (items) async => items,
+        errorResponse: (e, {st}) async {
+          fail('getAll Failed');
+        }))
+      ..sort(sorter);
+
+    matchEntityList(items, expected..sort(sorter));
+  }
+
+  void matchEntityList(List<CLEntity> actual, List<CLEntity> expected) {
+    expect(actual.length, expected.length,
+        reason: 'expected ${expected.length}, received ${actual.length}\n'
+            'expected:${expected.map((e) => e.id).toList()}\n'
+            'received: ${actual.map((e) => e.id).toList()}');
+
+    final listEquals = const ListEquality<CLEntity>().equals;
+    if (!listEquals(actual, expected)) {
+      for (final (i, item) in actual.indexed) {
+        if (expected[i] != item) {
+          print('expected: ${expected[i]}\nactual: $item\n\n}');
+        }
+      }
+    }
+    expect(listEquals(actual, expected), true,
+        reason: "Item contents don't match");
   }
 }
