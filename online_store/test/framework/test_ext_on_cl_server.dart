@@ -2,13 +2,15 @@
 
 import 'package:cl_basic_types/cl_basic_types.dart';
 import 'package:online_store/src/implementations/cl_server.dart';
+import 'package:online_store/src/implementations/rest_api.dart';
+import 'package:online_store/src/models/entity_endpoint.dart';
 import 'package:online_store/src/models/entity_server.dart';
 import 'package:store/store.dart';
 import 'package:test/test.dart';
 
 import 'test_context.dart';
 
-extension TextExtOnCLServer on CLServer {
+extension TestExtOnCLServer on CLServer {
   static Future<CLServer> establishConnection() async {
     // const serverAddr = 'http://192.168.0.225:5000'; RaspPi
     const serverAddr = 'http://192.168.0.162:5001'; //Mac
@@ -135,5 +137,19 @@ extension TextExtOnCLServer on CLServer {
 
   Future<void> cleanupCollection(List<int> ids) {
     throw UnimplementedError();
+  }
+
+  Future<void> reset() async {
+    await (await RestApi(
+      baseURL,
+    ).delete(EntityEndPoint.reset()))
+        .when<String>(
+      validResponse: (resp) async {
+        return resp;
+      },
+      errorResponse: (error, {st}) async {
+        fail('reset failed in tearDownAll');
+      },
+    );
   }
 }

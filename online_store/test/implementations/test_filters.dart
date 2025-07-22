@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:cl_basic_types/cl_basic_types.dart';
 import 'package:collection/collection.dart';
 import 'package:online_store/src/models/entity_server.dart';
@@ -8,6 +10,28 @@ import 'package:test/test.dart';
 import '../framework/framework.dart';
 
 class TestFilters {
+  static Future<void> setupRepo(TestContext testContext) async {
+    final random = Random(0x12345);
+    final now = DateTime(2024, 12, 31, 23, 59, 59);
+    final start = DateTime(2020);
+    final difference = now.difference(start).inSeconds;
+
+    for (var i = 0; i < 300; i++) {
+      final randomSeconds = random.nextInt(difference);
+      final randomDate = start.add(Duration(seconds: randomSeconds));
+
+      final imageFile = await testContext.createImageWithDateTime(randomDate);
+      final entity1 = await testContext.server
+          .validCreate(testContext, fileName: imageFile);
+
+      testContext.validate(entity1,
+          id: isNotNull, md5: isNotNull, createDate: isNotNull);
+      expect(entity1.createDate, randomDate,
+          reason:
+              "${entity1.id} createDate didn't match: set: $randomDate, got: ${entity1.createDate}");
+    }
+  }
+
   static Future<void> testF1(TestContext testContext) async {
     final collectionLabel = randomString(8);
     final collection = await testContext.server.validCreate(testContext,

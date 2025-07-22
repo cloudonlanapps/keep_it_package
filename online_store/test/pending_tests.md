@@ -33,11 +33,17 @@
 - [ ] R4 `get` with id / label returns valid entity if found for collection
 - [ ] R5 `get` with id / md5 returns valid entity if found for media
 
+## CreateDate
+
+- [ ] DT1 Server can recognize DateTimeOriginal as CreateDate
+
 ## Filters
 
 - [ ] F1 can fetch items with valid parentId
 - [ ] F2 parentId==null, returns all items without parentId
-- [ ]
+- [ ] F3 From a collection, can return images from a specific date based on CreateDate
+- [ ] F4 From a collection, can return images from a specific (month, day) (ignoring year)
+- [ ] F5 From a collection, can return images from a specific month, given (year, month)
 
 ## Known issues
 

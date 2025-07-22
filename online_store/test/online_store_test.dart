@@ -1,8 +1,3 @@
-import 'dart:io';
-import 'dart:math';
-
-import 'package:image/image.dart' as img;
-import 'package:intl/intl.dart';
 import 'package:online_store/src/implementations/cl_server.dart';
 import 'package:test/test.dart';
 
@@ -18,7 +13,7 @@ void main() async {
   late TestContext testContext;
 
   setUpAll(() async {
-    server = await TextExtOnCLServer.establishConnection();
+    server = await TestExtOnCLServer.establishConnection();
     testContext = TestContext(
         tempDir: 'image_test_dir_${randomString(5)}', server: server);
   });

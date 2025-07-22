@@ -1,11 +1,13 @@
 import 'dart:io';
 
 import 'package:cl_basic_types/cl_basic_types.dart';
+import 'package:image/image.dart' as img;
+import 'package:intl/intl.dart';
 import 'package:online_store/online_store.dart';
 import 'package:path/path.dart';
 import 'package:test/test.dart';
 
-import 'text_ext_on_cl_server.dart';
+import 'test_ext_on_cl_server.dart';
 import 'utils.dart';
 
 class TestContext {
@@ -19,8 +21,10 @@ class TestContext {
   final List<String> fileArtifacts = [];
   final Set<int> entities = {};
 
-  Future<void> dispose() async {
-    await server.cleanupEntity(entities);
+  Future<void> dispose({bool serverCleanup = true}) async {
+    if (serverCleanup) {
+      await server.cleanupEntity(entities);
+    }
     Directory(tempDir).deleteSync(recursive: true);
     //print('Artifacts directory $tempDir removed');
   }
@@ -41,6 +45,51 @@ class TestContext {
     fileName0 = generateFile(Directory(tempDir));
     fileArtifacts.add(fileName0);
     return fileName0;
+  }
+
+  Future<String> createImageWithDateTime(DateTime dateTime) async {
+    // Create image file
+    final imageFile = createImage();
+
+    // Write DateTimeOriginal tag
+    await addDateTimeOriginal(imageFile, dateTime);
+
+    // Read back using image package
+
+    final decodedImage = await img.decodeImageFile(imageFile);
+    final exifDateStr = decodedImage?.exif.exifIfd.data[36867];
+    if (exifDateStr != null) {
+      // Convert back to DateTime for comparison
+      // exifDateStr format is "yyyy:MM:dd HH:mm:ss"
+      final parsedDate = DateTime.parse(exifDateStr
+          .toString()
+          .replaceFirst(':', '-')
+          .replaceFirst(':', '-', 5));
+
+      // Compare ignoring milliseconds since EXIF has only seconds precision
+      expect(parsedDate.isAtSameMomentAs(dateTime), isTrue,
+          reason: 'Date mismatch on image');
+    } else {
+      fail('DateTimeOriginal is not found in the image');
+    }
+    return imageFile;
+  }
+
+  static Future<void> addDateTimeOriginal(
+      String imagePath, DateTime dateTime) async {
+    final exifFormat = DateFormat('yyyy:MM:dd HH:mm:ss');
+    final exifDate = exifFormat.format(dateTime);
+
+    final result = await Process.run(
+      'exiftool',
+      [
+        '-overwrite_original', // avoid creating backup files
+        '-DateTimeOriginal=$exifDate', // set the tag
+        imagePath,
+      ],
+    );
+    expect(result.exitCode, 0,
+        reason: 'Failed to add DateTimeOriginal: ${result.stderr}');
   }
 
   void validate(CLEntity entity,

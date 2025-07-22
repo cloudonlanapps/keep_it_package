@@ -16,4 +16,5 @@ class EntityEndPoint {
   static String restore(int id) => '/entity/$id/restore';
   static String deletePermanent(int id) => '/entity/$id/delete';
   static String filterloopback() => '/entity/filter/loopback';
+  static String reset() => '/entity/reset';
 }
