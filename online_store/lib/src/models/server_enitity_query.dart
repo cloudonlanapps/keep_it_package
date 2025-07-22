@@ -10,6 +10,8 @@ class ServerCLEntityQuery extends ServerQuery {
       final value = query.value;
 
       switch (value) {
+        case (final DateTime dateTime):
+          queryList.add('$key=${dateTime.millisecondsSinceEpoch}');
         case null:
         case []:
         case (final List<dynamic> _) when value.isEmpty:
