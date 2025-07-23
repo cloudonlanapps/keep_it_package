@@ -1,3 +1,5 @@
+import 'package:cl_basic_types/cl_basic_types.dart';
+
 List<Map<String, dynamic>> filterValidTestCases = [
   {'isCollection': 1},
   {'isDeleted': 0},
@@ -25,22 +27,19 @@ List<Map<String, dynamic>> filterValidTestCases = [
   {'FileSizeMax': 1048576},
   {'FileSizeMin': 50000, 'FileSizeMax': 100000},
   {'FileSizeMin': 1000000, 'FileSizeMax': 500000},
-  {'addedDate_from': DateTime(2023).millisecondsSinceEpoch},
+  {'addedDate_from': DateTime(2023).utcTimeStamp},
+  {'CreateDate_till': DateTime(2023, 12, 31, 23, 59, 59).utcTimeStamp},
   {
-    'CreateDate_till': DateTime(2023, 12, 31, 23, 59, 59).millisecondsSinceEpoch
+    'updatedDate_from': DateTime(2024).utcTimeStamp,
+    'updatedDate_till': DateTime(2024, 12, 31, 23, 59, 59).utcTimeStamp
   },
   {
-    'updatedDate_from': DateTime(2024).millisecondsSinceEpoch,
-    'updatedDate_till':
-        DateTime(2024, 12, 31, 23, 59, 59).millisecondsSinceEpoch
+    'addedDate_from': DateTime(2023).utcTimeStamp,
+    'addedDate_till': DateTime(2023, 12, 31, 23, 59, 59).utcTimeStamp
   },
   {
-    'addedDate_from': DateTime(2023).millisecondsSinceEpoch,
-    'addedDate_till': DateTime(2023, 12, 31, 23, 59, 59).millisecondsSinceEpoch
-  },
-  {
-    'CreateDate_from': DateTime(2023).millisecondsSinceEpoch,
-    'CreateDate_till': DateTime(2023, 12, 31, 23, 59, 59).millisecondsSinceEpoch
+    'CreateDate_from': DateTime(2023).utcTimeStamp,
+    'CreateDate_till': DateTime(2023, 12, 31, 23, 59, 59).utcTimeStamp
   },
   {
     'id': [1, 5, 10]
@@ -65,7 +64,7 @@ List<Map<String, dynamic>> filterValidTestCases = [
   {
     'MIMEType': 'video/mp4',
     'Duration_min': 300.0,
-    'CreateDate_from': DateTime(2024).millisecondsSinceEpoch
+    'CreateDate_from': DateTime(2024).utcTimeStamp
   },
   {
     'parentId': '__notnull__',
@@ -84,20 +83,17 @@ List<Map<String, dynamic>> filterValidTestCases = [
     'parentId': [4, 5],
     'FileSizeMin': 1000,
     'FileSizeMax': 2000,
-    'addedDate_from': DateTime(2023).millisecondsSinceEpoch,
-    'updatedDate_till':
-        DateTime(2023, 12, 31, 23, 59, 59).millisecondsSinceEpoch
+    'addedDate_from': DateTime(2023).utcTimeStamp,
+    'updatedDate_till': DateTime(2023, 12, 31, 23, 59, 59).utcTimeStamp
   },
   {
     'label_starts_with': 'Doc',
-    'CreateDate_from': DateTime(2023).millisecondsSinceEpoch,
-    'CreateDate_till':
-        DateTime(2023, 12, 31, 23, 59, 59).millisecondsSinceEpoch,
-    'addedDate_from': DateTime(2023).millisecondsSinceEpoch,
-    'addedDate_till': DateTime(2023, 12, 31, 23, 59, 59).millisecondsSinceEpoch,
-    'updatedDate_from': DateTime(2023).millisecondsSinceEpoch,
-    'updatedDate_till':
-        DateTime(2023, 12, 31, 23, 59, 59).millisecondsSinceEpoch
+    'CreateDate_from': DateTime(2023).utcTimeStamp,
+    'CreateDate_till': DateTime(2023, 12, 31, 23, 59, 59).utcTimeStamp,
+    'addedDate_from': DateTime(2023).utcTimeStamp,
+    'addedDate_till': DateTime(2023, 12, 31, 23, 59, 59).utcTimeStamp,
+    'updatedDate_from': DateTime(2023).utcTimeStamp,
+    'updatedDate_till': DateTime(2023, 12, 31, 23, 59, 59).utcTimeStamp
   },
   {
     'isCollection': 1,
@@ -107,7 +103,7 @@ List<Map<String, dynamic>> filterValidTestCases = [
     'parentId': '__notnull__',
     'FileSizeMin': 500,
     'FileSizeMax': 10000,
-    'addedDate_from': DateTime(2023).millisecondsSinceEpoch
+    'addedDate_from': DateTime(2023).utcTimeStamp
   },
   {
     'label': 'Combo',

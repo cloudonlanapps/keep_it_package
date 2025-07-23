@@ -9,3 +9,14 @@ extension UtilExtensionOnDateTime on DateTime {
     }
   }
 }
+
+extension TimeStampExtension on DateTime {
+  int get utcTimeStamp => (isUtc ? this : toUtc()).millisecondsSinceEpoch;
+}
+
+extension DateTimeExtensionOnInt on int {
+  DateTime get localDateTime => utcDateTime.toLocal();
+
+  DateTime get utcDateTime =>
+      DateTime.fromMillisecondsSinceEpoch(this, isUtc: true);
+}

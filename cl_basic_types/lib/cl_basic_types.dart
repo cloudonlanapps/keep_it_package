@@ -20,7 +20,8 @@ export 'src/extensions/ext_string.dart' show UtilExtensionOnString;
 export 'src/extensions/on_file.dart' show UtilExtensionOnFile;
 export 'src/extensions/on_date_time_nullable.dart'
     show UtilExtensionOnDateTimeNullable;
-export 'src/extensions/on_date_time.dart' show UtilExtensionOnDateTime;
+export 'src/extensions/on_date_time.dart'
+    show UtilExtensionOnDateTime, TimeStampExtension, DateTimeExtensionOnInt;
 export 'src/extensions/on_list.dart' show UtilExtensionOnList;
 export 'src/extensions/on_list_nullable.dart' show UtilExtensionOnListNullable;
 export 'src/extensions/on_set.dart' show UtilExtensionOnSet;

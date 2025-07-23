@@ -3,6 +3,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:cl_basic_types/src/extensions/on_date_time.dart';
 import 'package:meta/meta.dart';
 
 import 'cl_media_content.dart';
@@ -42,7 +43,7 @@ class CLMediaFile extends CLMediaContent {
       'mimeType': mimeType,
       'type': type.name,
       'fileSuffix': fileSuffix,
-      'createDate': createDate?.millisecondsSinceEpoch,
+      'createDate': createDate?.utcTimeStamp,
       'height': height,
       'width': width,
       'duration': duration,

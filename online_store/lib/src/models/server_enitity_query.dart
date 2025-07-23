@@ -1,3 +1,4 @@
+import 'package:cl_basic_types/cl_basic_types.dart';
 import 'package:online_store/src/implementations/server_query.dart';
 
 class ServerCLEntityQuery extends ServerQuery {
@@ -11,7 +12,7 @@ class ServerCLEntityQuery extends ServerQuery {
 
       switch (value) {
         case (final DateTime dateTime):
-          queryList.add('$key=${dateTime.millisecondsSinceEpoch}');
+          queryList.add('$key=${dateTime.utcTimeStamp}');
         case null:
         case []:
         case (final List<dynamic> _) when value.isEmpty:

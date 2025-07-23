@@ -495,8 +495,7 @@ class CLStore with CLLogger {
   }
 
   String createTempFile({required String ext}) {
-    final fileBasename =
-        'keep_it_temp_${DateTime.now().millisecondsSinceEpoch}';
+    final fileBasename = 'keep_it_temp_${DateTime.now().utcTimeStamp}';
 
     return '$tempFilePath/$fileBasename.$ext';
   }

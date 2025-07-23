@@ -49,8 +49,8 @@ class ServerTimeStamps {
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
-      'collection': collection?.millisecondsSinceEpoch,
-      'media': media?.millisecondsSinceEpoch,
+      'collection': collection?.utcTimeStamp,
+      'media': media?.utcTimeStamp,
     };
   }
 

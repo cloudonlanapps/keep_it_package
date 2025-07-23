@@ -1,5 +1,6 @@
 // ignore_for_file: avoid_print, print required for testing
 
+import 'package:cl_basic_types/cl_basic_types.dart';
 import 'package:collection/collection.dart';
 import 'package:online_store/src/models/entity_server.dart';
 import 'package:online_store/src/models/server_enitity_query.dart';
@@ -28,7 +29,7 @@ extension Normalize on Map<String, dynamic> {
     return switch (val) {
       T() => val, // Already the target numeric type
       final bool valBool => valBool ? 1 : 0,
-      final DateTime valDateTime => valDateTime.millisecondsSinceEpoch,
+      final DateTime valDateTime => valDateTime.utcTimeStamp,
       final String valString =>
         parser(valString) ?? valString, // Try parsing, else keep as string
       final List<dynamic> valList =>

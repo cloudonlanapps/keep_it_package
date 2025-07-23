@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:cl_basic_types/cl_basic_types.dart';
+
 import 'package:meta/meta.dart';
 
 @immutable
@@ -294,8 +295,8 @@ class CLEntity {
     return <String, dynamic>{
       'id': id,
       'isCollection': isCollection,
-      'addedDate': addedDate.millisecondsSinceEpoch,
-      'updatedDate': updatedDate.millisecondsSinceEpoch,
+      'addedDate': addedDate.utcTimeStamp,
+      'updatedDate': updatedDate.utcTimeStamp,
       'isDeleted': isDeleted,
       'label': label,
       'description': description,
@@ -305,7 +306,7 @@ class CLEntity {
       'mimeType': mimeType,
       'type': type,
       'extension': extension,
-      'createDate': createDate?.millisecondsSinceEpoch,
+      'createDate': createDate?.utcTimeStamp,
       'height': height,
       'width': width,
       'duration': duration,
@@ -320,8 +321,8 @@ class CLEntity {
     return <String, dynamic>{
       'id': id,
       'isCollection': isCollection,
-      'addedDate': addedDate.millisecondsSinceEpoch,
-      'updatedDate': updatedDate.millisecondsSinceEpoch,
+      'addedDate': addedDate.utcTimeStamp,
+      'updatedDate': updatedDate.utcTimeStamp,
       'isDeleted': isDeleted,
       'label': label,
       'description': description,
@@ -331,7 +332,7 @@ class CLEntity {
       'mimeType': mimeType,
       'type': type,
       'extension': extension,
-      'createDate': createDate?.millisecondsSinceEpoch,
+      'createDate': createDate?.utcTimeStamp,
       'height': height,
       'width': width,
       'duration': duration,
