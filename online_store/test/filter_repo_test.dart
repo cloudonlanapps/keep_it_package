@@ -31,7 +31,8 @@ void main() {
     // ignore: dead_code enable only when regeneration is required
     if (resetDB) {
       await server.reset();
-      testFiltersContext = await TestFilters.setupRepo(testContext);
+      testFiltersContext = await TestFilters.uploadRepo(testContext);
+      // ignore: dead_code enable only when regeneration is required
     } else {
       final items = await (await server.getAll()).when(
           validResponse: (items) async => items,
@@ -53,7 +54,8 @@ void main() {
   tearDown(() async {});
   group('TestFiltersLoopBack', () {
     test('LB1 valid query filters ',
-        () async => TestFiltersLoopback.testLB1(testContext));
+        () async => TestFiltersLoopback.testLB1(testContext),
+        timeout: const Timeout(Duration(hours: 3)));
     test('LB1 invalid query filters ',
         () async => TestFiltersLoopback.testLB2(testContext));
   });

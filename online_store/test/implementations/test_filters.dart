@@ -1,5 +1,6 @@
 // ignore_for_file: avoid_print, print required for testing
 
+import 'dart:io';
 import 'dart:math';
 
 import 'package:cl_basic_types/cl_basic_types.dart';
@@ -7,6 +8,7 @@ import 'package:cl_basic_types/cl_basic_types.dart';
 import 'package:test/test.dart';
 
 import '../framework/framework.dart';
+import 'get_create_date.dart';
 
 class DeterministicRandomString {
   DeterministicRandomString(this.seed) : random = Random(seed);
@@ -30,6 +32,56 @@ class TestFilters {
   TestFilters({required this.media, required this.collections});
   final List<CLEntity> media;
   final List<CLEntity?> collections;
+
+  static Future<TestFilters> uploadRepo(TestContext testContext) async {
+    final random2 = DeterministicRandomString(0x54321);
+    final random = Random(0x12345);
+    final collections = <CLEntity?>[null];
+    for (var i = 0; i < 20; i++) {
+      print('\rGenerating Collections: $i'.padRight(60));
+      final label1 = random2.nextString(prefix: 'test_');
+      final entity1 = await testContext.server.validCreate(testContext,
+          isCollection: () => true, label: () => label1);
+      testContext.validate(entity1,
+          id: isNotNull, label: equals(label1), description: isNull);
+      collections.add(entity1);
+    }
+    final entitites = <CLEntity>[];
+    // Create a Directory object
+    final directory =
+        Directory('/Users/anandasarangaram/Work/github/generated_media');
+    if (directory.existsSync()) {
+      print('Traversing files in: ${directory.path}');
+
+      final files = directory.listSync(recursive: true);
+
+      for (final (i, file) in files.indexed) {
+        if (file is File && !file.path.endsWith('.DS_Store')) {
+          print('$i:  ${file.path}');
+          final parentId = collections[random.nextInt(collections.length)]?.id;
+          final entity1 = await testContext.server.validCreate(testContext,
+              fileName: file.path,
+              parentId: parentId == null ? () => 0 : () => parentId);
+          final date = await getCreateDate(file.absolute.path);
+          if (date == null) {
+            testContext.validate(entity1,
+                id: isNotNull, md5: isNotNull, createDate: isNull);
+          } else {
+            testContext.validate(entity1,
+                id: isNotNull, md5: isNotNull, createDate: isNotNull);
+          }
+          expect(entity1.createDate, date,
+              reason:
+                  "${entity1.id} createDate didn't match: set: $date, got: ${entity1.createDate}");
+          entitites.add(entity1);
+        }
+      }
+    } else {
+      print('Error: Directory "${directory.path}" does not exist.');
+    }
+    print('Generated ${collections.length + entitites.length} items}');
+    return TestFilters(collections: collections, media: entitites);
+  }
 
   static Future<TestFilters> setupRepo(TestContext testContext) async {
     final random = Random(0x12345);
