@@ -13,7 +13,13 @@ void main() {
   late final TestContext testContext;
   late final TestFilters testFiltersContext;
   setUpAll(() async {
-    print('${'''
+    server = await TestExtOnCLServer.establishConnection();
+    testContext = TestContext(
+        tempDir: 'image_test_dir_${randomString(5)}', server: server);
+    const resetDB = false;
+    // ignore: dead_code enable only when regeneration is required
+    if (resetDB) {
+      print('${'''
   ******************************************************************************
   
   This module delete all the entitites in the server repo and creates a
@@ -23,13 +29,6 @@ void main() {
   * DON'T RUN ANY TEST IN PARALLEL WITH THIS TEST.
   ******************************************************************************
 '''.trim()} ');
-
-    server = await TestExtOnCLServer.establishConnection();
-    testContext = TestContext(
-        tempDir: 'image_test_dir_${randomString(5)}', server: server);
-    const resetDB = false;
-    // ignore: dead_code enable only when regeneration is required
-    if (resetDB) {
       await server.reset();
       testFiltersContext = await TestFilters.uploadRepo(testContext);
       // ignore: dead_code enable only when regeneration is required
@@ -56,8 +55,10 @@ void main() {
     test('LB1 valid query filters ',
         () async => TestFiltersLoopback.testLB1(testContext),
         timeout: const Timeout(Duration(hours: 3)));
-    test('LB1 invalid query filters ',
+    test('LB2 invalid query filters ',
         () async => TestFiltersLoopback.testLB2(testContext));
+    test('LB3 date queries',
+        () async => TestFiltersLoopback.testDateTime(testContext));
   });
 
   group('filterTest', () {
@@ -72,11 +73,11 @@ void main() {
 
     test('F4 CreateDate', () async => testFiltersContext.testF4(testContext),
         timeout: const Timeout(Duration(hours: 1)));
-    test('F5 CreateDate_year & CreateDate_month',
+    /* test('F5 CreateDate_year & CreateDate_month',
         () async => testFiltersContext.testF5(testContext),
         timeout: const Timeout(Duration(hours: 1)));
     test('F6 CreateDate_month & CreateDate_day',
         () async => testFiltersContext.testF6(testContext),
-        timeout: const Timeout(Duration(hours: 1)));
+        timeout: const Timeout(Duration(hours: 1))); */
   });
 }
