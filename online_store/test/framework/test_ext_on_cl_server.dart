@@ -13,7 +13,7 @@ import 'test_context.dart';
 extension TestExtOnCLServer on CLServer {
   static Future<CLServer> establishConnection() async {
     // const serverAddr = 'http://192.168.0.225:5000'; RaspPi
-    const serverAddr = 'http://192.168.0.162:5001'; //Mac
+    const serverAddr = 'http://127.0.0.1:5001'; //Mac
     try {
       final url = StoreURL(Uri.parse(serverAddr), identity: null, label: null);
 
