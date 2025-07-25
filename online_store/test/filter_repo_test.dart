@@ -58,7 +58,7 @@ void main() {
     test('LB2 invalid query filters ',
         () async => TestFiltersLoopback.testLB2(testContext));
     test('LB3 date queries',
-        () async => TestFiltersLoopback.testDateTime(testContext));
+        () async => TestFiltersLoopback.testLBRandomMap(testContext, {}));
   });
 
   group('filterTest', () {
