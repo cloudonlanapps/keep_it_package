@@ -27,19 +27,19 @@ List<Map<String, dynamic>> filterValidTestCases = [
   {'FileSizeMax': 1048576},
   {'FileSizeMin': 50000, 'FileSizeMax': 100000},
   {'FileSizeMin': 1000000, 'FileSizeMax': 500000},
-  {'addedDate_from': DateTime(2023).utcTimeStamp},
-  {'CreateDate_till': DateTime(2023, 12, 31, 23, 59, 59).utcTimeStamp},
+  {'addedDateFrom': DateTime(2023).utcTimeStamp},
+  {'CreateDateTill': DateTime(2023, 12, 31, 23, 59, 59).utcTimeStamp},
   {
-    'updatedDate_from': DateTime(2024).utcTimeStamp,
-    'updatedDate_till': DateTime(2024, 12, 31, 23, 59, 59).utcTimeStamp
+    'updatedDateFrom': DateTime(2024).utcTimeStamp,
+    'updatedDateTill': DateTime(2024, 12, 31, 23, 59, 59).utcTimeStamp
   },
   {
-    'addedDate_from': DateTime(2023).utcTimeStamp,
-    'addedDate_till': DateTime(2023, 12, 31, 23, 59, 59).utcTimeStamp
+    'addedDateFrom': DateTime(2023).utcTimeStamp,
+    'addedDateTill': DateTime(2023, 12, 31, 23, 59, 59).utcTimeStamp
   },
   {
-    'CreateDate_from': DateTime(2023).utcTimeStamp,
-    'CreateDate_till': DateTime(2023, 12, 31, 23, 59, 59).utcTimeStamp
+    'CreateDateFrom': DateTime(2023).utcTimeStamp,
+    'CreateDateTill': DateTime(2023, 12, 31, 23, 59, 59).utcTimeStamp
   },
   {
     'id': [1, 5, 10]
@@ -51,20 +51,16 @@ List<Map<String, dynamic>> filterValidTestCases = [
   {'Duration_max': 3600.0},
   {'Duration_min': 120.0, 'Duration_max': 600.0},
   {'Duration_min': 1000.0, 'Duration_max': 100.0},
-  {'CreateDate_day': 15},
-  {'CreateDate_month': 3},
-  {'CreateDate_year': 2024},
-  {'CreateDate_month': 7, 'CreateDate_day': 4},
   {
     'isCollection': 0,
     'label_starts_with': 'Image',
-    'CreateDate_year': 2023,
+    'CreateDateYY': DateTime(2023).utcTimeStamp,
     'FileSizeMin': 100000
   },
   {
     'MIMEType': 'video/mp4',
     'Duration_min': 300.0,
-    'CreateDate_from': DateTime(2024).utcTimeStamp
+    'CreateDateFrom': DateTime(2024).utcTimeStamp
   },
   {
     'parentId': '__notnull__',
@@ -83,17 +79,17 @@ List<Map<String, dynamic>> filterValidTestCases = [
     'parentId': [4, 5],
     'FileSizeMin': 1000,
     'FileSizeMax': 2000,
-    'addedDate_from': DateTime(2023).utcTimeStamp,
-    'updatedDate_till': DateTime(2023, 12, 31, 23, 59, 59).utcTimeStamp
+    'addedDateFrom': DateTime(2023).utcTimeStamp,
+    'updatedDateTill': DateTime(2023, 12, 31, 23, 59, 59).utcTimeStamp
   },
   {
     'label_starts_with': 'Doc',
-    'CreateDate_from': DateTime(2023).utcTimeStamp,
-    'CreateDate_till': DateTime(2023, 12, 31, 23, 59, 59).utcTimeStamp,
-    'addedDate_from': DateTime(2023).utcTimeStamp,
-    'addedDate_till': DateTime(2023, 12, 31, 23, 59, 59).utcTimeStamp,
-    'updatedDate_from': DateTime(2023).utcTimeStamp,
-    'updatedDate_till': DateTime(2023, 12, 31, 23, 59, 59).utcTimeStamp
+    'CreateDateFrom': DateTime(2023).utcTimeStamp,
+    'CreateDateTill': DateTime(2023, 12, 31, 23, 59, 59).utcTimeStamp,
+    'addedDateFrom': DateTime(2023).utcTimeStamp,
+    'addedDateTill': DateTime(2023, 12, 31, 23, 59, 59).utcTimeStamp,
+    'updatedDateFrom': DateTime(2023).utcTimeStamp,
+    'updatedDateTill': DateTime(2023, 12, 31, 23, 59, 59).utcTimeStamp
   },
   {
     'isCollection': 1,
@@ -103,7 +99,7 @@ List<Map<String, dynamic>> filterValidTestCases = [
     'parentId': '__notnull__',
     'FileSizeMin': 500,
     'FileSizeMax': 10000,
-    'addedDate_from': DateTime(2023).utcTimeStamp
+    'addedDateFrom': DateTime(2023).utcTimeStamp
   },
   {
     'label': 'Combo',
@@ -113,7 +109,7 @@ List<Map<String, dynamic>> filterValidTestCases = [
     'ImageWidth': 800,
     'ImageHeight': 600,
     'Duration': 120,
-    'CreateDate_year': 2022
+    'CreateDateYY': DateTime(2022).utcTimeStamp
   },
   {},
   {'isDeleted': '0'},
@@ -125,4 +121,37 @@ List<Map<String, dynamic>> filterValidTestCases = [
   {
     'parentId': ['__null__']
   },
+  {'CreateDate': DateTime.now().utcTimeStamp},
+  // Begin with year
+  {'CreateDateYY': DateTime.now().utcTimeStamp},
+  {'CreateDateYYMM': DateTime.now().utcTimeStamp},
+  {'CreateDateYYMMDD': DateTime.now().utcTimeStamp},
+  {'CreateDateYYMMDDHH': DateTime.now().utcTimeStamp},
+  {'CreateDateYYMMHH': DateTime.now().utcTimeStamp},
+  {'CreateDateYYDD': DateTime.now().utcTimeStamp},
+  {'CreateDateYYDDHH': DateTime.now().utcTimeStamp},
+  {'CreateDateYYHH': DateTime.now().utcTimeStamp},
+
+  // Begin with month
+  {'CreateDateMM': DateTime.now().utcTimeStamp},
+  {'CreateDateMMDD': DateTime.now().utcTimeStamp},
+  {'CreateDateMMDDHH': DateTime.now().utcTimeStamp},
+  {'CreateDateMMHH': DateTime.now().utcTimeStamp},
+
+  {'CreateDateDD': DateTime.now().utcTimeStamp},
+  {'CreateDateDDHH': DateTime.now().utcTimeStamp},
+
+  {'CreateDateHH': DateTime.now().utcTimeStamp},
+
+  {'CreateDateFrom': DateTime.now().utcTimeStamp},
+  {'CreateDateTill': DateTime.now().utcTimeStamp},
+
+  {'CreateDateYYFrom': DateTime.now().utcTimeStamp},
+  {'CreateDateYYTill': DateTime.now().utcTimeStamp},
+
+  {'CreateDateYYMMFrom': DateTime.now().utcTimeStamp},
+  {'CreateDateYYMMTill': DateTime.now().utcTimeStamp},
+
+  {'CreateDateYYMMDDFrom': DateTime.now().utcTimeStamp},
+  {'CreateDateYYMMDDTill': DateTime.now().utcTimeStamp},
 ];
