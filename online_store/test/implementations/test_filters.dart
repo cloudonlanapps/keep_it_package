@@ -175,53 +175,170 @@ class TestFilters {
     }
   }
 
-  Future<void> testF4(
+  Future<void> testCreateDate(
     TestContext testContext,
   ) async {
-    {
-      await testContext.queryandMatch({'CreateDate': '__null__'},
-          allEntities.where((e) => e.createDate == null).toList());
-      await testContext.queryandMatch({'CreateDate': '__notnull__'},
-          allEntities.where((e) => e.createDate != null).toList());
-
-      for (final date in createDates) {
-        await testContext.queryandMatch({'CreateDate': date},
-            allEntities.where((e) => e.createDate == date).toList());
-      }
+    for (final date in createDates) {
+      await testContext.queryandMatch({'CreateDate': date.utcTimeStamp},
+          allEntities.where((e) => e.createDate == date).toList());
     }
   }
 
-  Future<void> testF5(
+  Future<void> testCreateDateYY(
     TestContext testContext,
   ) async {
-    for (final yearEntry in yearMonth.entries) {
-      for (final month in yearEntry.value) {
-        await testContext.queryandMatch(
-            {'CreateDate_year': yearEntry.key, 'CreateDate_month': month},
-            allEntities
-                .where((e) =>
-                    e.createDate != null &&
-                    e.createDate!.year == yearEntry.key &&
-                    e.createDate!.month == month)
-                .toList());
-      }
+    final years = createDates.map((e) => e.year).toSet();
+    for (final year in years) {
+      await testContext.queryandMatch(
+          {'CreateDateYY': DateTime(year).utcTimeStamp},
+          allEntities.where((e) => e.createDate?.year == year).toList());
     }
   }
 
-  Future<void> testF6(
+  Future<void> testCreateDateMM(
     TestContext testContext,
   ) async {
-    for (final monthEntry in monthDay.entries) {
-      for (final day in monthEntry.value) {
-        await testContext.queryandMatch(
-            {'CreateDate_month': monthEntry.key, 'CreateDate_day': day},
-            allEntities
-                .where((e) =>
-                    e.createDate != null &&
-                    e.createDate!.month == monthEntry.key &&
-                    e.createDate!.day == day)
-                .toList());
-      }
+    final months = createDates.map((e) => e.month).toSet();
+    for (final month in months) {
+      final equivalentDatetime = DateTime(2024, month).utcTimeStamp;
+      await testContext.queryandMatch({'CreateDateMM': equivalentDatetime},
+          allEntities.where((e) => e.createDate?.month == month).toList());
+    }
+  }
+
+  Future<void> testCreateDateDD(
+    TestContext testContext,
+  ) async {
+    final days = createDates.map((e) => e.day).toSet();
+    for (final day in days) {
+      final equivalentDatetime = DateTime(2024, 1, day).utcTimeStamp;
+      await testContext.queryandMatch({'CreateDateDD': equivalentDatetime},
+          allEntities.where((e) => e.createDate?.day == day).toList());
+    }
+  }
+
+  Future<void> testCreateDateFrom(
+    TestContext testContext,
+  ) async {
+    for (final date in createDates) {
+      await testContext.queryandMatch(
+          {'CreateDateFrom': date.utcTimeStamp},
+          allEntities
+              .where((e) =>
+                  e.createDate != null && (e.createDate!.compareTo(date) >= 0))
+              .toList());
+    }
+  }
+
+  Future<void> testCreateDateYYFrom(
+    TestContext testContext,
+  ) async {
+    for (final date in createDates) {
+      final equivalentDatetime = DateTime(date.year);
+      await testContext.queryandMatch(
+          {'CreateDateYYFrom': date.utcTimeStamp},
+          allEntities
+              .where((e) =>
+                  e.createDate != null &&
+                  (e.createDate!.compareTo(equivalentDatetime) >= 0))
+              .toList());
+    }
+  }
+
+  Future<void> testCreateDateYYMMFrom(
+    TestContext testContext,
+  ) async {
+    for (final date in createDates) {
+      final equivalentDatetime = DateTime(date.year, date.month);
+      await testContext.queryandMatch(
+          {'CreateDateYYMMFrom': date.utcTimeStamp},
+          allEntities
+              .where((e) =>
+                  e.createDate != null &&
+                  (e.createDate!.compareTo(equivalentDatetime) >= 0))
+              .toList());
+    }
+  }
+
+  Future<void> testCreateDateYYMMDDFrom(
+    TestContext testContext,
+  ) async {
+    for (final date in createDates) {
+      final equivalentDatetime = DateTime(date.year, date.month, date.day);
+      await testContext.queryandMatch(
+          {'CreateDateYYMMDDFrom': date.utcTimeStamp},
+          allEntities
+              .where((e) =>
+                  e.createDate != null &&
+                  (e.createDate!.compareTo(equivalentDatetime) >= 0))
+              .toList());
+    }
+  }
+
+  Future<void> testCreateDateTill(
+    TestContext testContext,
+  ) async {
+    for (final date in createDates) {
+      await testContext.queryandMatch(
+          {'CreateDateTill': date.utcTimeStamp},
+          allEntities
+              .where((e) =>
+                  e.createDate != null && (e.createDate!.compareTo(date) <= 0))
+              .toList());
+    }
+  }
+
+  Future<void> testCreateDateYYTill(
+    TestContext testContext,
+  ) async {
+    for (final date in createDates) {
+      final equivalentDatetime =
+          DateTime(date.year + 1).subtract(const Duration(microseconds: 1));
+
+      await testContext.queryandMatch(
+          {'CreateDateYYTill': date.utcTimeStamp},
+          allEntities
+              .where((e) =>
+                  e.createDate != null &&
+                  (e.createDate!.compareTo(equivalentDatetime) <= 0))
+              .toList());
+    }
+  }
+
+  Future<void> testCreateDateYYMMTill(
+    TestContext testContext,
+  ) async {
+    for (final date in createDates) {
+      final equivalentDatetime = DateTime(
+              date.month == 12 ? date.year + 1 : date.year,
+              date.month == 12 ? 1 : date.month + 1)
+          .subtract(const Duration(microseconds: 1));
+
+      await testContext.queryandMatch(
+          {'CreateDateYYMMTill': date.utcTimeStamp},
+          allEntities
+              .where((e) =>
+                  e.createDate != null &&
+                  (e.createDate!.compareTo(equivalentDatetime) <= 0))
+              .toList());
+    }
+  }
+
+  Future<void> testCreateDateYYMMDDTill(
+    TestContext testContext,
+  ) async {
+    for (final date in createDates) {
+      final equivalentDatetime = DateTime(date.year, date.month, date.day)
+          .add(const Duration(days: 1))
+          .subtract(const Duration(microseconds: 1));
+
+      await testContext.queryandMatch(
+          {'CreateDateYYMMDDTill': date.utcTimeStamp},
+          allEntities
+              .where((e) =>
+                  e.createDate != null &&
+                  (e.createDate!.compareTo(equivalentDatetime) <= 0))
+              .toList());
     }
   }
 
@@ -231,10 +348,12 @@ class TestFilters {
   Map<int, Set<int>> get yearMonth => <int, Set<int>>{}
     ..addEntries(createDates.map((date) => MapEntry(date.year, {date.month})));
 
-  Set<DateTime> get createDates => allEntities
+  List<DateTime> get createDates => allEntities
       .where((e) => e.createDate != null)
       .map((e) => e.createDate!)
-      .toSet();
+      .toSet()
+      .toList()
+    ..sort();
 
   List<CLEntity> get allEntities => [...collections, ...media]
       .where((e) => e != null)

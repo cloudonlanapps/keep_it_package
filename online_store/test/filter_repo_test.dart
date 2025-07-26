@@ -20,14 +20,14 @@ void main() {
     // ignore: dead_code enable only when regeneration is required
     if (resetDB) {
       print('${'''
-  ******************************************************************************
-  
-  This module delete all the entitites in the server repo and creates a
-  deterministic repo to test the filter functionality. 
-  This test is designed for TEST SERVERS ONLY.
-  * DON'T ACCEPT THIS ON LIVE SERVER
-  * DON'T RUN ANY TEST IN PARALLEL WITH THIS TEST.
-  ******************************************************************************
+******************************************************************************
+
+This module delete all the entitites in the server repo and creates a
+deterministic repo to test the filter functionality. 
+This test is designed for TEST SERVERS ONLY.
+* DON'T ACCEPT THIS ON LIVE SERVER
+* DON'T RUN ANY TEST IN PARALLEL WITH THIS TEST.
+******************************************************************************
 '''.trim()} ');
       await server.reset();
       testFiltersContext = await TestFilters.uploadRepo(testContext);
@@ -70,14 +70,47 @@ void main() {
         timeout: const Timeout(Duration(hours: 1)));
     test('F3 parentId', () async => testFiltersContext.testF3(testContext),
         timeout: const Timeout(Duration(hours: 1)));
+  });
 
-    test('F4 CreateDate', () async => testFiltersContext.testF4(testContext),
+  group('CreateDate', () {
+    test('CreateDate',
+        () async => testFiltersContext.testCreateDate(testContext),
         timeout: const Timeout(Duration(hours: 1)));
-    /* test('F5 CreateDate_year & CreateDate_month',
-        () async => testFiltersContext.testF5(testContext),
+    test('CreateDateYY',
+        () async => testFiltersContext.testCreateDateYY(testContext),
         timeout: const Timeout(Duration(hours: 1)));
-    test('F6 CreateDate_month & CreateDate_day',
-        () async => testFiltersContext.testF6(testContext),
-        timeout: const Timeout(Duration(hours: 1))); */
+
+    test('CreateDateMM',
+        () async => testFiltersContext.testCreateDateMM(testContext),
+        timeout: const Timeout(Duration(hours: 1)));
+
+    test('CreateDateDD',
+        () async => testFiltersContext.testCreateDateDD(testContext),
+        timeout: const Timeout(Duration(hours: 1)));
+    test('CreateDateFrom',
+        () async => testFiltersContext.testCreateDateFrom(testContext),
+        timeout: const Timeout(Duration(hours: 1)));
+    test('CreateDateYYFrom',
+        () async => testFiltersContext.testCreateDateYYFrom(testContext),
+        timeout: const Timeout(Duration(hours: 1)));
+    test('CreateDateYYMMFrom',
+        () async => testFiltersContext.testCreateDateYYMMFrom(testContext),
+        timeout: const Timeout(Duration(hours: 1)));
+    test('CreateDateYYMMDDFrom',
+        () async => testFiltersContext.testCreateDateYYMMDDFrom(testContext),
+        timeout: const Timeout(Duration(hours: 1)));
+
+    test('CreateDateTill',
+        () async => testFiltersContext.testCreateDateTill(testContext),
+        timeout: const Timeout(Duration(hours: 1)));
+    test('CreateDateYYTill',
+        () async => testFiltersContext.testCreateDateYYTill(testContext),
+        timeout: const Timeout(Duration(hours: 1)));
+    test('CreateDateYYMMTill',
+        () async => testFiltersContext.testCreateDateYYMMTill(testContext),
+        timeout: const Timeout(Duration(hours: 1)));
+    test('CreateDateYYMMDDTill',
+        () async => testFiltersContext.testCreateDateYYMMDDTill(testContext),
+        timeout: const Timeout(Duration(hours: 1)));
   });
 }
