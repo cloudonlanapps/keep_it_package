@@ -11,6 +11,7 @@ import 'package:test/test.dart';
 
 import '../framework/framework.dart';
 import 'get_create_date.dart';
+import 'test_mime_types.dart';
 
 @immutable
 class DateTestCase {
@@ -174,7 +175,7 @@ class TestFilters {
     }
   }
 
-  Future<void> testF3(
+  Future<void> testParentID(
     TestContext testContext,
   ) async {
     {
@@ -186,7 +187,41 @@ class TestFilters {
     }
   }
 
-  Future<void> testCreateDateTemplate(TestContext testContext,
+  Future<void> testType(
+    TestContext testContext,
+  ) async {
+    {
+      for (final type in types) {
+        await testContext.queryandMatch(
+            {'type': type}, allEntities.where((e) => e.type == type).toList());
+      }
+    }
+  }
+
+  Future<void> testMIMEType(
+    TestContext testContext,
+  ) async {
+    {
+      for (final mimeType in mimeTypes) {
+        expect(mimeType, isIn(MimeTypes().all));
+        await testContext.queryandMatch({'MIMEType': mimeType},
+            allEntities.where((e) => e.mimeType == mimeType).toList());
+      }
+    }
+  }
+
+  Future<void> testExtension(
+    TestContext testContext,
+  ) async {
+    {
+      for (final extension in extensions) {
+        await testContext.queryandMatch({'extension': extension},
+            allEntities.where((e) => e.extension == extension).toList());
+      }
+    }
+  }
+
+  Future<void> dateTestCaseTemplate(TestContext testContext,
       {required List<dynamic> iters,
       required Map<String, dynamic> Function(dynamic iter) iterMap,
       required bool Function(CLEntity, dynamic date) filter}) async {
@@ -199,17 +234,17 @@ class TestFilters {
   Map<String, Future<void> Function(TestContext testContext)> get dateTests {
     final testCases =
         <String, Future<void> Function(TestContext testContext)>{};
-    for (final entry in createDateTestCases.entries) {
-      testCases[entry.key] = (TestContext testContext) =>
-          testCreateDateTemplate(testContext,
-              iters: entry.value.iters,
-              iterMap: entry.value.iterMap,
-              filter: entry.value.filter);
+    for (final entry in dateTestCases.entries) {
+      testCases[entry.key] = (TestContext testContext) => dateTestCaseTemplate(
+          testContext,
+          iters: entry.value.iters,
+          iterMap: entry.value.iterMap,
+          filter: entry.value.filter);
     }
     return testCases;
   }
 
-  Map<String, DateTestCase> get createDateTestCases => {
+  Map<String, DateTestCase> get dateTestCases => {
         'CreateDate': DateTestCase(
             iters: createDates,
             iterMap: (dynamic date) =>
@@ -630,6 +665,30 @@ class TestFilters {
 
   List<DateTime> get updatedDates =>
       allEntities.map((e) => e.updatedDate).toSet().toList()..sort();
+
+  List<String> get mimeTypes => allEntities
+      .map((e) => e.mimeType)
+      .where((e) => e != null)
+      .cast<String>()
+      .toSet()
+      .toList()
+    ..sort();
+
+  List<String> get extensions => allEntities
+      .map((e) => e.extension)
+      .where((e) => e != null)
+      .cast<String>()
+      .toSet()
+      .toList()
+    ..sort();
+
+  List<String> get types => allEntities
+      .map((e) => e.type)
+      .where((e) => e != null)
+      .cast<String>()
+      .toSet()
+      .toList()
+    ..sort();
 
   List<CLEntity> get allEntities => [...collections, ...media]
       .where((e) => e != null)

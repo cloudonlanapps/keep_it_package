@@ -5,16 +5,16 @@ List<Map<String, dynamic>> filterValidTestCases = [
   {'isDeleted': 0},
   {'isCollection': 1, 'isDeleted': 0},
   {'label': 'MyDocument'},
-  {'label': 'document', 'md5': 'a1b2c3d4e5f67890'},
+
   {'MIMEType': 'image/jpeg'},
   {'extension': 'pdf'},
   {'label': '__null__'},
   {'label': '__notnull__'},
-  {'md5': '__notnull__'},
+
   {
     'MIMEType': ['image/png', 'image/jpeg']
   },
-  {'label_starts_with': 'Report'},
+  {'labelStartsWith': 'Report'},
   {'id': 123},
   {'parentId': 456},
   {'ImageHeight': 1080},
@@ -47,19 +47,19 @@ List<Map<String, dynamic>> filterValidTestCases = [
   {
     'parentId': [7, 8]
   },
-  {'Duration_min': 60.5},
-  {'Duration_max': 3600.0},
-  {'Duration_min': 120.0, 'Duration_max': 600.0},
-  {'Duration_min': 1000.0, 'Duration_max': 100.0},
+  {'DurationMin': 60.5},
+  {'DurationMax': 3600.0},
+  {'DurationMin': 120.0, 'DurationMax': 600.0},
+  {'DurationMin': 1000.0, 'DurationMax': 100.0},
   {
     'isCollection': 0,
-    'label_starts_with': 'Image',
+    'labelStartsWith': 'Image',
     'CreateDateYY': DateTime(2023).utcTimeStamp,
     'FileSizeMin': 100000
   },
   {
     'MIMEType': 'video/mp4',
-    'Duration_min': 300.0,
+    'DurationMin': 300.0,
     'CreateDateFrom': DateTime(2024).utcTimeStamp
   },
   {
@@ -72,7 +72,6 @@ List<Map<String, dynamic>> filterValidTestCases = [
     'isCollection': 1,
     'isDeleted': 0,
     'label': 'Report',
-    'md5': 'abcd',
     'MIMEType': 'image/png',
     'extension': 'png',
     'id': [1, 2, 3],
@@ -83,7 +82,7 @@ List<Map<String, dynamic>> filterValidTestCases = [
     'updatedDateTill': DateTime(2023, 12, 31, 23, 59, 59).utcTimeStamp
   },
   {
-    'label_starts_with': 'Doc',
+    'labelStartsWith': 'Doc',
     'CreateDateFrom': DateTime(2023).utcTimeStamp,
     'CreateDateTill': DateTime(2023, 12, 31, 23, 59, 59).utcTimeStamp,
     'addedDateFrom': DateTime(2023).utcTimeStamp,
@@ -103,7 +102,6 @@ List<Map<String, dynamic>> filterValidTestCases = [
   },
   {
     'label': 'Combo',
-    'md5': ['a', 'b'],
     'MIMEType': 'image/gif',
     'extension': 'gif',
     'ImageWidth': 800,
@@ -154,4 +152,36 @@ List<Map<String, dynamic>> filterValidTestCases = [
 
   {'CreateDateYYMMDDFrom': DateTime.now().utcTimeStamp},
   {'CreateDateYYMMDDTill': DateTime.now().utcTimeStamp},
+
+  {'FileSize': 100},
+  {'FileSizeMin': 100},
+  {'FileSizeMax': 100},
+
+  {'ImageHeight': 100},
+  {'ImageHeightMin': 100},
+  {'ImageHeightMax': 100},
+
+  {'ImageWidth': 100},
+  {'ImageWidthMin': 100},
+  {'ImageWidthMax': 100},
+
+  {'Duration': 100},
+  {'DurationMin': 100},
+  {'DurationMax': 100},
+
+  {'Duration': 100.0},
+  {'DurationMin': 100.0},
+  {'DurationMax': 100.0},
+
+  {'Duration': 100.5},
+  {'DurationMin': 100.5},
+  {'DurationMax': 100.5},
+
+  {'label': 'mylabel'},
+  {'labelStartsWith': 'mylabel'},
+  {'labelContains': 'mylabel'},
+
+  {'description': 'mydescription'},
+  {'descriptionStartsWith': 'mydescription'},
+  {'descriptionContains': 'mydescription'},
 ];

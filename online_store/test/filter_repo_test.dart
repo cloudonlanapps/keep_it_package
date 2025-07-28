@@ -57,18 +57,29 @@ This test is designed for TEST SERVERS ONLY.
         timeout: const Timeout(Duration(hours: 3)));
     test('LB2 invalid query filters ',
         () async => TestFiltersLoopback.testLB2(testContext));
-    test('LB3 date queries',
-        () async => TestFiltersLoopback.testLBRandomMap(testContext, {}));
+    test(
+        'LB3 random queries',
+        () async => TestFiltersLoopback.testLBRandomMap(
+            testContext, {'labelContains': 'mylabel'}));
   });
 
-  group('filterTest', () {
+  group('Basics', () {
     test('F1 without any filter',
         () async => testFiltersContext.testF1(testContext),
         timeout: const Timeout(Duration(hours: 1)));
     test('F2 isCollection - helps to fiter out collections from media',
         () async => testFiltersContext.testF2(testContext),
         timeout: const Timeout(Duration(hours: 1)));
-    test('F3 parentId', () async => testFiltersContext.testF3(testContext),
+    test('parentId', () async => testFiltersContext.testParentID(testContext),
+        timeout: const Timeout(Duration(hours: 1)));
+  });
+
+  group('fileType', () {
+    test('type', () async => testFiltersContext.testType(testContext),
+        timeout: const Timeout(Duration(hours: 1)));
+    test('MIMEType', () async => testFiltersContext.testMIMEType(testContext),
+        timeout: const Timeout(Duration(hours: 1)));
+    test('extension', () async => testFiltersContext.testExtension(testContext),
         timeout: const Timeout(Duration(hours: 1)));
   });
 

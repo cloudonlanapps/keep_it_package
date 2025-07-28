@@ -11,6 +11,8 @@ class ServerCLEntityQuery extends ServerQuery {
       final value = query.value;
 
       switch (value) {
+        case (final bool flag):
+          queryList.add('$key=${flag ? 1 : 0}');
         case (final DateTime dateTime):
           queryList.add('$key=${dateTime.utcTimeStamp}');
         case null:
