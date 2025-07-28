@@ -1,14 +1,25 @@
+// dart format width=200
 // ignore_for_file: avoid_print, print required for testing
 
 import 'dart:io';
 import 'dart:math';
 
 import 'package:cl_basic_types/cl_basic_types.dart';
+import 'package:meta/meta.dart';
 
 import 'package:test/test.dart';
 
 import '../framework/framework.dart';
 import 'get_create_date.dart';
+
+@immutable
+class DateTestCase {
+  const DateTestCase(
+      {required this.iters, required this.iterMap, required this.filter});
+  final List<dynamic> iters;
+  final Map<String, dynamic> Function(dynamic currIter) iterMap;
+  final bool Function(CLEntity e, dynamic currIter) filter;
+}
 
 class DeterministicRandomString {
   DeterministicRandomString(this.seed) : random = Random(seed);
@@ -175,172 +186,431 @@ class TestFilters {
     }
   }
 
-  Future<void> testCreateDate(
-    TestContext testContext,
-  ) async {
-    for (final date in createDates) {
-      await testContext.queryandMatch({'CreateDate': date.utcTimeStamp},
-          allEntities.where((e) => e.createDate == date).toList());
-    }
-  }
-
-  Future<void> testCreateDateYY(
-    TestContext testContext,
-  ) async {
-    final years = createDates.map((e) => e.year).toSet();
-    for (final year in years) {
+  Future<void> testCreateDateTemplate(TestContext testContext,
+      {required List<dynamic> iters,
+      required Map<String, dynamic> Function(dynamic iter) iterMap,
+      required bool Function(CLEntity, dynamic date) filter}) async {
+    for (final date in iters) {
       await testContext.queryandMatch(
-          {'CreateDateYY': DateTime(year).utcTimeStamp},
-          allEntities.where((e) => e.createDate?.year == year).toList());
+          iterMap(date), allEntities.where((e) => filter(e, date)).toList());
     }
   }
 
-  Future<void> testCreateDateMM(
-    TestContext testContext,
-  ) async {
-    final months = createDates.map((e) => e.month).toSet();
-    for (final month in months) {
-      final equivalentDatetime = DateTime(2024, month).utcTimeStamp;
-      await testContext.queryandMatch({'CreateDateMM': equivalentDatetime},
-          allEntities.where((e) => e.createDate?.month == month).toList());
+  Map<String, Future<void> Function(TestContext testContext)> get dateTests {
+    final testCases =
+        <String, Future<void> Function(TestContext testContext)>{};
+    for (final entry in createDateTestCases.entries) {
+      testCases[entry.key] = (TestContext testContext) =>
+          testCreateDateTemplate(testContext,
+              iters: entry.value.iters,
+              iterMap: entry.value.iterMap,
+              filter: entry.value.filter);
     }
+    return testCases;
   }
 
-  Future<void> testCreateDateDD(
-    TestContext testContext,
-  ) async {
-    final days = createDates.map((e) => e.day).toSet();
-    for (final day in days) {
-      final equivalentDatetime = DateTime(2024, 1, day).utcTimeStamp;
-      await testContext.queryandMatch({'CreateDateDD': equivalentDatetime},
-          allEntities.where((e) => e.createDate?.day == day).toList());
-    }
-  }
-
-  Future<void> testCreateDateFrom(
-    TestContext testContext,
-  ) async {
-    for (final date in createDates) {
-      await testContext.queryandMatch(
-          {'CreateDateFrom': date.utcTimeStamp},
-          allEntities
-              .where((e) =>
-                  e.createDate != null && (e.createDate!.compareTo(date) >= 0))
-              .toList());
-    }
-  }
-
-  Future<void> testCreateDateYYFrom(
-    TestContext testContext,
-  ) async {
-    for (final date in createDates) {
-      final equivalentDatetime = DateTime(date.year);
-      await testContext.queryandMatch(
-          {'CreateDateYYFrom': date.utcTimeStamp},
-          allEntities
-              .where((e) =>
-                  e.createDate != null &&
-                  (e.createDate!.compareTo(equivalentDatetime) >= 0))
-              .toList());
-    }
-  }
-
-  Future<void> testCreateDateYYMMFrom(
-    TestContext testContext,
-  ) async {
-    for (final date in createDates) {
-      final equivalentDatetime = DateTime(date.year, date.month);
-      await testContext.queryandMatch(
-          {'CreateDateYYMMFrom': date.utcTimeStamp},
-          allEntities
-              .where((e) =>
-                  e.createDate != null &&
-                  (e.createDate!.compareTo(equivalentDatetime) >= 0))
-              .toList());
-    }
-  }
-
-  Future<void> testCreateDateYYMMDDFrom(
-    TestContext testContext,
-  ) async {
-    for (final date in createDates) {
-      final equivalentDatetime = DateTime(date.year, date.month, date.day);
-      await testContext.queryandMatch(
-          {'CreateDateYYMMDDFrom': date.utcTimeStamp},
-          allEntities
-              .where((e) =>
-                  e.createDate != null &&
-                  (e.createDate!.compareTo(equivalentDatetime) >= 0))
-              .toList());
-    }
-  }
-
-  Future<void> testCreateDateTill(
-    TestContext testContext,
-  ) async {
-    for (final date in createDates) {
-      await testContext.queryandMatch(
-          {'CreateDateTill': date.utcTimeStamp},
-          allEntities
-              .where((e) =>
-                  e.createDate != null && (e.createDate!.compareTo(date) <= 0))
-              .toList());
-    }
-  }
-
-  Future<void> testCreateDateYYTill(
-    TestContext testContext,
-  ) async {
-    for (final date in createDates) {
-      final equivalentDatetime =
-          DateTime(date.year + 1).subtract(const Duration(microseconds: 1));
-
-      await testContext.queryandMatch(
-          {'CreateDateYYTill': date.utcTimeStamp},
-          allEntities
-              .where((e) =>
-                  e.createDate != null &&
-                  (e.createDate!.compareTo(equivalentDatetime) <= 0))
-              .toList());
-    }
-  }
-
-  Future<void> testCreateDateYYMMTill(
-    TestContext testContext,
-  ) async {
-    for (final date in createDates) {
-      final equivalentDatetime = DateTime(
-              date.month == 12 ? date.year + 1 : date.year,
-              date.month == 12 ? 1 : date.month + 1)
-          .subtract(const Duration(microseconds: 1));
-
-      await testContext.queryandMatch(
-          {'CreateDateYYMMTill': date.utcTimeStamp},
-          allEntities
-              .where((e) =>
-                  e.createDate != null &&
-                  (e.createDate!.compareTo(equivalentDatetime) <= 0))
-              .toList());
-    }
-  }
-
-  Future<void> testCreateDateYYMMDDTill(
-    TestContext testContext,
-  ) async {
-    for (final date in createDates) {
-      final equivalentDatetime = DateTime(date.year, date.month, date.day)
-          .add(const Duration(days: 1))
-          .subtract(const Duration(microseconds: 1));
-
-      await testContext.queryandMatch(
-          {'CreateDateYYMMDDTill': date.utcTimeStamp},
-          allEntities
-              .where((e) =>
-                  e.createDate != null &&
-                  (e.createDate!.compareTo(equivalentDatetime) <= 0))
-              .toList());
-    }
-  }
+  Map<String, DateTestCase> get createDateTestCases => {
+        'CreateDate': DateTestCase(
+            iters: createDates,
+            iterMap: (dynamic date) =>
+                {'CreateDate': (date as DateTime).utcTimeStamp},
+            filter: (CLEntity e, dynamic currIter) =>
+                e.createDate == currIter as DateTime),
+        'CreateDateYY': DateTestCase(
+          iters: createDates.map((e) => e.year).toSet().toList(),
+          iterMap: (currIter) {
+            return {'CreateDateYY': DateTime(currIter as int).utcTimeStamp};
+          },
+          filter: (e, currIter) {
+            return e.createDate?.year == currIter;
+          },
+        ),
+        'CreateDateMM': DateTestCase(
+          iters: createDates.map((e) => e.month).toSet().toList(),
+          iterMap: (currIter) {
+            return {
+              'CreateDateMM': DateTime(2024, currIter as int).utcTimeStamp
+            };
+          },
+          filter: (e, currIter) {
+            return e.createDate?.month == currIter;
+          },
+        ),
+        'CreateDateDD': DateTestCase(
+          iters: createDates.map((e) => e.day).toSet().toList(),
+          iterMap: (currIter) {
+            return {
+              'CreateDateDD': DateTime(2024, 1, currIter as int).utcTimeStamp
+            };
+          },
+          filter: (e, currIter) {
+            return e.createDate?.day == currIter;
+          },
+        ),
+        'CreateDateFrom': DateTestCase(
+          iters: createDates,
+          iterMap: (currIter) {
+            return {'CreateDateFrom': (currIter as DateTime).utcTimeStamp};
+          },
+          filter: (e, currIter) {
+            return e.createDate != null &&
+                (e.createDate!.compareTo(currIter as DateTime) >= 0);
+          },
+        ),
+        'CreateDateYYFrom': DateTestCase(
+          iters: createDates,
+          iterMap: (currIter) {
+            return {'CreateDateYYFrom': (currIter as DateTime).utcTimeStamp};
+          },
+          filter: (e, currIter) {
+            return e.createDate != null &&
+                (e.createDate!
+                        .compareTo(DateTime((currIter as DateTime).year)) >=
+                    0);
+          },
+        ),
+        'CreateDateYYMMFrom': DateTestCase(
+          iters: createDates,
+          iterMap: (currIter) {
+            return {'CreateDateYYMMFrom': (currIter as DateTime).utcTimeStamp};
+          },
+          filter: (e, currIter) {
+            return e.createDate != null &&
+                (e.createDate!.compareTo(DateTime(
+                        (currIter as DateTime).year, currIter.month)) >=
+                    0);
+          },
+        ),
+        'CreateDateYYMMDDFrom': DateTestCase(
+          iters: createDates,
+          iterMap: (currIter) {
+            return {
+              'CreateDateYYMMDDFrom': (currIter as DateTime).utcTimeStamp
+            };
+          },
+          filter: (e, currIter) {
+            return e.createDate != null &&
+                (e.createDate!.compareTo(DateTime((currIter as DateTime).year,
+                        currIter.month, currIter.day)) >=
+                    0);
+          },
+        ),
+        'CreateDateTill': DateTestCase(
+          iters: createDates,
+          iterMap: (currIter) {
+            return {'CreateDateTill': (currIter as DateTime).utcTimeStamp};
+          },
+          filter: (e, currIter) {
+            return e.createDate != null &&
+                (e.createDate!.compareTo(currIter as DateTime) <= 0);
+          },
+        ),
+        'CreateDateYYTill': DateTestCase(
+          iters: createDates,
+          iterMap: (currIter) {
+            return {'CreateDateYYTill': (currIter as DateTime).utcTimeStamp};
+          },
+          filter: (e, currIter) {
+            return e.createDate != null &&
+                (e.createDate!.compareTo(
+                        DateTime((currIter as DateTime).year + 1)
+                            .subtract(const Duration(microseconds: 1))) <=
+                    0);
+          },
+        ),
+        'CreateDateYYMMTill': DateTestCase(
+          iters: createDates,
+          iterMap: (currIter) {
+            return {'CreateDateYYMMTill': (currIter as DateTime).utcTimeStamp};
+          },
+          filter: (e, currIter) {
+            return e.createDate != null &&
+                (e.createDate!.compareTo(DateTime(
+                            (currIter as DateTime).month == 12
+                                ? currIter.year + 1
+                                : currIter.year,
+                            currIter.month == 12 ? 1 : currIter.month + 1)
+                        .subtract(const Duration(microseconds: 1))) <=
+                    0);
+          },
+        ),
+        'CreateDateYYMMDDTill': DateTestCase(
+          iters: createDates,
+          iterMap: (currIter) {
+            return {
+              'CreateDateYYMMDDTill': (currIter as DateTime).utcTimeStamp
+            };
+          },
+          filter: (e, currIter) {
+            return e.createDate != null &&
+                (e.createDate!.compareTo(DateTime((currIter as DateTime).year,
+                            currIter.month, currIter.day)
+                        .add(const Duration(days: 1))
+                        .subtract(const Duration(microseconds: 1))) <=
+                    0);
+          },
+        ),
+        'addedDate': DateTestCase(
+            iters: addedDates,
+            iterMap: (dynamic date) =>
+                {'addedDate': (date as DateTime).utcTimeStamp},
+            filter: (CLEntity e, dynamic currIter) =>
+                e.addedDate == currIter as DateTime),
+        'addedDateYY': DateTestCase(
+          iters: addedDates.map((e) => e.year).toSet().toList(),
+          iterMap: (currIter) {
+            return {'addedDateYY': DateTime(currIter as int).utcTimeStamp};
+          },
+          filter: (e, currIter) {
+            return e.addedDate.year == currIter;
+          },
+        ),
+        'addedDateMM': DateTestCase(
+          iters: addedDates.map((e) => e.month).toSet().toList(),
+          iterMap: (currIter) {
+            return {
+              'addedDateMM': DateTime(2024, currIter as int).utcTimeStamp
+            };
+          },
+          filter: (e, currIter) {
+            return e.addedDate.month == currIter;
+          },
+        ),
+        'addedDateDD': DateTestCase(
+          iters: addedDates.map((e) => e.day).toSet().toList(),
+          iterMap: (currIter) {
+            return {
+              'addedDateDD': DateTime(2024, 1, currIter as int).utcTimeStamp
+            };
+          },
+          filter: (e, currIter) {
+            return e.addedDate.day == currIter;
+          },
+        ),
+        'addedDateFrom': DateTestCase(
+          iters: addedDates,
+          iterMap: (currIter) {
+            return {'addedDateFrom': (currIter as DateTime).utcTimeStamp};
+          },
+          filter: (e, currIter) {
+            return e.addedDate.compareTo(currIter as DateTime) >= 0;
+          },
+        ),
+        'addedDateYYFrom': DateTestCase(
+          iters: addedDates,
+          iterMap: (currIter) {
+            return {'addedDateYYFrom': (currIter as DateTime).utcTimeStamp};
+          },
+          filter: (e, currIter) {
+            return e.addedDate
+                    .compareTo(DateTime((currIter as DateTime).year)) >=
+                0;
+          },
+        ),
+        'addedDateYYMMFrom': DateTestCase(
+          iters: addedDates,
+          iterMap: (currIter) {
+            return {'addedDateYYMMFrom': (currIter as DateTime).utcTimeStamp};
+          },
+          filter: (e, currIter) {
+            return e.addedDate.compareTo(
+                    DateTime((currIter as DateTime).year, currIter.month)) >=
+                0;
+          },
+        ),
+        'addedDateYYMMDDFrom': DateTestCase(
+          iters: addedDates,
+          iterMap: (currIter) {
+            return {'addedDateYYMMDDFrom': (currIter as DateTime).utcTimeStamp};
+          },
+          filter: (e, currIter) {
+            return e.addedDate.compareTo(DateTime((currIter as DateTime).year,
+                    currIter.month, currIter.day)) >=
+                0;
+          },
+        ),
+        'addedDateTill': DateTestCase(
+          iters: addedDates,
+          iterMap: (currIter) {
+            return {'addedDateTill': (currIter as DateTime).utcTimeStamp};
+          },
+          filter: (e, currIter) {
+            return e.addedDate.compareTo(currIter as DateTime) <= 0;
+          },
+        ),
+        'addedDateYYTill': DateTestCase(
+          iters: addedDates,
+          iterMap: (currIter) {
+            return {'addedDateYYTill': (currIter as DateTime).utcTimeStamp};
+          },
+          filter: (e, currIter) {
+            return e.addedDate.compareTo(
+                    DateTime((currIter as DateTime).year + 1)
+                        .subtract(const Duration(microseconds: 1))) <=
+                0;
+          },
+        ),
+        'addedDateYYMMTill': DateTestCase(
+          iters: addedDates,
+          iterMap: (currIter) {
+            return {'addedDateYYMMTill': (currIter as DateTime).utcTimeStamp};
+          },
+          filter: (e, currIter) {
+            return e.addedDate.compareTo(DateTime(
+                        (currIter as DateTime).month == 12
+                            ? currIter.year + 1
+                            : currIter.year,
+                        currIter.month == 12 ? 1 : currIter.month + 1)
+                    .subtract(const Duration(microseconds: 1))) <=
+                0;
+          },
+        ),
+        'addedDateYYMMDDTill': DateTestCase(
+          iters: addedDates,
+          iterMap: (currIter) {
+            return {'addedDateYYMMDDTill': (currIter as DateTime).utcTimeStamp};
+          },
+          filter: (e, currIter) {
+            return e.addedDate.compareTo(DateTime((currIter as DateTime).year,
+                        currIter.month, currIter.day)
+                    .add(const Duration(days: 1))
+                    .subtract(const Duration(microseconds: 1))) <=
+                0;
+          },
+        ),
+        'updatedDate': DateTestCase(
+            iters: updatedDates,
+            iterMap: (dynamic date) =>
+                {'updatedDate': (date as DateTime).utcTimeStamp},
+            filter: (CLEntity e, dynamic currIter) =>
+                e.updatedDate == currIter as DateTime),
+        'updatedDateYY': DateTestCase(
+          iters: updatedDates.map((e) => e.year).toSet().toList(),
+          iterMap: (currIter) {
+            return {'updatedDateYY': DateTime(currIter as int).utcTimeStamp};
+          },
+          filter: (e, currIter) {
+            return e.updatedDate.year == currIter;
+          },
+        ),
+        'updatedDateMM': DateTestCase(
+          iters: updatedDates.map((e) => e.month).toSet().toList(),
+          iterMap: (currIter) {
+            return {
+              'updatedDateMM': DateTime(2024, currIter as int).utcTimeStamp
+            };
+          },
+          filter: (e, currIter) {
+            return e.updatedDate.month == currIter;
+          },
+        ),
+        'updatedDateDD': DateTestCase(
+          iters: updatedDates.map((e) => e.day).toSet().toList(),
+          iterMap: (currIter) {
+            return {
+              'updatedDateDD': DateTime(2024, 1, currIter as int).utcTimeStamp
+            };
+          },
+          filter: (e, currIter) {
+            return e.updatedDate.day == currIter;
+          },
+        ),
+        'updatedDateFrom': DateTestCase(
+          iters: updatedDates,
+          iterMap: (currIter) {
+            return {'updatedDateFrom': (currIter as DateTime).utcTimeStamp};
+          },
+          filter: (e, currIter) {
+            return e.updatedDate.compareTo(currIter as DateTime) >= 0;
+          },
+        ),
+        'updatedDateYYFrom': DateTestCase(
+          iters: updatedDates,
+          iterMap: (currIter) {
+            return {'updatedDateYYFrom': (currIter as DateTime).utcTimeStamp};
+          },
+          filter: (e, currIter) {
+            return e.updatedDate
+                    .compareTo(DateTime((currIter as DateTime).year)) >=
+                0;
+          },
+        ),
+        'updatedDateYYMMFrom': DateTestCase(
+          iters: updatedDates,
+          iterMap: (currIter) {
+            return {'updatedDateYYMMFrom': (currIter as DateTime).utcTimeStamp};
+          },
+          filter: (e, currIter) {
+            return e.updatedDate.compareTo(
+                    DateTime((currIter as DateTime).year, currIter.month)) >=
+                0;
+          },
+        ),
+        'updatedDateYYMMDDFrom': DateTestCase(
+          iters: updatedDates,
+          iterMap: (currIter) {
+            return {
+              'updatedDateYYMMDDFrom': (currIter as DateTime).utcTimeStamp
+            };
+          },
+          filter: (e, currIter) {
+            return e.updatedDate.compareTo(DateTime((currIter as DateTime).year,
+                    currIter.month, currIter.day)) >=
+                0;
+          },
+        ),
+        'updatedDateTill': DateTestCase(
+          iters: updatedDates,
+          iterMap: (currIter) {
+            return {'updatedDateTill': (currIter as DateTime).utcTimeStamp};
+          },
+          filter: (e, currIter) {
+            return e.updatedDate.compareTo(currIter as DateTime) <= 0;
+          },
+        ),
+        'updatedDateYYTill': DateTestCase(
+          iters: updatedDates,
+          iterMap: (currIter) {
+            return {'updatedDateYYTill': (currIter as DateTime).utcTimeStamp};
+          },
+          filter: (e, currIter) {
+            return e.updatedDate.compareTo(
+                    DateTime((currIter as DateTime).year + 1)
+                        .subtract(const Duration(microseconds: 1))) <=
+                0;
+          },
+        ),
+        'updatedDateYYMMTill': DateTestCase(
+          iters: updatedDates,
+          iterMap: (currIter) {
+            return {'updatedDateYYMMTill': (currIter as DateTime).utcTimeStamp};
+          },
+          filter: (e, currIter) {
+            return e.updatedDate.compareTo(DateTime(
+                        (currIter as DateTime).month == 12
+                            ? currIter.year + 1
+                            : currIter.year,
+                        currIter.month == 12 ? 1 : currIter.month + 1)
+                    .subtract(const Duration(microseconds: 1))) <=
+                0;
+          },
+        ),
+        'updatedDateYYMMDDTill': DateTestCase(
+          iters: updatedDates,
+          iterMap: (currIter) {
+            return {
+              'updatedDateYYMMDDTill': (currIter as DateTime).utcTimeStamp
+            };
+          },
+          filter: (e, currIter) {
+            return e.updatedDate.compareTo(DateTime((currIter as DateTime).year,
+                        currIter.month, currIter.day)
+                    .add(const Duration(days: 1))
+                    .subtract(const Duration(microseconds: 1))) <=
+                0;
+          },
+        ),
+      };
 
   Map<int, Set<int>> get monthDay => <int, Set<int>>{}
     ..addEntries(createDates.map((date) => MapEntry(date.month, {date.day})));
@@ -354,6 +624,12 @@ class TestFilters {
       .toSet()
       .toList()
     ..sort();
+
+  List<DateTime> get addedDates =>
+      allEntities.map((e) => e.addedDate).toSet().toList()..sort();
+
+  List<DateTime> get updatedDates =>
+      allEntities.map((e) => e.updatedDate).toSet().toList()..sort();
 
   List<CLEntity> get allEntities => [...collections, ...media]
       .where((e) => e != null)

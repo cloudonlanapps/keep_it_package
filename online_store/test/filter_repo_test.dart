@@ -74,43 +74,169 @@ This test is designed for TEST SERVERS ONLY.
 
   group('CreateDate', () {
     test('CreateDate',
-        () async => testFiltersContext.testCreateDate(testContext),
+        () async => testFiltersContext.dateTests['CreateDate']!(testContext),
         timeout: const Timeout(Duration(hours: 1)));
     test('CreateDateYY',
-        () async => testFiltersContext.testCreateDateYY(testContext),
+        () async => testFiltersContext.dateTests['CreateDateYY']!(testContext),
         timeout: const Timeout(Duration(hours: 1)));
 
     test('CreateDateMM',
-        () async => testFiltersContext.testCreateDateMM(testContext),
+        () async => testFiltersContext.dateTests['CreateDateMM']!(testContext),
         timeout: const Timeout(Duration(hours: 1)));
 
     test('CreateDateDD',
-        () async => testFiltersContext.testCreateDateDD(testContext),
+        () async => testFiltersContext.dateTests['CreateDateDD']!(testContext),
         timeout: const Timeout(Duration(hours: 1)));
-    test('CreateDateFrom',
-        () async => testFiltersContext.testCreateDateFrom(testContext),
+    test(
+        'CreateDateFrom',
+        () async =>
+            testFiltersContext.dateTests['CreateDateFrom']!(testContext),
         timeout: const Timeout(Duration(hours: 1)));
-    test('CreateDateYYFrom',
-        () async => testFiltersContext.testCreateDateYYFrom(testContext),
+    test(
+        'CreateDateYYFrom',
+        () async =>
+            testFiltersContext.dateTests['CreateDateYYFrom']!(testContext),
         timeout: const Timeout(Duration(hours: 1)));
-    test('CreateDateYYMMFrom',
-        () async => testFiltersContext.testCreateDateYYMMFrom(testContext),
+    test(
+        'CreateDateYYMMFrom',
+        () async =>
+            testFiltersContext.dateTests['CreateDateYYMMFrom']!(testContext),
         timeout: const Timeout(Duration(hours: 1)));
-    test('CreateDateYYMMDDFrom',
-        () async => testFiltersContext.testCreateDateYYMMDDFrom(testContext),
+    test(
+        'CreateDateYYMMDDFrom',
+        () async =>
+            testFiltersContext.dateTests['CreateDateYYMMDDFrom']!(testContext),
         timeout: const Timeout(Duration(hours: 1)));
 
-    test('CreateDateTill',
-        () async => testFiltersContext.testCreateDateTill(testContext),
+    test(
+        'CreateDateTill',
+        () async =>
+            testFiltersContext.dateTests['CreateDateTill']!(testContext),
         timeout: const Timeout(Duration(hours: 1)));
-    test('CreateDateYYTill',
-        () async => testFiltersContext.testCreateDateYYTill(testContext),
+    test(
+        'CreateDateYYTill',
+        () async =>
+            testFiltersContext.dateTests['CreateDateYYTill']!(testContext),
         timeout: const Timeout(Duration(hours: 1)));
-    test('CreateDateYYMMTill',
-        () async => testFiltersContext.testCreateDateYYMMTill(testContext),
+    test(
+        'CreateDateYYMMTill',
+        () async =>
+            testFiltersContext.dateTests['CreateDateYYMMTill']!(testContext),
         timeout: const Timeout(Duration(hours: 1)));
-    test('CreateDateYYMMDDTill',
-        () async => testFiltersContext.testCreateDateYYMMDDTill(testContext),
+    test(
+        'CreateDateYYMMDDTill',
+        () async =>
+            testFiltersContext.dateTests['CreateDateYYMMDDTill']!(testContext),
+        timeout: const Timeout(Duration(hours: 1)));
+  });
+  group('addedDate', () {
+    test('addedDate',
+        () async => testFiltersContext.dateTests['addedDate']!(testContext),
+        timeout: const Timeout(Duration(hours: 1)));
+    test('addedDateYY',
+        () async => testFiltersContext.dateTests['addedDateYY']!(testContext),
+        timeout: const Timeout(Duration(hours: 1)));
+
+    test('addedDateMM',
+        () async => testFiltersContext.dateTests['addedDateMM']!(testContext),
+        timeout: const Timeout(Duration(hours: 1)));
+
+    test('addedDateDD',
+        () async => testFiltersContext.dateTests['addedDateDD']!(testContext),
+        timeout: const Timeout(Duration(hours: 1)));
+    test('addedDateFrom',
+        () async => testFiltersContext.dateTests['addedDateFrom']!(testContext),
+        timeout: const Timeout(Duration(hours: 1)));
+    test(
+        'addedDateYYFrom',
+        () async =>
+            testFiltersContext.dateTests['addedDateYYFrom']!(testContext),
+        timeout: const Timeout(Duration(hours: 1)));
+    test(
+        'addedDateYYMMFrom',
+        () async =>
+            testFiltersContext.dateTests['addedDateYYMMFrom']!(testContext),
+        timeout: const Timeout(Duration(hours: 1)));
+    test(
+        'addedDateYYMMDDFrom',
+        () async =>
+            testFiltersContext.dateTests['addedDateYYMMDDFrom']!(testContext),
+        timeout: const Timeout(Duration(hours: 1)));
+
+    test('addedDateTill',
+        () async => testFiltersContext.dateTests['addedDateTill']!(testContext),
+        timeout: const Timeout(Duration(hours: 1)));
+    test(
+        'addedDateYYTill',
+        () async =>
+            testFiltersContext.dateTests['addedDateYYTill']!(testContext),
+        timeout: const Timeout(Duration(hours: 1)));
+    test(
+        'addedDateYYMMTill',
+        () async =>
+            testFiltersContext.dateTests['addedDateYYMMTill']!(testContext),
+        timeout: const Timeout(Duration(hours: 1)));
+    test(
+        'addedDateYYMMDDTill',
+        () async =>
+            testFiltersContext.dateTests['addedDateYYMMDDTill']!(testContext),
+        timeout: const Timeout(Duration(hours: 1)));
+  });
+  group('updatedDate', () {
+    test('updatedDate',
+        () async => testFiltersContext.dateTests['updatedDate']!(testContext),
+        timeout: const Timeout(Duration(hours: 1)));
+    test('updatedDateYY',
+        () async => testFiltersContext.dateTests['updatedDateYY']!(testContext),
+        timeout: const Timeout(Duration(hours: 1)));
+
+    test('updatedDateMM',
+        () async => testFiltersContext.dateTests['updatedDateMM']!(testContext),
+        timeout: const Timeout(Duration(hours: 1)));
+
+    test('updatedDateDD',
+        () async => testFiltersContext.dateTests['updatedDateDD']!(testContext),
+        timeout: const Timeout(Duration(hours: 1)));
+    test(
+        'updatedDateFrom',
+        () async =>
+            testFiltersContext.dateTests['updatedDateFrom']!(testContext),
+        timeout: const Timeout(Duration(hours: 1)));
+    test(
+        'updatedDateYYFrom',
+        () async =>
+            testFiltersContext.dateTests['updatedDateYYFrom']!(testContext),
+        timeout: const Timeout(Duration(hours: 1)));
+    test(
+        'updatedDateYYMMFrom',
+        () async =>
+            testFiltersContext.dateTests['updatedDateYYMMFrom']!(testContext),
+        timeout: const Timeout(Duration(hours: 1)));
+    test(
+        'updatedDateYYMMDDFrom',
+        () async =>
+            testFiltersContext.dateTests['updatedDateYYMMDDFrom']!(testContext),
+        timeout: const Timeout(Duration(hours: 1)));
+
+    test(
+        'updatedDateTill',
+        () async =>
+            testFiltersContext.dateTests['updatedDateTill']!(testContext),
+        timeout: const Timeout(Duration(hours: 1)));
+    test(
+        'updatedDateYYTill',
+        () async =>
+            testFiltersContext.dateTests['updatedDateYYTill']!(testContext),
+        timeout: const Timeout(Duration(hours: 1)));
+    test(
+        'updatedDateYYMMTill',
+        () async =>
+            testFiltersContext.dateTests['updatedDateYYMMTill']!(testContext),
+        timeout: const Timeout(Duration(hours: 1)));
+    test(
+        'updatedDateYYMMDDTill',
+        () async =>
+            testFiltersContext.dateTests['updatedDateYYMMDDTill']!(testContext),
         timeout: const Timeout(Duration(hours: 1)));
   });
 }
