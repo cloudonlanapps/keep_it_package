@@ -64,14 +64,24 @@ This test is designed for TEST SERVERS ONLY.
   });
 
   group('Basics', () {
-    test('F1 without any filter',
-        () async => testFiltersContext.testF1(testContext),
+    test('without any filter',
+        () async => testFiltersContext.testGetAll(testContext),
         timeout: const Timeout(Duration(hours: 1)));
-    test('F2 isCollection - helps to fiter out collections from media',
-        () async => testFiltersContext.testF2(testContext),
+    test('isCollection',
+        () async => testFiltersContext.testIsCollection(testContext),
         timeout: const Timeout(Duration(hours: 1)));
+    group('isDeleted', () {
+      test('isDeleted',
+          () async => testFiltersContext.testIsDeleted(testContext),
+          timeout: const Timeout(Duration(hours: 1)));
+    });
     test('parentId', () async => testFiltersContext.testParentID(testContext),
         timeout: const Timeout(Duration(hours: 1)));
+  });
+
+  group('label, description', () {
+    test('label', () => testFiltersContext.testLabel(testContext));
+    test('description', () => testFiltersContext.testDescription(testContext));
   });
 
   group('fileType', () {

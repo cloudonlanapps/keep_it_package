@@ -114,8 +114,8 @@ extension EntityServer on CLServer {
 
   Future<StoreReply<CLEntity>> restore(int id, {http.Client? client}) async {
     try {
-      final response =
-          await RestApi(baseURL, client: client).put(EntityEndPoint.toBin(id));
+      final response = await RestApi(baseURL, client: client)
+          .put(EntityEndPoint.restore(id));
       return response.when(
           validResponse: (data) async => StoreResult(CLEntity.fromJson(data)),
           errorResponse: (e, {st}) async {

@@ -5,7 +5,9 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:cl_basic_types/cl_basic_types.dart';
+import 'package:collection/collection.dart';
 import 'package:meta/meta.dart';
+import 'package:online_store/src/models/entity_server.dart';
 
 import 'package:test/test.dart';
 
@@ -41,9 +43,142 @@ class DeterministicRandomString {
 }
 
 class TestFilters {
-  TestFilters({required this.media, required this.collections});
+  TestFilters({
+    required this.media,
+    required this.collections,
+    this.descriptionPrefixesUsed = const [],
+    this.labelPrefixesUsed = const [],
+  });
   final List<CLEntity> media;
   final List<CLEntity?> collections;
+  final List<String?> labelPrefixesUsed;
+  final List<String?> descriptionPrefixesUsed;
+  static final startsWith = <String>[
+    'FamSnap_2024Q3',
+    'Memories_V2A',
+    'KidsJoy_001',
+    'Holiday_Moments_X',
+    'MyAlbum_2025B',
+    'SweetHome_Pics',
+    'Generations_Tag',
+    'Precious_Shots_C',
+    'Heartfelt_Views',
+    'LittleOnes_Fun',
+    'OurJourney_P1',
+    'GoldenYears_77',
+    'Laughter_Live_A',
+    'Cherish_Today_3',
+    'BrightSmiles_Z',
+    'Childhood_Days_1',
+    'Gatherings_V4',
+    'Milestone_2025',
+    'Unforgettable_Y',
+    'FamilyBond_09',
+    'WarmHugs_Series',
+    'Joyful_Life_B',
+    'Legacy_Pix_K2',
+    'Growth_Story_D',
+    'HappyTimes_23',
+    'PureBliss_Photo',
+    'Everyday_Magic',
+    'SpecialDay_Cap',
+    'Future_Past_Now',
+    'Forever_Frame_W'
+  ];
+  static final contains = [
+    'MemoriesCap_F1',
+    'SharedMoments_03',
+    'Heartprints_V6',
+    'OurLegacy_Alpha',
+    'Cherished_Pix_2',
+    'Gathered_Views_A',
+    'Warmth_InFrame',
+    'Connection_Snap',
+    'LifeBlooms_2025',
+    'EverydayJoy_Beta',
+    'HomeStories_07',
+    'LovedOnes_Album',
+    'Smiles_Forever_C',
+    'GrowingUp_Series',
+    'FamilyTales_Ch1',
+    'Precious_Glimpse',
+    'JoyfulVibes_Pix',
+    'Bonding_Moments_X',
+    'Timeless_Frames',
+    'KindredSpirits_9',
+    'SweetEchoes_V3',
+    'Snapshot_Bliss_R',
+    'Affection_Lens',
+    'Roots_AndWings_1',
+    'GoldenHours_Fam',
+    'Candid_Gems_005',
+    'Adventures_Together',
+    'PureHeart_Visuals',
+    'Chapter_One_Pics',
+    'Everlasting_View'
+  ];
+  static final duplicates = [
+    'PicturePerfect_G1',
+    'FamilyChron_V2',
+    'SweetMemories_A01',
+    'LifeCaptured_S2',
+    'JoyfulEssence_X',
+    'Beloved_Images_04',
+    'OurJourney_Pics',
+    'Heartfelt_Clicks',
+    'Generations_Lens',
+    'WarmFlashes_789',
+    'Precious_Album_B',
+    'HomeScene_Moments',
+    'Laughter_Frames_C',
+    'Cherished_Echoes_1',
+    'GoldenLight_Views',
+    'Childhood_Snaps_P',
+    'Together_Always_Z',
+    'HappyHeart_Vis_Q',
+    'Unfolding_Tales_5',
+    'PureMoments_Photo',
+    'Connection_Vibe_D',
+    'Evergreen_Photos',
+    'Legacy_Captures_K',
+    'Growth_And_Grace',
+    'BrightFutures_00',
+    'FamilyCircle_Vis',
+    'Candid_Treasures',
+    'Everyday_Love_E',
+    'Milestone_Mem_V3',
+    'Eternal_Reflects'
+  ];
+
+  static List<String?> generateRandomStrings(int n, {bool haveNull = false}) {
+    final random = Random(0xABCDEF);
+    final result = <String?>[];
+
+    for (var i = 0; i < n; i++) {
+      final choice = random.nextInt(6);
+
+      result.add(switch (choice) {
+        0 => duplicates[random.nextInt(startsWith.length)],
+        1 => startsWith[random.nextInt(startsWith.length)] +
+            _randomString(random, length: 4 + random.nextInt(6)),
+        2 => _randomString(random, length: 4 + random.nextInt(6)) +
+            contains[random.nextInt(startsWith.length)] +
+            _randomString(random, length: 4 + random.nextInt(6)),
+        5 => null,
+        _ => _randomString(random, length: 4 + random.nextInt(16)),
+      });
+    }
+
+    return result;
+  }
+
+  static String _randomString(Random random, {int length = 6}) {
+    const chars = 'abcdefghijklmnopqrstuvwxyz'
+        'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+        '0123456789 '; // added space at the end
+    return List.generate(length, (_) => chars[random.nextInt(chars.length)])
+        .join();
+  }
 
   static Future<TestFilters> uploadRepo(TestContext testContext) async {
     final random2 = DeterministicRandomString(0x54321);
@@ -67,32 +202,67 @@ class TestFilters {
 
       final files = directory.listSync(recursive: true);
 
+      final randomLables = generateRandomStrings(files.length, haveNull: true);
+      final randomDescription =
+          generateRandomStrings(files.length, haveNull: true);
+
       for (final (i, file) in files.indexed) {
         if (file is File && !file.path.endsWith('.DS_Store')) {
           print('$i:  ${file.path}');
           final parentId = collections[random.nextInt(collections.length)]?.id;
+          final label = randomLables[i];
+          final description = randomDescription[i];
           final entity1 = await testContext.server.validCreate(testContext,
               fileName: file.path,
-              parentId: parentId == null ? () => 0 : () => parentId);
+              parentId: parentId == null ? () => 0 : () => parentId,
+              label: label != null ? () => label : null,
+              description: description != null ? () => description : null);
           final date = await getCreateDate(file.absolute.path);
-          if (date == null) {
-            testContext.validate(entity1,
-                id: isNotNull, md5: isNotNull, createDate: isNull);
-          } else {
-            testContext.validate(entity1,
-                id: isNotNull, md5: isNotNull, createDate: isNotNull);
-          }
+
+          testContext.validate(entity1,
+              id: isNotNull,
+              md5: isNotNull,
+              parentId: parentId == null ? isNull : isNotNull,
+              createDate: date == null ? isNull : isNotNull,
+              label: label == null ? isNull : isNotNull,
+              description: description == null ? isNull : isNotNull);
+
+          expect(entity1.parentId, parentId,
+              reason:
+                  "${entity1.parentId} parentId didn't match: set: $parentId, got: ${entity1.parentId}");
+
+          expect(entity1.label, label,
+              reason:
+                  "${entity1.id} label didn't match: set: $label, got: ${entity1.label}");
+          expect(entity1.description, description,
+              reason:
+                  "${entity1.id} description didn't match: set: $description, got: ${entity1.description}");
           expect(entity1.createDate, date,
               reason:
                   "${entity1.id} createDate didn't match: set: $date, got: ${entity1.createDate}");
           entitites.add(entity1);
         }
       }
+      // Delete random 30 to test 'isDeleted'
+      final items2Delete = entitites.shuffled().take(30);
+      for (final item in items2Delete) {
+        await testContext.server.toBin(item.id!);
+      }
+      print('Generated ${collections.length + entitites.length} items}');
+      return TestFilters(
+          collections: collections,
+          media: entitites
+              .map((e) => items2Delete.map((e) => e.id).contains(e.id)
+                  ? e.copyWith(isDeleted: true)
+                  : e)
+              .toList(),
+          descriptionPrefixesUsed: randomDescription,
+          labelPrefixesUsed: randomLables);
     } else {
       print('Error: Directory "${directory.path}" does not exist.');
+      print('Generated ${collections.length + entitites.length} items}');
+      return TestFilters(collections: collections, media: entitites);
     }
-    print('Generated ${collections.length + entitites.length} items}');
-    return TestFilters(collections: collections, media: entitites);
   }
 
   static Future<TestFilters> setupRepo(TestContext testContext) async {
@@ -160,13 +330,13 @@ class TestFilters {
     return TestFilters(collections: collections, media: entitites);
   }
 
-  Future<void> testF1(
+  Future<void> testGetAll(
     TestContext testContext,
   ) async {
     await testContext.queryandMatch({}, allEntities);
   }
 
-  Future<void> testF2(
+  Future<void> testIsCollection(
     TestContext testContext,
   ) async {
     {
@@ -194,6 +364,108 @@ class TestFilters {
       for (final type in types) {
         await testContext.queryandMatch(
             {'type': type}, allEntities.where((e) => e.type == type).toList());
+      }
+    }
+  }
+
+  Future<void> testIsDeleted(
+    TestContext testContext,
+  ) async {
+    print('Items deleted: ${allEntities.where((e) => e.isDeleted).length}');
+    await testContext.queryandMatch(
+        {'isDeleted': true}, allEntities.where((e) => e.isDeleted).toList());
+    await testContext.queryandMatch(
+        {'isDeleted': false}, allEntities.where((e) => !e.isDeleted).toList());
+  }
+
+  Future<void> testLabel(
+    TestContext testContext,
+  ) async {
+    {
+      print(
+          'Items without label: ${allEntities.where((e) => e.label == null).length}');
+      print(
+          'Items with label: ${allEntities.where((e) => e.label != null).length}');
+
+      final labels = allEntities
+          .map((e) => e.label)
+          .where((e) => e != null)
+          .cast<String>();
+
+      await testContext.queryandMatch({'label': '__null__'},
+          allEntities.where((e) => e.label == null).toList());
+      await testContext.queryandMatch({'label': '__notnull__'},
+          allEntities.where((e) => e.label != null).toList());
+
+      for (final label in labels.shuffled().shuffled().take(15)) {
+        await testContext.queryandMatch({'label': label},
+            allEntities.where((e) => e.label == label).toList());
+      }
+      for (final label in startsWith) {
+        await testContext.queryandMatch(
+            {'labelStartsWith': label},
+            allEntities
+                .where((e) => e.label != null && e.label!.startsWith(label))
+                .toList());
+      }
+      for (final label in contains) {
+        await testContext.queryandMatch(
+            {'labelContains': label},
+            allEntities
+                .where((e) => e.label != null && e.label!.contains(label))
+                .toList());
+      }
+      for (final label in duplicates) {
+        await testContext.queryandMatch({'label': label},
+            allEntities.where((e) => e.label == label).toList());
+      }
+    }
+  }
+
+  Future<void> testDescription(
+    TestContext testContext,
+  ) async {
+    {
+      print(
+          'Items without description: ${allEntities.where((e) => e.description == null).length}');
+      print(
+          'Items with description: ${allEntities.where((e) => e.description != null).length}');
+
+      final description = allEntities
+          .map((e) => e.description)
+          .where((e) => e != null)
+          .cast<String>();
+
+      await testContext.queryandMatch({'description': '__null__'},
+          allEntities.where((e) => e.description == null).toList());
+      await testContext.queryandMatch({'description': '__notnull__'},
+          allEntities.where((e) => e.description != null).toList());
+
+      for (final description in description.shuffled().shuffled().take(15)) {
+        await testContext.queryandMatch({'description': description},
+            allEntities.where((e) => e.description == description).toList());
+      }
+      for (final description in startsWith) {
+        await testContext.queryandMatch(
+            {'descriptionStartsWith': description},
+            allEntities
+                .where((e) =>
+                    e.description != null &&
+                    e.description!.startsWith(description))
+                .toList());
+      }
+      for (final description in contains) {
+        await testContext.queryandMatch(
+            {'descriptionContains': description},
+            allEntities
+                .where((e) =>
+                    e.description != null &&
+                    e.description!.contains(description))
+                .toList());
+      }
+      for (final description in duplicates) {
+        await testContext.queryandMatch({'description': description},
+            allEntities.where((e) => e.description == description).toList());
       }
     }
   }
@@ -246,7 +518,7 @@ class TestFilters {
 
   Map<String, DateTestCase> get dateTestCases => {
         'CreateDate': DateTestCase(
-            iters: createDates,
+            iters: createDates.shuffled().take(8).toList(),
             iterMap: (dynamic date) =>
                 {'CreateDate': (date as DateTime).utcTimeStamp},
             filter: (CLEntity e, dynamic currIter) =>
@@ -283,7 +555,7 @@ class TestFilters {
           },
         ),
         'CreateDateFrom': DateTestCase(
-          iters: createDates,
+          iters: createDates.shuffled().take(8).toList(),
           iterMap: (currIter) {
             return {'CreateDateFrom': (currIter as DateTime).utcTimeStamp};
           },
@@ -293,7 +565,7 @@ class TestFilters {
           },
         ),
         'CreateDateYYFrom': DateTestCase(
-          iters: createDates,
+          iters: groupAndPickUpto8(createDates, 'year'),
           iterMap: (currIter) {
             return {'CreateDateYYFrom': (currIter as DateTime).utcTimeStamp};
           },
@@ -305,7 +577,7 @@ class TestFilters {
           },
         ),
         'CreateDateYYMMFrom': DateTestCase(
-          iters: createDates,
+          iters: groupAndPickUpto8(createDates, 'month'),
           iterMap: (currIter) {
             return {'CreateDateYYMMFrom': (currIter as DateTime).utcTimeStamp};
           },
@@ -317,7 +589,7 @@ class TestFilters {
           },
         ),
         'CreateDateYYMMDDFrom': DateTestCase(
-          iters: createDates,
+          iters: groupAndPickUpto8(createDates, 'day'),
           iterMap: (currIter) {
             return {
               'CreateDateYYMMDDFrom': (currIter as DateTime).utcTimeStamp
@@ -331,7 +603,7 @@ class TestFilters {
           },
         ),
         'CreateDateTill': DateTestCase(
-          iters: createDates,
+          iters: createDates.shuffled().take(8).toList(),
           iterMap: (currIter) {
             return {'CreateDateTill': (currIter as DateTime).utcTimeStamp};
           },
@@ -341,7 +613,7 @@ class TestFilters {
           },
         ),
         'CreateDateYYTill': DateTestCase(
-          iters: createDates,
+          iters: groupAndPickUpto8(createDates, 'year'),
           iterMap: (currIter) {
             return {'CreateDateYYTill': (currIter as DateTime).utcTimeStamp};
           },
@@ -354,7 +626,7 @@ class TestFilters {
           },
         ),
         'CreateDateYYMMTill': DateTestCase(
-          iters: createDates,
+          iters: groupAndPickUpto8(createDates, 'month'),
           iterMap: (currIter) {
             return {'CreateDateYYMMTill': (currIter as DateTime).utcTimeStamp};
           },
@@ -370,7 +642,7 @@ class TestFilters {
           },
         ),
         'CreateDateYYMMDDTill': DateTestCase(
-          iters: createDates,
+          iters: groupAndPickUpto8(createDates, 'day'),
           iterMap: (currIter) {
             return {
               'CreateDateYYMMDDTill': (currIter as DateTime).utcTimeStamp
@@ -386,7 +658,7 @@ class TestFilters {
           },
         ),
         'addedDate': DateTestCase(
-            iters: addedDates,
+            iters: addedDates.shuffled().take(8).toList(),
             iterMap: (dynamic date) =>
                 {'addedDate': (date as DateTime).utcTimeStamp},
             filter: (CLEntity e, dynamic currIter) =>
@@ -423,7 +695,7 @@ class TestFilters {
           },
         ),
         'addedDateFrom': DateTestCase(
-          iters: addedDates,
+          iters: addedDates.shuffled().take(8).toList(),
           iterMap: (currIter) {
             return {'addedDateFrom': (currIter as DateTime).utcTimeStamp};
           },
@@ -432,7 +704,7 @@ class TestFilters {
           },
         ),
         'addedDateYYFrom': DateTestCase(
-          iters: addedDates,
+          iters: groupAndPickUpto8(addedDates, 'year'),
           iterMap: (currIter) {
             return {'addedDateYYFrom': (currIter as DateTime).utcTimeStamp};
           },
@@ -443,7 +715,7 @@ class TestFilters {
           },
         ),
         'addedDateYYMMFrom': DateTestCase(
-          iters: addedDates,
+          iters: groupAndPickUpto8(addedDates, 'month'),
           iterMap: (currIter) {
             return {'addedDateYYMMFrom': (currIter as DateTime).utcTimeStamp};
           },
@@ -454,7 +726,7 @@ class TestFilters {
           },
         ),
         'addedDateYYMMDDFrom': DateTestCase(
-          iters: addedDates,
+          iters: groupAndPickUpto8(addedDates, 'day'),
           iterMap: (currIter) {
             return {'addedDateYYMMDDFrom': (currIter as DateTime).utcTimeStamp};
           },
@@ -465,7 +737,7 @@ class TestFilters {
           },
         ),
         'addedDateTill': DateTestCase(
-          iters: addedDates,
+          iters: addedDates.shuffled().take(8).toList(),
           iterMap: (currIter) {
             return {'addedDateTill': (currIter as DateTime).utcTimeStamp};
           },
@@ -474,7 +746,7 @@ class TestFilters {
           },
         ),
         'addedDateYYTill': DateTestCase(
-          iters: addedDates,
+          iters: groupAndPickUpto8(addedDates, 'year'),
           iterMap: (currIter) {
             return {'addedDateYYTill': (currIter as DateTime).utcTimeStamp};
           },
@@ -486,7 +758,7 @@ class TestFilters {
           },
         ),
         'addedDateYYMMTill': DateTestCase(
-          iters: addedDates,
+          iters: groupAndPickUpto8(addedDates, 'month'),
           iterMap: (currIter) {
             return {'addedDateYYMMTill': (currIter as DateTime).utcTimeStamp};
           },
@@ -501,7 +773,7 @@ class TestFilters {
           },
         ),
         'addedDateYYMMDDTill': DateTestCase(
-          iters: addedDates,
+          iters: groupAndPickUpto8(addedDates, 'day'),
           iterMap: (currIter) {
             return {'addedDateYYMMDDTill': (currIter as DateTime).utcTimeStamp};
           },
@@ -514,7 +786,7 @@ class TestFilters {
           },
         ),
         'updatedDate': DateTestCase(
-            iters: updatedDates,
+            iters: updatedDates.shuffled().take(10).toList(),
             iterMap: (dynamic date) =>
                 {'updatedDate': (date as DateTime).utcTimeStamp},
             filter: (CLEntity e, dynamic currIter) =>
@@ -551,7 +823,7 @@ class TestFilters {
           },
         ),
         'updatedDateFrom': DateTestCase(
-          iters: updatedDates,
+          iters: updatedDates.shuffled().take(10).toList(),
           iterMap: (currIter) {
             return {'updatedDateFrom': (currIter as DateTime).utcTimeStamp};
           },
@@ -560,7 +832,7 @@ class TestFilters {
           },
         ),
         'updatedDateYYFrom': DateTestCase(
-          iters: updatedDates,
+          iters: groupAndPickUpto8(updatedDates, 'year'),
           iterMap: (currIter) {
             return {'updatedDateYYFrom': (currIter as DateTime).utcTimeStamp};
           },
@@ -571,7 +843,7 @@ class TestFilters {
           },
         ),
         'updatedDateYYMMFrom': DateTestCase(
-          iters: updatedDates,
+          iters: groupAndPickUpto8(updatedDates, 'month'),
           iterMap: (currIter) {
             return {'updatedDateYYMMFrom': (currIter as DateTime).utcTimeStamp};
           },
@@ -582,7 +854,7 @@ class TestFilters {
           },
         ),
         'updatedDateYYMMDDFrom': DateTestCase(
-          iters: updatedDates,
+          iters: groupAndPickUpto8(updatedDates, 'day'),
           iterMap: (currIter) {
             return {
               'updatedDateYYMMDDFrom': (currIter as DateTime).utcTimeStamp
@@ -595,7 +867,7 @@ class TestFilters {
           },
         ),
         'updatedDateTill': DateTestCase(
-          iters: updatedDates,
+          iters: updatedDates.shuffled().take(10).toList(),
           iterMap: (currIter) {
             return {'updatedDateTill': (currIter as DateTime).utcTimeStamp};
           },
@@ -604,7 +876,7 @@ class TestFilters {
           },
         ),
         'updatedDateYYTill': DateTestCase(
-          iters: updatedDates,
+          iters: groupAndPickUpto8(updatedDates, 'year'),
           iterMap: (currIter) {
             return {'updatedDateYYTill': (currIter as DateTime).utcTimeStamp};
           },
@@ -616,7 +888,7 @@ class TestFilters {
           },
         ),
         'updatedDateYYMMTill': DateTestCase(
-          iters: updatedDates,
+          iters: groupAndPickUpto8(updatedDates, 'month'),
           iterMap: (currIter) {
             return {'updatedDateYYMMTill': (currIter as DateTime).utcTimeStamp};
           },
@@ -631,7 +903,7 @@ class TestFilters {
           },
         ),
         'updatedDateYYMMDDTill': DateTestCase(
-          iters: updatedDates,
+          iters: groupAndPickUpto8(updatedDates, 'day'),
           iterMap: (currIter) {
             return {
               'updatedDateYYMMDDTill': (currIter as DateTime).utcTimeStamp
@@ -696,4 +968,28 @@ class TestFilters {
       .cast<CLEntity>();
   List<CLEntity> get validCollections =>
       collections.where((e) => e != null).toList().cast<CLEntity>();
+
+  List<DateTime> groupAndPickUpto8(List<DateTime> currentDates, String by) {
+    final grouped = <String, List<DateTime>>{};
+    for (final date in currentDates) {
+      final key = switch (by) {
+        'year' => date.year.toString(),
+        'month' => '${date.year}-${date.month.toString().padLeft(2, '0')}',
+        'day' =>
+          '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}',
+        _ => throw UnimplementedError()
+      };
+
+      grouped.putIfAbsent(key, () => []).add(date);
+    }
+    final selectedDates = <DateTime>[];
+    for (final entry in grouped.entries) {
+      final shuffled = entry.value.shuffled();
+
+      // Take up to first 8 dates
+      selectedDates.addAll(shuffled.take(8));
+    }
+
+    return selectedDates;
+  }
 }
