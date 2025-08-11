@@ -161,6 +161,7 @@ class _CollectionMetadataEditorState
             store: widget.store,
             isHidden: null,
             isDeleted: null,
+            isCollection: true,
             errorBuilder: errorBuilder,
             loadingBuilder: () => loading('GetAllCollection'),
             builder: (allCollections) {
