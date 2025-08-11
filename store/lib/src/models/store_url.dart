@@ -4,7 +4,7 @@ import 'package:cl_basic_types/cl_basic_types.dart';
 import 'package:meta/meta.dart';
 
 @immutable
-class StoreURL {
+class StoreURL implements Comparable<StoreURL> {
   const StoreURL(this.uri, {required this.identity, required this.label});
 
   factory StoreURL.fromMap(Map<String, dynamic> map) {
@@ -65,4 +65,22 @@ class StoreURL {
   }
 
   String toJson() => json.encode(toMap());
+
+  @override
+  int compareTo(StoreURL other) {
+    if (identity == null && other.identity == null) {
+      return 0; // They are considered equal for comparison purposes.
+    }
+    // Case 2: My value is null, but the other's isn't.
+    // Conventionally, null is treated as smaller.
+    if (identity == null) {
+      return -1;
+    }
+    // Case 3: My value isn't null, but the other's is.
+    // My value is larger.
+    if (other.identity == null) {
+      return 1;
+    }
+    return identity!.compareTo(other.identity!);
+  }
 }
