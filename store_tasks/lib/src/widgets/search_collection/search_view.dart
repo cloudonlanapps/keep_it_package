@@ -65,20 +65,22 @@ class _SearchViewState extends ConsumerState<SearchView> {
                 .where((item) => item.label!.startsWith(searchText))
                 .toList();
           }
-          return CLGrid(
-            columns: 3,
-            itemCount: items.length + 1,
-            physics: const BouncingScrollPhysics(),
-            itemBuilder: (context, index) {
-              if (index == items.length) {
-                return CreateNewCollection(
-                    onSelect: widget.onSelect, suggestedName: searchText);
-              }
-              return SuggestedCollection(
-                item: items[index],
-                onSelect: widget.onSelect,
-              );
-            },
+          return SingleChildScrollView(
+            child: CLGrid(
+              columns: 3,
+              itemCount: items.length + 1,
+              physics: const BouncingScrollPhysics(),
+              itemBuilder: (context, index) {
+                if (index == items.length) {
+                  return CreateNewCollection(
+                      onSelect: widget.onSelect, suggestedName: searchText);
+                }
+                return SuggestedCollection(
+                  item: items[index],
+                  onSelect: widget.onSelect,
+                );
+              },
+            ),
           );
         });
   }
