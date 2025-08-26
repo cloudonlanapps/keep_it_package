@@ -7,6 +7,8 @@ environment:
   sdk: ^3.8.1
 
 dependencies:
+  cl_basic_types:
+    path: ../../cl_basic_types
   flutter:
     sdk: flutter
   flutter_riverpod: 2.5.1  
@@ -17,6 +19,9 @@ dependencies:
   google_fonts: ^6.3.0
   intl: ^0.20.2
   image_picker: ^1.2.0
+  scroll_to_index: ^3.0.1
+  scrollable_positioned_list: ^0.3.8
+  collection: ^1.19.1
 
 dev_dependencies:
   flutter_test:

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
-import 'web_socket_demo.dart';
+import 'face_it_desktop.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -17,7 +17,7 @@ void main() {
           brightness: Brightness.dark,
           colorScheme: const ShadZincColorScheme.dark(),
         ),
-        home: const WebSocketDemo(),
+        home: const FaceItDesktop(),
       ),
     ),
   );

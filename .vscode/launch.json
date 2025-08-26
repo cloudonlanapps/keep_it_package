@@ -23,7 +23,7 @@
       "request": "launch",
       "type": "dart",
       "flutterMode": "release"
-    }
+    },
 
     /*{
       "name": "cl_media_info_extractor",
@@ -45,5 +45,25 @@
       "type": "dart",
       "flutterMode": "release"
     }**/
+    {
+      "name": "face_it_desktop",
+      "cwd": "face_it/face_it_desktop",
+      "request": "launch",
+      "type": "dart"
+    },
+    {
+      "name": "face_it_desktop (profile mode)",
+      "cwd": "face_it/face_it_desktop",
+      "request": "launch",
+      "type": "dart",
+      "flutterMode": "profile"
+    },
+    {
+      "name": "face_it_desktop (release mode)",
+      "cwd": "face_it/face_it_desktop",
+      "request": "launch",
+      "type": "dart",
+      "flutterMode": "release"
+    }
   ]
 }
