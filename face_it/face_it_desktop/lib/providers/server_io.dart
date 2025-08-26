@@ -17,7 +17,8 @@ class ServerIONotifier extends AsyncNotifier<ServerIO> {
   void connect() {
     state = AsyncData(state.value!.dispose());
     final socket = io.io(
-      "http://192.168.0.179:5002",
+      "http://127.0.0.1:5002",
+      //"http://192.168.0.179:5002",
       io.OptionBuilder()
           .setTransports(['websocket'])
           .disableAutoConnect() // connect manually

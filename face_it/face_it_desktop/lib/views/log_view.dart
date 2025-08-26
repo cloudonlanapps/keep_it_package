@@ -171,7 +171,7 @@ class _MessageBoxState extends State<MessageBox> {
                   child: SizedBox(
                     width: calculatedWidth,
                     child: ListView.builder(
-                      shrinkWrap: true,
+                      //shrinkWrap: true,
                       controller: verticalScroller,
                       itemCount: widget.messages.length,
                       itemBuilder: (context, index) {

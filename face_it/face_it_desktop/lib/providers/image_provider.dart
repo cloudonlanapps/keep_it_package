@@ -3,19 +3,23 @@ import 'dart:async';
 
 import 'package:collection/collection.dart';
 import 'package:face_it_desktop/models/media_descriptor.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 @immutable
 class AvailableMedia {
-  const AvailableMedia({required this.items, this.currentIndex = 0});
+  const AvailableMedia({required this.items, this.activePath});
   final List<MediaDescriptor> items;
-  final int currentIndex;
+  final String? activePath;
 
-  AvailableMedia copyWith({List<MediaDescriptor>? items, int? currentIndex}) {
+  AvailableMedia copyWith({
+    List<MediaDescriptor>? items,
+    ValueGetter<String?>? activePath,
+  }) {
     return AvailableMedia(
       items: items ?? this.items,
-      currentIndex: currentIndex ?? this.currentIndex,
+      activePath: activePath != null ? activePath.call() : this.activePath,
     );
   }
 
@@ -24,11 +28,14 @@ class AvailableMedia {
     if (identical(this, other)) return true;
     final listEquals = const DeepCollectionEquality().equals;
 
-    return listEquals(other.items, items) && other.currentIndex == currentIndex;
+    return listEquals(other.items, items) && other.activePath == activePath;
   }
 
   @override
-  int get hashCode => items.hashCode ^ currentIndex.hashCode;
+  int get hashCode => items.hashCode ^ activePath.hashCode;
+
+  MediaDescriptor? get activeMedia =>
+      items.where((item) => item.path == activePath).firstOrNull;
 }
 
 class AvailableMediaNotifier extends AsyncNotifier<AvailableMedia> {
@@ -58,6 +65,21 @@ class AvailableMediaNotifier extends AsyncNotifier<AvailableMedia> {
 
   Future<void> clear() async {
     state = AsyncData(AvailableMedia(items: const []));
+  }
+
+  MediaDescriptor? get activeMedia => state.value!.activeMedia;
+  set activeMedia(MediaDescriptor? value) {
+    if (value == null) {
+      state = AsyncData(state.value!.copyWith(activePath: () => null));
+    } else {
+      final path = value.path;
+      final item = state.value!.items
+          .where((item) => item.path == path)
+          .firstOrNull;
+      if (item != null) {
+        state = AsyncData(state.value!.copyWith(activePath: () => path));
+      }
+    }
   }
 }
 

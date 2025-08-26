@@ -1,7 +1,10 @@
+import 'dart:io';
+
 import 'package:face_it_desktop/cl_browser_panel/views/cl_browser_panel_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
+import 'providers/image_provider.dart';
 import 'views/image_browser.dart';
 import 'cl_browser_panel/models/cl_browser_panal.dart';
 import 'cl_browser_panel/providers/cl_browser_panal.dart';
@@ -66,14 +69,7 @@ class _FaceItDesktopState extends ConsumerState<FaceItDesktop> {
                     defaultSize: .6,
                     minSize: .2,
 
-                    child: Center(
-                      child: ElevatedButton(
-                        onPressed: isConnected == true
-                            ? notifier.sendProcess
-                            : null,
-                        child: const Text("Send Process"),
-                      ),
-                    ),
+                    child: ActiveImage(),
                   ),
                   ShadResizablePanel(
                     id: 'logView',
@@ -122,5 +118,45 @@ class _FaceItDesktopState extends ConsumerState<FaceItDesktop> {
         ),
       ),
     );
+  }
+}
+
+class ActiveImage extends ConsumerWidget {
+  const ActiveImage({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return ref
+        .watch(availableMediaProvider)
+        .when(
+          data: (data) {
+            if (data.activeMedia == null) {
+              return Center(
+                child: Text(
+                  "Select a Media",
+                  style: ShadTheme.of(context).textTheme.muted,
+                ),
+              );
+            }
+            return Column(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  spacing: 16,
+                  children: [
+                    ShadButton.link(enabled: false, child: Text("Get Faces")),
+                    ShadButton.link(enabled: false, child: Text("Get Text")),
+                    ShadButton.link(enabled: false, child: Text("Get Objects")),
+                  ],
+                ),
+                Expanded(
+                  child: Image.file(File(data.activeMedia!.path), width: 256),
+                ),
+              ],
+            );
+          },
+          error: (_, __) => Container(),
+          loading: () => Container(),
+        );
   }
 }
