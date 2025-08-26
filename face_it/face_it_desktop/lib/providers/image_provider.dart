@@ -38,8 +38,11 @@ class AvailableMediaNotifier extends AsyncNotifier<AvailableMedia> {
   }
 
   Future<void> addImages(List<MediaDescriptor> images) async {
+    final uniqueImages = images.where(
+      (e) => !state.value!.items.map((c) => c.path).contains(e.path),
+    );
     state = AsyncData(
-      state.value!.copyWith(items: [...state.value!.items, ...images]),
+      state.value!.copyWith(items: [...state.value!.items, ...uniqueImages]),
     );
   }
 

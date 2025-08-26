@@ -2,7 +2,7 @@ import 'package:face_it_desktop/cl_browser_panel/views/cl_browser_panel_view.dar
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
-import 'image_browser_view.dart';
+import 'views/image_browser.dart';
 import 'cl_browser_panel/models/cl_browser_panal.dart';
 import 'cl_browser_panel/providers/cl_browser_panal.dart';
 import 'views/log_view.dart';
@@ -40,10 +40,7 @@ class _FaceItDesktopState extends ConsumerState<FaceItDesktop> {
                   label: "Images",
                   panelBuilder: (context) => ImageBrowser(),
                 ),
-                CLBrowserPanal(
-                  label: "Faces",
-                  panelBuilder: (context) => BrowserPlaceHolder(),
-                ),
+                CLBrowserPanal(label: "Faces"),
               ],
             ),
           ),

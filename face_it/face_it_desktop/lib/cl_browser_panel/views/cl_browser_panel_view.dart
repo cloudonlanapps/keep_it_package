@@ -1,4 +1,6 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'package:face_it_desktop/cl_browser_panel/views/cl_browser_container.dart';
+import 'package:face_it_desktop/cl_browser_panel/views/cl_browser_place_holder.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
@@ -34,9 +36,6 @@ class _CLBrowserPanelViewState extends ConsumerState<CLBrowserPanelView> {
     ref.listen(clBrowserPanalProvider, (prev, curr) {
       setState(() {
         panels = curr.activePanels;
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          //  scrollController.jumpTo(0);
-        });
       });
     });
     return Column(
@@ -56,34 +55,15 @@ class _CLBrowserPanelViewState extends ConsumerState<CLBrowserPanelView> {
             ),
           ),
           if (panels[index].isExpanded)
-            Expanded(child: panels[index].panelBuilder(context)),
+            Expanded(
+              child: CLBrowserContainer(
+                child:
+                    panels[index].panelBuilder?.call(context) ??
+                    CLBrowserPlaceHolder(),
+              ),
+            ),
         ],
       ],
     );
-    /* 
-    return Container(
-      alignment: Alignment.topCenter,
-      child: SingleChildScrollView(
-        controller: scrollController,
-        child: ExpansionPanelList(
-          expansionCallback: (index, isExpanded) {
-            ref
-                .read(clBrowserPanalProvider.notifier)
-                .onTogglePanelByLabel(panels[index].label);
-          },
-          children: [
-            for (int index = 0; index < panels.length; index++)
-              ExpansionPanel(
-                canTapOnHeader: true,
-                headerBuilder: (BuildContext context, bool isExpanded) {
-                  return ListTile(title: Text(panels[index].label));
-                },
-                body: panels[index].panelBuilder(context),
-                isExpanded: panels[index].isExpanded,
-              ),
-          ],
-        ),
-      ),
-    ); */
   }
 }

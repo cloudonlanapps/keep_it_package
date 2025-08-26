@@ -5,12 +5,12 @@ import 'package:flutter/material.dart';
 @immutable
 class CLBrowserPanal {
   const CLBrowserPanal({
-    required this.panelBuilder,
+    this.panelBuilder,
     required this.label,
     this.isExpanded = false,
   });
 
-  final Widget Function(BuildContext context) panelBuilder;
+  final Widget Function(BuildContext context)? panelBuilder;
   final String label;
   final bool isExpanded;
 
