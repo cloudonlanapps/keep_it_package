@@ -40,10 +40,10 @@ class _FaceItDesktopState extends ConsumerState<FaceItDesktop> {
                   label: "Images",
                   panelBuilder: (context) => ImageBrowser(),
                 ),
-                /*  CLBrowserPanal(
-              label: "Images",
-              panelBuilder: (context) => ImageBrowser(itemCount: 50),
-            ), */
+                CLBrowserPanal(
+                  label: "Faces",
+                  panelBuilder: (context) => BrowserPlaceHolder(),
+                ),
               ],
             ),
           ),

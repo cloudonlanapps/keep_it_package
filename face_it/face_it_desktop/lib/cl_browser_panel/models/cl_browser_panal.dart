@@ -51,15 +51,12 @@ class CLBrowserPanals {
 
   List<CLBrowserPanal> get activePanels {
     if (activePanelLabel != null) {
-      final panel = availablePanels
-          .where((e) => e.label == activePanelLabel)
-          .firstOrNull;
-      if (panel == null) {
-        return availablePanels;
-      }
-      final panels = [...availablePanels];
-      panels.removeWhere((e) => e.label == activePanelLabel);
-      return [panel.copyWith(isExpanded: true), ...panels];
+      return availablePanels
+          .map(
+            (e) =>
+                e.label == activePanelLabel ? e.copyWith(isExpanded: true) : e,
+          )
+          .toList();
     }
     return availablePanels;
   }

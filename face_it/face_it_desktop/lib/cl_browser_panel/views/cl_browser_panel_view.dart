@@ -35,12 +35,11 @@ class _CLBrowserPanelViewState extends ConsumerState<CLBrowserPanelView> {
       setState(() {
         panels = curr.activePanels;
         WidgetsBinding.instance.addPostFrameCallback((_) {
-          scrollController.jumpTo(0);
+          //  scrollController.jumpTo(0);
         });
       });
     });
-    return ListView(
-      controller: scrollController,
+    return Column(
       children: [
         for (int index = 0; index < panels.length; index++) ...[
           GestureDetector(
@@ -57,10 +56,7 @@ class _CLBrowserPanelViewState extends ConsumerState<CLBrowserPanelView> {
             ),
           ),
           if (panels[index].isExpanded)
-            Padding(
-              padding: const EdgeInsets.only(left: 8.0),
-              child: panels[index].panelBuilder(context),
-            ),
+            Expanded(child: panels[index].panelBuilder(context)),
         ],
       ],
     );
