@@ -29,7 +29,7 @@ class ImageBrowser extends ConsumerWidget {
                         ? 1
                         : availableMedia.items.length,
                     shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
+                    // physics: const NeverScrollableScrollPhysics(),
                     // The builder function that creates each item
                     itemBuilder: (BuildContext context, int index) {
                       if (availableMedia.items.isEmpty) {
@@ -86,6 +86,7 @@ class ImageTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListTile(
+      contentPadding: EdgeInsets.symmetric(vertical: 8),
       leading: Image.file(
         File(media.path), // Replace with your image URL
         width: 64,
@@ -96,6 +97,77 @@ class ImageTile extends StatelessWidget {
         style: ShadTheme.of(context).textTheme.small,
         overflow: TextOverflow.ellipsis,
         maxLines: 2,
+      ),
+      trailing: MediaPopover(media: media),
+    );
+  }
+}
+
+class MediaPopover extends ConsumerStatefulWidget {
+  const MediaPopover({super.key, required this.media});
+  final MediaDescriptor media;
+
+  @override
+  ConsumerState<MediaPopover> createState() => _MediaPopoverState();
+}
+
+class _MediaPopoverState extends ConsumerState<MediaPopover> {
+  final popoverController = ShadPopoverController();
+
+  final List<({String name, String initialValue})> layer = [
+    (name: 'Width', initialValue: '100%'),
+    (name: 'Max. width', initialValue: '300px'),
+    (name: 'Height', initialValue: '25px'),
+    (name: 'Max. height', initialValue: 'none'),
+  ];
+
+  @override
+  void dispose() {
+    popoverController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final textTheme = ShadTheme.of(context).textTheme;
+    return ShadPopover(
+      controller: popoverController,
+      popover: (context) => SizedBox(
+        width: 288,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          spacing: 8,
+          children: [
+            Row(
+              spacing: 8,
+              children: [
+                Expanded(
+                  child: Text(widget.media.label, style: textTheme.lead),
+                ),
+                ShadIconButton.outline(
+                  onPressed: () {
+                    ref
+                        .read(availableMediaProvider.notifier)
+                        .removeImagesByPath([widget.media.path]);
+                    popoverController.toggle();
+                  },
+                  icon: Icon(
+                    LucideIcons.trash,
+                    color: ShadTheme.of(context).colorScheme.destructive,
+                  ),
+                ),
+              ],
+            ),
+            Image.file(
+              File(widget.media.path), // Replace with your image URL
+            ),
+          ],
+        ),
+      ),
+      child: ShadIconButton.outline(
+        onPressed: popoverController.toggle,
+        icon: Icon(LucideIcons.ellipsis200),
       ),
     );
   }

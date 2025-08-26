@@ -46,10 +46,12 @@ class AvailableMediaNotifier extends AsyncNotifier<AvailableMedia> {
     );
   }
 
-  Future<void> removeImages(List<MediaDescriptor> images) async {
+  Future<void> removeImagesByPath(List<String> pathsToRemove) async {
     state = AsyncData(
       state.value!.copyWith(
-        items: state.value!.items.where((e) => !images.contains(e)).toList(),
+        items: state.value!.items.where((item) {
+          return !pathsToRemove.contains(item.path);
+        }).toList(),
       ),
     );
   }
