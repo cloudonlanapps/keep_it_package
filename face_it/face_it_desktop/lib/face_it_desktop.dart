@@ -140,15 +140,98 @@ class ActiveImage extends ConsumerWidget {
             }
             return Column(
               children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  spacing: 16,
-                  children: [
-                    ShadButton.link(enabled: false, child: Text("Get Faces")),
-                    ShadButton.link(enabled: false, child: Text("Get Text")),
-                    ShadButton.link(enabled: false, child: Text("Get Objects")),
-                  ],
-                ),
+                ref
+                    .watch(serverIOProvider)
+                    .when(
+                      loading: () =>
+                          const Center(child: CircularProgressIndicator()),
+                      error: (err, stack) => Center(child: Text("Error: $err")),
+                      data: (serverIO) {
+                        final notifier = ref.read(serverIOProvider.notifier);
+                        final isConnected = serverIO.isConnected;
+                        return Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              ShadButton(
+                                onPressed: isConnected
+                                    ? notifier.disconnectFromServer
+                                    : notifier.connect,
+                                child: Text(
+                                  isConnected ? "Disconnect" : "Connect",
+                                ),
+                              ),
+                              Expanded(
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceEvenly,
+                                  children: [
+                                    Expanded(
+                                      child: FittedBox(
+                                        fit: BoxFit.scaleDown,
+                                        child: ShadButton.link(
+                                          enabled: isConnected,
+                                          child: Text(
+                                            "Recognize Faces",
+                                            maxLines: 2,
+                                            textAlign: TextAlign.center,
+                                            softWrap: true,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    Expanded(
+                                      child: FittedBox(
+                                        fit: BoxFit.scaleDown,
+                                        child: ShadButton.link(
+                                          enabled: isConnected,
+                                          child: Text(
+                                            "Extract Text",
+                                            maxLines: 2,
+                                            textAlign: TextAlign.center,
+                                            softWrap: true,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    Expanded(
+                                      child: FittedBox(
+                                        fit: BoxFit.scaleDown,
+                                        child: ShadButton.link(
+                                          enabled: isConnected,
+                                          child: Text(
+                                            "Scan Objects",
+                                            maxLines: 2,
+                                            textAlign: TextAlign.center,
+                                            softWrap: true,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    Expanded(
+                                      child: FittedBox(
+                                        fit: BoxFit.scaleDown,
+                                        child: ShadButton.link(
+                                          enabled: isConnected,
+                                          child: Text(
+                                            "Generate Caption",
+                                            maxLines: 2,
+                                            textAlign: TextAlign.center,
+                                            softWrap: true,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      },
+                    ),
+
                 Expanded(
                   child: Image.file(File(data.activeMedia!.path), width: 256),
                 ),
