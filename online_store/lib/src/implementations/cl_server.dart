@@ -14,7 +14,6 @@ import 'rest_api.dart';
 class CLServer {
   const CLServer({
     required this.storeURL,
-    this.label,
     this.id,
     this.status,
   });
@@ -22,7 +21,6 @@ class CLServer {
   factory CLServer.fromMap(Map<String, dynamic> map) {
     return CLServer(
       storeURL: StoreURL.fromMap(map['url'] as Map<String, dynamic>),
-      label: map['label'] != null ? map['label'] as String : null,
       id: map['id'] != null ? map['id'] as int : null,
       status: map['status'] != null
           ? ServerTimeStamps.fromMap(map['status'] as Map<String, dynamic>)
@@ -34,7 +32,7 @@ class CLServer {
       CLServer.fromMap(json.decode(source) as Map<String, dynamic>);
 
   final StoreURL storeURL;
-  final String? label;
+
   final int? id;
   final ServerTimeStamps? status;
 
@@ -46,7 +44,6 @@ class CLServer {
   }) {
     return CLServer(
       storeURL: storeURL ?? this.storeURL,
-      label: label != null ? label.call() : this.label,
       id: id != null ? id.call() : this.id,
       status: status != null ? status.call() : this.status,
     );
@@ -55,7 +52,6 @@ class CLServer {
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
       'url': storeURL.toMap(),
-      'label': label,
       'id': id,
       'status': status?.toMap(),
     };
@@ -65,7 +61,7 @@ class CLServer {
 
   @override
   String toString() {
-    return 'CLServer(url: $storeURL, label: $label, id: $id, status: $status)';
+    return 'CLServer(url: $storeURL,  id: $id, status: $status)';
   }
 
   @override
@@ -73,14 +69,13 @@ class CLServer {
     if (identical(this, other)) return true;
 
     return other.storeURL == storeURL &&
-        other.label == label &&
         other.id == id &&
         other.status == status;
   }
 
   @override
   int get hashCode {
-    return storeURL.hashCode ^ label.hashCode ^ id.hashCode ^ status.hashCode;
+    return storeURL.hashCode ^ id.hashCode ^ status.hashCode;
   }
 
   void log(
