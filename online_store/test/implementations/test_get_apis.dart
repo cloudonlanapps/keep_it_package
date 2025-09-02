@@ -90,8 +90,8 @@ class TestGetAPIs {
     for (final entry in collections.entries) {
       {
         final retrieved =
-            await (await testContext.server.get(label: entry.value.label)).when(
-                validResponse: (result) async {
+            await (await testContext.server.getEntiy(label: entry.value.label))
+                .when(validResponse: (result) async {
           return result;
         }, errorResponse: (e, {st}) async {
           fail('failed to get collection with id ${entry.value.id} $e');
@@ -115,8 +115,8 @@ class TestGetAPIs {
     for (final entry in media.entries) {
       {
         final retrieved =
-            await (await testContext.server.get(md5: entry.value.md5)).when(
-                validResponse: (result) async {
+            await (await testContext.server.getEntiy(md5: entry.value.md5))
+                .when(validResponse: (result) async {
           return result;
         }, errorResponse: (e, {st}) async {
           fail('failed to get media with id ${entry.value.id} $e');

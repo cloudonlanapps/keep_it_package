@@ -14,7 +14,7 @@ extension TestExtOnCLServer on CLServer {
     try {
       final url = CLUrl(Uri.parse(serverAddr), identity: null, label: null);
 
-      final server = await CLServer(storeURL: url).withId();
+      final server = await CLServer(storeURL: url).isConnected();
       if (!server.connected) {
         fail('Connection Failed, could not get the server Id');
       }
@@ -137,10 +137,7 @@ extension TestExtOnCLServer on CLServer {
   }
 
   Future<void> reset() async {
-    await (await RestApi(
-      baseURL,
-    ).delete(EntityEndPoint.reset()))
-        .when<String>(
+    await (await delete(EntityEndPoint.reset())).when<String>(
       validResponse: (resp) async {
         return resp;
       },

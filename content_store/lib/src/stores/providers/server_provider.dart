@@ -14,7 +14,7 @@ class ServerNotifier extends FamilyAsyncNotifier<CLServer, CLUrl>
   @override
   FutureOr<CLServer> build(CLUrl arg) async {
     try {
-      final clServer = await CLServer(storeURL: arg).getServerLiveStatus();
+      final clServer = await CLServer(storeURL: arg).isConnected();
 
       timer = Timer.periodic(const Duration(seconds: 5), monitorServer);
 
@@ -33,7 +33,7 @@ class ServerNotifier extends FamilyAsyncNotifier<CLServer, CLUrl>
 
   Future<void> monitorServer(Timer _) async {
     try {
-      final clServer = await CLServer(storeURL: arg).getServerLiveStatus();
+      final clServer = await CLServer(storeURL: arg).isConnected();
       final server = state.value;
 
       if (server != clServer) {

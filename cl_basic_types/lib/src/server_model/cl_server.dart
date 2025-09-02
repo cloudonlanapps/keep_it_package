@@ -1,17 +1,19 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:cl_basic_types/cl_basic_types.dart';
 import 'package:http/http.dart' as http;
 import 'package:meta/meta.dart';
 
+import 'rest_api_1.dart';
+
 @immutable
 class CLServer {
-  const CLServer({required this.storeURL, this.connected = false});
+  const CLServer({required this.storeURL, this.connected = false, this.client});
 
   final CLUrl storeURL;
-
   final bool connected;
-  //  final ServerTimeStamps? status;
+  final http.Client? client;
 
   CLServer copyWith({CLUrl? storeURL, bool? connected}) {
     return CLServer(
@@ -52,12 +54,20 @@ class CLServer {
     ); */
   }
 
-  Future<CLServer> withId({http.Client? client}) async {
+  bool validatePingResponse(String responseBody) {
+    final info = jsonDecode(responseBody) as Map<String, dynamic>;
+    if ((info['name'] as String) == 'CoLAN server') {
+      return true;
+    }
+    return false;
+  }
+
+  Future<CLServer> isConnected({http.Client? client}) async {
     try {
-      final reply = await RestApi(baseURL, client: client).getURLStatus();
+      final reply = get("");
       return switch (reply) {
-        (final StoreResult<Map<String, dynamic>> _) => copyWith(
-          connected: true,
+        (final StoreResult<String> response) => copyWith(
+          connected: validatePingResponse(response.result),
         ),
         _ => copyWith(connected: false),
       };
@@ -65,9 +75,6 @@ class CLServer {
       return copyWith(connected: false);
     }
   }
-
-  Future<CLServer> getServerLiveStatus({http.Client? client}) async =>
-      withId(client: client);
 
   String get identifier {
     const separator = '_';
@@ -91,4 +98,61 @@ class CLServer {
   }
 
   String get baseURL => '${storeURL.uri}';
+  static int defaultTimeoutInSec = 3600;
+  static http.Client defaultHttpClient = http.Client();
+  Uri _generateURI(String endPoint) {
+    return Uri.parse('$baseURL$endPoint');
+  }
+
+  Future<StoreReply<String>> get(String endPoint, {String? auth}) async {
+    return (await RESTAPi.get(
+      _generateURI(endPoint),
+      httpClient: client ?? defaultHttpClient,
+      auth: () => null,
+      timeoutInSec: defaultTimeoutInSec,
+    )).cast<String>();
+  }
+
+  Future<StoreReply<String>> post(
+    String endPoint, {
+    String? auth,
+    String json = '',
+    Map<String, dynamic>? form,
+    Map<String, List<String>>? fileFields,
+  }) async {
+    return (await RESTAPi.post(
+      _generateURI(endPoint),
+      httpClient: client ?? defaultHttpClient,
+      auth: () => null,
+      timeoutInSec: defaultTimeoutInSec,
+      formFields: form,
+      filesFields: fileFields,
+    )).cast<String>();
+  }
+
+  Future<StoreReply<String>> put(
+    String endPoint, {
+    String? auth,
+    String json = '',
+    Map<String, dynamic>? form,
+    Map<String, List<String>>? fileFields,
+  }) async {
+    return (await RESTAPi.put(
+      _generateURI(endPoint),
+      httpClient: client ?? defaultHttpClient,
+      auth: () => null,
+      timeoutInSec: defaultTimeoutInSec,
+      formFields: form,
+      filesFields: fileFields,
+    )).cast<String>();
+  }
+
+  Future<StoreReply<String>> delete(String endPoint, {String? auth}) async {
+    return (await RESTAPi.delete(
+      _generateURI(endPoint),
+      httpClient: client ?? defaultHttpClient,
+      auth: () => null,
+      timeoutInSec: defaultTimeoutInSec,
+    )).cast<String>();
+  }
 }

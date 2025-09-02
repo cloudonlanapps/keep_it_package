@@ -17,7 +17,7 @@ class OnlineEntityStore extends EntityStore {
 
   @override
   Future<CLEntity?> get({String? md5, String? label}) async {
-    final reply = await server.get(md5: md5, label: label);
+    final reply = await server.getEntiy(md5: md5, label: label);
     return reply.when(
       validResponse: (result) async {
         return result;

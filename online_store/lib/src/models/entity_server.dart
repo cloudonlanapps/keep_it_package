@@ -11,8 +11,7 @@ extension EntityServer on CLServer {
     final endPoint = EntityEndPoint.getAll();
     try {
       final query = queryString.isEmpty ? '' : '?$queryString';
-      final reply =
-          await RestApi(baseURL, client: client).get('$endPoint$query');
+      final reply = await get('$endPoint$query');
       return reply.when(validResponse: (response) async {
         final map = jsonDecode(response);
         final items = (((map as Map<String, dynamic>)['items']) ?? <CLEntity>[])
@@ -28,7 +27,7 @@ extension EntityServer on CLServer {
     }
   }
 
-  Future<StoreReply<CLEntity?>> get(
+  Future<StoreReply<CLEntity?>> getEntiy(
       {String? md5, String? label, http.Client? client}) async {
     final endPoint = EntityEndPoint.get();
     final queryString = [
@@ -36,8 +35,7 @@ extension EntityServer on CLServer {
       if (label != null) 'label=$label'
     ].join('&');
     try {
-      final reply =
-          await RestApi(baseURL, client: client).get('$endPoint?$queryString');
+      final reply = await get('$endPoint?$queryString');
       return reply.when(validResponse: (response) async {
         return StoreResult(CLEntity.fromJson(response));
       }, errorResponse: (e, {st}) async {
@@ -51,7 +49,7 @@ extension EntityServer on CLServer {
   Future<StoreReply<CLEntity?>> getById(int id, {http.Client? client}) async {
     final endPoint = EntityEndPoint.getById(id);
     try {
-      final reply = await RestApi(baseURL, client: client).get(endPoint);
+      final reply = await get(endPoint);
       return reply.when(
           validResponse: (data) async {
             return StoreResult(CLEntity.fromJson(data));
@@ -79,11 +77,21 @@ extension EntityServer on CLServer {
       };
       final StoreReply<String> response;
       if (id != null) {
-        response = await RestApi(baseURL, client: client)
-            .put(EntityEndPoint.update(id), fileName: fileName, form: form);
+        response = await put(EntityEndPoint.update(id),
+            fileFields: fileName == null
+                ? null
+                : {
+                    'media': [fileName]
+                  },
+            form: form);
       } else {
-        response = await RestApi(baseURL, client: client)
-            .post(EntityEndPoint.create(), fileName: fileName, form: form);
+        response = await post(EntityEndPoint.create(),
+            fileFields: fileName == null
+                ? null
+                : {
+                    'media': [fileName]
+                  },
+            form: form);
       }
 
       return response.when(
@@ -98,8 +106,7 @@ extension EntityServer on CLServer {
 
   Future<StoreReply<bool>> toBin(int id, {http.Client? client}) async {
     try {
-      final response =
-          await RestApi(baseURL, client: client).put(EntityEndPoint.toBin(id));
+      final response = await put(EntityEndPoint.toBin(id));
       return response.when(
           validResponse: (data) async => StoreResult(true),
           errorResponse: (e, {st}) async {
@@ -112,8 +119,7 @@ extension EntityServer on CLServer {
 
   Future<StoreReply<CLEntity>> restore(int id, {http.Client? client}) async {
     try {
-      final response = await RestApi(baseURL, client: client)
-          .put(EntityEndPoint.restore(id));
+      final response = await put(EntityEndPoint.restore(id));
       return response.when(
           validResponse: (data) async => StoreResult(CLEntity.fromJson(data)),
           errorResponse: (e, {st}) async {
@@ -127,8 +133,7 @@ extension EntityServer on CLServer {
   Future<StoreReply<bool>> deletePermanent(int id,
       {http.Client? client}) async {
     try {
-      final response = await RestApi(baseURL, client: client)
-          .delete(EntityEndPoint.deletePermanent(id));
+      final response = await delete(EntityEndPoint.deletePermanent(id));
       return response.when(
           validResponse: (data) async => StoreResult(true),
           errorResponse: (e, {st}) async {
@@ -161,8 +166,7 @@ extension EntityServer on CLServer {
     final endPoint = EntityEndPoint.filterloopback();
     try {
       final query = queryString.isEmpty ? '' : '?$queryString';
-      final reply =
-          await RestApi(baseURL, client: client).get('$endPoint$query');
+      final reply = await get('$endPoint$query');
       return reply.when(validResponse: (response) async {
         final map = jsonDecode(response);
         return StoreResult(map as Map<String, dynamic>);
