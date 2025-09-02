@@ -5,8 +5,6 @@ import 'package:http/http.dart' as http;
 import 'package:meta/meta.dart';
 import 'package:store/store.dart';
 
-import 'cl_server_status.dart';
-
 import 'rest_api.dart';
 
 @immutable
@@ -14,44 +12,38 @@ class CLServer {
   const CLServer({
     required this.storeURL,
     this.connected = false,
-    this.status,
   });
 
   final StoreURL storeURL;
 
   final bool connected;
-  final ServerTimeStamps? status;
+//  final ServerTimeStamps? status;
 
   CLServer copyWith({
     StoreURL? storeURL,
-    ValueGetter<String?>? label,
     bool? connected,
-    ValueGetter<ServerTimeStamps?>? status,
   }) {
     return CLServer(
       storeURL: storeURL ?? this.storeURL,
       connected: connected ?? this.connected,
-      status: status != null ? status.call() : this.status,
     );
   }
 
   @override
   String toString() {
-    return 'CLServer(url: $storeURL,  connected: $connected, status: $status)';
+    return 'CLServer(url: $storeURL,  connected: $connected)';
   }
 
   @override
   bool operator ==(covariant CLServer other) {
     if (identical(this, other)) return true;
 
-    return other.storeURL == storeURL &&
-        other.connected == connected &&
-        other.status == status;
+    return other.storeURL == storeURL && other.connected == connected;
   }
 
   @override
   int get hashCode {
-    return storeURL.hashCode ^ connected.hashCode ^ status.hashCode;
+    return storeURL.hashCode ^ connected.hashCode;
   }
 
   void log(
