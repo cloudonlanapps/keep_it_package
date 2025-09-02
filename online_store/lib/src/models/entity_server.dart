@@ -13,7 +13,7 @@ extension EntityServer on CLServer {
       final query = queryString.isEmpty ? '' : '?$queryString';
       final reply = await get('$endPoint$query');
       return reply.when(validResponse: (response) async {
-        final map = jsonDecode(response);
+        final map = jsonDecode(response as String);
         final items = (((map as Map<String, dynamic>)['items']) ?? <CLEntity>[])
             as List<dynamic>;
         final mediaMapList =
@@ -37,7 +37,7 @@ extension EntityServer on CLServer {
     try {
       final reply = await get('$endPoint?$queryString');
       return reply.when(validResponse: (response) async {
-        return StoreResult(CLEntity.fromJson(response));
+        return StoreResult(CLEntity.fromJson(response as String));
       }, errorResponse: (e, {st}) async {
         return StoreError(e, st: st);
       });
@@ -51,8 +51,8 @@ extension EntityServer on CLServer {
     try {
       final reply = await get(endPoint);
       return reply.when(
-          validResponse: (data) async {
-            return StoreResult(CLEntity.fromJson(data));
+          validResponse: (response) async {
+            return StoreResult(CLEntity.fromJson(response as String));
           },
           errorResponse: (e, {st}) async => StoreError(e, st: st));
     } catch (e) {
@@ -77,21 +77,23 @@ extension EntityServer on CLServer {
       };
       final StoreReply<String> response;
       if (id != null) {
-        response = await put(EntityEndPoint.update(id),
-            fileFields: fileName == null
-                ? null
-                : {
-                    'media': [fileName]
-                  },
-            form: form);
+        response = (await put(EntityEndPoint.update(id),
+                filesFields: fileName == null
+                    ? null
+                    : {
+                        'media': [fileName]
+                      },
+                formFields: form))
+            .cast();
       } else {
-        response = await post(EntityEndPoint.create(),
-            fileFields: fileName == null
-                ? null
-                : {
-                    'media': [fileName]
-                  },
-            form: form);
+        response = (await post(EntityEndPoint.create(),
+                filesFields: fileName == null
+                    ? null
+                    : {
+                        'media': [fileName]
+                      },
+                formFields: form))
+            .cast();
       }
 
       return response.when(
@@ -121,7 +123,8 @@ extension EntityServer on CLServer {
     try {
       final response = await put(EntityEndPoint.restore(id));
       return response.when(
-          validResponse: (data) async => StoreResult(CLEntity.fromJson(data)),
+          validResponse: (response) async =>
+              StoreResult(CLEntity.fromJson(response as String)),
           errorResponse: (e, {st}) async {
             return StoreError(e, st: st);
           });
@@ -168,7 +171,7 @@ extension EntityServer on CLServer {
       final query = queryString.isEmpty ? '' : '?$queryString';
       final reply = await get('$endPoint$query');
       return reply.when(validResponse: (response) async {
-        final map = jsonDecode(response);
+        final map = jsonDecode(response as String);
         return StoreResult(map as Map<String, dynamic>);
       }, errorResponse: (e, {st}) async {
         return StoreError(e, st: st);

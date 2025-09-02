@@ -138,8 +138,8 @@ extension TestExtOnCLServer on CLServer {
 
   Future<void> reset() async {
     await (await delete(EntityEndPoint.reset())).when<String>(
-      validResponse: (resp) async {
-        return resp;
+      validResponse: (response) async {
+        return response as String;
       },
       errorResponse: (error, {st}) async {
         fail('reset failed in tearDownAll');

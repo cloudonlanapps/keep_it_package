@@ -5,8 +5,6 @@ import 'package:cl_basic_types/cl_basic_types.dart';
 import 'package:http/http.dart' as http;
 import 'package:meta/meta.dart';
 
-import 'rest_api_1.dart';
-
 @immutable
 class CLServer {
   const CLServer({required this.storeURL, this.connected = false, this.client});
@@ -100,59 +98,4 @@ class CLServer {
   String get baseURL => '${storeURL.uri}';
   static int defaultTimeoutInSec = 3600;
   static http.Client defaultHttpClient = http.Client();
-  Uri _generateURI(String endPoint) {
-    return Uri.parse('$baseURL$endPoint');
-  }
-
-  Future<StoreReply<String>> get(String endPoint, {String? auth}) async {
-    return (await RESTAPi.get(
-      _generateURI(endPoint),
-      httpClient: client ?? defaultHttpClient,
-      auth: () => null,
-      timeoutInSec: defaultTimeoutInSec,
-    )).cast<String>();
-  }
-
-  Future<StoreReply<String>> post(
-    String endPoint, {
-    String? auth,
-    String json = '',
-    Map<String, dynamic>? form,
-    Map<String, List<String>>? fileFields,
-  }) async {
-    return (await RESTAPi.post(
-      _generateURI(endPoint),
-      httpClient: client ?? defaultHttpClient,
-      auth: () => null,
-      timeoutInSec: defaultTimeoutInSec,
-      formFields: form,
-      filesFields: fileFields,
-    )).cast<String>();
-  }
-
-  Future<StoreReply<String>> put(
-    String endPoint, {
-    String? auth,
-    String json = '',
-    Map<String, dynamic>? form,
-    Map<String, List<String>>? fileFields,
-  }) async {
-    return (await RESTAPi.put(
-      _generateURI(endPoint),
-      httpClient: client ?? defaultHttpClient,
-      auth: () => null,
-      timeoutInSec: defaultTimeoutInSec,
-      formFields: form,
-      filesFields: fileFields,
-    )).cast<String>();
-  }
-
-  Future<StoreReply<String>> delete(String endPoint, {String? auth}) async {
-    return (await RESTAPi.delete(
-      _generateURI(endPoint),
-      httpClient: client ?? defaultHttpClient,
-      auth: () => null,
-      timeoutInSec: defaultTimeoutInSec,
-    )).cast<String>();
-  }
 }
