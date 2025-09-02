@@ -2,7 +2,6 @@ import 'package:cl_basic_types/cl_basic_types.dart';
 import 'package:meta/meta.dart';
 import 'package:store/store.dart';
 
-import '../implementations/cl_server.dart';
 import 'entity_server.dart';
 import 'server_enitity_query.dart';
 

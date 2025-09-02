@@ -3,8 +3,6 @@ import 'dart:convert';
 import 'package:cl_basic_types/cl_basic_types.dart';
 import 'package:http/http.dart' as http;
 
-import '../implementations/cl_server.dart';
-import '../implementations/rest_api.dart';
 import 'entity_endpoint.dart';
 
 extension EntityServer on CLServer {

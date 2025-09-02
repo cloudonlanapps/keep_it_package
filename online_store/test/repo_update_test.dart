@@ -1,4 +1,4 @@
-import 'package:online_store/src/implementations/cl_server.dart';
+import 'package:cl_basic_types/cl_basic_types.dart';
 import 'package:test/test.dart';
 
 import 'framework/framework.dart';

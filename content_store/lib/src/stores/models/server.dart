@@ -1,6 +1,5 @@
-import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
-import 'package:online_store/online_store.dart';
+import 'package:cl_basic_types/cl_basic_types.dart';
+import 'package:meta/meta.dart';
 
 @immutable
 class Server {

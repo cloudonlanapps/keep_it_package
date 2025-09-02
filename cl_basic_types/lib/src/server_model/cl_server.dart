@@ -4,24 +4,16 @@ import 'package:cl_basic_types/cl_basic_types.dart';
 import 'package:http/http.dart' as http;
 import 'package:meta/meta.dart';
 
-import 'rest_api.dart';
-
 @immutable
 class CLServer {
-  const CLServer({
-    required this.storeURL,
-    this.connected = false,
-  });
+  const CLServer({required this.storeURL, this.connected = false});
 
   final CLUrl storeURL;
 
   final bool connected;
-//  final ServerTimeStamps? status;
+  //  final ServerTimeStamps? status;
 
-  CLServer copyWith({
-    CLUrl? storeURL,
-    bool? connected,
-  }) {
+  CLServer copyWith({CLUrl? storeURL, bool? connected}) {
     return CLServer(
       storeURL: storeURL ?? this.storeURL,
       connected: connected ?? this.connected,
@@ -64,9 +56,10 @@ class CLServer {
     try {
       final reply = await RestApi(baseURL, client: client).getURLStatus();
       return switch (reply) {
-        (final StoreResult<Map<String, dynamic>> _) =>
-          copyWith(connected: true),
-        _ => copyWith(connected: false)
+        (final StoreResult<Map<String, dynamic>> _) => copyWith(
+          connected: true,
+        ),
+        _ => copyWith(connected: false),
       };
     } catch (e) {
       return copyWith(connected: false);

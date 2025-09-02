@@ -6,7 +6,6 @@ import 'package:cl_basic_types/cl_basic_types.dart';
 import 'package:collection/collection.dart';
 import 'package:image/image.dart' as img;
 import 'package:intl/intl.dart';
-import 'package:online_store/online_store.dart';
 import 'package:online_store/src/models/entity_server.dart';
 import 'package:online_store/src/models/server_enitity_query.dart';
 import 'package:path/path.dart';

@@ -1,8 +1,6 @@
 // ignore_for_file: avoid_print, print required for testing
 
 import 'package:cl_basic_types/cl_basic_types.dart';
-import 'package:online_store/src/implementations/cl_server.dart';
-import 'package:online_store/src/implementations/rest_api.dart';
 import 'package:online_store/src/models/entity_endpoint.dart';
 import 'package:online_store/src/models/entity_server.dart';
 import 'package:test/test.dart';
