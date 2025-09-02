@@ -14,7 +14,7 @@ class OnlineEntityStore extends EntityStore {
   final CLServer server;
 
   @override
-  bool get isAlive => server.hasID;
+  bool get isAlive => server.connected;
 
   @override
   Future<CLEntity?> get({String? md5, String? label}) async {

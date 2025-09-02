@@ -18,7 +18,7 @@ extension TestExtOnCLServer on CLServer {
       final url = StoreURL(Uri.parse(serverAddr), identity: null, label: null);
 
       final server = await CLServer(storeURL: url).withId();
-      if (!server.hasID) {
+      if (!server.connected) {
         fail('Connection Failed, could not get the server Id');
       }
       return server;

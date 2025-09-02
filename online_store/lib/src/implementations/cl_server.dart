@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:cl_basic_types/cl_basic_types.dart';
 import 'package:http/http.dart' as http;
@@ -14,54 +13,31 @@ import 'rest_api.dart';
 class CLServer {
   const CLServer({
     required this.storeURL,
-    this.id,
+    this.connected = false,
     this.status,
   });
 
-  factory CLServer.fromMap(Map<String, dynamic> map) {
-    return CLServer(
-      storeURL: StoreURL.fromMap(map['url'] as Map<String, dynamic>),
-      id: map['id'] != null ? map['id'] as int : null,
-      status: map['status'] != null
-          ? ServerTimeStamps.fromMap(map['status'] as Map<String, dynamic>)
-          : null,
-    );
-  }
-
-  factory CLServer.fromJson(String source) =>
-      CLServer.fromMap(json.decode(source) as Map<String, dynamic>);
-
   final StoreURL storeURL;
 
-  final int? id;
+  final bool connected;
   final ServerTimeStamps? status;
 
   CLServer copyWith({
     StoreURL? storeURL,
     ValueGetter<String?>? label,
-    ValueGetter<int?>? id,
+    bool? connected,
     ValueGetter<ServerTimeStamps?>? status,
   }) {
     return CLServer(
       storeURL: storeURL ?? this.storeURL,
-      id: id != null ? id.call() : this.id,
+      connected: connected ?? this.connected,
       status: status != null ? status.call() : this.status,
     );
   }
 
-  Map<String, dynamic> toMap() {
-    return <String, dynamic>{
-      'url': storeURL.toMap(),
-      'id': id,
-      'status': status?.toMap(),
-    };
-  }
-
-  String toJson() => json.encode(toMap());
-
   @override
   String toString() {
-    return 'CLServer(url: $storeURL,  id: $id, status: $status)';
+    return 'CLServer(url: $storeURL,  connected: $connected, status: $status)';
   }
 
   @override
@@ -69,13 +45,13 @@ class CLServer {
     if (identical(this, other)) return true;
 
     return other.storeURL == storeURL &&
-        other.id == id &&
+        other.connected == connected &&
         other.status == status;
   }
 
   @override
   int get hashCode {
-    return storeURL.hashCode ^ id.hashCode ^ status.hashCode;
+    return storeURL.hashCode ^ connected.hashCode ^ status.hashCode;
   }
 
   void log(
@@ -97,23 +73,22 @@ class CLServer {
     try {
       final reply = await RestApi(baseURL, client: client).getURLStatus();
       return switch (reply) {
-        (final StoreResult<Map<String, dynamic>> map) =>
-          CLServer.fromMap(toMap()..addAll(map.result)),
-        _ => copyWith(id: () => null)
+        (final StoreResult<Map<String, dynamic>> _) =>
+          copyWith(connected: true),
+        _ => copyWith(connected: false)
       };
     } catch (e) {
-      return copyWith(id: () => null);
+      return copyWith(connected: false);
     }
   }
 
   Future<CLServer> getServerLiveStatus({http.Client? client}) async =>
       withId(client: client);
 
-  bool get hasID => id != null;
-
   String get identifier {
     const separator = '_';
-    if (id == null) return 'Unknown';
+    if (!connected) return 'Unknown';
+    final id = storeURL.identity.toInt();
 
     var hexString = id!.toRadixString(16).toUpperCase();
     hexString = hexString.padLeft(4, '0');

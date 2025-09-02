@@ -14,7 +14,7 @@ class Server {
 
   final CLServer? previousIdentity;
 
-  bool get isAccessible => identity.hasID;
+  bool get isAccessible => identity.connected;
 
   bool get canSync => !workingOffline && !isAccessible;
   bool get isOffline => isAccessible;
