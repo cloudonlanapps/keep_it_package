@@ -5,7 +5,6 @@ import 'package:online_store/src/implementations/cl_server.dart';
 import 'package:online_store/src/implementations/rest_api.dart';
 import 'package:online_store/src/models/entity_endpoint.dart';
 import 'package:online_store/src/models/entity_server.dart';
-import 'package:store/store.dart';
 import 'package:test/test.dart';
 
 import 'test_context.dart';

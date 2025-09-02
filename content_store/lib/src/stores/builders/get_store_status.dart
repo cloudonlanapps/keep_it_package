@@ -1,3 +1,4 @@
+import 'package:cl_basic_types/cl_basic_types.dart';
 import 'package:content_store/src/stores/providers/active_store_provider.dart';
 import 'package:content_store/src/stores/providers/network_scanner.dart';
 import 'package:flutter/material.dart';
