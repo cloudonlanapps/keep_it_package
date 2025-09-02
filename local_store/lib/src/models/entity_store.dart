@@ -224,7 +224,7 @@ class LocalSQLiteEntityStore extends EntityStore
   static Future<EntityStore> createStore(
     DBModel db, {
     required String identity,
-    required StoreURL storeURL,
+    required CLUrl storeURL,
     required String mediaPath,
     required String previewPath,
     required Future<String> Function(String mediaPath,
@@ -262,7 +262,7 @@ class LocalSQLiteEntityStore extends EntityStore
 }
 
 Future<EntityStore> createEntityStore(
-  StoreURL url, {
+  CLUrl url, {
   required String storePath,
   required Future<String> Function(String mediaPath,
           {required String previewPath, required int dimension})

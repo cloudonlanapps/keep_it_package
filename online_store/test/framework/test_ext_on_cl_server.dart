@@ -15,7 +15,7 @@ extension TestExtOnCLServer on CLServer {
     // const serverAddr = 'http://192.168.0.225:5000'; RaspPi
     const serverAddr = 'http://127.0.0.1:5001'; //Mac
     try {
-      final url = StoreURL(Uri.parse(serverAddr), identity: null, label: null);
+      final url = CLUrl(Uri.parse(serverAddr), identity: null, label: null);
 
       final server = await CLServer(storeURL: url).withId();
       if (!server.connected) {

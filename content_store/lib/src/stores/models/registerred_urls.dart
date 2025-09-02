@@ -5,8 +5,7 @@ import 'package:store/store.dart';
 @immutable
 class RegisteredURLs {
   factory RegisteredURLs(
-      {required List<StoreURL> availableStores,
-      required int activeStoreIndex}) {
+      {required List<CLUrl> availableStores, required int activeStoreIndex}) {
     final stores = availableStores;
     // Not a good idea when network involved. need more checks
     if (stores.isEmpty) {
@@ -21,11 +20,11 @@ class RegisteredURLs {
     required this.availableStores,
     required this.activeStoreIndex,
   });
-  final List<StoreURL> availableStores;
+  final List<CLUrl> availableStores;
   final int activeStoreIndex;
 
   RegisteredURLs copyWith({
-    List<StoreURL>? availableStores,
+    List<CLUrl>? availableStores,
     int? activeStoreIndex,
   }) {
     return RegisteredURLs._(
@@ -50,7 +49,7 @@ class RegisteredURLs {
   String toString() =>
       'AvailableStores(availableStores: $availableStores, activeStoreIndex: $activeStoreIndex)';
 
-  RegisteredURLs setActiveStore(StoreURL storeURL) {
+  RegisteredURLs setActiveStore(CLUrl storeURL) {
     if (!availableStores.contains(storeURL)) {
       throw Exception('Store is not registered');
     }
@@ -58,11 +57,11 @@ class RegisteredURLs {
         activeStoreIndex: availableStores.indexWhere((e) => e == storeURL));
   }
 
-  RegisteredURLs addStore(StoreURL storeURL) {
+  RegisteredURLs addStore(CLUrl storeURL) {
     if (availableStores.contains(storeURL)) {
       throw Exception('Store already exists');
     }
-    final stores = List<StoreURL>.from(availableStores)
+    final stores = List<CLUrl>.from(availableStores)
       ..add(storeURL)
       ..sort();
 
@@ -70,7 +69,7 @@ class RegisteredURLs {
     return copyWith(availableStores: stores, activeStoreIndex: index);
   }
 
-  RegisteredURLs removeStore(StoreURL storeURL) {
+  RegisteredURLs removeStore(CLUrl storeURL) {
     if (!availableStores.contains(storeURL)) {
       throw Exception('Store is not registered');
     }
@@ -79,18 +78,18 @@ class RegisteredURLs {
     }
     final index = (isActiveStore(storeURL)) ? 0 : activeStoreIndex;
 
-    final stores = List<StoreURL>.from(availableStores)..remove(storeURL);
+    final stores = List<CLUrl>.from(availableStores)..remove(storeURL);
     return copyWith(availableStores: stores, activeStoreIndex: index);
   }
 
-  bool isDefaultStore(StoreURL storeURL) {
+  bool isDefaultStore(CLUrl storeURL) {
     return storeURL == defaultStoreURL;
   }
 
-  bool isActiveStore(StoreURL storeURL) {
+  bool isActiveStore(CLUrl storeURL) {
     return storeURL == availableStores[activeStoreIndex];
   }
 
-  StoreURL get activeStoreURL => availableStores[activeStoreIndex];
-  StoreURL get defaultStoreURL => availableStores[0];
+  CLUrl get activeStoreURL => availableStores[activeStoreIndex];
+  CLUrl get defaultStoreURL => availableStores[0];
 }

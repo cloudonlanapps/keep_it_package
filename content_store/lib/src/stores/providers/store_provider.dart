@@ -10,12 +10,11 @@ import 'package:store/store.dart';
 import '../../../storage_service/providers/directories.dart';
 import 'server_provider.dart';
 
-class StoreNotifier extends FamilyAsyncNotifier<CLStore, StoreURL>
-    with CLLogger {
+class StoreNotifier extends FamilyAsyncNotifier<CLStore, CLUrl> with CLLogger {
   @override
   String get logPrefix => 'StoreNotifier';
   @override
-  FutureOr<CLStore> build(StoreURL arg) async {
+  FutureOr<CLStore> build(CLUrl arg) async {
     try {
       final storeURL = arg;
       final directories = await ref.watch(deviceDirectoriesProvider.future);
@@ -48,5 +47,5 @@ class StoreNotifier extends FamilyAsyncNotifier<CLStore, StoreURL>
 }
 
 final storeProvider =
-    AsyncNotifierProviderFamily<StoreNotifier, CLStore, StoreURL>(
+    AsyncNotifierProviderFamily<StoreNotifier, CLStore, CLUrl>(
         StoreNotifier.new);

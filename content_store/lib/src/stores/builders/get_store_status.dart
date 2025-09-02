@@ -10,7 +10,7 @@ class GetStoreStatus extends ConsumerWidget {
   const GetStoreStatus({required this.builder, super.key});
 
   final Widget Function(
-      {required AsyncValue<StoreURL> activeURL,
+      {required AsyncValue<CLUrl> activeURL,
       required bool isConnected,
       required AsyncValue<CLStore> storeAsync}) builder;
 

@@ -4,23 +4,23 @@ import 'package:cl_basic_types/cl_basic_types.dart';
 import 'package:meta/meta.dart';
 
 @immutable
-class StoreURL implements Comparable<StoreURL> {
-  const StoreURL(this.uri, {required this.identity, required this.label});
+class CLUrl implements Comparable<CLUrl> {
+  const CLUrl(this.uri, {required this.identity, required this.label});
 
-  factory StoreURL.fromMap(Map<String, dynamic> map) {
-    return StoreURL(
+  factory CLUrl.fromMap(Map<String, dynamic> map) {
+    return CLUrl(
       Uri.parse(map['uri'] as String),
       identity: map['identity'] != null ? map['identity'] as String : null,
       label: map['label'] != null ? map['label'] as String : null,
     );
   }
 
-  factory StoreURL.fromJson(String source) =>
-      StoreURL.fromMap(json.decode(source) as Map<String, dynamic>);
+  factory CLUrl.fromJson(String source) =>
+      CLUrl.fromMap(json.decode(source) as Map<String, dynamic>);
 
-  factory StoreURL.fromString(String url,
+  factory CLUrl.fromString(String url,
       {required String? identity, required String? label}) {
-    return StoreURL(Uri.parse(url), identity: identity, label: label);
+    return CLUrl(Uri.parse(url), identity: identity, label: label);
   }
   final Uri uri;
   final String? identity;
@@ -31,7 +31,7 @@ class StoreURL implements Comparable<StoreURL> {
       (uri.host.isNotEmpty ? uri.host : uri.path);
 
   @override
-  bool operator ==(covariant StoreURL other) {
+  bool operator ==(covariant CLUrl other) {
     if (identical(this, other)) return true;
 
     return other.uri == uri && other.identity == identity;
@@ -44,12 +44,12 @@ class StoreURL implements Comparable<StoreURL> {
   String toString() =>
       'StoreURL(uri: $uri, identity: $identity, label: $label)';
 
-  StoreURL copyWith({
+  CLUrl copyWith({
     Uri? uri,
     ValueGetter<String?>? identity,
     ValueGetter<String?>? label,
   }) {
-    return StoreURL(
+    return CLUrl(
       uri ?? this.uri,
       identity: identity != null ? identity.call() : this.identity,
       label: label != null ? label.call() : this.label,
@@ -67,7 +67,7 @@ class StoreURL implements Comparable<StoreURL> {
   String toJson() => json.encode(toMap());
 
   @override
-  int compareTo(StoreURL other) {
+  int compareTo(CLUrl other) {
     if (identity == null && other.identity == null) {
       return 0; // They are considered equal for comparison purposes.
     }

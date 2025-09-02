@@ -11,7 +11,7 @@ class RegisteredURLsNotifier extends AsyncNotifier<RegisteredURLs>
     with CLLogger {
   @override
   String get logPrefix => 'RegisteredURLsNotifier';
-  final defaultStore = StoreURL.fromString('local://default',
+  final defaultStore = CLUrl.fromString('local://default',
       identity: null, label: 'Primary Collection');
   @override
   FutureOr<RegisteredURLs> build() {
@@ -19,7 +19,7 @@ class RegisteredURLsNotifier extends AsyncNotifier<RegisteredURLs>
       final scanner = ref.watch(networkScannerProvider);
       final servers = [
         defaultStore,
-        StoreURL.fromString('local://QuotesCollection',
+        CLUrl.fromString('local://QuotesCollection',
             identity: 'Quote Collection', label: 'Quote Collection'),
         // StoreURL.fromString('http://192.168.0.220:5001')
 
@@ -44,8 +44,8 @@ class RegisteredURLsNotifier extends AsyncNotifier<RegisteredURLs>
     }
   }
 
-  StoreURL get activeStore => state.value!.activeStoreURL;
-  set activeStore(StoreURL storeURL) =>
+  CLUrl get activeStore => state.value!.activeStoreURL;
+  set activeStore(CLUrl storeURL) =>
       state = AsyncValue.data(state.value!.setActiveStore(storeURL));
 }
 

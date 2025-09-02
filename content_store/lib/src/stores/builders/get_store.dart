@@ -11,7 +11,7 @@ class GetStore extends ConsumerWidget {
     required this.loadingBuilder,
     super.key,
   });
-  final StoreURL storeURL;
+  final CLUrl storeURL;
   final Widget Function(CLStore) builder;
   final Widget Function(Object, StackTrace) errorBuilder;
   final Widget Function() loadingBuilder;

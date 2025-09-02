@@ -14,13 +14,13 @@ class CLServer {
     this.connected = false,
   });
 
-  final StoreURL storeURL;
+  final CLUrl storeURL;
 
   final bool connected;
 //  final ServerTimeStamps? status;
 
   CLServer copyWith({
-    StoreURL? storeURL,
+    CLUrl? storeURL,
     bool? connected,
   }) {
     return CLServer(

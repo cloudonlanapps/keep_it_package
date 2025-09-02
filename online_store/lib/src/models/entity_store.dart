@@ -108,14 +108,14 @@ class OnlineEntityStore extends EntityStore {
   }
 
   static Future<EntityStore> createStore(
-      {required StoreURL storeURL, required CLServer server}) async {
+      {required CLUrl storeURL, required CLServer server}) async {
     return OnlineEntityStore(
         identity: server.baseURL, storeURL: storeURL, server: server);
   }
 }
 
 Future<EntityStore> createOnlineEntityStore({
-  required StoreURL storeURL,
+  required CLUrl storeURL,
   required CLServer server,
   required String storePath,
 }) async {

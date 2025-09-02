@@ -100,7 +100,7 @@ class ServerTile extends ConsumerWidget {
       required this.isActive,
       super.key,
       this.store});
-  final StoreURL storeURL;
+  final CLUrl storeURL;
   final CLStore? store;
   final bool isLoading;
   final bool isActive;

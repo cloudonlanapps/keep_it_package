@@ -8,7 +8,7 @@ import 'store_url.dart';
 abstract class EntityStore {
   const EntityStore({required this.identity, required this.storeURL});
   final String identity;
-  final StoreURL storeURL;
+  final CLUrl storeURL;
 
   bool get isAlive;
   Future<CLEntity?> get({String? md5, String? label});

@@ -5,7 +5,7 @@ import 'package:online_store/online_store.dart';
 
 import 'package:store/store.dart';
 
-class ServerNotifier extends FamilyAsyncNotifier<CLServer, StoreURL>
+class ServerNotifier extends FamilyAsyncNotifier<CLServer, CLUrl>
     with CLLogger {
   @override
   String get logPrefix => 'ServerNotifier';
@@ -13,7 +13,7 @@ class ServerNotifier extends FamilyAsyncNotifier<CLServer, StoreURL>
   Timer? timer;
 
   @override
-  FutureOr<CLServer> build(StoreURL arg) async {
+  FutureOr<CLServer> build(CLUrl arg) async {
     try {
       final clServer = await CLServer(storeURL: arg).getServerLiveStatus();
 
@@ -48,5 +48,5 @@ class ServerNotifier extends FamilyAsyncNotifier<CLServer, StoreURL>
 }
 
 final serverProvider =
-    AsyncNotifierProviderFamily<ServerNotifier, CLServer, StoreURL>(
+    AsyncNotifierProviderFamily<ServerNotifier, CLServer, CLUrl>(
         ServerNotifier.new);

@@ -16,11 +16,11 @@ class NetworkScanner {
     );
   }
   final bool lanStatus;
-  final Set<StoreURL>? servers;
+  final Set<CLUrl>? servers;
 
   NetworkScanner copyWith({
     bool? lanStatus,
-    Set<StoreURL>? servers,
+    Set<CLUrl>? servers,
   }) {
     return NetworkScanner(
       lanStatus: lanStatus ?? this.lanStatus,

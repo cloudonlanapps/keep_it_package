@@ -81,10 +81,10 @@ class NetworkScannerNotifier extends StateNotifier<NetworkScanner>
   }
 
   Future<void> listener() async {
-    final servers = <StoreURL>{};
+    final servers = <CLUrl>{};
     for (final e in discovery?.services ?? <Service>[]) {
       if (e.name != null && e.name!.endsWith('cloudonlapapps')) {
-        servers.add(StoreURL(Uri.parse('http://${e.host}:${e.port}'),
+        servers.add(CLUrl(Uri.parse('http://${e.host}:${e.port}'),
             identity: e.name,
             label: "online: ${e.name!.split("@").firstOrNull ?? e.name!}"));
       }
