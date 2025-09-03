@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:content_store/content_store.dart'
+    show ContentSourceSelectorIcon;
 import 'package:face_it_desktop/cl_browser_panel/views/cl_browser_panel_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -50,7 +52,10 @@ class _FaceItDesktopState extends ConsumerState<FaceItDesktop> {
         ),
       ],
       child: Scaffold(
-        appBar: AppBar(title: const Text("Detect Faces")),
+        appBar: AppBar(
+          title: const Text("Detect Faces"),
+          actions: [ContentSourceSelectorIcon()],
+        ),
         body: Column(
           children: [
             Divider(color: ShadTheme.of(context).colorScheme.muted, height: 1),

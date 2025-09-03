@@ -120,7 +120,7 @@ class ServerTile extends ConsumerWidget {
       icon = clIcons.noNetwork;
       color = Colors.red;
     }
-
+    print('$storeURL: isAlive? ${store?.store.isAlive}');
     final child = ListTile(
         leading: Icon(
           icon,

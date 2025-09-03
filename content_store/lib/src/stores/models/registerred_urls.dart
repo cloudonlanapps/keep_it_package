@@ -92,4 +92,8 @@ class RegisteredURLs {
 
   CLUrl get activeStoreURL => availableStores[activeStoreIndex];
   CLUrl get defaultStoreURL => availableStores[0];
+
+  List<CLUrl> get onlineStores => availableStores
+      .where((e) => ['http', 'https'].contains(e.scheme))
+      .toList();
 }

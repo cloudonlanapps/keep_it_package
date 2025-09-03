@@ -195,7 +195,6 @@
 				B9FD95EE28F29B4E2481B76E /* Pods-RunnerTests.release.xcconfig */,
 				BDD0B5E7331249E8C33333F0 /* Pods-RunnerTests.profile.xcconfig */,
 			);
-			name = Pods;
 			path = Pods;
 			sourceTree = "<group>";
 		};
@@ -579,6 +578,8 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
+				MACOSX_DEPLOYMENT_TARGET = 14.6;
+				PRODUCT_BUNDLE_IDENTIFIER = com.cloudonlanapps.faceItDesktop;
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 5.0;
 			};
@@ -711,6 +712,8 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
+				MACOSX_DEPLOYMENT_TARGET = 14.6;
+				PRODUCT_BUNDLE_IDENTIFIER = com.cloudonlanapps.faceItDesktop;
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
@@ -731,6 +734,8 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
+				MACOSX_DEPLOYMENT_TARGET = 14.6;
+				PRODUCT_BUNDLE_IDENTIFIER = com.cloudonlanapps.faceItDesktop;
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 5.0;
 			};

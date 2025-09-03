@@ -63,23 +63,28 @@ class CLServer {
   bool validatePingResponse(String responseBody) {
     final info = jsonDecode(responseBody) as Map<String, dynamic>;
     if ((info['name'] as String) == 'CoLAN server') {
+      print("Found server");
       return true;
     }
     return false;
   }
 
   Future<CLServer> isConnected({http.Client? client}) async {
+    CLServer updated;
     try {
-      final reply = get("");
-      return switch (reply) {
-        (final StoreResult<String> response) => copyWith(
+      final reply = await get("");
+      print(reply);
+      updated = switch (reply) {
+        (final StoreResult response) => copyWith(
           connected: validatePingResponse(response.result),
         ),
         _ => copyWith(connected: false),
       };
     } catch (e) {
-      return copyWith(connected: false);
+      updated = copyWith(connected: false);
     }
+    print(updated);
+    return updated;
   }
 
   String get identifier {
