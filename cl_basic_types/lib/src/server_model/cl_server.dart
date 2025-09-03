@@ -1,3 +1,4 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:async';
 import 'dart:convert';
 
@@ -13,28 +14,35 @@ class CLServer {
   final bool connected;
   final http.Client? client;
 
-  CLServer copyWith({CLUrl? storeURL, bool? connected}) {
+  CLServer copyWith({
+    CLUrl? storeURL,
+    bool? connected,
+    ValueGetter<http.Client?>? client,
+  }) {
     return CLServer(
       storeURL: storeURL ?? this.storeURL,
       connected: connected ?? this.connected,
+      client: client != null ? client.call() : this.client,
     );
   }
 
   @override
   String toString() {
-    return 'CLServer(url: $storeURL,  connected: $connected)';
+    return 'CLServer(storeURL: $storeURL, connected: $connected, client: $client)';
   }
 
   @override
   bool operator ==(covariant CLServer other) {
     if (identical(this, other)) return true;
 
-    return other.storeURL == storeURL && other.connected == connected;
+    return other.storeURL == storeURL &&
+        other.connected == connected &&
+        other.client == client;
   }
 
   @override
   int get hashCode {
-    return storeURL.hashCode ^ connected.hashCode;
+    return storeURL.hashCode ^ connected.hashCode ^ client.hashCode;
   }
 
   void log(
