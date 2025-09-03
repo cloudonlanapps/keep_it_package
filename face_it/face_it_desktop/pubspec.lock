@@ -183,7 +183,7 @@ packages:
     source: hosted
     version: "4.10.1"
   colan_widgets:
-    dependency: transitive
+    dependency: "direct main"
     description:
       path: "../../colan_widgets"
       relative: true
@@ -1127,7 +1127,7 @@ packages:
     source: hosted
     version: "3.0.0"
   shimmer:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: shimmer
       sha256: "5f88c883a22e9f9f299e5ba0e4f7e6054857224976a5d9f839d4ebdc94a14ac9"
@@ -1228,7 +1228,7 @@ packages:
     source: hosted
     version: "1.0.0"
   store:
-    dependency: transitive
+    dependency: "direct main"
     description:
       path: "../../store"
       relative: true

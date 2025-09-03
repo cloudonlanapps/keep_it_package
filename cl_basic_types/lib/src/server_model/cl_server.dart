@@ -63,7 +63,6 @@ class CLServer {
   bool validatePingResponse(String responseBody) {
     final info = jsonDecode(responseBody) as Map<String, dynamic>;
     if ((info['name'] as String) == 'CoLAN server') {
-      print("Found server");
       return true;
     }
     return false;
@@ -73,7 +72,7 @@ class CLServer {
     CLServer updated;
     try {
       final reply = await get("");
-      print(reply);
+
       updated = switch (reply) {
         (final StoreResult response) => copyWith(
           connected: validatePingResponse(response.result),
@@ -83,25 +82,8 @@ class CLServer {
     } catch (e) {
       updated = copyWith(connected: false);
     }
-    print(updated);
+
     return updated;
-  }
-
-  String get identifier {
-    const separator = '_';
-    if (!connected) return 'Unknown';
-    final id = storeURL.identity.toInt();
-
-    var hexString = id!.toRadixString(16).toUpperCase();
-    hexString = hexString.padLeft(4, '0');
-    final formattedHex = hexString.replaceAllMapped(
-      RegExp('.{4}'),
-      (match) => '${match.group(0)}$separator',
-    );
-    final identifierString = formattedHex.endsWith(separator)
-        ? formattedHex.substring(0, formattedHex.length - 1)
-        : formattedHex;
-    return identifierString;
   }
 
   Uri getEndpointURI(String endPoint) {

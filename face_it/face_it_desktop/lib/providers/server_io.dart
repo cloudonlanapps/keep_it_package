@@ -1,67 +1,75 @@
+import 'dart:async';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:intl/intl.dart';
 import 'package:socket_io_client/socket_io_client.dart' as io;
 
 import '../models/server_io.dart';
+import 'online_server.dart';
 
-final serverIOProvider = AsyncNotifierProvider<ServerIONotifier, ServerIO>(
-  ServerIONotifier.new,
+final sessionProvider = AsyncNotifierProvider<SessionNotifier, CLSocket?>(
+  SessionNotifier.new,
 );
 
-class ServerIONotifier extends AsyncNotifier<ServerIO> {
+class SessionNotifier extends AsyncNotifier<CLSocket?> {
   @override
-  Future<ServerIO> build() async {
-    return ServerIO();
-  }
+  FutureOr<CLSocket?> build() async {
+    final server = await ref.watch(onlineServerProvider.future);
+    if (server == null) return null;
 
-  void connect() {
-    state = AsyncData(state.value!.dispose());
+    final uri = server.storeURL.uri.replace(port: 5002);
     final socket = io.io(
-      "http://127.0.0.1:5002",
-      //"http://192.168.0.179:5002",
+      uri.toString(),
       io.OptionBuilder()
           .setTransports(['websocket'])
           .disableAutoConnect() // connect manually
           .disableReconnection() // stop infinite retries
           .build(),
     );
-
-    socket.connect();
-    state = AsyncData(state.value!.copyWith(socket: () => socket));
-
     socket.onConnect((_) {
-      state = AsyncData(state.value!.copyWith(connected: true));
-      addMessage("Connected to server".info);
+      state = AsyncValue.data(CLSocket(socket: socket));
     });
     socket.onConnectError((err) {
-      addMessage('Connection error: $err'.error);
+      state = AsyncValue.data(CLSocket(socket: socket));
     });
-    /*
-    _socket!.onError((err) {
-      addMessage(' error: $err'.error);
-      // Show "Server not available"
-    });
-    */
-
-    socket.on("message", (data) {
-      final msg = data["msg"];
-      addMessage("$msg".info);
-
-      if (msg == "done") {
-        addMessage("Process finished!".info);
-      }
-    });
+    socket.on("message", onReceiveMessage);
 
     socket.onDisconnect((_) {
-      state = AsyncData(state.value!.dispose());
-      addMessage("Disconnected".info);
-      addMessage("@Divider");
+      state = AsyncValue.data(CLSocket(socket: socket));
     });
+    ref.onDispose(() {
+      socket.disconnect();
+      socket.dispose();
+    });
+    socket.connect();
+    return CLSocket(socket: socket);
   }
 
-  void disconnectFromServer() {
-    state.value!.socket?.disconnect();
-    state = AsyncData(state.value!.dispose());
+  void onReceiveMessage(dynamic data) {
+    // ignore: unused_local_variable
+    final msg = data["msg"];
+  }
+}
+
+/* 
+
+final serviceProvider = StateProvider<String?>((ref) {
+  return null;
+});
+final serverIOProvider = AsyncNotifierProvider<ServerIONotifier, ServerIO?>(
+  ServerIONotifier.new,
+);
+
+class ServerIONotifier extends AsyncNotifier<ServerIO?> {
+  @override
+  Future<ServerIO?> build() async {
+    final registerredURLsAsync = ref.watch(registeredURLsProvider);
+    
+    final serverId = ref.watch(serviceProvider);
+    final servers = ref.watch(provider)
+    if (serverId == null) return null;
+    final server = 
+
+    
   }
 
   void sendProcess() {
@@ -99,3 +107,4 @@ extension Timestamp on String {
     return "[$formatted] : $this";
   }
 }
+ */

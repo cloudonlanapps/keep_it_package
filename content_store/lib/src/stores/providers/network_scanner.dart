@@ -86,7 +86,7 @@ class NetworkScannerNotifier extends StateNotifier<NetworkScanner>
       if (e.name != null && e.name!.endsWith('cloudonlapapps')) {
         servers.add(CLUrl(Uri.parse('http://${e.host}:${e.port}'),
             identity: e.name,
-            label: "online: ${e.name!.split("@").firstOrNull ?? e.name!}"));
+            label: e.name!.split('@').firstOrNull ?? e.name!));
       }
     }
 

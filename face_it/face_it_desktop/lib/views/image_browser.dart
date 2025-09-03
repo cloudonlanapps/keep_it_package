@@ -1,5 +1,8 @@
 import 'dart:io';
 
+import 'package:colan_widgets/colan_widgets.dart';
+import 'package:face_it_desktop/face_it_desktop.dart'
+    show MenuButtonActiveWhenSocketConnected;
 import 'package:face_it_desktop/views/media_popover.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -51,23 +54,32 @@ class ImageBrowser extends ConsumerWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    ShadButton.outline(child: const Text('Import Folder')),
-                    ShadButton.outline(
-                      child: const Text('Import Image'),
-                      onPressed: () async {
-                        ref
-                            .read(availableMediaProvider.notifier)
-                            .addImages(
-                              (await _picker.pickMultiImage())
-                                  .map(
-                                    (image) => MediaDescriptor(
-                                      path: image.path,
-                                      label: image.name,
-                                    ),
-                                  )
-                                  .toList(),
-                            );
-                      },
+                    MenuButtonActiveWhenSocketConnected(
+                      menuItem: CLMenuItem(
+                        title: 'Import Folder',
+                        icon: Icons.abc,
+                      ),
+                    ),
+                    MenuButtonActiveWhenSocketConnected(
+                      menuItem: CLMenuItem(
+                        title: 'Import Image',
+                        icon: Icons.abc,
+                        onTap: () async {
+                          ref
+                              .read(availableMediaProvider.notifier)
+                              .addImages(
+                                (await _picker.pickMultiImage())
+                                    .map(
+                                      (image) => MediaDescriptor(
+                                        path: image.path,
+                                        label: image.name,
+                                      ),
+                                    )
+                                    .toList(),
+                              );
+                          return null;
+                        },
+                      ),
                     ),
                   ],
                 ),

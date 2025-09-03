@@ -3,6 +3,7 @@ library;
 
 export 'src/share_files.dart' show ShareManager;
 export 'src/stores/builders/get_active_store.dart';
+export 'src/stores/builders/get_available_servers.dart';
 export 'src/stores/builders/get_available_stores.dart' show GetAvailableStores;
 export 'src/stores/builders/get_content.dart' show GetContent;
 export 'src/stores/builders/get_default_store.dart' show GetDefaultStore;
@@ -14,6 +15,7 @@ export 'src/stores/models/registerred_urls.dart' show RegisteredURLs;
 export 'src/stores/providers/refresh_cache.dart' show reloadProvider;
 export 'src/stores/providers/registerred_urls.dart'
     show registeredURLsProvider; // avoid?
+export 'src/stores/providers/server_provider.dart' show serverProvider;
 export 'src/widgets/broken_image.dart';
 export 'src/widgets/content_store_selector_icon.dart'
     show ContentSourceSelectorIcon;
@@ -21,5 +23,4 @@ export 'src/widgets/metadata_editors/collection_metadata_editor.dart';
 export 'src/widgets/metadata_editors/media_metadata_editor.dart';
 export 'src/widgets/server_bar.dart' show ServerBar;
 export 'src/widgets/shimmer.dart';
-
 export 'storage_service/widgets/storage_monitor.dart' show StorageMonitor;

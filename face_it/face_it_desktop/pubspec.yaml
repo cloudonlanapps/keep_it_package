@@ -9,6 +9,8 @@ environment:
 dependencies:
   cl_basic_types:
     path: ../../cl_basic_types
+  colan_widgets:
+    path: ../../colan_widgets
   content_store:
     path : ../../content_store
   flutter:
@@ -24,6 +26,9 @@ dependencies:
   scroll_to_index: ^3.0.1
   scrollable_positioned_list: ^0.3.8
   collection: ^1.19.1
+  store:
+    path: ../../store
+  shimmer: ^3.0.0
 
 dev_dependencies:
   flutter_test:
@@ -32,3 +37,5 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  assets:
+    - assets/icon/cloud_on_lan_128px_color.png

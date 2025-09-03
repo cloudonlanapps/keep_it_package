@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
+import '../../views/server_selector.dart';
 import '../models/cl_browser_panal.dart';
 import '../providers/cl_browser_panal.dart';
 
@@ -40,29 +41,36 @@ class _CLBrowserPanelViewState extends ConsumerState<CLBrowserPanelView> {
     });
     return Column(
       children: [
-        for (int index = 0; index < panels.length; index++) ...[
-          GestureDetector(
-            onTap: () => ref
-                .read(clBrowserPanalProvider.notifier)
-                .onTogglePanelByLabel(panels[index].label),
-            child: ListTile(
-              title: Text(panels[index].label),
-              trailing: Icon(
-                panels[index].isExpanded
-                    ? LucideIcons.chevronDown200
-                    : LucideIcons.chevronRight200,
-              ),
-            ),
+        ServerSelector(onDone: null),
+        Expanded(
+          child: Column(
+            children: [
+              for (int index = 0; index < panels.length; index++) ...[
+                GestureDetector(
+                  onTap: () => ref
+                      .read(clBrowserPanalProvider.notifier)
+                      .onTogglePanelByLabel(panels[index].label),
+                  child: ListTile(
+                    title: Text(panels[index].label),
+                    trailing: Icon(
+                      panels[index].isExpanded
+                          ? LucideIcons.chevronDown200
+                          : LucideIcons.chevronRight200,
+                    ),
+                  ),
+                ),
+                if (panels[index].isExpanded)
+                  Expanded(
+                    child: CLBrowserContainer(
+                      child:
+                          panels[index].panelBuilder?.call(context) ??
+                          CLBrowserPlaceHolder(),
+                    ),
+                  ),
+              ],
+            ],
           ),
-          if (panels[index].isExpanded)
-            Expanded(
-              child: CLBrowserContainer(
-                child:
-                    panels[index].panelBuilder?.call(context) ??
-                    CLBrowserPlaceHolder(),
-              ),
-            ),
-        ],
+        ),
       ],
     );
   }

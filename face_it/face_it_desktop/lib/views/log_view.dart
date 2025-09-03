@@ -21,12 +21,12 @@ class _LogViewState extends ConsumerState<LogView> {
   @override
   Widget build(BuildContext context) {
     return ref
-        .watch(serverIOProvider)
+        .watch(sessionProvider)
         .when(
           loading: () => const Center(child: CircularProgressIndicator()),
           error: (err, stack) => Center(child: Text("Error: $err")),
           data: (serverIO) {
-            return MessageBox(messages: serverIO.messages);
+            return MessageBox(messages: ["MESSAGE PROVDER NOT IMPLEMENTED"]);
           },
         );
   }

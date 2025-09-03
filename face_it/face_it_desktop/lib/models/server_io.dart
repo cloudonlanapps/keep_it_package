@@ -4,47 +4,49 @@ import 'package:flutter/foundation.dart';
 import 'package:socket_io_client/socket_io_client.dart' as io;
 
 @immutable
-class ServerIO {
-  const ServerIO({
-    this.socket,
-    this.connected = false,
-    this.messages = const [],
-  });
-  final io.Socket? socket;
-  final bool connected;
-  final List<String> messages;
+class CLSocket {
+  const CLSocket({required this.socket, this.connected = false});
+  final io.Socket socket;
+  final bool connected; //
 
-  bool get isConnected => socket != null && connected;
+  bool get isConnected => socket.connected;
 
-  ServerIO copyWith({
-    ValueGetter<io.Socket?>? socket,
-    bool? connected,
-    List<String>? messages,
-  }) {
-    return ServerIO(
-      socket: socket != null ? socket.call() : this.socket,
+  CLSocket copyWith({io.Socket? socket, bool? connected}) {
+    return CLSocket(
+      socket: socket ?? this.socket,
       connected: connected ?? this.connected,
-      messages: messages ?? this.messages,
     );
   }
 
-  ServerIO dispose() {
-    if (socket != null) {
-      socket!.dispose();
-      return copyWith(socket: () => null, connected: false);
-    }
-    return this;
+  void dispose() {
+    socket.disconnect();
+    socket.dispose();
   }
 
+  @override
+  bool operator ==(covariant CLSocket other) {
+    if (identical(this, other)) return true;
+
+    return other.socket == socket && other.connected == connected;
+  }
+
+  @override
+  int get hashCode => socket.hashCode ^ connected.hashCode;
+
+  @override
+  String toString() => 'ServerIO(socket: $socket, connected: $connected)';
+}
+
+/*
   ServerIO addMessage(String msg) {
     return copyWith(messages: [...messages, msg]);
   }
 
   bool sendMessage(msg) {
     if (isConnected) {
-      socket!.emit("message", msg);
+      socket.emit("message", msg);
     }
 
     return isConnected;
   }
-}
+ */
