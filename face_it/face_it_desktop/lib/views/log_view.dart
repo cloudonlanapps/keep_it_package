@@ -81,14 +81,14 @@ class _MessageBoxState extends State<MessageBox> {
       if (!atEndOfScroll) {
         setState(() {
           atEndOfScroll = true;
-          print('Reached the end of the scrollable area.');
+          // print('Reached the end of the scrollable area.');
         });
       }
     } else {
       if (atEndOfScroll) {
         setState(() {
           atEndOfScroll = false;
-          print('Moved away from the end.');
+          //  print('Moved away from the end.');
         });
       }
     }

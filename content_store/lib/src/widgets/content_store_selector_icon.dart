@@ -40,7 +40,8 @@ class ContentSourceSelectorIconState
 }
 
 class ShowAvailableServers extends ConsumerWidget {
-  const ShowAvailableServers({super.key});
+  const ShowAvailableServers({super.key, this.supportedSchema = const []});
+  final List<String> supportedSchema;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -54,6 +55,7 @@ class ShowAvailableServers extends ConsumerWidget {
         builder: (availableStores) {
           return KnownServersList(
             servers: availableStores,
+            supportedSchema: supportedSchema,
           );
         });
   }
@@ -62,15 +64,25 @@ class ShowAvailableServers extends ConsumerWidget {
 class KnownServersList extends ConsumerWidget {
   const KnownServersList({
     required this.servers,
+    required this.supportedSchema,
     super.key,
   });
   final RegisteredURLs servers;
+  final List<String> supportedSchema;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final List<CLUrl> stores;
+    if (supportedSchema.isNotEmpty) {
+      stores = servers.availableStores
+          .where((e) => supportedSchema.contains(e.scheme))
+          .toList();
+    } else {
+      stores = servers.availableStores;
+    }
     return ListView(
       shrinkWrap: true,
-      children: servers.availableStores
+      children: stores
           .map((storeURL) => GetStore(
               storeURL: storeURL,
               errorBuilder: (p0, p1) => ServerTile(
@@ -120,7 +132,7 @@ class ServerTile extends ConsumerWidget {
       icon = clIcons.noNetwork;
       color = Colors.red;
     }
-    print('$storeURL: isAlive? ${store?.store.isAlive}');
+
     final child = ListTile(
         leading: Icon(
           icon,
