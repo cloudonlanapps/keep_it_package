@@ -2,14 +2,17 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
-import '../../models/session_candidate.dart';
 import '../../providers/a_files.dart';
+import '../../providers/b_candidate.dart';
+import '../../providers/online_server.dart';
+import '../../providers/server_io.dart';
 
 class MediaPopover extends ConsumerStatefulWidget {
-  const MediaPopover({required this.media, super.key});
-  final SessionCandidate media;
+  const MediaPopover({required this.file, super.key});
+  final XFile file;
 
   @override
   ConsumerState<MediaPopover> createState() => _MediaPopoverState();
@@ -27,6 +30,19 @@ class _MediaPopoverState extends ConsumerState<MediaPopover> {
   @override
   Widget build(BuildContext context) {
     final textTheme = ShadTheme.of(context).textTheme;
+    final server = ref
+        .watch(onlineServerProvider)
+        .whenOrNull(data: (server) => server);
+    final session = ref
+        .watch(sessionProvider)
+        .whenOrNull(data: (session) => session);
+
+    final canUpload = server != null && session?.socket.id != null;
+
+    final candidate = ref
+        .watch(sessionCandidateProvider(widget.file))
+        .whenOrNull(data: (data) => data);
+    final needUpload = candidate != null && candidate.entity == null;
     return ShadPopover(
       controller: popoverController,
       popover: (context) => SizedBox(
@@ -39,13 +55,32 @@ class _MediaPopoverState extends ConsumerState<MediaPopover> {
             Row(
               spacing: 8,
               children: [
-                Expanded(
-                  child: Text(widget.media.label, style: textTheme.lead),
-                ),
+                if (needUpload)
+                  ShadIconButton.outline(
+                    enabled: canUpload,
+                    onPressed: canUpload
+                        ? () {
+                            ref
+                                .read(
+                                  sessionCandidateProvider(
+                                    widget.file,
+                                  ).notifier,
+                                )
+                                .upload(server, session!.socket.id!);
+                            popoverController.toggle();
+                          }
+                        : null,
+                    icon: const Icon(LucideIcons.upload300),
+                  )
+                else if (candidate != null)
+                  const ShadIconButton.ghost(
+                    icon: Icon(LucideIcons.check600, color: Colors.blue),
+                  ),
+                Expanded(child: Text(widget.file.name, style: textTheme.lead)),
                 ShadIconButton.outline(
                   onPressed: () {
-                    ref.read(sessionFilesProvider.notifier).removeByPath([
-                      widget.media.path,
+                    ref.read(sessionFilesProvider.notifier).remove([
+                      widget.file,
                     ]);
                     popoverController.toggle();
                   },
@@ -56,7 +91,7 @@ class _MediaPopoverState extends ConsumerState<MediaPopover> {
                 ),
               ],
             ),
-            Image.file(File(widget.media.path), width: 256),
+            Image.file(File(widget.file.path), width: 256),
           ],
         ),
       ),

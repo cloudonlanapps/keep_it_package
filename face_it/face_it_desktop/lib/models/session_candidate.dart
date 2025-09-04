@@ -1,33 +1,48 @@
 import 'package:cl_basic_types/cl_basic_types.dart';
 import 'package:flutter/material.dart' hide ValueGetter;
+import 'package:image_picker/image_picker.dart';
 
-enum MediaStatus { added, uploading, uploaded }
+enum MediaStatus {
+  added,
+  uploading,
+  uploaded,
+  failed;
+
+  String get message => switch (this) {
+    added => 'File not uploaded',
+    uploading => 'File is uploading',
+    uploaded => 'File is uploaded',
+    failed => 'File upload failed',
+  };
+}
 
 @immutable
 class SessionCandidate {
   const SessionCandidate({
-    required this.path,
-    required this.label,
+    required this.file,
     this.entity,
     this.status = MediaStatus.added,
+    this.uploadProgress,
   });
-  final String path;
-  final String label;
+  final XFile file;
 
   final CLEntity? entity;
   final MediaStatus status;
+  final String? uploadProgress;
 
   SessionCandidate copyWith({
-    String? path,
-    String? label,
+    XFile? file,
     ValueGetter<CLEntity?>? entity,
     MediaStatus? status,
+    ValueGetter<String?>? uploadProgress,
   }) {
     return SessionCandidate(
-      path: path ?? this.path,
-      label: label ?? this.label,
+      file: file ?? this.file,
       entity: entity != null ? entity.call() : this.entity,
       status: status ?? this.status,
+      uploadProgress: uploadProgress != null
+          ? uploadProgress.call()
+          : this.uploadProgress,
     );
   }
 
@@ -70,23 +85,28 @@ class SessionCandidate {
 
   @override
   String toString() {
-    return 'MediaDescriptor(path: $path, label: $label, entity: $entity, status: $status)';
+    return 'SessionCandidate(file: $file, entity: $entity, status: $status, uploadProgress: $uploadProgress)';
   }
 
   @override
   bool operator ==(covariant SessionCandidate other) {
     if (identical(this, other)) return true;
 
-    return other.path == path &&
-        other.label == label &&
+    return other.file == file &&
         other.entity == entity &&
-        other.status == status;
+        other.status == status &&
+        other.uploadProgress == uploadProgress;
   }
 
   @override
   int get hashCode {
-    return path.hashCode ^ label.hashCode ^ entity.hashCode ^ status.hashCode;
+    return file.hashCode ^
+        entity.hashCode ^
+        status.hashCode ^
+        uploadProgress.hashCode;
   }
+
+  String get statusString => status.message;
 }
 
 
