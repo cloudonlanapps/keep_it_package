@@ -1,8 +1,9 @@
-import 'package:face_it_desktop/providers/e_preferred_server.dart';
-import 'package:face_it_desktop/providers/d_session_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
+
+import '../../providers/d_session_provider.dart';
+import '../../providers/e_preferred_server.dart';
 
 class SocketConnectButton extends ConsumerWidget {
   const SocketConnectButton({super.key});

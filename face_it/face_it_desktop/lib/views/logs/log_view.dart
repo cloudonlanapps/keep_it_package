@@ -8,39 +8,19 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
-import '../../providers/d_session_provider.dart';
+import '../../providers/messages.dart';
 
-class LogView extends ConsumerStatefulWidget {
+class LogView extends ConsumerWidget {
   const LogView({super.key});
 
   @override
-  ConsumerState<LogView> createState() => _LogViewState();
-}
-
-class _LogViewState extends ConsumerState<LogView> {
-  @override
-  Widget build(BuildContext context) {
-    return DecoratedBox(
-      decoration: const BoxDecoration(color: Colors.black87),
-      child: Padding(
-        padding: const EdgeInsets.all(8),
-        child: ref
-            .watch(sessionProvider)
-            .when(
-              loading: () => const Center(child: CircularProgressIndicator()),
-              error: (err, stack) => Center(child: Text('Error: $err')),
-              data: (serverIO) {
-                return const MessageBox(
-                  messages: ['MESSAGE PROVDER NOT IMPLEMENTED'],
-                );
-              },
-            ),
-      ),
-    );
+  Widget build(BuildContext context, WidgetRef ref) {
+    final messages = ref.watch(messagesProvider);
+    return MessageBox(messages: messages);
   }
 }
 
-class MessageBox extends StatefulWidget {
+class MessageBox extends ConsumerStatefulWidget {
   const MessageBox({
     required this.messages,
     super.key,
@@ -52,10 +32,10 @@ class MessageBox extends StatefulWidget {
   final ScrollController? horizontalScroller;
 
   @override
-  State<MessageBox> createState() => _MessageBoxState();
+  ConsumerState<MessageBox> createState() => _MessageBoxState();
 }
 
-class _MessageBoxState extends State<MessageBox> {
+class _MessageBoxState extends ConsumerState<MessageBox> {
   final ScrollController verticalScroller = ScrollController();
   final ScrollController horizontalScroller = ScrollController();
   bool userScrolled = false;
@@ -126,109 +106,118 @@ class _MessageBoxState extends State<MessageBox> {
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final textPainter = TextPainter(
-          text: TextSpan(
-            text: 'W',
-            style: GoogleFonts.robotoMono(color: Colors.white, fontSize: 14),
-          ),
-          textDirection: TextDirection.ltr,
-        )..layout();
+    return DecoratedBox(
+      decoration: const BoxDecoration(color: Colors.black87),
+      child: Padding(
+        padding: const EdgeInsets.all(8),
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final textPainter = TextPainter(
+              text: TextSpan(
+                text: 'W',
+                style: GoogleFonts.robotoMono(
+                  color: Colors.white,
+                  fontSize: 14,
+                ),
+              ),
+              textDirection: TextDirection.ltr,
+            )..layout();
 
-        final maxLength = widget.messages.fold(
-          0,
-          (maxLen, element) => max(maxLen, element.length),
-        );
+            final maxLength = widget.messages.fold(
+              0,
+              (maxLen, element) => max(maxLen, element.length),
+            );
 
-        final double calculatedWidth = max(
-          constraints.maxWidth,
-          (textPainter.width.ceil() * maxLength).toDouble(),
-        );
+            final double calculatedWidth = max(
+              constraints.maxWidth,
+              (textPainter.width.ceil() * maxLength).toDouble(),
+            );
 
-        return Stack(
-          children: [
-            Listener(
-              onPointerSignal: (PointerSignalEvent event) {
-                // Check if the event is a PointerScrollEvent
-                if (event is PointerScrollEvent) {
-                  // Check if the shift key is pressed. The `event.synthesized` property
-                  // is not reliable, so this is the best way to handle it.
-                  if (HardwareKeyboard.instance.physicalKeysPressed.contains(
-                        PhysicalKeyboardKey.shiftLeft,
-                      ) ||
-                      HardwareKeyboard.instance.physicalKeysPressed.contains(
-                        PhysicalKeyboardKey.shiftRight,
-                      )) {
-                    // Apply the horizontal scroll offset
-                    horizontalScroller.animateTo(
-                      horizontalScroller.offset + event.scrollDelta.dy,
-                      duration: const Duration(milliseconds: 200),
-                      curve: Curves.easeOut,
-                    );
-                  }
-                }
-              },
-              child: Scrollbar(
-                controller: horizontalScroller,
-                child: SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  controller: horizontalScroller,
-                  physics: const AlwaysScrollableScrollPhysics(
-                    parent: ClampingScrollPhysics(),
-                  ),
-                  child: SizedBox(
-                    width: calculatedWidth,
-                    child: ListView.builder(
-                      //shrinkWrap: true,
-                      controller: verticalScroller,
-                      itemCount: widget.messages.length,
-                      itemBuilder: (context, index) {
-                        if (widget.messages[index] == '@Divider') {
-                          return const Divider(
-                            thickness: 2,
-                            color: Colors.grey,
-                          );
-                        }
-                        return Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 4),
-                          child: Text(
-                            //"W" * maxLength + 'X',
-                            widget.messages[index],
-                            style: GoogleFonts.robotoMono(
-                              color: Colors.white,
-                              fontSize: 14,
-                            ),
-
-                            maxLines: 1, // ensure single line
-                            // overflow: TextOverflow.ellipsis,
-                          ),
+            return Stack(
+              children: [
+                Listener(
+                  onPointerSignal: (PointerSignalEvent event) {
+                    // Check if the event is a PointerScrollEvent
+                    if (event is PointerScrollEvent) {
+                      // Check if the shift key is pressed. The `event.synthesized` property
+                      // is not reliable, so this is the best way to handle it.
+                      if (HardwareKeyboard.instance.physicalKeysPressed
+                              .contains(PhysicalKeyboardKey.shiftLeft) ||
+                          HardwareKeyboard.instance.physicalKeysPressed
+                              .contains(PhysicalKeyboardKey.shiftRight)) {
+                        // Apply the horizontal scroll offset
+                        horizontalScroller.animateTo(
+                          horizontalScroller.offset + event.scrollDelta.dy,
+                          duration: const Duration(milliseconds: 200),
+                          curve: Curves.easeOut,
                         );
-                      },
+                      }
+                    }
+                  },
+                  child: Scrollbar(
+                    controller: horizontalScroller,
+                    child: SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      controller: horizontalScroller,
+                      physics: const AlwaysScrollableScrollPhysics(
+                        parent: ClampingScrollPhysics(),
+                      ),
+                      child: SizedBox(
+                        width: calculatedWidth,
+                        child: ListView.builder(
+                          //shrinkWrap: true,
+                          controller: verticalScroller,
+                          itemCount: widget.messages.length,
+                          itemBuilder: (context, index) {
+                            if (widget.messages[index] == '@Divider') {
+                              return const Divider(
+                                thickness: 2,
+                                color: Colors.grey,
+                              );
+                            }
+                            return Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 4,
+                              ),
+                              child: Text(
+                                //"W" * maxLength + 'X',
+                                widget.messages[index],
+                                style: GoogleFonts.robotoMono(
+                                  color: Colors.white,
+                                  fontSize: 14,
+                                ),
+
+                                maxLines: 1, // ensure single line
+                                // overflow: TextOverflow.ellipsis,
+                              ),
+                            );
+                          },
+                        ),
+                      ),
                     ),
                   ),
                 ),
-              ),
-            ),
-            if (!atEndOfScroll)
-              Align(
-                alignment: Alignment.bottomCenter,
-                child: ShadBadge.outline(
-                  onPressed: () {
-                    setState(() {
-                      _scrollToBottomLeft();
-                      userScrolled = false;
-                    });
-                  },
-                  child: const Icon(
-                    Icons.arrow_downward_sharp,
-                    color: Colors.white,
+                if (!atEndOfScroll)
+                  Align(
+                    alignment: Alignment.bottomCenter,
+                    child: ShadBadge.outline(
+                      onPressed: () {
+                        setState(() {
+                          _scrollToBottomLeft();
+                          userScrolled = false;
+                        });
+                      },
+                      child: const Icon(
+                        Icons.arrow_downward_sharp,
+                        color: Colors.white,
+                      ),
+                    ),
                   ),
-                ),
-              ),
-          ],
-        );
-      },
+              ],
+            );
+          },
+        ),
+      ),
     );
   }
 }
