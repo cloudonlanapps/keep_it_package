@@ -1,29 +1,29 @@
-import 'dart:async';
+/* import 'dart:async';
 
 import 'package:collection/collection.dart';
-import 'package:face_it_desktop/models/media_descriptor.dart';
+import 'package:face_it_desktop/models/session_candidate.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 @immutable
-class AvailableMedia {
-  const AvailableMedia({required this.items, this.activePath});
-  final List<MediaDescriptor> items;
+class SessionCandidates {
+  const SessionCandidates({required this.items, this.activePath});
+  final List<SessionCandidate> items;
   final String? activePath;
 
-  AvailableMedia copyWith({
-    List<MediaDescriptor>? items,
+  SessionCandidates copyWith({
+    List<SessionCandidate>? items,
     ValueGetter<String?>? activePath,
   }) {
-    return AvailableMedia(
+    return SessionCandidates(
       items: items ?? this.items,
       activePath: activePath != null ? activePath.call() : this.activePath,
     );
   }
 
   @override
-  bool operator ==(covariant AvailableMedia other) {
+  bool operator ==(covariant SessionCandidates other) {
     if (identical(this, other)) return true;
     final listEquals = const DeepCollectionEquality().equals;
 
@@ -33,17 +33,17 @@ class AvailableMedia {
   @override
   int get hashCode => items.hashCode ^ activePath.hashCode;
 
-  MediaDescriptor? get activeMedia =>
+  SessionCandidate? get activeMedia =>
       items.where((item) => item.path == activePath).firstOrNull;
 }
 
-class AvailableMediaNotifier extends AsyncNotifier<AvailableMedia> {
+class AvailableMediaNotifier extends AsyncNotifier<SessionCandidates> {
   @override
-  FutureOr<AvailableMedia> build() {
-    return const AvailableMedia(items: []);
+  FutureOr<SessionCandidates> build() {
+    return const SessionCandidates(items: []);
   }
 
-  Future<void> addImages(List<MediaDescriptor> images) async {
+  Future<void> addImages(List<SessionCandidate> images) async {
     final uniqueImages = images.where(
       (e) => !state.value!.items.map((c) => c.path).contains(e.path),
     );
@@ -63,11 +63,11 @@ class AvailableMediaNotifier extends AsyncNotifier<AvailableMedia> {
   }
 
   Future<void> clear() async {
-    state = const AsyncData(AvailableMedia(items: []));
+    state = const AsyncData(SessionCandidates(items: []));
   }
 
-  MediaDescriptor? get activeMedia => state.value!.activeMedia;
-  set activeMedia(MediaDescriptor? value) {
+  SessionCandidate? get activeMedia => state.value!.activeMedia;
+  set activeMedia(SessionCandidate? value) {
     if (value == null) {
       state = AsyncData(state.value!.copyWith(activePath: () => null));
     } else {
@@ -83,6 +83,7 @@ class AvailableMediaNotifier extends AsyncNotifier<AvailableMedia> {
 }
 
 final availableMediaProvider =
-    AsyncNotifierProvider<AvailableMediaNotifier, AvailableMedia>(
+    AsyncNotifierProvider<AvailableMediaNotifier, SessionCandidates>(
       AvailableMediaNotifier.new,
     );
+ */

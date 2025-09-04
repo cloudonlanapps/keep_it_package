@@ -4,12 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
-import '../../models/media_descriptor.dart';
-import '../../providers/image_provider.dart';
+import '../../models/session_candidate.dart';
+import '../../providers/a_files.dart';
 
 class MediaPopover extends ConsumerStatefulWidget {
   const MediaPopover({required this.media, super.key});
-  final MediaDescriptor media;
+  final SessionCandidate media;
 
   @override
   ConsumerState<MediaPopover> createState() => _MediaPopoverState();
@@ -44,9 +44,9 @@ class _MediaPopoverState extends ConsumerState<MediaPopover> {
                 ),
                 ShadIconButton.outline(
                   onPressed: () {
-                    ref
-                        .read(availableMediaProvider.notifier)
-                        .removeImagesByPath([widget.media.path]);
+                    ref.read(sessionFilesProvider.notifier).removeByPath([
+                      widget.media.path,
+                    ]);
                     popoverController.toggle();
                   },
                   icon: Icon(
