@@ -31,9 +31,7 @@ class ActiveImage extends ConsumerWidget {
           )
         else ...[
           ImageMenu(menuItems: menuItems),
-          Expanded(
-            child: Image.file(File(activeCandidate.file.path), width: 256),
-          ),
+          Expanded(child: Image.file(File(activeCandidate.file.path))),
         ],
       ],
     );
