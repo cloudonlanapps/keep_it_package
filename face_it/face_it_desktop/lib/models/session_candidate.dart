@@ -108,17 +108,3 @@ class SessionCandidate {
 
   String get statusString => status.message;
 }
-
-
-/* 
-{
-  "createDate": null,
-  "duration": null,
-  "fileSize": 42214,
-  "file_identifier": "3789db620aa8136331c1b321e344112d.jpg",
-  "height": 500,
-  "md5": "3789db620aa8136331c1b321e344112d",
-  "mimeType": "image/jpeg",
-  "status": "duplicate",
-  "width": 483
-} */

@@ -22,7 +22,7 @@ class SessionCandidatesNotifier extends AsyncNotifier<List<SessionCandidate>> {
         .where((userAsyncValue) => userAsyncValue.hasValue)
         .map((userAsyncValue) => userAsyncValue.value!)
         .toList();
-    print('SessionCandidatesNotifier: ${candidates.length}');
+
     return candidates;
   }
 }
@@ -48,7 +48,6 @@ class SessionAsyncCandidatesNotifier
       final candidate = ref.watch(sessionCandidateProvider(file));
       candidates.add(candidate);
     }
-    print('SessionAsyncCandidatesNotifier: ${candidates.length}');
 
     return candidates;
   }

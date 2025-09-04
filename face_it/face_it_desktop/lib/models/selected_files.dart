@@ -9,9 +9,7 @@ import 'package:image_picker/image_picker.dart';
 
 @immutable
 class SelectedFiles {
-  SelectedFiles(this.files, {this.activeFilePath}) {
-    print('SelectedFiles: ${files.length}');
-  }
+  const SelectedFiles(this.files, {this.activeFilePath});
   final List<XFile> files;
   final String? activeFilePath;
 

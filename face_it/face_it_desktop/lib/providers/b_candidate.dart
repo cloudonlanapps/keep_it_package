@@ -7,8 +7,6 @@ import 'package:cl_basic_types/cl_basic_types.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import '../models/session_candidate.dart';
-import 'online_server.dart';
-import 'server_io.dart';
 
 final sessionCandidateProvider =
     AsyncNotifierProviderFamily<

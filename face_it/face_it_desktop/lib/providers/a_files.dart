@@ -9,7 +9,7 @@ final sessionFilesProvider =
     });
 
 class SessionFilesNotifier extends StateNotifier<SelectedFiles> {
-  SessionFilesNotifier() : super(SelectedFiles(const []));
+  SessionFilesNotifier() : super(const SelectedFiles([]));
   void setActiveFile(String file) => state = state.setActiveFile(file);
 
   void append(List<XFile> files) => state = state.append(files);
