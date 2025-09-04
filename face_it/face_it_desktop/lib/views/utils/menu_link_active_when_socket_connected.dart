@@ -14,6 +14,7 @@ class MenuLinkActiveWhenSocketConnected extends ConsumerWidget {
     final serverIO = ref.watch(sessionProvider).whenOrNull(data: (io) => io);
     return ShadButton.link(
       enabled: serverIO?.socket.connected ?? false,
+      onPressed: serverIO?.socket.connected ?? false ? menuItem.onTap : null,
       child: Text(
         menuItem.title,
         maxLines: 2,

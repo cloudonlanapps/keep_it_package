@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:face_it_desktop/providers/a_files.dart';
+import 'package:face_it_desktop/providers/e_preferred_server.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:socket_io_client/socket_io_client.dart' as io;
 
@@ -40,6 +42,11 @@ class SessionNotifier extends AsyncNotifier<CLSocket?> {
       ..onDisconnect((_) {
         log('Disconnected');
         state = AsyncValue.data(CLSocket(socket: socket));
+        socket
+          ..disconnect()
+          ..dispose();
+        ref.read(sessionFilesProvider.notifier).clear();
+        ref.read(preferredServerIdProvider.notifier).state = null;
       });
     ref.onDispose(() {
       socket
@@ -52,6 +59,11 @@ class SessionNotifier extends AsyncNotifier<CLSocket?> {
 
   void onReceiveMessage(dynamic data) {
     log('Received: ${(data as Map<String, dynamic>)["msg"]}');
+  }
+
+  void sendMsg(String type, dynamic map) {
+    log('Sending: $type - $map');
+    state.value!.socket.emit(type, map);
   }
 
   void log(String msg) {

@@ -18,4 +18,5 @@ class SessionFilesNotifier extends StateNotifier<SelectedFiles> {
 
   void removeByPath(List<String> pathsToRemove) =>
       state = state.removeByPath(pathsToRemove);
+  void clear() => state = const SelectedFiles([]);
 }
