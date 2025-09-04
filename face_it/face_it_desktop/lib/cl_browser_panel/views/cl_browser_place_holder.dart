@@ -7,6 +7,6 @@ class CLBrowserPlaceHolder extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return CLBrowserContainer();
+    return const CLBrowserContainer();
   }
 }

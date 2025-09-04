@@ -9,13 +9,13 @@ class CLBrowserContainer extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Container(
-      padding: const EdgeInsets.only(left: 8.0, bottom: 8),
+      padding: const EdgeInsets.only(left: 8, bottom: 8),
       decoration: BoxDecoration(
         border: Border(
           bottom: BorderSide(color: ShadTheme.of(context).colorScheme.muted),
         ),
       ),
-      child: child ?? Text("Place Holder"),
+      child: child ?? const Text('Place Holder'),
     );
   }
 }

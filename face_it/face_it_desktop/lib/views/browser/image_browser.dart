@@ -1,16 +1,15 @@
 import 'dart:io';
 
 import 'package:colan_widgets/colan_widgets.dart';
-import 'package:face_it_desktop/face_it_desktop.dart'
-    show MenuButtonActiveWhenSocketConnected;
-import 'package:face_it_desktop/views/media_popover.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
-import '../models/media_descriptor.dart';
-import '../providers/image_provider.dart';
+import '../../models/media_descriptor.dart';
+import '../../providers/image_provider.dart';
+import '../utils/menu_button_active_when_socket_connected.dart';
+import 'media_popover.dart';
 
 // stores ExpansionPanel state information
 final ImagePicker _picker = ImagePicker();
@@ -40,7 +39,7 @@ class ImageBrowser extends ConsumerWidget {
                         return ListTile(
                           title: Center(
                             child: Text(
-                              "Nothing to show",
+                              'Nothing to show',
                               style: ShadTheme.of(context).textTheme.muted,
                             ),
                           ),
@@ -54,7 +53,7 @@ class ImageBrowser extends ConsumerWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    MenuButtonActiveWhenSocketConnected(
+                    const MenuButtonActiveWhenSocketConnected(
                       menuItem: CLMenuItem(
                         title: 'Import Folder',
                         icon: Icons.abc,
@@ -65,7 +64,7 @@ class ImageBrowser extends ConsumerWidget {
                         title: 'Import Image',
                         icon: Icons.abc,
                         onTap: () async {
-                          ref
+                          await ref
                               .read(availableMediaProvider.notifier)
                               .addImages(
                                 (await _picker.pickMultiImage())
@@ -77,7 +76,7 @@ class ImageBrowser extends ConsumerWidget {
                                     )
                                     .toList(),
                               );
-                          return null;
+                          return true;
                         },
                       ),
                     ),
@@ -86,20 +85,20 @@ class ImageBrowser extends ConsumerWidget {
               ],
             );
           },
-          error: (_, __) => Container(),
-          loading: () => Container(),
+          error: (_, _) => Container(),
+          loading: Container.new,
         );
   }
 }
 
 class ImageTile extends ConsumerWidget {
-  const ImageTile({super.key, required this.media});
+  const ImageTile({required this.media, super.key});
   final MediaDescriptor media;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return ListTile(
-      contentPadding: EdgeInsets.symmetric(vertical: 8),
+      contentPadding: const EdgeInsets.symmetric(vertical: 8),
       leading: Image.file(
         File(media.path), // Replace with your image URL
         width: 64,

@@ -8,9 +8,8 @@ import 'package:face_it_desktop/providers/server_io.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
-import 'package:shimmer/shimmer.dart';
 
-import '../providers/preferred_server.dart';
+import '../../providers/preferred_server.dart';
 
 class ServerSelector extends ConsumerWidget {
   const ServerSelector({required this.onDone, super.key});
@@ -28,36 +27,30 @@ class ServerSelector extends ConsumerWidget {
       loadingBuilder: () => loadingWidget,
       errorBuilder: (p0, p1) => errorWidget,
       builder: (servers) {
-        return Shimmer.fromColors(
-          baseColor: Colors.grey[300]!,
-          highlightColor: Colors.grey[100]!,
-          child: ListTile(
-            title: servers.isEmpty
-                ? Text(
-                    'Server Not Available',
-                    style: ShadTheme.of(context).textTheme.p,
-                    textAlign: servers.isEmpty
-                        ? TextAlign.center
-                        : TextAlign.end,
-                  )
-                : clServer != null
-                ? Text(
-                    (clServer.storeURL.uri.replace(port: 5002)).toString(),
-                    style: ShadTheme.of(context).textTheme.small,
-                    textAlign: servers.isEmpty
-                        ? TextAlign.center
-                        : TextAlign.end,
-                  )
-                : null,
-            leading: ShadAvatar(
-              'assets/icon/cloud_on_lan_128px_color.png',
-              backgroundColor: Colors.transparent,
-              size: const Size.fromRadius((kMinInteractiveDimension / 2) - 6),
-            ),
-            trailing: servers.isEmpty
-                ? null
-                : ServerSelectorIcon(servers: servers),
+        return ListTile(
+          title: servers.isEmpty
+              ? Text(
+                  'Server Not Available',
+                  style: ShadTheme.of(context).textTheme.p,
+                  textAlign: servers.isEmpty ? TextAlign.center : TextAlign.end,
+                )
+              : clServer != null
+              ? Text(
+                  clServer.storeURL.uri.replace(port: 5002).toString(),
+                  style: ShadTheme.of(context).textTheme.small,
+                  textAlign: servers.isEmpty ? TextAlign.center : TextAlign.end,
+                )
+              : null,
+          leading: const ShadAvatar(
+            'assets/icon/cloud_on_lan_128px_color.png',
+            backgroundColor: Colors.transparent,
+            size: Size.fromRadius((kMinInteractiveDimension / 2) - 6),
           ),
+          trailing: servers.isEmpty
+              ? const ShadButton.ghost(
+                  leading: CircularProgressIndicator.adaptive(),
+                )
+              : ServerSelectorIcon(servers: servers),
         );
       },
     );
@@ -65,7 +58,7 @@ class ServerSelector extends ConsumerWidget {
 }
 
 class ServerSelectorIcon extends ConsumerStatefulWidget {
-  const ServerSelectorIcon({super.key, required this.servers});
+  const ServerSelectorIcon({required this.servers, super.key});
   final List<CLServer> servers;
 
   @override
@@ -81,14 +74,15 @@ class ServerSelectorIconState extends ConsumerState<ServerSelectorIcon> {
     popoverController.addListener(listener);
     blinkDuration = popoverController.isOpen
         ? Duration.zero
-        : Duration(milliseconds: 500);
+        : const Duration(milliseconds: 500);
     super.initState();
   }
 
   @override
   void dispose() {
-    popoverController.removeListener(listener);
-    popoverController.dispose();
+    popoverController
+      ..removeListener(listener)
+      ..dispose();
 
     super.dispose();
   }
@@ -97,7 +91,7 @@ class ServerSelectorIconState extends ConsumerState<ServerSelectorIcon> {
     setState(() {
       blinkDuration = popoverController.isOpen
           ? Duration.zero
-          : Duration(milliseconds: 500);
+          : const Duration(milliseconds: 500);
     });
   }
 
@@ -109,16 +103,22 @@ class ServerSelectorIconState extends ConsumerState<ServerSelectorIcon> {
     final session = ref.watch(sessionProvider).whenOrNull(data: (io) => io);
 
     if (clServer != null) {
-      return ShadButton.ghost(
-        leading: clIcons.disconnectToServer.iconFormatted(
-          color: ShadTheme.of(context).colorScheme.destructive,
-        ),
-        onPressed: () {
-          session?.socket.disconnect();
+      if (!(session?.socket.connected ?? true)) {
+        return const ShadButton.ghost(
+          leading: CircularProgressIndicator.adaptive(),
+        );
+      } else {
+        return ShadButton.ghost(
+          leading: clIcons.disconnectToServer.iconFormatted(
+            color: ShadTheme.of(context).colorScheme.destructive,
+          ),
+          onPressed: () {
+            session?.socket.disconnect();
 
-          ref.read(preferredServerIdProvider.notifier).state = null;
-        },
-      );
+            ref.read(preferredServerIdProvider.notifier).state = null;
+          },
+        );
+      }
     }
     return ShadPopover(
       controller: popoverController,
@@ -143,14 +143,14 @@ class ServerSelectorIconState extends ConsumerState<ServerSelectorIcon> {
       child: ShadButton.ghost(
         leading: clIcons.connectToServer.iconFormatted(),
         onPressed: popoverController.toggle,
-        child: clServer == null ? Text("Select Server") : null /* , */,
+        child: clServer == null ? const Text('Select Server') : null /* , */,
       ),
     );
   }
 }
 
 class ServerTile extends ConsumerWidget {
-  const ServerTile({super.key, required this.server, required this.onPressed});
+  const ServerTile({required this.server, required this.onPressed, super.key});
   final CLServer server;
   final void Function() onPressed;
 

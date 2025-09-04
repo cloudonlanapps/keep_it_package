@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
-import 'face_it_desktop.dart';
+import 'views/face_it_desktop.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   runApp(
     ProviderScope(
       child: ShadApp(
-        debugShowCheckedModeBanner: false,
         theme: ShadThemeData(
           brightness: Brightness.light,
           colorScheme: const ShadZincColorScheme.light(),

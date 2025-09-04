@@ -4,11 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
-import '../models/media_descriptor.dart';
-import '../providers/image_provider.dart';
+import '../../models/media_descriptor.dart';
+import '../../providers/image_provider.dart';
 
 class MediaPopover extends ConsumerStatefulWidget {
-  const MediaPopover({super.key, required this.media});
+  const MediaPopover({required this.media, super.key});
   final MediaDescriptor media;
 
   @override
@@ -62,7 +62,7 @@ class _MediaPopoverState extends ConsumerState<MediaPopover> {
       ),
       child: ShadIconButton.outline(
         onPressed: popoverController.toggle,
-        icon: Icon(LucideIcons.ellipsis200),
+        icon: const Icon(LucideIcons.ellipsis200),
       ),
     );
   }

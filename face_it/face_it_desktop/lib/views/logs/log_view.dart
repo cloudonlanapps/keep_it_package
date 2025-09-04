@@ -8,7 +8,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
-import '../providers/server_io.dart';
+import '../../providers/server_io.dart';
 
 class LogView extends ConsumerStatefulWidget {
   const LogView({super.key});
@@ -20,22 +20,30 @@ class LogView extends ConsumerStatefulWidget {
 class _LogViewState extends ConsumerState<LogView> {
   @override
   Widget build(BuildContext context) {
-    return ref
-        .watch(sessionProvider)
-        .when(
-          loading: () => const Center(child: CircularProgressIndicator()),
-          error: (err, stack) => Center(child: Text("Error: $err")),
-          data: (serverIO) {
-            return MessageBox(messages: ["MESSAGE PROVDER NOT IMPLEMENTED"]);
-          },
-        );
+    return DecoratedBox(
+      decoration: const BoxDecoration(color: Colors.black87),
+      child: Padding(
+        padding: const EdgeInsets.all(8),
+        child: ref
+            .watch(sessionProvider)
+            .when(
+              loading: () => const Center(child: CircularProgressIndicator()),
+              error: (err, stack) => Center(child: Text('Error: $err')),
+              data: (serverIO) {
+                return const MessageBox(
+                  messages: ['MESSAGE PROVDER NOT IMPLEMENTED'],
+                );
+              },
+            ),
+      ),
+    );
   }
 }
 
 class MessageBox extends StatefulWidget {
   const MessageBox({
-    super.key,
     required this.messages,
+    super.key,
     this.horizontalScroller,
     this.verticalScroller,
   });
@@ -61,8 +69,9 @@ class _MessageBoxState extends State<MessageBox> {
 
   @override
   void dispose() {
-    verticalScroller.removeListener(verticalScrollListener);
-    verticalScroller.dispose();
+    verticalScroller
+      ..removeListener(verticalScrollListener)
+      ..dispose();
     horizontalScroller.dispose();
     super.dispose();
   }
@@ -119,7 +128,7 @@ class _MessageBoxState extends State<MessageBox> {
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        final TextPainter textPainter = TextPainter(
+        final textPainter = TextPainter(
           text: TextSpan(
             text: 'W',
             style: GoogleFonts.robotoMono(color: Colors.white, fontSize: 14),
@@ -127,7 +136,7 @@ class _MessageBoxState extends State<MessageBox> {
           textDirection: TextDirection.ltr,
         )..layout();
 
-        final int maxLength = widget.messages.fold(
+        final maxLength = widget.messages.fold(
           0,
           (maxLen, element) => max(maxLen, element.length),
         );
@@ -165,7 +174,7 @@ class _MessageBoxState extends State<MessageBox> {
                 child: SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
                   controller: horizontalScroller,
-                  physics: AlwaysScrollableScrollPhysics(
+                  physics: const AlwaysScrollableScrollPhysics(
                     parent: ClampingScrollPhysics(),
                   ),
                   child: SizedBox(
@@ -175,14 +184,14 @@ class _MessageBoxState extends State<MessageBox> {
                       controller: verticalScroller,
                       itemCount: widget.messages.length,
                       itemBuilder: (context, index) {
-                        if (widget.messages[index] == "@Divider") {
+                        if (widget.messages[index] == '@Divider') {
                           return const Divider(
                             thickness: 2,
                             color: Colors.grey,
                           );
                         }
                         return Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                          padding: const EdgeInsets.symmetric(horizontal: 4),
                           child: Text(
                             //"W" * maxLength + 'X',
                             widget.messages[index],

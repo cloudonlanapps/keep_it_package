@@ -25,28 +25,28 @@ class SessionNotifier extends AsyncNotifier<CLSocket?> {
           .disableReconnection() // stop infinite retries
           .build(),
     );
-    socket.onConnect((_) {
-      state = AsyncValue.data(CLSocket(socket: socket));
-    });
-    socket.onConnectError((err) {
-      state = AsyncValue.data(CLSocket(socket: socket));
-    });
-    socket.on("message", onReceiveMessage);
-
-    socket.onDisconnect((_) {
-      state = AsyncValue.data(CLSocket(socket: socket));
-    });
+    socket
+      ..onConnect((_) {
+        state = AsyncValue.data(CLSocket(socket: socket));
+      })
+      ..onConnectError((err) {
+        state = AsyncValue.data(CLSocket(socket: socket));
+      })
+      ..on('message', onReceiveMessage)
+      ..onDisconnect((_) {
+        state = AsyncValue.data(CLSocket(socket: socket));
+      });
     ref.onDispose(() {
-      socket.disconnect();
-      socket.dispose();
+      socket
+        ..disconnect()
+        ..dispose();
     });
-    socket.connect();
+    Future.delayed(const Duration(seconds: 1), socket.connect);
     return CLSocket(socket: socket);
   }
 
   void onReceiveMessage(dynamic data) {
-    // ignore: unused_local_variable
-    final msg = data["msg"];
+    //final msg = data['msg'];
   }
 }
 

@@ -1,4 +1,3 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:async';
 
 import 'package:collection/collection.dart';
@@ -41,7 +40,7 @@ class AvailableMedia {
 class AvailableMediaNotifier extends AsyncNotifier<AvailableMedia> {
   @override
   FutureOr<AvailableMedia> build() {
-    return AvailableMedia(items: const []);
+    return const AvailableMedia(items: []);
   }
 
   Future<void> addImages(List<MediaDescriptor> images) async {
@@ -64,7 +63,7 @@ class AvailableMediaNotifier extends AsyncNotifier<AvailableMedia> {
   }
 
   Future<void> clear() async {
-    state = AsyncData(AvailableMedia(items: const []));
+    state = const AsyncData(AvailableMedia(items: []));
   }
 
   MediaDescriptor? get activeMedia => state.value!.activeMedia;
