@@ -4,7 +4,7 @@ import 'package:cl_basic_types/cl_basic_types.dart';
 import 'package:content_store/content_store.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'preferred_server.dart';
+import 'e_preferred_server.dart';
 
 final onlineServerProvider =
     AsyncNotifierProvider<OnlineServerNotifier, CLServer?>(

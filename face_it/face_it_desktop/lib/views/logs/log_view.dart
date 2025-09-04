@@ -8,7 +8,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
-import '../../providers/server_io.dart';
+import '../../providers/d_session_provider.dart';
 
 class LogView extends ConsumerStatefulWidget {
   const LogView({super.key});

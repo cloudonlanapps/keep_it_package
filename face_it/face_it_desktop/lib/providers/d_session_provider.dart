@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:socket_io_client/socket_io_client.dart' as io;
 
 import '../models/server_io.dart';
-import 'online_server.dart';
+import 'd_online_server.dart';
 
 final sessionProvider = AsyncNotifierProvider<SessionNotifier, CLSocket?>(
   SessionNotifier.new,

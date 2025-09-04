@@ -9,8 +9,8 @@ import 'package:shadcn_ui/shadcn_ui.dart';
 
 import '../../providers/b_candidate.dart';
 import '../../providers/c_candidates.dart';
-import '../../providers/online_server.dart';
-import '../../providers/server_io.dart';
+import '../../providers/d_online_server.dart';
+import '../../providers/d_session_provider.dart';
 import '../utils/menu_button_active_when_socket_connected.dart';
 
 final ImagePicker _picker = ImagePicker();
