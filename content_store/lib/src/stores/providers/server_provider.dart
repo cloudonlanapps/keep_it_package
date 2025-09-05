@@ -33,11 +33,11 @@ class ServerNotifier extends FamilyAsyncNotifier<CLServer, CLUrl>
 
   Future<void> monitorServer(Timer _) async {
     try {
-      final clServer = await CLServer(storeURL: arg).isConnected();
+      final clServer = await state.value?.isConnected();
       final server = state.value;
 
       if (server != clServer) {
-        state = AsyncData(clServer);
+        state = AsyncData(clServer!);
       }
     } catch (e) {
       log('monitorServer: $e');
