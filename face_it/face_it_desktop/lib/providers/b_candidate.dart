@@ -26,7 +26,8 @@ class SessionCandidateNotifier
     state = AsyncData(state.value!.copyWith(status: MediaStatus.uploading));
     final task = UploadTask.fromFile(
       file: File(state.value!.file.path),
-      url: '${server.baseURL}/sessions/$sessionId/upload',
+      url:
+          '${server.storeURL.uri.replace(port: 5002)}/sessions/$sessionId/upload',
 
       fileField: 'media',
       updates: Updates.progress, // request status and progress updates
