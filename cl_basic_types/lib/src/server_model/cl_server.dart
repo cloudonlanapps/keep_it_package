@@ -62,10 +62,8 @@ class CLServer {
 
   bool validatePingResponse(String responseBody) {
     final info = jsonDecode(responseBody) as Map<String, dynamic>;
-    if ((info['name'] as String) == 'CoLAN server') {
-      return true;
-    }
-    return false;
+
+    return (info['name'] as String).startsWith('CoLAN server');
   }
 
   Future<CLServer> isConnected({http.Client? client}) async {
