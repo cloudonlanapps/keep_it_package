@@ -37,5 +37,6 @@ export 'src/store_reply.dart' show StoreReply, StoreError, StoreResult;
 export 'src/server_model/cl_url.dart' show CLUrl;
 export 'src/server_model/cl_server.dart' show CLServer;
 export 'src/server_model/rest_api.dart' show RESTAPi;
+export 'src/cl_logger.dart' show CLLogger;
 
 //export 'src/server_model/rest_api.dart';

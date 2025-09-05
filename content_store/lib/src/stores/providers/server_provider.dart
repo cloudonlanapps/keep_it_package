@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:cl_basic_types/cl_basic_types.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:store/store.dart';
 
 class ServerNotifier extends FamilyAsyncNotifier<CLServer, CLUrl>
     with CLLogger {

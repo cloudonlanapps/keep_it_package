@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:cl_basic_types/cl_basic_types.dart' show CLLogger;
 import 'package:content_store/src/stores/providers/registerred_urls.dart';
 import 'package:content_store/src/stores/providers/store_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
