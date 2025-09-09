@@ -16,10 +16,10 @@ final sessionProvider = AsyncNotifierProvider<SessionNotifier, CLSocket?>(
 class SessionNotifier extends AsyncNotifier<CLSocket?> {
   @override
   FutureOr<CLSocket?> build() async {
-    final server = await ref.watch(onlineServerProvider.future);
+    final server = await ref.watch(activeAIServerProvider.future);
     if (server == null) return null;
 
-    final uri = server.storeURL.uri.replace(port: 5002);
+    final uri = server.storeURL.uri;
     final socket = io.io(
       uri.toString(),
       io.OptionBuilder()
@@ -39,6 +39,8 @@ class SessionNotifier extends AsyncNotifier<CLSocket?> {
         state = AsyncValue.data(CLSocket(socket: socket));
       })
       ..on('message', onReceiveMessage)
+      ..on('result', onReceiveMessage)
+      ..on('progress', onReceiveMessage)
       ..onDisconnect((_) {
         log('Disconnected');
         state = AsyncValue.data(CLSocket(socket: socket));
@@ -58,7 +60,7 @@ class SessionNotifier extends AsyncNotifier<CLSocket?> {
   }
 
   void onReceiveMessage(dynamic data) {
-    log('Received: ${(data as Map<String, dynamic>)["msg"]}');
+    log('Received: $data ');
   }
 
   void sendMsg(String type, dynamic map) {

@@ -1,27 +1,18 @@
 import 'package:cl_basic_types/cl_basic_types.dart';
 import 'package:collection/collection.dart';
-import 'package:meta/meta.dart';
+import 'package:flutter/foundation.dart';
 
 @immutable
 class NetworkScanner {
-  const NetworkScanner({
-    required this.lanStatus,
-    required this.servers,
-  });
+  const NetworkScanner({required this.lanStatus, required this.servers});
 
   factory NetworkScanner.unknown() {
-    return const NetworkScanner(
-      lanStatus: false,
-      servers: null,
-    );
+    return const NetworkScanner(lanStatus: false, servers: <CLUrl>{});
   }
   final bool lanStatus;
-  final Set<CLUrl>? servers;
+  final Set<CLUrl> servers;
 
-  NetworkScanner copyWith({
-    bool? lanStatus,
-    Set<CLUrl>? servers,
-  }) {
+  NetworkScanner copyWith({bool? lanStatus, Set<CLUrl>? servers}) {
     return NetworkScanner(
       lanStatus: lanStatus ?? this.lanStatus,
       servers: servers ?? this.servers,
@@ -43,14 +34,11 @@ class NetworkScanner {
   String toString() =>
       'NetworkScanner(lanStatus: $lanStatus, servers: $servers)';
 
-  bool get isEmpty => servers?.isEmpty ?? true;
-  bool get isNotEmpty => servers?.isNotEmpty ?? false;
+  bool get isEmpty => servers.isEmpty;
+  bool get isNotEmpty => servers.isNotEmpty;
 
   NetworkScanner clearServers() {
-    return NetworkScanner(
-      lanStatus: lanStatus,
-      servers: null,
-    );
+    return NetworkScanner(lanStatus: lanStatus, servers: const {});
   }
 
   void search() {}

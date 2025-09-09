@@ -1,5 +1,7 @@
 import 'package:cl_basic_types/cl_basic_types.dart';
-import 'package:meta/meta.dart';
+import 'package:flutter/foundation.dart' hide ValueGetter;
+
+import 'cl_server.dart';
 
 @immutable
 class Server {

@@ -31,7 +31,7 @@ class _MediaPopoverState extends ConsumerState<MediaPopover> {
   Widget build(BuildContext context) {
     final textTheme = ShadTheme.of(context).textTheme;
     final server = ref
-        .watch(onlineServerProvider)
+        .watch(activeAIServerProvider)
         .whenOrNull(data: (server) => server);
     final session = ref
         .watch(sessionProvider)

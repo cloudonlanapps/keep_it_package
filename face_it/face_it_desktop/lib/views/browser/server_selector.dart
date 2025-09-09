@@ -1,7 +1,6 @@
-import 'package:cl_basic_types/cl_basic_types.dart';
+import 'package:cl_servers/cl_servers.dart' show CLServer, GetAvailableServers;
 import 'package:colan_widgets/colan_widgets.dart';
 
-import 'package:content_store/content_store.dart';
 import 'package:face_it_desktop/providers/d_online_server.dart';
 import 'package:face_it_desktop/providers/d_session_provider.dart';
 
@@ -20,10 +19,12 @@ class ServerSelector extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     const loadingWidget = Center(child: CircularProgressIndicator.adaptive());
     const errorWidget = Center(child: Icon(LucideIcons.triangleAlert));
-    final clServer = ref
-        .watch(onlineServerProvider)
+    final activeAIServer = ref
+        .watch(activeAIServerProvider)
         .whenOrNull(data: (io) => io);
+
     return GetAvailableServers(
+      serverType: 'ai.',
       loadingBuilder: () => loadingWidget,
       errorBuilder: (p0, p1) => errorWidget,
       builder: (servers) {
@@ -34,9 +35,9 @@ class ServerSelector extends ConsumerWidget {
                   style: ShadTheme.of(context).textTheme.p,
                   textAlign: servers.isEmpty ? TextAlign.center : TextAlign.end,
                 )
-              : clServer != null
+              : activeAIServer != null
               ? Text(
-                  clServer.storeURL.uri.replace(port: 5002).toString(),
+                  activeAIServer.storeURL.uri.toString(),
                   style: ShadTheme.of(context).textTheme.small,
                   textAlign: servers.isEmpty ? TextAlign.center : TextAlign.end,
                 )
@@ -98,7 +99,7 @@ class ServerSelectorIconState extends ConsumerState<ServerSelectorIcon> {
   @override
   Widget build(BuildContext context) {
     final clServer = ref
-        .watch(onlineServerProvider)
+        .watch(activeAIServerProvider)
         .whenOrNull(data: (io) => io);
     final session = ref.watch(sessionProvider).whenOrNull(data: (io) => io);
 

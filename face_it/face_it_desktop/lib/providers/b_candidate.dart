@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:background_downloader/background_downloader.dart';
-import 'package:cl_basic_types/cl_basic_types.dart';
+import 'package:cl_servers/cl_servers.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import '../models/session_candidate.dart';
@@ -26,8 +26,7 @@ class SessionCandidateNotifier
     state = AsyncData(state.value!.copyWith(status: MediaStatus.uploading));
     final task = UploadTask.fromFile(
       file: File(state.value!.file.path),
-      url:
-          '${server.storeURL.uri.replace(port: 5002)}/sessions/$sessionId/upload',
+      url: '${server.storeURL.uri}/sessions/$sessionId/upload',
 
       fileField: 'media',
       updates: Updates.progress, // request status and progress updates
@@ -43,15 +42,21 @@ class SessionCandidateNotifier
       },
     );
     if (result.responseBody?.isNotEmpty ?? false) {
-      final withEntity = state.value!.entityFromMap(
-        jsonDecode(result.responseBody!) as Map<String, dynamic>,
-      );
-      state = AsyncData(
-        withEntity.copyWith(
-          uploadProgress: () => null,
-          status: MediaStatus.uploaded,
-        ),
-      );
+      try {
+        final withEntity = state.value!.entityFromMap(
+          jsonDecode(result.responseBody!) as Map<String, dynamic>,
+        );
+        state = AsyncData(
+          withEntity.copyWith(
+            uploadProgress: () => null,
+            status: MediaStatus.uploaded,
+          ),
+        );
+      } catch (e) {
+        state = AsyncData(
+          state.value!.copyWith(uploadProgress: () => 'file upload failed'),
+        );
+      }
     } else {
       state = AsyncData(
         state.value!.copyWith(uploadProgress: () => 'file upload failed'),

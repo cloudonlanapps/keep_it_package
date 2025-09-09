@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:cl_basic_types/cl_basic_types.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../models/cl_server.dart';
+
 class ServerNotifier extends FamilyAsyncNotifier<CLServer, CLUrl>
     with CLLogger {
   @override
@@ -47,4 +49,5 @@ class ServerNotifier extends FamilyAsyncNotifier<CLServer, CLUrl>
 
 final serverProvider =
     AsyncNotifierProviderFamily<ServerNotifier, CLServer, CLUrl>(
-        ServerNotifier.new);
+      ServerNotifier.new,
+    );

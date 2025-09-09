@@ -1,0 +1,25 @@
+name: cl_servers
+description: "A new Flutter package project."
+version: 0.0.1
+homepage: https://www.cloudonlanapps.com
+publish_to: none
+environment:
+  sdk: ^3.8.1
+  flutter: ">=1.17.0"
+
+dependencies:
+  cl_basic_types:
+    path: ../cl_basic_types
+  collection: ^1.19.1
+  connectivity_plus: ^6.1.5
+  flutter:
+    sdk: flutter
+  flutter_riverpod: ^2.5.1
+  http: ^1.5.0
+  nsd: ^4.0.3
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+

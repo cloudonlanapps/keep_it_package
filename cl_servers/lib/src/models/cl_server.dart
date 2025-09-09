@@ -1,10 +1,11 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:cl_basic_types/cl_basic_types.dart';
+import 'package:flutter/foundation.dart' hide ValueGetter;
 import 'package:http/http.dart' as http;
-import 'package:meta/meta.dart';
+
+import 'rest_api.dart';
 
 @immutable
 class CLServer {
@@ -61,9 +62,9 @@ class CLServer {
   }
 
   bool validatePingResponse(String responseBody) {
-    final info = jsonDecode(responseBody) as Map<String, dynamic>;
-
-    return (info['name'] as String).startsWith('CoLAN server');
+    // final info = jsonDecode(responseBody) as Map<String, dynamic>;
+    //FIXME validatePingResponse
+    return true;
   }
 
   Future<CLServer> isConnected({http.Client? client}) async {

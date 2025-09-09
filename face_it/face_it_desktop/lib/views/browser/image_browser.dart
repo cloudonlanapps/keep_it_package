@@ -22,7 +22,7 @@ class ImageBrowser extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     ref.listen(sessionCandidatesProvider, (prev, curr) {
       final server = ref
-          .read(onlineServerProvider)
+          .read(activeAIServerProvider)
           .whenOrNull(data: (server) => server);
       final session = ref
           .read(sessionProvider)

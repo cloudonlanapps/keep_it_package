@@ -18,8 +18,11 @@ class CLUrl implements Comparable<CLUrl> {
   factory CLUrl.fromJson(String source) =>
       CLUrl.fromMap(json.decode(source) as Map<String, dynamic>);
 
-  factory CLUrl.fromString(String url,
-      {required String? identity, required String? label}) {
+  factory CLUrl.fromString(
+    String url, {
+    required String? identity,
+    required String? label,
+  }) {
     return CLUrl(Uri.parse(url), identity: identity, label: label);
   }
   final Uri uri;
@@ -83,4 +86,9 @@ class CLUrl implements Comparable<CLUrl> {
     }
     return identity!.compareTo(other.identity!);
   }
+
+  bool isType(String type) => identity != null && identity!.startsWith(type);
+
+  bool get isRepoServer => isType('repo.');
+  bool get isAIServer => isType('ai.');
 }

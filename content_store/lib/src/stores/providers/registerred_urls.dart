@@ -1,11 +1,11 @@
 import 'dart:async';
 
 import 'package:cl_basic_types/cl_basic_types.dart';
-import 'package:content_store/src/stores/providers/network_scanner.dart';
-import 'package:content_store/src/stores/providers/store_provider.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:cl_servers/cl_servers.dart';
 
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/registerred_urls.dart';
+import '../providers/store_provider.dart';
 
 class RegisteredURLsNotifier extends AsyncNotifier<RegisteredURLs>
     with CLLogger {
@@ -23,7 +23,7 @@ class RegisteredURLsNotifier extends AsyncNotifier<RegisteredURLs>
             identity: 'Quote Collection', label: 'Quote Collection'),
         // StoreURL.fromString('http://192.168.0.220:5001')
 
-        if (scanner.lanStatus && scanner.servers != null) ...scanner.servers!
+        if (scanner.lanStatus) ...scanner.servers.where((e) => e.isRepoServer)
       ];
 
       final registeredURLs =
