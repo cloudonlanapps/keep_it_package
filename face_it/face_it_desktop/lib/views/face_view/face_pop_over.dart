@@ -23,7 +23,6 @@ class _PopoverPageState extends State<PopoverPage> {
 
   @override
   Widget build(BuildContext context) {
-    final textTheme = ShadTheme.of(context).textTheme;
     return ShadPopover(
       decoration: const ShadDecoration(
         color: Colors.transparent,

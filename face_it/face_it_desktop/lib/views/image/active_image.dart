@@ -1,6 +1,4 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:colan_widgets/colan_widgets.dart';
-import 'package:face_it_desktop/views/settings/face_preferences_view.dart';
 import 'package:face_it_desktop/views/settings/quick_settings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -8,7 +6,6 @@ import 'package:shadcn_ui/shadcn_ui.dart';
 
 import '../../providers/b_active_candidate.dart';
 import '../../providers/b_candidate.dart';
-import '../../providers/face_box_preferences.dart';
 import 'image_menu.dart';
 import 'image_with_faces.dart';
 

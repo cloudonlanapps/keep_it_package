@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:background_downloader/background_downloader.dart';
-import 'package:cl_basic_types/cl_basic_types.dart';
 import 'package:cl_servers/cl_servers.dart';
 import 'package:face_it_desktop/models/face.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -74,7 +73,7 @@ class SessionCandidateNotifier
       final response = await ref
           .read(sessionProvider.notifier)
           .aitask(identifier!, 'recognize');
-      print(response);
+
       final faces = <Face>[
         if (response['faces'] case final List<dynamic> facesList)
           ...facesList.map((r) => Face.fromMap(r as Map<String, dynamic>)),

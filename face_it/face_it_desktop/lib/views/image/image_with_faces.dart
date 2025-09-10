@@ -4,7 +4,6 @@ import 'package:face_it_desktop/models/bbox.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:shadcn_ui/shadcn_ui.dart';
 
 import '../../providers/b_candidate.dart';
 import '../../providers/face_box_preferences.dart';
