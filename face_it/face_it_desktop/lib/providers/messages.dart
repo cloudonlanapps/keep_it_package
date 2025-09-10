@@ -12,6 +12,10 @@ class MessagesNotifier extends StateNotifier<List<String>> {
 
     state = [...state.removeOld(), '[$now] $msg'];
   }
+
+  void clear() {
+    state = [];
+  }
 }
 
 final messagesProvider = StateNotifierProvider<MessagesNotifier, List<String>>((
