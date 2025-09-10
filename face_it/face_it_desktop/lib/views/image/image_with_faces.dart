@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:face_it_desktop/models/bbox.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -5,6 +7,8 @@ import 'package:image_picker/image_picker.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
 import '../../providers/b_candidate.dart';
+import '../../providers/face_box_preferences.dart';
+import 'draw_bbox.dart';
 
 class ImageViewer extends ConsumerStatefulWidget {
   const ImageViewer({required this.image, super.key});
@@ -15,96 +19,48 @@ class ImageViewer extends ConsumerStatefulWidget {
 }
 
 class _ImageViewerState extends ConsumerState<ImageViewer> {
-  bool showFaceBoxes = false;
   @override
   Widget build(BuildContext context) {
-    final candidate = ref
-        .watch(sessionCandidateProvider(widget.image))
-        .whenOrNull(data: (data) => data);
+    final showFaceBoxes = ref.watch(
+      faceBoxPreferenceProvider.select((e) => e.enabled),
+    );
+    final faces =
+        ref
+            .watch(sessionCandidateProvider(widget.image))
+            .whenOrNull(data: (data) => data.faces) ??
+        [];
 
-    /* if (candidate == null || candidate.faces == null) {
-      return SizedBox(
-        width: 500,
-        height: 500,
-        child: Image.asset(widget.image.path),
-      );
-    } */
-
-    final boundingBoxes = candidate?.faces?.map((e) {
-      return e.bbox;
-    }).toList();
-    print('boundingBoxes $boundingBoxes');
-    final showfaces = boundingBoxes != null && showFaceBoxes;
-
-    return Stack(
-      alignment: AlignmentDirectional.bottomEnd,
-      children: [
-        SizedBox(
-          width: 500,
-          height: 500,
-          child: FittedBox(
-            child: Stack(
-              children: [
-                Align(
-                  alignment: Alignment.topLeft,
-                  child: Image.asset(widget.image.path),
-                ),
-                if (showfaces)
-                  for (final bbox in boundingBoxes) ...[
-                    Positioned(
-                      left: bbox.xmin,
-                      top: bbox.ymin - 100,
-                      child: SizedBox(
-                        width: bbox.xmax - bbox.xmin,
-                        height: 100,
-                        child: Align(
-                          alignment: Alignment.bottomCenter,
-                          child: Text(
-                            'Ami',
-                            style: ShadTheme.of(context).textTheme.small
-                                .copyWith(
-                                  color: const Color.fromARGB(255, 57, 255, 20),
-                                  fontSize: 100,
-                                ),
-                          ),
-                        ),
-                      ),
+    return LayoutBuilder(
+      builder: (context, constrainedBox) {
+        return Stack(
+          alignment: AlignmentDirectional.bottomEnd,
+          children: [
+            SizedBox(
+              width: constrainedBox.maxWidth,
+              height: constrainedBox.maxHeight,
+              child: FittedBox(
+                child: Stack(
+                  children: [
+                    Align(
+                      alignment: Alignment.topLeft,
+                      child: Image.file(File(widget.image.path)),
                     ),
-                    Positioned(
-                      left: bbox.xmin,
-                      top: bbox.ymin,
-                      child: Container(
-                        width: bbox.xmax - bbox.xmin,
-                        height: bbox.ymax - bbox.ymin,
-                        decoration: BoxDecoration(
-                          border: Border.all(
-                            width: 10,
-                            color: const Color.fromARGB(255, 57, 255, 20),
-                          ),
-                        ),
-                      ),
-                    ),
+                    if (showFaceBoxes)
+                      for (final face in faces) ...[
+                        DrawFace.positioned(face: face),
+                      ],
                   ],
-              ],
+                ),
+              ),
             ),
-          ),
-        ),
-        Positioned(
-          right: 8,
-          bottom: 8,
-          child: Switch(
-            value: showFaceBoxes,
-            onChanged: (value) {
-              setState(() {
-                showFaceBoxes = value;
-              });
-            },
-          ),
-        ),
-      ],
+          ],
+        );
+      },
     );
   }
-} /* 
+}
+
+/* 
 if (boundingBoxes != null)
                 CustomPaint(
                   painter: BboxPainter(
@@ -143,3 +99,54 @@ class BboxPainter extends CustomPainter {
     return oldDelegate.bboxes != bboxes;
   }
 }
+
+/* class _GradientBackgroundTextPainter extends CustomPainter {
+  _GradientBackgroundTextPainter({
+    required this.text,
+    required this.style,
+    required this.gradient,
+    required this.padding,
+    this.borderRadius,
+  });
+  final String text;
+  final TextStyle style;
+  final Gradient gradient;
+  final EdgeInsetsGeometry padding;
+  final BorderRadiusGeometry? borderRadius;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final textSpan = TextSpan(text: text, style: style);
+
+    final textPainter = TextPainter(
+      text: textSpan,
+      textDirection: TextDirection.ltr,
+    )..layout();
+
+    final paint = Paint()
+      ..shader = gradient.createShader(
+        Rect.fromLTWH(0, 0, size.width, size.height),
+      );
+
+    final textRect =
+        Offset(padding.horizontal / 2, padding.vertical / 2) & textPainter.size;
+
+    if (borderRadius != null) {
+      canvas.drawRRect(
+        borderRadius!.resolve(TextDirection.ltr).toRRect(textRect),
+        paint,
+      );
+    } else {
+      canvas.drawRect(textRect, paint);
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant _GradientBackgroundTextPainter oldDelegate) {
+    return oldDelegate.text != text ||
+        oldDelegate.style != style ||
+        oldDelegate.gradient != gradient ||
+        oldDelegate.padding != padding ||
+        oldDelegate.borderRadius != borderRadius;
+  }
+} */
