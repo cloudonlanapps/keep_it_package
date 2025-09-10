@@ -12,12 +12,12 @@ class FacePreferencesView extends ConsumerWidget {
     final faceBoxPreferences = ref.watch(faceBoxPreferenceProvider);
     return ShadCard(
       padding: const EdgeInsets.all(8),
+
       child: Column(
         spacing: 8,
         children: [
           Row(
             mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             spacing: 8,
             children: [
               const Text('Faces'),

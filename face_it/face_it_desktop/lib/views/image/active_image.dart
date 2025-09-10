@@ -1,6 +1,7 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:colan_widgets/colan_widgets.dart';
-import 'package:face_it_desktop/views/image/face_preferences_view.dart';
+import 'package:face_it_desktop/views/settings/face_preferences_view.dart';
+import 'package:face_it_desktop/views/settings/quick_settings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
@@ -54,21 +55,9 @@ class ActiveImage extends ConsumerWidget {
         else ...[
           ImageMenu(menuItems: menuItems),
           Expanded(child: ImageViewer(image: activeCandidate.file)),
-          const ColorSelector(),
+          const QuickSettings(),
         ],
       ],
-    );
-  }
-}
-
-class ColorSelector extends StatelessWidget {
-  const ColorSelector({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const Padding(
-      padding: EdgeInsets.all(8),
-      child: Row(spacing: 8, children: [FacePreferencesView()]),
     );
   }
 }
