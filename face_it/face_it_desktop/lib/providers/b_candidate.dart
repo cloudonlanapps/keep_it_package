@@ -26,6 +26,9 @@ class SessionCandidateNotifier
   }
 
   Future<void> upload(CLServer server, String sessionId) async {
+    if (state.value!.status != MediaStatus.added) {
+      return;
+    }
     state = AsyncData(state.value!.copyWith(status: MediaStatus.uploading));
     final task = UploadTask.fromFile(
       file: File(state.value!.file.path),

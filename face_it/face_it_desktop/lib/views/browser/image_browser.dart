@@ -31,10 +31,7 @@ class ImageBrowser extends ConsumerWidget {
       final canUpload = server != null && session?.socket.id != null;
       if (canUpload) {
         if (curr.hasValue) {
-          final newCandidates = curr.value!.where(
-            (e) => e.status == MediaStatus.added,
-          );
-          for (final candidate in newCandidates) {
+          for (final candidate in curr.value!) {
             ref
                 .read(sessionCandidateProvider(candidate.file).notifier)
                 .upload(server, session!.socket.id!);
