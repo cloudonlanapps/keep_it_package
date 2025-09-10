@@ -1,13 +1,12 @@
-import 'dart:io';
-
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
 import '../../providers/b_active_candidate.dart';
-import '../../providers/d_session_provider.dart';
+import '../../providers/b_candidate.dart';
 import 'image_menu.dart';
+import 'image_with_faces.dart';
 
 class ActiveImage extends ConsumerWidget {
   const ActiveImage({super.key});
@@ -15,20 +14,25 @@ class ActiveImage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final activeCandidate = ref.watch(activeCandidateProvider);
-    final identifier = activeCandidate?.entity?.label;
+
+    final isUploaded = activeCandidate != null && activeCandidate.isUploaded;
     final menuItems = [
-      if (identifier != null) ...[
+      if (isUploaded) ...[
         CLMenuItem(
           title: 'Recognize Faces',
           icon: Icons.abc,
-          onTap: activeCandidate?.entity?.label == null
-              ? null
-              : () async {
-                  ref
-                      .read(sessionProvider.notifier)
-                      .sendMsg('recognize', identifier);
+
+          onTap: isUploaded
+              ? () async {
+                  await ref
+                      .read(
+                        sessionCandidateProvider(activeCandidate.file).notifier,
+                      )
+                      .recognize();
+
                   return true;
-                },
+                }
+              : null,
         ),
         const CLMenuItem(title: 'Extract Text', icon: Icons.abc),
         const CLMenuItem(title: 'Scan Objects', icon: Icons.abc),
@@ -46,9 +50,7 @@ class ActiveImage extends ConsumerWidget {
           )
         else ...[
           ImageMenu(menuItems: menuItems),
-          Expanded(
-            child: Image.file(File(activeCandidate.file.path), width: 256),
-          ),
+          ImageViewer(image: activeCandidate.file),
         ],
       ],
     );

@@ -3,10 +3,14 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:background_downloader/background_downloader.dart';
+import 'package:cl_basic_types/cl_basic_types.dart';
 import 'package:cl_servers/cl_servers.dart';
+import 'package:face_it_desktop/models/face.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import '../models/session_candidate.dart';
+import 'd_session_provider.dart';
+import 'messages.dart';
 
 final sessionCandidateProvider =
     AsyncNotifierProviderFamily<
@@ -61,6 +65,31 @@ class SessionCandidateNotifier
       state = AsyncData(
         state.value!.copyWith(uploadProgress: () => 'file upload failed'),
       );
+    }
+  }
+
+  String? get identifier => state.value!.entity?.label;
+  Future<void> recognize() async {
+    if (state.value!.isUploaded) {
+      final response = await ref
+          .read(sessionProvider.notifier)
+          .aitask(identifier!, 'recognize');
+      print(response);
+      final faces = <Face>[
+        if (response['faces'] case final List<dynamic> facesList)
+          ...facesList.map((r) => Face.fromMap(r as Map<String, dynamic>)),
+      ];
+
+      var entity = state.value!.entity!;
+      if (response['dimension'] case [final int width, final int height]) {
+        entity = entity.copyWith(width: () => width, height: () => height);
+      }
+
+      state = AsyncData(
+        state.value!.copyWith(faces: () => faces, entity: () => entity),
+      );
+
+      ref.read(messagesProvider.notifier).addMessage('$faces');
     }
   }
 }

@@ -39,7 +39,7 @@ class SessionNotifier extends AsyncNotifier<CLSocket?> {
         state = AsyncValue.data(CLSocket(socket: socket));
       })
       ..on('message', onReceiveMessage)
-      ..on('result', onReceiveMessage)
+      //..on('result', onReceiveMessage)
       ..on('progress', onReceiveMessage)
       ..onDisconnect((_) {
         log('Disconnected');
@@ -66,6 +66,26 @@ class SessionNotifier extends AsyncNotifier<CLSocket?> {
   void sendMsg(String type, dynamic map) {
     log('Sending: $type - $map');
     state.value!.socket.emit(type, map);
+  }
+
+  Future<Map<String, dynamic>> aitask(String identifier, String task) async {
+    final socket = state.value!.socket;
+    final completer = Completer<Map<String, dynamic>>();
+
+    void callback(dynamic data) {
+      final map = data as Map<String, dynamic>;
+      if (map.keys.contains('identifier') && map['identifier'] == identifier) {
+        completer.complete(map);
+      }
+    }
+
+    socket.on('result', callback);
+    state.value!.socket.emit(task, identifier);
+
+    final result = await completer.future;
+    socket.off(task, callback);
+
+    return result;
   }
 
   void log(String msg) {

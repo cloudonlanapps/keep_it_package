@@ -116,4 +116,6 @@ class SessionCandidate {
   }
 
   String get statusString => status.message;
+
+  bool get isUploaded => entity?.label != null;
 }
