@@ -1,4 +1,6 @@
 import 'package:cl_basic_types/cl_basic_types.dart';
+import 'package:collection/collection.dart';
+import 'package:face_it_desktop/models/face.dart';
 import 'package:flutter/material.dart' hide ValueGetter;
 import 'package:image_picker/image_picker.dart';
 
@@ -23,18 +25,21 @@ class SessionCandidate {
     this.entity,
     this.status = MediaStatus.added,
     this.uploadProgress,
+    this.faces,
   });
   final XFile file;
 
   final CLEntity? entity;
   final MediaStatus status;
   final String? uploadProgress;
+  final List<Face>? faces;
 
   SessionCandidate copyWith({
     XFile? file,
     ValueGetter<CLEntity?>? entity,
     MediaStatus? status,
     ValueGetter<String?>? uploadProgress,
+    ValueGetter<List<Face>?>? faces,
   }) {
     return SessionCandidate(
       file: file ?? this.file,
@@ -43,6 +48,7 @@ class SessionCandidate {
       uploadProgress: uploadProgress != null
           ? uploadProgress.call()
           : this.uploadProgress,
+      faces: faces != null ? faces.call() : this.faces,
     );
   }
 
@@ -85,17 +91,19 @@ class SessionCandidate {
 
   @override
   String toString() {
-    return 'SessionCandidate(file: $file, entity: $entity, status: $status, uploadProgress: $uploadProgress)';
+    return 'SessionCandidate(file: $file, entity: $entity, status: $status, uploadProgress: $uploadProgress, faces: $faces)';
   }
 
   @override
   bool operator ==(covariant SessionCandidate other) {
     if (identical(this, other)) return true;
+    final listEquals = const DeepCollectionEquality().equals;
 
     return other.file == file &&
         other.entity == entity &&
         other.status == status &&
-        other.uploadProgress == uploadProgress;
+        other.uploadProgress == uploadProgress &&
+        listEquals(other.faces, faces);
   }
 
   @override
@@ -103,7 +111,8 @@ class SessionCandidate {
     return file.hashCode ^
         entity.hashCode ^
         status.hashCode ^
-        uploadProgress.hashCode;
+        uploadProgress.hashCode ^
+        faces.hashCode;
   }
 
   String get statusString => status.message;
