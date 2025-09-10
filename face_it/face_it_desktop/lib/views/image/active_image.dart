@@ -15,21 +15,24 @@ class ActiveImage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final activeCandidate = ref.watch(activeCandidateProvider);
+    final identifier = activeCandidate?.entity?.label;
     final menuItems = [
-      CLMenuItem(
-        title: 'Recognize Faces',
-        icon: Icons.abc,
-        onTap: activeCandidate?.entity?.label == null
-            ? null
-            : () async {
-                ref
-                    .read(sessionProvider.notifier)
-                    .sendMsg('recognize', 'process');
-                return true;
-              },
-      ),
-      const CLMenuItem(title: 'Extract Text', icon: Icons.abc),
-      const CLMenuItem(title: 'Scan Objects', icon: Icons.abc),
+      if (identifier != null) ...[
+        CLMenuItem(
+          title: 'Recognize Faces',
+          icon: Icons.abc,
+          onTap: activeCandidate?.entity?.label == null
+              ? null
+              : () async {
+                  ref
+                      .read(sessionProvider.notifier)
+                      .sendMsg('recognize', identifier);
+                  return true;
+                },
+        ),
+        const CLMenuItem(title: 'Extract Text', icon: Icons.abc),
+        const CLMenuItem(title: 'Scan Objects', icon: Icons.abc),
+      ],
     ];
 
     return Column(
