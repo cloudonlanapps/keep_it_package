@@ -1,5 +1,4 @@
 import 'package:colan_widgets/colan_widgets.dart';
-import 'package:face_it_desktop/models/session_candidate.dart';
 import 'package:face_it_desktop/providers/a_files.dart';
 import 'package:face_it_desktop/views/browser/image_tile.dart';
 import 'package:flutter/material.dart';
