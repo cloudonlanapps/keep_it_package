@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
 import '../../models/face.dart';
+import '../../providers/d_online_server.dart';
+import '../../providers/d_session_provider.dart';
 import '../image/draw_bbox.dart';
 
 class PopoverPage extends StatefulWidget {
@@ -40,15 +43,7 @@ class _PopoverPageState extends State<PopoverPage> {
           children: [
             Row(
               children: [
-                Container(
-                  width: 112,
-                  height: 112,
-                  decoration: BoxDecoration(
-                    borderRadius: const BorderRadius.all(Radius.circular(8)),
-                    border: Border.all(),
-                    color: Colors.grey.shade400,
-                  ),
-                ),
+                FacePreview(face: widget.face),
                 Expanded(child: Container()),
               ],
             ),
@@ -61,6 +56,41 @@ class _PopoverPageState extends State<PopoverPage> {
         onTap: popoverController.toggle,
         child: DrawBBox(bbox: widget.face.bbox),
       ),
+    );
+  }
+}
+
+class FacePreview extends ConsumerWidget {
+  const FacePreview({required this.face, super.key});
+  final Face face;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    //
+    final server = ref
+        .read(activeAIServerProvider)
+        .whenOrNull(data: (server) => server);
+    final session = ref
+        .read(sessionProvider)
+        .whenOrNull(data: (session) => session);
+
+    final isOnline = server != null && session?.socket.id != null;
+
+    String? url;
+    if (isOnline) {
+      url =
+          '${server.storeURL.uri}/sessions/${session?.socket.id}/face/${face.image}';
+    }
+
+    return Container(
+      width: 112,
+      height: 112,
+      decoration: BoxDecoration(
+        borderRadius: const BorderRadius.all(Radius.circular(8)),
+        border: Border.all(),
+        color: Colors.grey.shade400,
+      ),
+      child: url != null ? Image.network(url) : null,
     );
   }
 }
