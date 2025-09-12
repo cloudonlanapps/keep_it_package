@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:face_it_desktop/models/bbox.dart';
+import 'package:face_it_desktop/models/face/bbox.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';

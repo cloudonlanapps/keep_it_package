@@ -4,7 +4,7 @@ import 'dart:io';
 
 import 'package:background_downloader/background_downloader.dart';
 import 'package:cl_servers/cl_servers.dart';
-import 'package:face_it_desktop/models/face.dart';
+import 'package:face_it_desktop/models/face/detected_face.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import '../models/session_candidate.dart';

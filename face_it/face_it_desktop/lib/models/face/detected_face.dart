@@ -1,7 +1,7 @@
 import 'dart:convert';
 
-import 'package:face_it_desktop/models/bbox.dart';
-import 'package:face_it_desktop/models/landmarks.dart';
+import 'package:face_it_desktop/models/face/bbox.dart';
+import 'package:face_it_desktop/models/face/landmarks.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 

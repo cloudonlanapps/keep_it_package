@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
-import '../../models/face.dart';
+import '../../models/face/detected_face.dart';
 import '../../providers/d_online_server.dart';
 import '../../providers/d_session_provider.dart';
 import '../image/draw_bbox.dart';

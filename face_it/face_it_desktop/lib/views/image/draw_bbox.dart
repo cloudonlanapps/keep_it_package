@@ -2,8 +2,8 @@ import 'package:face_it_desktop/providers/face_box_preferences.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../models/bbox.dart';
-import '../../models/face.dart';
+import '../../models/face/bbox.dart';
+import '../../models/face/detected_face.dart';
 //import '../face_view/known_face_popover.dart';
 import '../face_view/unknown_face_popover.dart';
 

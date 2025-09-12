@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:face_it_desktop/models/registered_face.dart';
+import 'package:face_it_desktop/models/face/registered_face.dart';
 import 'package:flutter/foundation.dart';
 
 @immutable
