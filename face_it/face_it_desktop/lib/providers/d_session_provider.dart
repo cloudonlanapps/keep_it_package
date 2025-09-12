@@ -83,7 +83,7 @@ class SessionNotifier extends AsyncNotifier<CLSocket?> {
     state.value!.socket.emit(task, identifier);
 
     final result = await completer.future;
-    socket.off(task, callback);
+    socket.off('result', callback);
 
     return result;
   }

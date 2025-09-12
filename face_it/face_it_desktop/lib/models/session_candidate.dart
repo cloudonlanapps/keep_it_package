@@ -32,14 +32,14 @@ class SessionCandidate {
   final CLEntity? entity;
   final MediaStatus status;
   final String? uploadProgress;
-  final List<Face>? faces;
+  final List<DetectedFace>? faces;
 
   SessionCandidate copyWith({
     XFile? file,
     ValueGetter<CLEntity?>? entity,
     MediaStatus? status,
     ValueGetter<String?>? uploadProgress,
-    ValueGetter<List<Face>?>? faces,
+    ValueGetter<List<DetectedFace>?>? faces,
   }) {
     return SessionCandidate(
       file: file ?? this.file,

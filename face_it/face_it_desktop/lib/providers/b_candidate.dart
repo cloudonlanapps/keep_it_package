@@ -77,9 +77,11 @@ class SessionCandidateNotifier
           .read(sessionProvider.notifier)
           .aitask(identifier!, 'recognize');
 
-      final faces = <Face>[
+      final faces = <DetectedFace>[
         if (response['faces'] case final List<dynamic> facesList)
-          ...facesList.map((r) => Face.fromMap(r as Map<String, dynamic>)),
+          ...facesList.map(
+            (r) => DetectedFace.fromMap(r as Map<String, dynamic>),
+          ),
       ];
 
       var entity = state.value!.entity!;

@@ -4,16 +4,17 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../models/bbox.dart';
 import '../../models/face.dart';
-import '../face_view/face_pop_over.dart';
+import '../face_view/known_face_popover.dart';
+import '../face_view/unknown_face_popover.dart';
 
 class DrawFace extends Positioned {
-  DrawFace.positioned({required Face face, super.key})
+  DrawFace.positioned({required DetectedFace face, super.key})
     : super(
         child: SizedBox(
           width: face.bbox.width,
           height: face.bbox.height + 100,
 
-          child: PopoverPage(face: face),
+          child: UnknownFacePopOver(face: face),
         ),
         left: face.bbox.xmin,
         top: face.bbox.ymin - 100,

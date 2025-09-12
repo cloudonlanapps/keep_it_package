@@ -7,16 +7,17 @@ import '../../providers/d_online_server.dart';
 import '../../providers/d_session_provider.dart';
 import '../image/draw_bbox.dart';
 
-class PopoverPage extends StatefulWidget {
-  const PopoverPage({required this.face, super.key});
-  final Face face;
+class KnownFacePopOver extends StatefulWidget {
+  const KnownFacePopOver({required this.face, super.key});
+  final DetectedFace face;
 
   @override
-  State<PopoverPage> createState() => _PopoverPageState();
+  State<KnownFacePopOver> createState() => _KnownFacePopOverState();
 }
 
-class _PopoverPageState extends State<PopoverPage> {
+class _KnownFacePopOverState extends State<KnownFacePopOver> {
   final popoverController = ShadPopoverController();
+  final popoverFlagController = ShadPopoverController();
 
   @override
   void dispose() {
@@ -37,18 +38,56 @@ class _PopoverPageState extends State<PopoverPage> {
         width: 288,
         padding: const EdgeInsets.all(8),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           spacing: 8,
           children: [
+            Align(
+              alignment: Alignment.centerLeft,
+              child: Text.rich(
+                TextSpan(
+                  children: [
+                    TextSpan(
+                      text: 'Identified as ',
+                      style: ShadTheme.of(context).textTheme.muted,
+                    ),
+                    TextSpan(
+                      children: [
+                        TextSpan(
+                          text: '<Person name>',
+                          style: ShadTheme.of(context).textTheme.h4,
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
             Row(
+              mainAxisSize: MainAxisSize.min,
+              spacing: 8,
               children: [
                 FacePreview(face: widget.face),
-                Expanded(child: Container()),
+                const Expanded(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    spacing: 8,
+                    children: [
+                      ShadButton.outline(
+                        leading: Icon(LucideIcons.save300),
+                        expands: true,
+                        child: Text('Confirm'),
+                      ),
+                      ShadButton.outline(
+                        leading: Icon(LucideIcons.save300),
+                        expands: true,
+                        child: Text('Reject'),
+                      ),
+                    ],
+                  ),
+                ),
               ],
             ),
-
-            const SizedBox(height: 4),
           ],
         ),
       ),
@@ -62,7 +101,7 @@ class _PopoverPageState extends State<PopoverPage> {
 
 class FacePreview extends ConsumerWidget {
   const FacePreview({required this.face, super.key});
-  final Face face;
+  final DetectedFace face;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -90,7 +129,12 @@ class FacePreview extends ConsumerWidget {
         border: Border.all(),
         color: Colors.grey.shade400,
       ),
-      child: url != null ? Image.network(url) : null,
+      child: url != null
+          ? ClipRRect(
+              borderRadius: const BorderRadius.all(Radius.circular(8)),
+              child: Image.network(url),
+            )
+          : null,
     );
   }
 }
