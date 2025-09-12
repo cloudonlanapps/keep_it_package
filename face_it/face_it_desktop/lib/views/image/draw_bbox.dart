@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../models/bbox.dart';
 import '../../models/face.dart';
-import '../face_view/known_face_popover.dart';
+//import '../face_view/known_face_popover.dart';
 import '../face_view/unknown_face_popover.dart';
 
 class DrawFace extends Positioned {
