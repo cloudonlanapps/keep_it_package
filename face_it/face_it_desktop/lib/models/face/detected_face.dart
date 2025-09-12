@@ -1,10 +1,13 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
 
+import 'package:collection/collection.dart';
 import 'package:face_it_desktop/models/face/bbox.dart';
 import 'package:face_it_desktop/models/face/landmarks.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
+import 'guessed_face.dart';
 import 'registered_face.dart';
 
 enum RecognitionStatus {
@@ -26,7 +29,7 @@ class DetectedFace {
   const DetectedFace({
     required this.bbox,
     required this.image,
-    required this.confidence,
+    required this.guesses,
     required this.status,
     this.landmarks,
     this.registeredFace,
@@ -44,7 +47,11 @@ class DetectedFace {
               map['registeredFace'] as Map<String, dynamic>,
             )
           : null,
-      confidence: map['confidence'] != null ? map['confidence'] as double : 0,
+      guesses: map['guesses'] != null
+          ? (map['guesses'] as List<dynamic>)
+                .map((e) => GuessedFace.fromMap(e as Map<String, dynamic>))
+                .toList()
+          : null,
       status: RecognitionStatus.values.firstWhere(
         (e) => (map['status'] as String) == e.label,
         orElse: () => throw ArgumentError('Invalid MediaType: ${map['name']}'),
@@ -58,7 +65,7 @@ class DetectedFace {
   final FaceLandmarks? landmarks;
   final String image;
   final RegisteredFace? registeredFace;
-  final double confidence;
+  final List<GuessedFace>? guesses;
   final RecognitionStatus status;
 
   DetectedFace copyWith({
@@ -66,7 +73,7 @@ class DetectedFace {
     ValueGetter<FaceLandmarks?>? landmarks,
     String? image,
     ValueGetter<RegisteredFace?>? registeredFace,
-    double? confidence,
+    ValueGetter<List<GuessedFace>?>? guesses,
     RecognitionStatus? status,
   }) {
     return DetectedFace(
@@ -76,7 +83,7 @@ class DetectedFace {
       registeredFace: registeredFace != null
           ? registeredFace.call()
           : this.registeredFace,
-      confidence: confidence ?? this.confidence,
+      guesses: guesses != null ? guesses.call() : this.guesses,
       status: status ?? this.status,
     );
   }
@@ -87,7 +94,7 @@ class DetectedFace {
       'landmarks': landmarks?.toMap()['data'],
       'image': image,
       'registeredFace': registeredFace?.toMap(),
-      'confidence': confidence,
+      'guesses': guesses?.map((e) => e.toMap()).toList(),
       'status': status.label,
     };
   }
@@ -96,18 +103,19 @@ class DetectedFace {
 
   @override
   String toString() {
-    return 'DetectedFace(bbox: $bbox, landmarks: $landmarks, image: $image, registeredFace: $registeredFace, confidence: $confidence, status: $status)';
+    return 'DetectedFace(bbox: $bbox, landmarks: $landmarks, image: $image, registeredFace: $registeredFace, guesses: $guesses, status: $status)';
   }
 
   @override
   bool operator ==(covariant DetectedFace other) {
     if (identical(this, other)) return true;
+    final listEquals = const DeepCollectionEquality().equals;
 
     return other.bbox == bbox &&
         other.landmarks == landmarks &&
         other.image == image &&
         other.registeredFace == registeredFace &&
-        other.confidence == confidence &&
+        listEquals(other.guesses, guesses) &&
         other.status == status;
   }
 
@@ -117,7 +125,7 @@ class DetectedFace {
         landmarks.hashCode ^
         image.hashCode ^
         registeredFace.hashCode ^
-        confidence.hashCode ^
+        guesses.hashCode ^
         status.hashCode;
   }
 }
