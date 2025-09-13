@@ -1,13 +1,14 @@
 import 'dart:io';
 
-import 'package:face_it_desktop/models/face/bbox.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 
+import '../../models/face/bbox.dart';
 import '../../providers/b_candidate.dart';
+import '../../providers/f_face.dart';
 import '../../providers/face_box_preferences.dart';
-import 'draw_bbox.dart';
+import 'draw_face.dart';
 
 class ImageViewer extends ConsumerStatefulWidget {
   const ImageViewer({required this.image, super.key});
@@ -23,11 +24,19 @@ class _ImageViewerState extends ConsumerState<ImageViewer> {
     final showFaceBoxes = ref.watch(
       faceBoxPreferenceProvider.select((e) => e.enabled),
     );
-    final faces =
+    final faceIds =
         ref
             .watch(sessionCandidateProvider(widget.image))
-            .whenOrNull(data: (data) => data.faces) ??
+            .whenOrNull(data: (data) => data.faceIds) ??
         [];
+
+    final faces = faceIds
+        .map(
+          (e) => ref
+              .watch(detectedFaceProvider(e))
+              .whenOrNull(data: (data) => data),
+        )
+        .toList();
 
     return LayoutBuilder(
       builder: (context, constrainedBox) {
@@ -46,7 +55,7 @@ class _ImageViewerState extends ConsumerState<ImageViewer> {
                     ),
                     if (showFaceBoxes)
                       for (final face in faces) ...[
-                        DrawFace.positioned(face: face),
+                        if (face != null) DrawFace.positioned(face: face),
                       ],
                   ],
                 ),

@@ -25,21 +25,21 @@ class SessionCandidate {
     this.entity,
     this.status = MediaStatus.added,
     this.uploadProgress,
-    this.faces,
+    this.faceIds,
   });
   final XFile file;
 
   final CLEntity? entity;
   final MediaStatus status;
   final String? uploadProgress;
-  final List<DetectedFace>? faces;
+  final List<String>? faceIds;
 
   SessionCandidate copyWith({
     XFile? file,
     ValueGetter<CLEntity?>? entity,
     MediaStatus? status,
     ValueGetter<String?>? uploadProgress,
-    ValueGetter<List<DetectedFace>?>? faces,
+    ValueGetter<List<String>?>? faces,
   }) {
     return SessionCandidate(
       file: file ?? this.file,
@@ -48,7 +48,7 @@ class SessionCandidate {
       uploadProgress: uploadProgress != null
           ? uploadProgress.call()
           : this.uploadProgress,
-      faces: faces != null ? faces.call() : this.faces,
+      faceIds: faces != null ? faces.call() : faceIds,
     );
   }
 
@@ -91,7 +91,7 @@ class SessionCandidate {
 
   @override
   String toString() {
-    return 'SessionCandidate(file: $file, entity: $entity, status: $status, uploadProgress: $uploadProgress, faces: $faces)';
+    return 'SessionCandidate(file: $file, entity: $entity, status: $status, uploadProgress: $uploadProgress, faces: $faceIds)';
   }
 
   @override
@@ -103,7 +103,7 @@ class SessionCandidate {
         other.entity == entity &&
         other.status == status &&
         other.uploadProgress == uploadProgress &&
-        listEquals(other.faces, faces);
+        listEquals(other.faceIds, faceIds);
   }
 
   @override
@@ -112,7 +112,7 @@ class SessionCandidate {
         entity.hashCode ^
         status.hashCode ^
         uploadProgress.hashCode ^
-        faces.hashCode;
+        faceIds.hashCode;
   }
 
   String get statusString => status.message;

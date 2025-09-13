@@ -3,23 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../models/face/bbox.dart';
-import '../../models/face/detected_face.dart';
-//import '../face_view/known_face_popover.dart';
-import '../face_view/unknown_face_popover.dart';
-
-class DrawFace extends Positioned {
-  DrawFace.positioned({required DetectedFace face, super.key})
-    : super(
-        child: SizedBox(
-          width: face.bbox.width,
-          height: face.bbox.height + 100,
-
-          child: UnknownFacePopOver(face: face),
-        ),
-        left: face.bbox.xmin,
-        top: face.bbox.ymin - 100,
-      );
-}
 
 class DrawBBox extends ConsumerWidget {
   const DrawBBox({required this.bbox, super.key});

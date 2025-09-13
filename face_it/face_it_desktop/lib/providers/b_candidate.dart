@@ -9,6 +9,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import '../models/session_candidate.dart';
 import 'd_session_provider.dart';
+import 'f_faces.dart';
 import 'messages.dart';
 
 final sessionCandidateProvider =
@@ -88,9 +89,13 @@ class SessionCandidateNotifier
       if (response['dimension'] case [final int width, final int height]) {
         entity = entity.copyWith(width: () => width, height: () => height);
       }
+      ref.read(detectedFacesProvider.notifier).upsertFaces(faces);
 
       state = AsyncData(
-        state.value!.copyWith(faces: () => faces, entity: () => entity),
+        state.value!.copyWith(
+          faces: () => faces.map((e) => e.identity).toList(),
+          entity: () => entity,
+        ),
       );
 
       ref.read(messagesProvider.notifier).addMessage('$faces');
