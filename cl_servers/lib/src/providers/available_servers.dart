@@ -26,6 +26,7 @@ class AvailableServersNotifier
               .watch(serverProvider(url))
               .whenOrNull(data: (clServer) => clServer),
         )
+        .where((e) => e != null)
         .cast<CLServer>()
         .toList();
     final servers = detectedServers
