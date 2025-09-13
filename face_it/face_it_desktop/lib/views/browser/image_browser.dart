@@ -64,7 +64,8 @@ class ImageBrowser extends ConsumerWidget {
             ),
           ),
         Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          mainAxisSize: MainAxisSize.min,
+          spacing: 8,
           children: [
             const MenuButtonActiveWhenSocketConnected(
               menuItem: CLMenuItem(title: 'Import Folder', icon: Icons.abc),
