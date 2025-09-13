@@ -1,4 +1,3 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
 
 import 'package:collection/collection.dart';
@@ -33,6 +32,7 @@ class DetectedFace {
     required this.status,
     this.landmarks,
     this.registeredFace,
+    this.loading = false,
   });
 
   factory DetectedFace.fromMap(Map<String, dynamic> map) {
@@ -67,6 +67,7 @@ class DetectedFace {
   final RegisteredFace? registeredFace;
   final List<GuessedFace>? guesses;
   final RecognitionStatus status;
+  final bool loading;
 
   DetectedFace copyWith({
     BBox? bbox,
@@ -75,6 +76,7 @@ class DetectedFace {
     ValueGetter<RegisteredFace?>? registeredFace,
     ValueGetter<List<GuessedFace>?>? guesses,
     RecognitionStatus? status,
+    bool? loading,
   }) {
     return DetectedFace(
       bbox: bbox ?? this.bbox,
@@ -85,6 +87,7 @@ class DetectedFace {
           : this.registeredFace,
       guesses: guesses != null ? guesses.call() : this.guesses,
       status: status ?? this.status,
+      loading: loading ?? this.loading,
     );
   }
 
@@ -103,7 +106,7 @@ class DetectedFace {
 
   @override
   String toString() {
-    return 'DetectedFace(bbox: $bbox, landmarks: $landmarks, image: $image, registeredFace: $registeredFace, guesses: $guesses, status: $status)';
+    return 'DetectedFace(bbox: $bbox, landmarks: $landmarks, image: $image, registeredFace: $registeredFace, guesses: $guesses, status: $status, loading: $loading)';
   }
 
   @override
@@ -116,7 +119,8 @@ class DetectedFace {
         other.image == image &&
         other.registeredFace == registeredFace &&
         listEquals(other.guesses, guesses) &&
-        other.status == status;
+        other.status == status &&
+        other.loading == loading;
   }
 
   @override
@@ -126,6 +130,9 @@ class DetectedFace {
         image.hashCode ^
         registeredFace.hashCode ^
         guesses.hashCode ^
-        status.hashCode;
+        status.hashCode ^
+        loading.hashCode;
   }
+
+  String get identity => image;
 }
