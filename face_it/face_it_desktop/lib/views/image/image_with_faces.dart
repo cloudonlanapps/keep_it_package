@@ -7,6 +7,7 @@ import 'package:image_picker/image_picker.dart';
 import '../../models/face/bbox.dart';
 import '../../providers/b_candidate.dart';
 import '../../providers/f_face.dart';
+import '../../providers/f_faces.dart';
 import '../../providers/face_box_preferences.dart';
 import 'draw_face.dart';
 
@@ -21,6 +22,7 @@ class ImageViewer extends ConsumerStatefulWidget {
 class _ImageViewerState extends ConsumerState<ImageViewer> {
   @override
   Widget build(BuildContext context) {
+    ref.watch(detectedFacesProvider);
     final showFaceBoxes = ref.watch(
       faceBoxPreferenceProvider.select((e) => e.enabled),
     );
