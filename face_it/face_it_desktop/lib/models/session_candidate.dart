@@ -1,6 +1,5 @@
 import 'package:cl_basic_types/cl_basic_types.dart';
 import 'package:collection/collection.dart';
-import 'package:face_it_desktop/models/face/detected_face.dart';
 import 'package:flutter/material.dart' hide ValueGetter;
 import 'package:image_picker/image_picker.dart';
 
