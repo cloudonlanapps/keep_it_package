@@ -28,7 +28,7 @@ class DetectedFacesNotifier extends AsyncNotifier<Map<String, DetectedFace>> {
 
   void upsertFaces(List<DetectedFace> faces) {
     state = AsyncData({
-      ...state.value!,
+      ...state.asData?.value ?? {},
       ...{for (final e in faces) e.identity: e},
     });
   }
@@ -50,11 +50,11 @@ class DetectedFacesNotifier extends AsyncNotifier<Map<String, DetectedFace>> {
     String identity,
     String name,
   ) async {
-    print('Register for $identity with name $name');
     final face = getFace(identity);
     if (face == null) return false;
+    // ignore: unused_local_variable for now!
     final files = filesFromSession(server, sessionId, identity);
-    print(files);
+
     return true;
   }
 
