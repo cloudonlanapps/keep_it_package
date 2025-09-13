@@ -26,6 +26,7 @@ class _UnknownnFaceState extends ConsumerState<UnknownFace> {
   Widget build(BuildContext context) {
     return ShadCard(
       width: 360,
+      height: 112 + 20,
       padding: const EdgeInsets.all(8),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -34,49 +35,55 @@ class _UnknownnFaceState extends ConsumerState<UnknownFace> {
           FacePreview(face: widget.face),
           Expanded(
             child: Column(
-              mainAxisSize: MainAxisSize.min,
-              mainAxisAlignment: MainAxisAlignment.center,
-              spacing: 8,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const ShadInput(
-                  placeholder: Text('Who is this?'),
-                  leading: Padding(
-                    padding: EdgeInsets.all(4),
-                    child: Icon(LucideIcons.lock),
+                const Expanded(
+                  child: Center(
+                    child: ShadInput(
+                      placeholder: Text('Who is this?'),
+                      leading: Icon(LucideIcons.userPen300),
+                    ),
                   ),
                 ),
                 Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  mainAxisSize: MainAxisSize.min,
+                  spacing: 8,
                   children: [
                     const Expanded(
-                      child: ShadButton(
-                        leading: Icon(LucideIcons.save300),
+                      child: ShadButton.outline(
                         expands: true,
                         child: Text('Save'),
                       ),
                     ),
-                    ShadPopover(
-                      popover: (context) {
-                        return const SizedBox(
-                          width: 180,
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              ShadButton.ghost(
-                                child: Text('Ignore this person'),
-                              ),
-                              ShadButton.ghost(
-                                child: Text('This is not a face'),
-                              ),
-                            ],
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: ShadPopover(
+                        popover: (context) {
+                          return const SizedBox(
+                            width: 180,
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                ShadButton.ghost(
+                                  child: Text('Ignore this person'),
+                                ),
+                                ShadButton.ghost(
+                                  child: Text('This is not a face'),
+                                ),
+                              ],
+                            ),
+                          );
+                        },
+                        controller: popoverFlagController,
+                        child: ShadButton.ghost(
+                          onPressed: popoverFlagController.toggle,
+                          child: Icon(
+                            LucideIcons.flag300,
+                            color: ShadTheme.of(
+                              context,
+                            ).colorScheme.destructive,
                           ),
-                        );
-                      },
-                      controller: popoverFlagController,
-                      child: ShadButton.ghost(
-                        onPressed: popoverFlagController.toggle,
-                        child: Icon(
-                          LucideIcons.flag300,
-                          color: ShadTheme.of(context).colorScheme.destructive,
                         ),
                       ),
                     ),
