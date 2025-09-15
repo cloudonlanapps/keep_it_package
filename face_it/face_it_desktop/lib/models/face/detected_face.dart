@@ -50,7 +50,7 @@ class DetectedFace {
           : null,
       guesses: map['guesses'] != null
           ? (map['guesses'] as List<dynamic>)
-                .map((e) => GuessedFace.fromMap(e as Map<String, dynamic>))
+                .map((e) => GuessedPerson.fromMap(e as Map<String, dynamic>))
                 .toList()
           : null,
       status: RecognitionStatus.values.firstWhere(
@@ -68,7 +68,7 @@ class DetectedFace {
   final FaceLandmarks? landmarks;
   final String image;
   final RegisteredFace? registeredFace;
-  final List<GuessedFace>? guesses;
+  final List<GuessedPerson>? guesses;
   final RecognitionStatus status;
   final bool loading;
   final String imageCache;
@@ -79,7 +79,7 @@ class DetectedFace {
     ValueGetter<FaceLandmarks?>? landmarks,
     String? image,
     ValueGetter<RegisteredFace?>? registeredFace,
-    ValueGetter<List<GuessedFace>?>? guesses,
+    ValueGetter<List<GuessedPerson>?>? guesses,
     RecognitionStatus? status,
     bool? loading,
     String? imageCache,
@@ -165,8 +165,9 @@ class DetectedFace {
     final String label;
     if (registeredFace?.personName != null) {
       label = '${registeredFace?.personName}';
-    } else if (guesses?[0].registeredFace.personName != null) {
-      label = '${guesses?[0].registeredFace.personName} ?';
+    } else if ((guesses?.isNotEmpty ?? false) && guesses?[0].person != null) {
+      label =
+          '${guesses?[0].person.name} (${guesses?[0].confidencePercentage})%';
     } else {
       label = 'New Face';
     }
