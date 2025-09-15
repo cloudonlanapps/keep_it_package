@@ -25,3 +25,19 @@ class ActiveAIServerNotifier extends AsyncNotifier<CLServer?> {
     return server;
   }
 }
+
+extension DownloadExt on CLServer {
+  Future<String?> downloadFile(String url, String targetFile) async {
+    final response = await get(url, outputFileName: targetFile);
+
+    return response.when(
+      validResponse: (result) async {
+        return result as String;
+      },
+      errorResponse: (e, {st}) async {
+        print(e);
+        return null;
+      },
+    );
+  }
+}

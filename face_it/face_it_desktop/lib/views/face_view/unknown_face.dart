@@ -2,15 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
-import '../../models/face/detected_face.dart';
+import '../../models/face/f_face_file_cache.dart';
 import '../../providers/d_online_server.dart';
 import '../../providers/d_session_provider.dart';
 import '../../providers/f_faces.dart';
+import '../../providers/face_file_cache_provider.dart';
 import 'face_preview.dart';
 
 class UnknownFace extends ConsumerStatefulWidget {
-  const UnknownFace({required this.face, super.key});
-  final DetectedFace face;
+  const UnknownFace({required this.faceFileCache, super.key});
+  final FaceFileCache faceFileCache;
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _UnknownnFaceState();
@@ -44,14 +45,6 @@ class _UnknownnFaceState extends ConsumerState<UnknownFace> {
 
   @override
   Widget build(BuildContext context) {
-    final server = ref
-        .read(activeAIServerProvider)
-        .whenOrNull(data: (server) => server);
-    final session = ref
-        .read(sessionProvider)
-        .whenOrNull(data: (session) => session);
-    final socketId = session?.socket.id;
-    final canUpload = server != null && socketId != null;
     return ShadCard(
       width: 360,
       height: 112 + 20,
@@ -60,7 +53,7 @@ class _UnknownnFaceState extends ConsumerState<UnknownFace> {
         mainAxisSize: MainAxisSize.min,
         spacing: 8,
         children: [
-          FacePreview(face: widget.face),
+          FacePreview(faceFileCache: widget.faceFileCache),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -82,21 +75,14 @@ class _UnknownnFaceState extends ConsumerState<UnknownFace> {
                     Expanded(
                       child: ShadButton.outline(
                         expands: true,
-                        onPressed:
-                            canUpload && textEditingController.text.isNotEmpty
-                            ? () {
-                                ref
-                                    .read(detectedFacesProvider.notifier)
-                                    .registerFace(
-                                      server,
-                                      socketId,
-                                      widget.face.identity,
-                                      textEditingController.text,
-                                    );
-                              }
-                            : null,
-                        enabled:
-                            canUpload && textEditingController.text.isNotEmpty,
+                        onPressed: () => ref
+                            .read(
+                              faceFileCacheProvider(
+                                widget.faceFileCache.face.identity,
+                              ).notifier,
+                            )
+                            .registerSelf(textEditingController.text),
+                        enabled: textEditingController.text.isNotEmpty,
                         child: const Text('Save'),
                       ),
                     ),

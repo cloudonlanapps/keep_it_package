@@ -2,11 +2,11 @@ import 'package:face_it_desktop/views/face_view/face_preview.dart';
 import 'package:flutter/material.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
-import '../../models/face/detected_face.dart';
+import '../../models/face/f_face_file_cache.dart';
 
 class GuessedFaces extends StatelessWidget {
-  const GuessedFaces({required this.face, super.key});
-  final DetectedFace face;
+  const GuessedFaces({required this.faceFileCache, super.key});
+  final FaceFileCache faceFileCache;
   @override
   Widget build(BuildContext context) {
     return ShadCard(
@@ -41,7 +41,7 @@ class GuessedFaces extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             spacing: 8,
             children: [
-              FacePreview(face: face),
+              FacePreview(faceFileCache: faceFileCache),
               const Expanded(
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
