@@ -74,6 +74,9 @@ class SessionCandidateNotifier
   String? get identifier => state.value!.entity?.label;
   Future<void> recognize() async {
     if (state.value!.isUploaded) {
+      state = AsyncData(state.value!.copyWith(isRecognizing: true));
+      await Future<void>.delayed(const Duration(seconds: 5));
+
       final response = await ref
           .read(sessionProvider.notifier)
           .aitask(identifier!, 'recognize');
@@ -93,10 +96,12 @@ class SessionCandidateNotifier
 
       state = AsyncData(
         state.value!.copyWith(
-          faces: () => faces.map((e) => e.identity).toList(),
+          faceIds: () => faces.map((e) => e.identity).toList(),
           entity: () => entity,
         ),
       );
+      await Future<void>.delayed(const Duration(seconds: 5));
+      state = AsyncData(state.value!.copyWith(isRecognizing: false));
 
       ref.read(messagesProvider.notifier).addMessage('$faces');
     }

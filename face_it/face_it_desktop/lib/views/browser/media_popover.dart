@@ -43,6 +43,12 @@ class _MediaPopoverState extends ConsumerState<MediaPopover> {
         .watch(sessionCandidateProvider(widget.file))
         .whenOrNull(data: (data) => data);
     final needUpload = candidate != null && candidate.entity == null;
+    if (candidate?.isRecognizing ?? false) {
+      return const ShadIconButton.outline(
+        enabled: false,
+        icon: CircularProgressIndicator.adaptive(),
+      );
+    }
     return ShadPopover(
       controller: popoverController,
       popover: (context) => SizedBox(

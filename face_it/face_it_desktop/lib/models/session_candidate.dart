@@ -1,5 +1,6 @@
 import 'package:cl_basic_types/cl_basic_types.dart';
 import 'package:collection/collection.dart';
+
 import 'package:flutter/material.dart' hide ValueGetter;
 import 'package:image_picker/image_picker.dart';
 
@@ -25,6 +26,7 @@ class SessionCandidate {
     this.status = MediaStatus.added,
     this.uploadProgress,
     this.faceIds,
+    this.isRecognizing = false,
   });
   final XFile file;
 
@@ -32,13 +34,15 @@ class SessionCandidate {
   final MediaStatus status;
   final String? uploadProgress;
   final List<String>? faceIds;
+  final bool isRecognizing;
 
   SessionCandidate copyWith({
     XFile? file,
     ValueGetter<CLEntity?>? entity,
     MediaStatus? status,
     ValueGetter<String?>? uploadProgress,
-    ValueGetter<List<String>?>? faces,
+    ValueGetter<List<String>?>? faceIds,
+    bool? isRecognizing,
   }) {
     return SessionCandidate(
       file: file ?? this.file,
@@ -47,7 +51,8 @@ class SessionCandidate {
       uploadProgress: uploadProgress != null
           ? uploadProgress.call()
           : this.uploadProgress,
-      faceIds: faces != null ? faces.call() : faceIds,
+      faceIds: faceIds != null ? faceIds.call() : this.faceIds,
+      isRecognizing: isRecognizing ?? this.isRecognizing,
     );
   }
 
@@ -90,7 +95,7 @@ class SessionCandidate {
 
   @override
   String toString() {
-    return 'SessionCandidate(file: $file, entity: $entity, status: $status, uploadProgress: $uploadProgress, faces: $faceIds)';
+    return 'SessionCandidate(file: $file, entity: $entity, status: $status, uploadProgress: $uploadProgress, faceIds: $faceIds, isRecognizing: $isRecognizing)';
   }
 
   @override
@@ -102,7 +107,8 @@ class SessionCandidate {
         other.entity == entity &&
         other.status == status &&
         other.uploadProgress == uploadProgress &&
-        listEquals(other.faceIds, faceIds);
+        listEquals(other.faceIds, faceIds) &&
+        other.isRecognizing == isRecognizing;
   }
 
   @override
@@ -111,7 +117,8 @@ class SessionCandidate {
         entity.hashCode ^
         status.hashCode ^
         uploadProgress.hashCode ^
-        faceIds.hashCode;
+        faceIds.hashCode ^
+        isRecognizing.hashCode;
   }
 
   String get statusString => status.message;
