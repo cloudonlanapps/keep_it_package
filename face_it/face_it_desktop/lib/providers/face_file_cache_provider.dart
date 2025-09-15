@@ -48,30 +48,4 @@ class FaceFileCacheNotifier
 
     return FaceFileCache(face: face, image: facePath, vector: vectorPath);
   }
-
-  Future<void> registerSelf(String name) async {
-    final server = await ref.read(activeAIServerProvider.future);
-    if (server == null) return;
-    final faceFileCache = state.asData?.value;
-    if (faceFileCache == null) return;
-
-    final reply = await server.post(
-      '/store/register_face/of/$name',
-      filesFields: {
-        'face': [faceFileCache.image],
-        'vector': [faceFileCache.vector],
-      },
-    );
-    await reply.when(
-      validResponse: (result) async {
-        final updatedFace = faceFileCache.face.copyWith(
-          registeredFace: () => RegisteredFace.fromJson(result as String),
-        );
-        ref.read(detectedFacesProvider.notifier).upsertFace(updatedFace);
-      },
-      errorResponse: (e, {st}) async {
-        print(e);
-      },
-    );
-  }
 }

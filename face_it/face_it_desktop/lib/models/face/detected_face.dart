@@ -28,6 +28,8 @@ class DetectedFace {
     required this.bbox,
     required this.image,
     required this.guesses,
+    required this.imageCache,
+    required this.vectorCache,
     required this.status,
     this.landmarks,
     this.registeredFace,
@@ -55,6 +57,8 @@ class DetectedFace {
         (e) => (map['status'] as String) == e.label,
         orElse: () => throw ArgumentError('Invalid MediaType: ${map['name']}'),
       ),
+      imageCache: map['imageCache'] as String,
+      vectorCache: map['vectorCache'] as String,
     );
   }
 
@@ -67,6 +71,8 @@ class DetectedFace {
   final List<GuessedFace>? guesses;
   final RecognitionStatus status;
   final bool loading;
+  final String imageCache;
+  final String vectorCache;
 
   DetectedFace copyWith({
     BBox? bbox,
@@ -76,6 +82,8 @@ class DetectedFace {
     ValueGetter<List<GuessedFace>?>? guesses,
     RecognitionStatus? status,
     bool? loading,
+    String? imageCache,
+    String? vectorCache,
   }) {
     return DetectedFace(
       bbox: bbox ?? this.bbox,
@@ -87,6 +95,8 @@ class DetectedFace {
       guesses: guesses != null ? guesses.call() : this.guesses,
       status: status ?? this.status,
       loading: loading ?? this.loading,
+      imageCache: imageCache ?? this.imageCache,
+      vectorCache: vectorCache ?? this.vectorCache,
     );
   }
 
@@ -105,7 +115,7 @@ class DetectedFace {
 
   @override
   String toString() {
-    return 'DetectedFace(bbox: $bbox, landmarks: $landmarks, image: $image, registeredFace: $registeredFace, guesses: $guesses, status: $status, loading: $loading)';
+    return 'DetectedFace(bbox: $bbox, landmarks: $landmarks, image: $image, registeredFace: $registeredFace, guesses: $guesses, status: $status, loading: $loading, imageCache: $imageCache, vectorCache: $vectorCache)';
   }
 
   @override
@@ -119,7 +129,9 @@ class DetectedFace {
         other.registeredFace == registeredFace &&
         listEquals(other.guesses, guesses) &&
         other.status == status &&
-        other.loading == loading;
+        other.loading == loading &&
+        other.imageCache == imageCache &&
+        other.vectorCache == vectorCache;
   }
 
   @override
@@ -130,7 +142,9 @@ class DetectedFace {
         registeredFace.hashCode ^
         guesses.hashCode ^
         status.hashCode ^
-        loading.hashCode;
+        loading.hashCode ^
+        imageCache.hashCode ^
+        vectorCache.hashCode;
   }
 
   String get identity => image;

@@ -35,7 +35,7 @@ extension DownloadExt on CLServer {
         return result as String;
       },
       errorResponse: (e, {st}) async {
-        print(e);
+        //print(e);
         return null;
       },
     );

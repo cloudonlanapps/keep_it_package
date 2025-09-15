@@ -4,10 +4,14 @@ import 'dart:io';
 
 import 'package:background_downloader/background_downloader.dart';
 import 'package:cl_servers/cl_servers.dart';
+import 'package:content_store/content_store.dart';
 import 'package:face_it_desktop/models/face/detected_face.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:path/path.dart' as p;
+
 import '../models/session_candidate.dart';
+import 'd_online_server.dart';
 import 'd_session_provider.dart';
 import 'f_faces.dart';
 import 'messages.dart';
@@ -21,8 +25,12 @@ final sessionCandidateProvider =
 
 class SessionCandidateNotifier
     extends FamilyAsyncNotifier<SessionCandidate, XFile> {
+  late String tempDirectory;
   @override
   FutureOr<SessionCandidate> build(XFile arg) async {
+    final directories = await ref.watch(deviceDirectoriesProvider.future);
+    tempDirectory = directories.temp.pathString;
+
     return SessionCandidate(file: arg);
   }
 
@@ -81,12 +89,16 @@ class SessionCandidateNotifier
           final response = await ref
               .read(sessionProvider.notifier)
               .aitask(identifier!, 'recognize');
-          final faces = <DetectedFace>[
-            if (response['faces'] case final List<dynamic> facesList)
-              ...facesList.map(
-                (r) => DetectedFace.fromMap(r as Map<String, dynamic>),
-              ),
-          ];
+          final List<DetectedFace> faces;
+          if (response['faces'] case final List<dynamic> facesList) {
+            faces = <DetectedFace>[];
+            for (final map in facesList) {
+              final face = await lookupOnStore(map as Map<String, dynamic>);
+              if (face != null) faces.add(face);
+            }
+          } else {
+            faces = [];
+          }
 
           var entity = state.value!.entity!;
           if (response['dimension'] case [final int width, final int height]) {
@@ -107,5 +119,41 @@ class SessionCandidateNotifier
 
       state = AsyncData(state.value!.copyWith(isRecognizing: false));
     }
+  }
+
+  Future<DetectedFace?> lookupOnStore(Map<String, dynamic> map) async {
+    if (!map.containsKey('image')) {
+      //('Unexpected response from server');
+      return null;
+    }
+    final session = await ref.read(sessionProvider.future);
+    final server = await ref.read(activeAIServerProvider.future);
+
+    final identity = map['image'] as String;
+
+    if (session?.connected ?? false) {
+      //throw Exception('session is not connected');
+      return null;
+    }
+    if (server == null) {
+      //throw Exception('server is not available');
+      return null;
+    }
+
+    final faceUrl = '/sessions/${session!.socket.id}/face/$identity';
+    final vectorUrl = '/sessions/${session.socket.id}/vector/$identity';
+    final faceFileName = p.join(tempDirectory, identity);
+    final vectorFilename = p.join(
+      tempDirectory,
+      identity.replaceAll(RegExp(r'\.png$'), '.npy'),
+    );
+
+    final facePath = await server.downloadFile(faceUrl, faceFileName);
+    final vectorPath = await server.downloadFile(vectorUrl, vectorFilename);
+    if (facePath == null || vectorPath == null) return null;
+    map['imageCache'] = facePath;
+    map['vectorCache'] = vectorPath;
+
+    return DetectedFace.fromMap(map);
   }
 }

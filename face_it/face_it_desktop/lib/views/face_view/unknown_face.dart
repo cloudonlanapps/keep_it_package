@@ -2,14 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
-import '../../models/face/f_face_file_cache.dart';
+import '../../models/face/detected_face.dart';
 
+import '../../providers/f_face.dart';
 import '../../providers/face_file_cache_provider.dart';
 import 'face_preview.dart';
 
 class UnknownFace extends ConsumerStatefulWidget {
-  const UnknownFace({required this.faceFileCache, super.key});
-  final FaceFileCache faceFileCache;
+  const UnknownFace({required this.face, super.key});
+  final DetectedFace face;
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _UnknownnFaceState();
@@ -51,7 +52,7 @@ class _UnknownnFaceState extends ConsumerState<UnknownFace> {
         mainAxisSize: MainAxisSize.min,
         spacing: 8,
         children: [
-          FacePreview(faceFileCache: widget.faceFileCache),
+          FacePreview(face: widget.face),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -75,8 +76,8 @@ class _UnknownnFaceState extends ConsumerState<UnknownFace> {
                         expands: true,
                         onPressed: () => ref
                             .read(
-                              faceFileCacheProvider(
-                                widget.faceFileCache.face.identity,
+                              detectedFaceProvider(
+                                widget.face.identity,
                               ).notifier,
                             )
                             .registerSelf(textEditingController.text),

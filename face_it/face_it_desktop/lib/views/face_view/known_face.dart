@@ -3,11 +3,11 @@ import 'package:face_it_desktop/views/face_view/face_preview.dart';
 import 'package:flutter/material.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
-import '../../models/face/f_face_file_cache.dart';
+import '../../models/face/detected_face.dart';
 
 class ConfirmedFace extends StatelessWidget {
-  const ConfirmedFace({required this.faceFileCache, super.key});
-  final FaceFileCache faceFileCache;
+  const ConfirmedFace({required this.face, super.key});
+  final DetectedFace face;
   @override
   Widget build(BuildContext context) {
     return ShadCard(
@@ -35,7 +35,7 @@ class ConfirmedFace extends StatelessWidget {
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          FacePreview(faceFileCache: faceFileCache),
+                          FacePreview(face: face),
                           Text('', style: ShadTheme.of(context).textTheme.h4),
                         ],
                       ),
@@ -50,9 +50,9 @@ class ConfirmedFace extends StatelessWidget {
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          FacePreview(faceFileCache: faceFileCache),
+                          FacePreview(face: face),
                           Text(
-                            faceFileCache.face.registeredFace!.personName
+                            face.registeredFace!.personName
                                 .capitalizeFirstLetter(),
                             style: ShadTheme.of(context).textTheme.h4,
                           ),

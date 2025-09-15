@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
-import '../../providers/face_file_cache_provider.dart';
+import '../../providers/f_face.dart';
 import '../face_view/guessed_face.dart';
 import '../face_view/known_face.dart';
 import '../face_view/unknown_face.dart';
@@ -42,10 +42,10 @@ class _DrawFace0State extends ConsumerState<DrawFace0> {
 
   @override
   Widget build(BuildContext context) {
-    final faceCached = ref
-        .watch(faceFileCacheProvider(widget.faceId))
+    final face = ref
+        .watch(detectedFaceProvider(widget.faceId))
         .whenOrNull(data: (data) => data);
-    if (faceCached == null) {
+    if (face == null) {
       return const SizedBox.shrink();
     }
 
@@ -56,20 +56,17 @@ class _DrawFace0State extends ConsumerState<DrawFace0> {
       ),
       padding: EdgeInsets.zero,
       controller: popoverController,
-      popover: (context) => switch (faceCached.face) {
+      popover: (context) => switch (face) {
         (final DetectedFace face) when face.registeredFace != null =>
-          ConfirmedFace(faceFileCache: faceCached),
+          ConfirmedFace(face: face),
         (final DetectedFace face) when face.guesses != null => GuessedFaces(
-          faceFileCache: faceCached,
+          face: face,
         ),
-        _ => UnknownFace(faceFileCache: faceCached),
+        _ => UnknownFace(face: face),
       },
       child: GestureDetector(
         onTap: popoverController.toggle,
-        child: DrawBBox(
-          bbox: faceCached.face.bbox,
-          label: faceCached.face.label,
-        ),
+        child: DrawBBox(bbox: face.bbox, label: face.label),
       ),
     );
   }
