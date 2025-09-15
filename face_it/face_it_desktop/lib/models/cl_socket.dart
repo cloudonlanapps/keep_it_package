@@ -96,13 +96,26 @@ class CLSocket {
     return result.responseBody;
   }
 
+  String get sessionDirectory {
+    if (socket.id == null) {
+      throw Exception("Can't create directory without session");
+    }
+    final sessionId = socket.id!;
+    final directory = Directory(p.join(tempDirectory!, sessionId));
+    if (!directory.existsSync()) {
+      directory.createSync(recursive: true);
+    }
+    return directory.path;
+  }
+
   Future<String?> downloadFaceImage(String identity) async {
     if (socket.id == null) return null;
     final sessionId = socket.id!;
     final faceUrl = '/sessions/$sessionId/face/$identity';
+
     final face = await server.downloadFile(
       faceUrl,
-      p.join(tempDirectory!, sessionId, identity),
+      p.join(sessionDirectory, identity),
     );
     return face;
   }
@@ -114,11 +127,7 @@ class CLSocket {
 
     final vector = await server.downloadFile(
       vectorUrl,
-      p.join(
-        tempDirectory!,
-        sessionId,
-        identity.replaceAll(RegExp(r'\.png$'), '.npy'),
-      ),
+      p.join(sessionDirectory, identity.replaceAll(RegExp(r'\.png$'), '.npy')),
     );
     return vector;
   }
@@ -132,7 +141,10 @@ extension DownloadExt on CLServer {
       validResponse: (result) async {
         return result as String;
       },
-      errorResponse: (_, {st}) async => null,
+      errorResponse: (e, {st}) async {
+        print(e);
+        return null;
+      },
     );
   }
 }
