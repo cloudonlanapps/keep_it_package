@@ -1,8 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
 
-import 'package:background_downloader/background_downloader.dart';
 import 'package:cl_servers/cl_servers.dart';
 import 'package:face_it_desktop/models/cl_socket.dart';
 import 'package:face_it_desktop/models/face/detected_face.dart';

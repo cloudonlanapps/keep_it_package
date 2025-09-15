@@ -89,7 +89,7 @@ class _UnknownnFaceState extends ConsumerState<UnknownFace> {
                                     .read(detectedFacesProvider.notifier)
                                     .registerFace(
                                       server,
-                                      socketId,
+                                      session!,
                                       widget.face.identity,
                                       textEditingController.text,
                                     );

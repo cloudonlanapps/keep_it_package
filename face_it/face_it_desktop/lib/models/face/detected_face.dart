@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:collection/collection.dart';
 import 'package:face_it_desktop/models/face/bbox.dart';
 import 'package:face_it_desktop/models/face/landmarks.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import 'guessed_face.dart';
