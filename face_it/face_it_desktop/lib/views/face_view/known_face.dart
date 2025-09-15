@@ -1,5 +1,3 @@
-import 'dart:math' as math;
-
 import 'package:cl_basic_types/cl_basic_types.dart';
 import 'package:face_it_desktop/views/face_view/face_preview.dart';
 import 'package:flutter/material.dart';
