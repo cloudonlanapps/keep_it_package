@@ -75,35 +75,37 @@ class SessionCandidateNotifier
   Future<void> recognize() async {
     if (state.value!.isUploaded) {
       state = AsyncData(state.value!.copyWith(isRecognizing: true));
-      await Future<void>.delayed(const Duration(seconds: 5));
 
-      final response = await ref
-          .read(sessionProvider.notifier)
-          .aitask(identifier!, 'recognize');
+      await Future.wait([
+        () async {
+          final response = await ref
+              .read(sessionProvider.notifier)
+              .aitask(identifier!, 'recognize');
+          final faces = <DetectedFace>[
+            if (response['faces'] case final List<dynamic> facesList)
+              ...facesList.map(
+                (r) => DetectedFace.fromMap(r as Map<String, dynamic>),
+              ),
+          ];
 
-      final faces = <DetectedFace>[
-        if (response['faces'] case final List<dynamic> facesList)
-          ...facesList.map(
-            (r) => DetectedFace.fromMap(r as Map<String, dynamic>),
-          ),
-      ];
+          var entity = state.value!.entity!;
+          if (response['dimension'] case [final int width, final int height]) {
+            entity = entity.copyWith(width: () => width, height: () => height);
+          }
+          ref.read(detectedFacesProvider.notifier).upsertFaces(faces);
 
-      var entity = state.value!.entity!;
-      if (response['dimension'] case [final int width, final int height]) {
-        entity = entity.copyWith(width: () => width, height: () => height);
-      }
-      ref.read(detectedFacesProvider.notifier).upsertFaces(faces);
+          state = AsyncData(
+            state.value!.copyWith(
+              faceIds: () => faces.map((e) => e.identity).toList(),
+              entity: () => entity,
+            ),
+          );
+          ref.read(messagesProvider.notifier).addMessage('$faces');
+        }(),
+        Future<void>.delayed(const Duration(seconds: 2)), // fixed wait
+      ]);
 
-      state = AsyncData(
-        state.value!.copyWith(
-          faceIds: () => faces.map((e) => e.identity).toList(),
-          entity: () => entity,
-        ),
-      );
-      await Future<void>.delayed(const Duration(seconds: 5));
       state = AsyncData(state.value!.copyWith(isRecognizing: false));
-
-      ref.read(messagesProvider.notifier).addMessage('$faces');
     }
   }
 }
