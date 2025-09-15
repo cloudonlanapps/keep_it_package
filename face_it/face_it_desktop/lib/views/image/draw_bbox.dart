@@ -5,9 +5,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../models/face/bbox.dart';
 
 class DrawBBox extends ConsumerWidget {
-  const DrawBBox({required this.bbox, super.key});
+  const DrawBBox({required this.bbox, super.key, this.label = 'New Face'});
 
   final BBox bbox;
+  final String label;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -22,7 +23,7 @@ class DrawBBox extends ConsumerWidget {
           alignment: Alignment.bottomCenter,
           child: FittedBox(
             child: GradientBackgroundText(
-              text: 'Amizhthini',
+              text: label,
               gradient: LinearGradient(
                 colors: [color.withAlpha(0x80), color, color.withAlpha(0x80)],
               ),

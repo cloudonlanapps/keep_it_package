@@ -135,4 +135,28 @@ class DetectedFace {
   }
 
   String get identity => image;
+
+  String formatName(String name) {
+    return name
+        .split(RegExp(r'\s+')) // split on spaces/tabs
+        .map((word) {
+          if (word.isEmpty) return word;
+          final first = word.characters.first.toUpperCase();
+          final rest = word.characters.skip(1).toString();
+          return '$first$rest';
+        })
+        .join(' ');
+  }
+
+  String get label {
+    final String label;
+    if (registeredFace?.personName != null) {
+      label = '${registeredFace?.personName}';
+    } else if (guesses?[0].registeredFace.personName != null) {
+      label = '${guesses?[0].registeredFace.personName} ?';
+    } else {
+      label = 'New Face';
+    }
+    return formatName(label);
+  }
 }

@@ -4,8 +4,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
 import '../../providers/f_face.dart';
-import '../face_view/known_face_popover.dart';
-import '../face_view/unknown_face_popover.dart';
+import '../face_view/guessed_face.dart';
+import '../face_view/known_face.dart';
+import '../face_view/unknown_face.dart';
 import 'draw_bbox.dart';
 
 class DrawFace extends Positioned {
@@ -47,6 +48,7 @@ class _DrawFace0State extends ConsumerState<DrawFace0> {
     if (face == null) {
       return const SizedBox.shrink();
     }
+
     return ShadPopover(
       decoration: const ShadDecoration(
         color: Colors.transparent,
@@ -56,7 +58,7 @@ class _DrawFace0State extends ConsumerState<DrawFace0> {
       controller: popoverController,
       popover: (context) => switch (face) {
         (final DetectedFace face) when face.registeredFace != null =>
-          GuessedFaces(face: face),
+          ConfirmedFace(face: face),
         (final DetectedFace face) when face.guesses != null => GuessedFaces(
           face: face,
         ),
@@ -64,7 +66,7 @@ class _DrawFace0State extends ConsumerState<DrawFace0> {
       },
       child: GestureDetector(
         onTap: popoverController.toggle,
-        child: DrawBBox(bbox: face.bbox),
+        child: DrawBBox(bbox: face.bbox, label: face.label),
       ),
     );
   }

@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:cl_servers/cl_servers.dart';
 import 'package:content_store/content_store.dart';
+import 'package:face_it_desktop/models/face/registered_face.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path/path.dart' as p;
 
@@ -53,9 +54,31 @@ class DetectedFacesNotifier extends AsyncNotifier<Map<String, DetectedFace>> {
     final face = getFace(identity);
     if (face == null) return false;
     // ignore: unused_local_variable for now!
-    final files = filesFromSession(server, sessionId, identity);
+    final files = await filesFromSession(server, sessionId, identity);
 
-    return true;
+    if (files != null) {
+      final reply = await server.post(
+        '/store/face/register/person/new/$name',
+        filesFields: {
+          'face': [files[0]],
+          'vector': [files[1]],
+        },
+      );
+      await reply.when(
+        validResponse: (result) async {
+          final updatedFace = face.copyWith(
+            registeredFace: () => RegisteredFace.fromJson(result as String),
+          );
+          upsertFace(updatedFace);
+        },
+        errorResponse: (e, {st}) async {
+          print(e);
+        },
+      );
+
+      return true;
+    }
+    return false;
   }
 
   Future<bool> associateFace(
@@ -66,6 +89,8 @@ class DetectedFacesNotifier extends AsyncNotifier<Map<String, DetectedFace>> {
   ) async {
     final face = getFace(identity);
     if (face == null) return false;
+    // ignore: unused_local_variable for now
+    final files = await filesFromSession(server, sessionId, identity);
     return true;
   }
 
@@ -74,9 +99,8 @@ class DetectedFacesNotifier extends AsyncNotifier<Map<String, DetectedFace>> {
     String sessionId,
     String identity,
   ) async {
-    final faceUrl = '${server.storeURL.uri}/sessions/$sessionId/face/$identity';
-    final vectorUrl =
-        '${server.storeURL.uri}/sessions/$sessionId/vector/$identity';
+    final faceUrl = '/sessions/$sessionId/face/$identity';
+    final vectorUrl = '/sessions/$sessionId/vector/$identity';
 
     final face = await downloadFile(
       server,
@@ -91,6 +115,7 @@ class DetectedFacesNotifier extends AsyncNotifier<Map<String, DetectedFace>> {
       p.join(tempDirectory, identity.replaceAll(RegExp(r'\.png$'), '.npy')),
     );
     if (face == null || vector == null) return null;
+
     return [face, vector];
   }
 

@@ -13,7 +13,7 @@ class RegisteredFace {
   factory RegisteredFace.fromMap(Map<String, dynamic> map) {
     return RegisteredFace(
       id: map['id'] as String,
-      personId: map['personId'] as String,
+      personId: map['personId'] as int,
       personName: map['personName'] as String,
     );
   }
@@ -21,10 +21,10 @@ class RegisteredFace {
   factory RegisteredFace.fromJson(String source) =>
       RegisteredFace.fromMap(json.decode(source) as Map<String, dynamic>);
   final String id;
-  final String personId;
+  final int personId;
   final String personName;
 
-  RegisteredFace copyWith({String? id, String? personId, String? personName}) {
+  RegisteredFace copyWith({String? id, int? personId, String? personName}) {
     return RegisteredFace(
       id: id ?? this.id,
       personId: personId ?? this.personId,
