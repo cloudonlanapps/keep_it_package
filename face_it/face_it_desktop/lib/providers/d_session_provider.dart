@@ -31,19 +31,19 @@ class SessionNotifier extends AsyncNotifier<CLSocket?> {
     socket
       ..onConnect((_) {
         log('Connected: session id ${socket.id}');
-        state = AsyncValue.data(CLSocket(socket: socket));
+        state = AsyncValue.data(CLSocket(socket: socket, server: server));
       })
       ..onConnectError((err) {
         log('Error: session Connection Failed\n\t$err');
 
-        state = AsyncValue.data(CLSocket(socket: socket));
+        state = AsyncValue.data(CLSocket(socket: socket, server: server));
       })
       ..on('message', onReceiveMessage)
       //..on('result', onReceiveMessage)
       ..on('progress', onReceiveMessage)
       ..onDisconnect((_) {
         log('Disconnected');
-        state = AsyncValue.data(CLSocket(socket: socket));
+        state = AsyncValue.data(CLSocket(socket: socket, server: server));
         socket
           ..disconnect()
           ..dispose();
@@ -56,7 +56,7 @@ class SessionNotifier extends AsyncNotifier<CLSocket?> {
         ..dispose();
     });
     Future.delayed(const Duration(seconds: 1), socket.connect);
-    return CLSocket(socket: socket);
+    return CLSocket(socket: socket, server: server);
   }
 
   void onReceiveMessage(dynamic data) {
