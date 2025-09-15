@@ -58,7 +58,7 @@ class DetectedFacesNotifier extends AsyncNotifier<Map<String, DetectedFace>> {
 
     if (files != null) {
       final reply = await server.post(
-        '/store/face/register/person/new/$name',
+        '/store/register_face/of/$name',
         filesFields: {
           'face': [files[0]],
           'vector': [files[1]],
