@@ -66,7 +66,7 @@ class _MediaPopoverState extends ConsumerState<MediaPopover> {
                                     widget.file,
                                   ).notifier,
                                 )
-                                .upload(server, session!.socket.id!);
+                                .upload(server, session!);
                             popoverController.toggle();
                           }
                         : null,

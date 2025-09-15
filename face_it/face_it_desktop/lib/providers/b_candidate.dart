@@ -4,6 +4,7 @@ import 'dart:io';
 
 import 'package:background_downloader/background_downloader.dart';
 import 'package:cl_servers/cl_servers.dart';
+import 'package:face_it_desktop/models/cl_socket.dart';
 import 'package:face_it_desktop/models/face/detected_face.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
@@ -26,20 +27,14 @@ class SessionCandidateNotifier
     return SessionCandidate(file: arg);
   }
 
-  Future<void> upload(CLServer server, String sessionId) async {
+  Future<void> upload(CLServer server, CLSocket socket) async {
     if (state.value!.status != MediaStatus.added) {
       return;
     }
     state = AsyncData(state.value!.copyWith(status: MediaStatus.uploading));
-    final task = UploadTask.fromFile(
-      file: File(state.value!.file.path),
-      url: '${server.storeURL.uri}/sessions/$sessionId/upload',
 
-      fileField: 'media',
-      updates: Updates.progress, // request status and progress updates
-    );
-    final result = await FileDownloader().upload(
-      task,
+    final result = await socket.uploadMedia(
+      state.value!.file.path,
       onProgress: (progress) {
         state = AsyncData(
           state.value!.copyWith(
@@ -48,10 +43,10 @@ class SessionCandidateNotifier
         );
       },
     );
-    if (result.responseBody?.isNotEmpty ?? false) {
+    if (result?.isNotEmpty ?? false) {
       try {
         final withEntity = state.value!.entityFromMap(
-          jsonDecode(result.responseBody!) as Map<String, dynamic>,
+          jsonDecode(result!) as Map<String, dynamic>,
         );
         state = AsyncData(
           withEntity.copyWith(
@@ -75,9 +70,10 @@ class SessionCandidateNotifier
   Future<void> recognize() async {
     if (state.value!.isUploaded) {
       final response = await ref
-          .read(sessionProvider.notifier)
-          .aitask(identifier!, 'recognize');
-
+          .read(sessionProvider)
+          .whenOrNull(data: (data) => data)
+          ?.aitask(identifier!, 'recognize');
+      if (response == null) return;
       final faces = <DetectedFace>[
         if (response['faces'] case final List<dynamic> facesList)
           ...facesList.map(

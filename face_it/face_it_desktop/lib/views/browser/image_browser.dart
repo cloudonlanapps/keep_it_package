@@ -33,7 +33,7 @@ class ImageBrowser extends ConsumerWidget {
           for (final candidate in curr.value!) {
             ref
                 .read(sessionCandidateProvider(candidate.file).notifier)
-                .upload(server, session!.socket.id!);
+                .upload(server, session!);
           }
         }
       }

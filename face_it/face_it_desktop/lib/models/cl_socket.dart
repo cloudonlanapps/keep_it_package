@@ -1,3 +1,7 @@
+import 'dart:async';
+import 'dart:io';
+
+import 'package:background_downloader/background_downloader.dart';
 import 'package:cl_servers/cl_servers.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
@@ -45,18 +49,40 @@ class CLSocket {
   @override
   String toString() =>
       'ServerIO(socket: $socket, server: $server, connected: $connected)';
-}
 
-/*
-  ServerIO addMessage(String msg) {
-    return copyWith(messages: [...messages, msg]);
-  }
+  Future<Map<String, dynamic>> aitask(String identifier, String task) async {
+    final completer = Completer<Map<String, dynamic>>();
 
-  bool sendMessage(msg) {
-    if (isConnected) {
-      socket.emit("message", msg);
+    void callback(dynamic data) {
+      final map = data as Map<String, dynamic>;
+      if (map.keys.contains('identifier') && map['identifier'] == identifier) {
+        completer.complete(map);
+      }
     }
 
-    return isConnected;
+    socket
+      ..on('result', callback)
+      ..emit(task, identifier);
+
+    final result = await completer.future;
+    socket.off('result', callback);
+
+    return result;
   }
- */
+
+  Future<String?> uploadMedia(
+    String filePath, {
+    void Function(double)? onProgress,
+  }) async {
+    final sessionId = socket.id;
+    if (sessionId == null) return null;
+    final task = UploadTask.fromFile(
+      file: File(filePath),
+      url: '${server.storeURL.uri}/sessions/$sessionId/upload',
+      fileField: 'media',
+      updates: Updates.progress, // request status and progress updates
+    );
+    final result = await FileDownloader().upload(task, onProgress: onProgress);
+    return result.responseBody;
+  }
+}
