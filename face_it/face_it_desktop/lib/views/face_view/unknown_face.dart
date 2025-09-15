@@ -5,7 +5,6 @@ import 'package:shadcn_ui/shadcn_ui.dart';
 import '../../models/face/detected_face.dart';
 
 import '../../providers/f_face.dart';
-import '../../providers/face_file_cache_provider.dart';
 import 'face_preview.dart';
 
 class UnknownFace extends ConsumerStatefulWidget {
