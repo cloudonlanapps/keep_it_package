@@ -42,10 +42,6 @@ class _DrawFace0State extends ConsumerState<DrawFace0> {
 
   @override
   Widget build(BuildContext context) {
-    ref.listen(faceFileCacheProvider(widget.faceId), (prev, curr) {
-      print(curr);
-    });
-
     final faceCached = ref
         .watch(faceFileCacheProvider(widget.faceId))
         .whenOrNull(data: (data) => data);
