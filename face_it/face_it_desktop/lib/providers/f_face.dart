@@ -1,11 +1,10 @@
 import 'dart:async';
 
-import 'package:cl_servers/cl_servers.dart';
+import 'package:face_it_desktop/models/face/registered_person.dart';
 import 'package:face_it_desktop/providers/d_online_server.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../models/face/detected_face.dart';
-import '../models/face/registered_face.dart';
 import 'f_faces.dart';
 
 final detectedFaceProvider =
@@ -22,29 +21,63 @@ class DetectedFaceNotifier extends FamilyAsyncNotifier<DetectedFace?, String> {
     return faceMap?[arg];
   }
 
-  Future<void> registerSelf(String name) async {
+  void confirmTaggedFace(RegisteredPerson person) {
+    final face = state.asData?.value;
+    if (face == null) return;
+    final updatedFace = face.confirmTaggedFace(person);
+    ref.read(detectedFacesProvider.notifier).upsertFace(updatedFace);
+  }
+
+  void isAFace() {
+    final face = state.asData?.value;
+    if (face == null) return;
+    final updatedFace = face.isAFace();
+    ref.read(detectedFacesProvider.notifier).upsertFace(updatedFace);
+  }
+
+  void markAsUnknown() {
+    final face = state.asData?.value;
+    if (face == null) return;
+    final updatedFace = face.markAsUnknown();
+    ref.read(detectedFacesProvider.notifier).upsertFace(updatedFace);
+  }
+
+  void markNotAFace() {
+    final face = state.asData?.value;
+    if (face == null) return;
+    final updatedFace = face.markNotAFace();
+    ref.read(detectedFacesProvider.notifier).upsertFace(updatedFace);
+  }
+
+  void rejectTaggedPerson(RegisteredPerson person) {
+    final face = state.asData?.value;
+    if (face == null) return;
+    final updatedFace = face.rejectTaggedPerson(person);
+    ref.read(detectedFacesProvider.notifier).upsertFace(updatedFace);
+  }
+
+  void removeConfirmation() {
+    final face = state.asData?.value;
+    if (face == null) return;
+    final updatedFace = face.removeConfirmation();
+    ref.read(detectedFacesProvider.notifier).upsertFace(updatedFace);
+  }
+
+  Future<void> register(String name) async {
     final server = await ref.read(activeAIServerProvider.future);
     if (server == null) return;
     final face = state.asData?.value;
     if (face == null) return;
+    final updatedFace = await face.register(server, name);
+    ref.read(detectedFacesProvider.notifier).upsertFace(updatedFace);
+  }
 
-    final reply = await server.post(
-      '/store/register_face/of/$name',
-      filesFields: {
-        'face': [face.imageCache],
-        'vector': [face.vectorCache],
-      },
-    );
-    await reply.when(
-      validResponse: (result) async {
-        final updatedFace = face.copyWith(
-          registeredFace: () => RegisteredFace.fromJson(result as String),
-        );
-        ref.read(detectedFacesProvider.notifier).upsertFace(updatedFace);
-      },
-      errorResponse: (e, {st}) async {
-        //print(e);
-      },
-    );
+  Future<void> searchDB() async {
+    final server = await ref.read(activeAIServerProvider.future);
+    if (server == null) return;
+    final face = state.asData?.value;
+    if (face == null) return;
+    final updatedFace = await face.searchDB(server);
+    ref.read(detectedFacesProvider.notifier).upsertFace(updatedFace);
   }
 }

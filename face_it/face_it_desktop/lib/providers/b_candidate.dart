@@ -6,8 +6,7 @@ import 'package:background_downloader/background_downloader.dart';
 import 'package:cl_servers/cl_servers.dart';
 import 'package:content_store/content_store.dart';
 import 'package:face_it_desktop/models/face/detected_face.dart';
-import 'package:face_it_desktop/models/face/guessed_face.dart';
-import 'package:face_it_desktop/models/face/registered_person.dart';
+import 'package:face_it_desktop/models/face/face_descriptor.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path/path.dart' as p;
@@ -96,7 +95,9 @@ class SessionCandidateNotifier
             faces = <DetectedFace>[];
             for (final map in facesList) {
               final face = await lookupOnStore(map as Map<String, dynamic>);
-              if (face != null) faces.add(face);
+              if (face != null) {
+                faces.add(face);
+              }
             }
           } else {
             faces = [];
@@ -110,7 +111,7 @@ class SessionCandidateNotifier
 
           state = AsyncData(
             state.value!.copyWith(
-              faceIds: () => faces.map((e) => e.identity).toList(),
+              faceIds: () => faces.map((e) => e.descriptor.identity).toList(),
               entity: () => entity,
             ),
           );
@@ -128,6 +129,7 @@ class SessionCandidateNotifier
       //('Unexpected response from server');
       return null;
     }
+    map['identity'] = map['image'];
     final session = await ref.read(sessionProvider.future);
     final server = await ref.read(activeAIServerProvider.future);
 
@@ -155,64 +157,11 @@ class SessionCandidateNotifier
     if (facePath == null || vectorPath == null) return null;
     map['imageCache'] = facePath;
     map['vectorCache'] = vectorPath;
+    map['imageId'] = identifier;
 
-    final face = await searchDB(DetectedFace.fromMap(map), server);
-
+    final face = DetectedFace.notChecked(
+      descriptor: FaceDescriptor.fromMap(map),
+    );
     return face;
-  }
-
-  Future<DetectedFace> searchDB(DetectedFace face, CLServer server) async {
-    final reply = await server.post(
-      '/store/search',
-      filesFields: {
-        'vector': [face.vectorCache],
-      },
-    );
-    return reply.when(
-      validResponse: (result) async {
-        final decoded = jsonDecode(result as String);
-
-        if (decoded is! List) {
-          throw ArgumentError('Expected a JSON list');
-        }
-
-        final map = {
-          for (final item in decoded)
-            if (item is Map &&
-                item.containsKey('name') &&
-                item.containsKey('confidence'))
-              item['name'].toString(): (item['confidence'] as num).toDouble(),
-        };
-
-        final guesses = <GuessedPerson>[];
-        for (final name in map.keys) {
-          if (map[name]! > 0.5) {
-            final personReply = await server.get('/store/person/$name');
-            final person = await personReply.when(
-              validResponse: (personJson) async {
-                return RegisteredPerson.fromJson(personJson as String);
-              },
-              errorResponse: (e, {st}) async {
-                return null;
-              },
-            );
-            if (person != null) {
-              guesses.add(
-                GuessedPerson(person: person, confidence: map[name]!),
-              );
-            }
-          }
-        }
-
-        if (guesses.isNotEmpty) {
-          return face.copyWith(guesses: () => guesses);
-        } else {
-          return face;
-        }
-      },
-      errorResponse: (e, {st}) async {
-        return face;
-      },
-    );
   }
 }

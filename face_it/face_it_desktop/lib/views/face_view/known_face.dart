@@ -1,74 +1,85 @@
-import 'package:cl_basic_types/cl_basic_types.dart';
+import 'dart:io';
+
 import 'package:face_it_desktop/views/face_view/face_preview.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
+import 'package:vertical_percent_indicator/vertical_percent_indicator.dart';
 
 import '../../models/face/detected_face.dart';
+import '../../providers/f_face.dart';
+import '../../providers/face_box_preferences.dart';
 
-class ConfirmedFace extends StatelessWidget {
-  const ConfirmedFace({required this.face, super.key});
+class FaceConfirmed extends ConsumerStatefulWidget {
+  const FaceConfirmed({required this.face, super.key});
   final DetectedFace face;
+
+  @override
+  ConsumerState<ConsumerStatefulWidget> createState() => _FaceConfirmedState();
+}
+
+class _FaceConfirmedState extends ConsumerState<FaceConfirmed> {
+  late final ShadPopoverController popoverFlagController;
+
+  @override
+  void initState() {
+    popoverFlagController = ShadPopoverController();
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    popoverFlagController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return ShadCard(
-      width: 320,
-      height: 200,
-      padding: const EdgeInsets.all(8),
-      child: FittedBox(
-        fit: BoxFit.cover,
-        child: Stack(
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(8),
-              child: Center(
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  spacing: 8,
-                  children: [
-                    Transform(
-                      transform: Matrix4.identity()
-                        ..setEntry(3, 2, 0.005) // Apply perspective
-                        ..rotateX(0.1) // Example: rotate along X-axis
-                        ..rotateY(-0.4), // Example: rotate along Y-axis
-                      alignment: FractionalOffset.center,
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          FacePreview(face: face),
-                          Text('', style: ShadTheme.of(context).textTheme.h4),
-                        ],
-                      ),
-                    ),
-                    const Icon(LucideIcons.arrowBigRight300),
-                    Transform(
-                      transform: Matrix4.identity()
-                        ..setEntry(3, 2, 0.005) // Apply perspective
-                        ..rotateX(0.1) // Example: rotate along X-axis
-                        ..rotateY(0.4), // Example: rotate along Y-axis
-                      alignment: FractionalOffset.center,
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          FacePreview(face: face),
-                          Text(
-                            face.registeredFace!.personName
-                                .capitalizeFirstLetter(),
-                            style: ShadTheme.of(context).textTheme.h4,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
+    final color = ref.watch(faceBoxPreferenceProvider.select((e) => e.color));
+    return Card(
+      elevation: 8,
+      shadowColor: color,
+      margin: const EdgeInsets.all(4),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            width: 152,
+            height: 152,
+            decoration: BoxDecoration(
+              border: Border.all(color: color),
+              borderRadius: const BorderRadius.all(Radius.circular(8)),
+            ),
+            child: Stack(
+              fit: StackFit.expand,
+              children: [
+                ClipRRect(
+                  borderRadius: const BorderRadius.all(Radius.circular(8)),
+                  child: Image.file(
+                    File(widget.face.descriptor.imageCache),
+
+                    fit: BoxFit.contain,
+                  ),
                 ),
-              ),
+                Positioned(
+                  right: 4,
+                  bottom: 0,
+                  child: ShadButton.link(
+                    onPressed: () => ref
+                        .read(
+                          detectedFaceProvider(
+                            widget.face.descriptor.identity,
+                          ).notifier,
+                        )
+                        .removeConfirmation(),
+                    padding: const EdgeInsets.all(2),
+                    child: Text('Not ${widget.face.label}?'),
+                  ),
+                ),
+              ],
             ),
-            const Align(
-              alignment: Alignment.bottomRight,
-              child: Icon(LucideIcons.flag300),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

@@ -1,119 +1,152 @@
 import 'dart:convert';
 
+import 'package:cl_servers/cl_servers.dart';
 import 'package:collection/collection.dart';
-import 'package:face_it_desktop/models/face/bbox.dart';
-import 'package:face_it_desktop/models/face/landmarks.dart';
 import 'package:flutter/material.dart';
 
+import 'face_descriptor.dart';
+import 'face_state_manager.dart';
 import 'guessed_face.dart';
-import 'registered_face.dart';
+import 'registered_person.dart';
 
-enum RecognitionStatus {
+///     Face Transition
+///
+///                          Unchecked
+///                              │ vectorSearch()
+///                  ┌───────────┴───────────────────────────────┐
+///               notFound                                     found
+///     ┌─────────────┼──────────────┐                 ┌─────────┴───┐
+///     │ notAface()  │ notKnown()   │ register()      │ confirm()   │ reject()
+///  notAface      notKnown       confirm           confirm       notFound
+///
+///
+
+enum FaceStatus {
   notChecked,
+
+  found,
+  foundConfirmed,
+
   notFound,
-  recognized,
-  confirmed;
+  notFoundNotAFace,
+  notFoundUnknown;
 
   String get label => switch (this) {
-    notChecked => 'UNCHECKED',
-    notFound => 'NOT_FOUND',
-    recognized => 'FOUND',
-    confirmed => 'CONFIRMED',
+    notChecked => 'New Face',
+    found => 'Found',
+    foundConfirmed => 'Confirmed',
+    notFound => 'Not Found',
+    notFoundNotAFace => 'Not A Face',
+    notFoundUnknown => 'Unknown',
+  };
+
+  bool get canConfirm => switch (this) {
+    notChecked => true,
+    notFound => true,
+    notFoundUnknown => true,
+    found => true,
+    foundConfirmed => false, // Already found, must remove confirmation before
+    notFoundNotAFace => false, // clear the flag to proceed
+  };
+
+  bool get canRecognize => switch (this) {
+    notChecked => true,
+    notFound => true,
+    notFoundUnknown => true,
+    FaceStatus.found =>
+      false, //'Reject all earlier guesses before updating with search results',
+    FaceStatus.foundConfirmed => false, //Already confirmed
+    FaceStatus.notFoundNotAFace =>
+      false, //This is not a face, unflag to proceed
   };
 }
 
 @immutable
-class DetectedFace {
+class DetectedFace implements FaceStateManager {
   const DetectedFace({
-    required this.bbox,
-    required this.identity,
+    required this.descriptor,
     required this.guesses,
-    required this.imageCache,
-    required this.vectorCache,
-    required this.notAFace,
-    this.landmarks,
-    this.registeredFace,
-    this.loading = false,
+    required this.status,
+    required this.person,
   });
-
-  factory DetectedFace.fromMap(Map<String, dynamic> map) {
+  factory DetectedFace.notChecked({required FaceDescriptor descriptor}) {
     return DetectedFace(
-      bbox: BBox.fromMap({'data': map['bbox']}),
-      landmarks: map['landmarks'] != null
-          ? FaceLandmarks.fromMap({'data': map['landmarks']})
-          : null,
-      // FIXME: Server need to send this as identity
-      identity: map['image'] as String,
-      registeredFace: map['registeredFace'] != null
-          ? RegisteredFace.fromMap(
-              map['registeredFace'] as Map<String, dynamic>,
-            )
-          : null,
-      guesses: map['guesses'] != null
-          ? (map['guesses'] as List<dynamic>)
-                .map((e) => GuessedPerson.fromMap(e as Map<String, dynamic>))
-                .toList()
-          : null,
-      notAFace: (map['imageCache'] as int) != 0,
-      imageCache: map['imageCache'] as String,
-      vectorCache: map['vectorCache'] as String,
+      descriptor: descriptor,
+      status: FaceStatus.notChecked,
+      guesses: null,
+      person: null,
     );
   }
-
-  factory DetectedFace.fromJson(String source) =>
-      DetectedFace.fromMap(json.decode(source) as Map<String, dynamic>);
-  final BBox bbox;
-  final FaceLandmarks? landmarks;
-  final String identity;
-  final RegisteredFace? registeredFace;
-  final List<GuessedPerson>? guesses;
-  final bool notAFace;
-  final bool loading;
-  final String imageCache;
-  final String vectorCache;
-
-  DetectedFace copyWith({
-    BBox? bbox,
-    ValueGetter<FaceLandmarks?>? landmarks,
-    String? identity,
-    ValueGetter<RegisteredFace?>? registeredFace,
-    ValueGetter<List<GuessedPerson>?>? guesses,
-    bool? notAFace,
-    bool? loading,
-    String? imageCache,
-    String? vectorCache,
+  factory DetectedFace.found({
+    required FaceDescriptor descriptor,
+    required List<GuessedPerson> guesses,
   }) {
     return DetectedFace(
-      bbox: bbox ?? this.bbox,
-      landmarks: landmarks != null ? landmarks.call() : this.landmarks,
-      identity: identity ?? this.identity,
-      registeredFace: registeredFace != null
-          ? registeredFace.call()
-          : this.registeredFace,
-      guesses: guesses != null ? guesses.call() : this.guesses,
-      notAFace: notAFace ?? this.notAFace,
-      loading: loading ?? this.loading,
-      imageCache: imageCache ?? this.imageCache,
-      vectorCache: vectorCache ?? this.vectorCache,
+      descriptor: descriptor,
+      status: FaceStatus.found,
+      guesses: guesses,
+      person: null,
+    );
+  }
+  factory DetectedFace.confirm({
+    required FaceDescriptor descriptor,
+    required RegisteredPerson person,
+  }) {
+    return DetectedFace(
+      descriptor: descriptor,
+      status: FaceStatus.foundConfirmed,
+      guesses: null,
+      person: person,
     );
   }
 
-  Map<String, dynamic> toMap() {
-    return <String, dynamic>{
-      'bbox': bbox.toMap()['data'],
-      'landmarks': landmarks?.toMap()['data'],
-      'identity': identity,
-      'registeredFace': registeredFace?.toMap(),
-      'guesses': guesses?.map((e) => e.toMap()).toList(),
-      'notAFace': notAFace ? 1 : 0,
-    };
+  factory DetectedFace.notFound({required FaceDescriptor descriptor}) {
+    return DetectedFace(
+      descriptor: descriptor,
+      status: FaceStatus.notFound,
+      guesses: null,
+      person: null,
+    );
+  }
+  factory DetectedFace.notAFace({required FaceDescriptor descriptor}) {
+    return DetectedFace(
+      descriptor: descriptor,
+      status: FaceStatus.notFoundNotAFace,
+      guesses: null,
+      person: null,
+    );
+  }
+  factory DetectedFace.unknown({required FaceDescriptor descriptor}) {
+    return DetectedFace(
+      descriptor: descriptor,
+      status: FaceStatus.notFoundUnknown,
+      guesses: null,
+      person: null,
+    );
   }
 
-  String toJson() => json.encode(toMap());
+  final FaceDescriptor descriptor;
+  final FaceStatus status;
+  final RegisteredPerson? person;
+  final List<GuessedPerson>? guesses;
+
+  DetectedFace copyWith({
+    FaceDescriptor? descriptor,
+    FaceStatus? status,
+    ValueGetter<RegisteredPerson?>? person,
+    ValueGetter<List<GuessedPerson>?>? guesses,
+  }) {
+    return DetectedFace(
+      descriptor: descriptor ?? this.descriptor,
+      status: status ?? this.status,
+      person: person != null ? person.call() : this.person,
+      guesses: guesses != null ? guesses.call() : this.guesses,
+    );
+  }
 
   @override
   String toString() {
-    return 'DetectedFace(bbox: $bbox, landmarks: $landmarks, identity: $identity, registeredFace: $registeredFace, guesses: $guesses, notAFace: $notAFace, loading: $loading, imageCache: $imageCache, vectorCache: $vectorCache)';
+    return 'DetectedFace(descriptor: $descriptor, status: $status, person: $person, guesses: $guesses)';
   }
 
   @override
@@ -121,28 +154,18 @@ class DetectedFace {
     if (identical(this, other)) return true;
     final listEquals = const DeepCollectionEquality().equals;
 
-    return other.bbox == bbox &&
-        other.landmarks == landmarks &&
-        other.identity == identity &&
-        other.registeredFace == registeredFace &&
-        listEquals(other.guesses, guesses) &&
-        other.notAFace == notAFace &&
-        other.loading == loading &&
-        other.imageCache == imageCache &&
-        other.vectorCache == vectorCache;
+    return other.descriptor == descriptor &&
+        other.status == status &&
+        other.person == person &&
+        listEquals(other.guesses, guesses);
   }
 
   @override
   int get hashCode {
-    return bbox.hashCode ^
-        landmarks.hashCode ^
-        identity.hashCode ^
-        registeredFace.hashCode ^
-        guesses.hashCode ^
-        notAFace.hashCode ^
-        loading.hashCode ^
-        imageCache.hashCode ^
-        vectorCache.hashCode;
+    return descriptor.hashCode ^
+        status.hashCode ^
+        person.hashCode ^
+        guesses.hashCode;
   }
 
   String formatName(String name) {
@@ -157,16 +180,139 @@ class DetectedFace {
         .join(' ');
   }
 
-  String get label {
-    final String label;
-    if (registeredFace?.personName != null) {
-      label = '${registeredFace?.personName}';
-    } else if ((guesses?.isNotEmpty ?? false) && guesses?[0].person != null) {
-      label =
-          '${guesses?[0].person.name} (${guesses?[0].confidencePercentage})%';
-    } else {
-      label = 'New Face';
+  String get label => formatName(switch (status) {
+    FaceStatus.notChecked => 'Unchecked',
+    FaceStatus.found => guesses![0].person.name,
+    FaceStatus.foundConfirmed => person!.name,
+    FaceStatus.notFound => 'New Face',
+    FaceStatus.notFoundNotAFace => 'Not A Face',
+    FaceStatus.notFoundUnknown => 'Unknown',
+  });
+
+  DetectedFace confirm(RegisteredPerson person) {
+    if (status.canConfirm) {
+      return DetectedFace.confirm(descriptor: descriptor, person: person);
     }
-    return formatName(label);
+    return this;
+  }
+
+  DetectedFace vectorSearchResults(List<GuessedPerson>? guesses) {
+    if (status.canRecognize) {
+      final DetectedFace face;
+      if (guesses != null && guesses.isNotEmpty) {
+        face = DetectedFace.found(descriptor: descriptor, guesses: guesses);
+      } else {
+        face = DetectedFace.notFound(descriptor: descriptor);
+      }
+      return face;
+    }
+    return this;
+  }
+
+  @override
+  DetectedFace confirmTaggedFace(RegisteredPerson person) =>
+      DetectedFace.confirm(descriptor: descriptor, person: person);
+
+  @override
+  DetectedFace isAFace() => DetectedFace.notChecked(descriptor: descriptor);
+
+  @override
+  DetectedFace markAsUnknown() => DetectedFace.unknown(descriptor: descriptor);
+
+  @override
+  DetectedFace markNotAFace() => DetectedFace.notAFace(descriptor: descriptor);
+
+  @override
+  DetectedFace rejectTaggedPerson(RegisteredPerson person) {
+    if (guesses == null) return this;
+    // Remove the person
+    final updated = guesses!.where((e) => e.person.id != person.id).toList();
+    if (updated.isEmpty) {
+      return DetectedFace.notFound(descriptor: descriptor);
+    } else {
+      return DetectedFace.found(descriptor: descriptor, guesses: updated);
+    }
+  }
+
+  @override
+  DetectedFace removeConfirmation() =>
+      DetectedFace.notChecked(descriptor: descriptor);
+
+  @override
+  Future<DetectedFace> register(CLServer server, String name) async {
+    final reply = await server.post(
+      '/store/register_face/of/$name',
+      filesFields: {
+        'face': [descriptor.imageCache],
+        'vector': [descriptor.vectorCache],
+      },
+    );
+    return reply.when(
+      validResponse: (result) async {
+        return DetectedFace.confirm(
+          descriptor: descriptor,
+          person: RegisteredPerson.fromJson(result as String),
+        );
+      },
+      errorResponse: (e, {st}) async {
+        return this;
+      },
+    );
+  }
+
+  @override
+  Future<DetectedFace> searchDB(CLServer server) async {
+    final reply = await server.post(
+      '/store/search',
+      filesFields: {
+        'vector': [descriptor.vectorCache],
+      },
+    );
+    return reply.when(
+      validResponse: (result) async {
+        final decoded = jsonDecode(result as String);
+
+        if (decoded is! List) {
+          throw ArgumentError('Expected a JSON list');
+        }
+
+        final map = {
+          for (final item in decoded)
+            if (item is Map &&
+                item.containsKey('name') &&
+                item.containsKey('confidence'))
+              item['name'].toString(): (item['confidence'] as num).toDouble(),
+        };
+
+        final guesses = <GuessedPerson>[];
+        for (final name in map.keys) {
+          if (map[name]! > 0.5) {
+            final personReply = await server.get('/store/person/$name');
+            final person = await personReply.when(
+              validResponse: (personJson) async {
+                return RegisteredPerson.fromJson(personJson as String);
+              },
+              errorResponse: (e, {st}) async {
+                return null;
+              },
+            );
+            if (person != null) {
+              guesses.add(
+                GuessedPerson(person: person, confidence: map[name]!),
+              );
+            }
+          }
+        }
+
+        if (guesses.isNotEmpty) {
+          return DetectedFace.found(descriptor: descriptor, guesses: guesses);
+        } else {
+          return DetectedFace.notFound(descriptor: descriptor);
+        }
+      },
+      errorResponse: (e, {st}) async {
+        return this;
+      },
+    );
   }
 }

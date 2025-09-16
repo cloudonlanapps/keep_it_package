@@ -5,17 +5,16 @@ import 'package:shadcn_ui/shadcn_ui.dart';
 import '../../models/face/detected_face.dart';
 
 import '../../providers/f_face.dart';
-import 'face_preview.dart';
 
-class UnknownFace extends ConsumerStatefulWidget {
-  const UnknownFace({required this.face, super.key});
+class FaceNotChecked extends ConsumerStatefulWidget {
+  const FaceNotChecked({required this.face, super.key});
   final DetectedFace face;
 
   @override
-  ConsumerState<ConsumerStatefulWidget> createState() => _UnknownnFaceState();
+  ConsumerState<ConsumerStatefulWidget> createState() => FaceNotCheckedState();
 }
 
-class _UnknownnFaceState extends ConsumerState<UnknownFace> {
+class FaceNotCheckedState extends ConsumerState<FaceNotChecked> {
   late final ShadPopoverController popoverFlagController;
   late final TextEditingController textEditingController;
 
@@ -43,82 +42,48 @@ class _UnknownnFaceState extends ConsumerState<UnknownFace> {
 
   @override
   Widget build(BuildContext context) {
+    final notifier = ref.watch(
+      detectedFaceProvider(widget.face.descriptor.identity).notifier,
+    );
     return ShadCard(
-      width: 360,
-      height: 112 + 20,
-      padding: const EdgeInsets.all(8),
-      child: Row(
+      width: 288,
+      padding: const EdgeInsets.all(16),
+      child: Column(
         mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
         spacing: 8,
         children: [
-          FacePreview(face: widget.face),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Expanded(
-                  child: Center(
-                    child: ShadInput(
-                      controller: textEditingController,
-                      placeholder: const Text('Who is this?'),
-                      leading: const Icon(LucideIcons.userPen300),
-                    ),
-                  ),
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  mainAxisSize: MainAxisSize.min,
-                  spacing: 8,
-                  children: [
-                    Expanded(
-                      child: ShadButton.outline(
-                        expands: true,
-                        onPressed: () => ref
-                            .read(
-                              detectedFaceProvider(
-                                widget.face.identity,
-                              ).notifier,
-                            )
-                            .registerSelf(textEditingController.text),
-                        enabled: textEditingController.text.isNotEmpty,
-                        child: const Text('Save'),
-                      ),
-                    ),
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: ShadPopover(
-                        popover: (context) {
-                          return const SizedBox(
-                            width: 180,
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                ShadButton.ghost(
-                                  child: Text('Ignore this person'),
-                                ),
-                                ShadButton.ghost(
-                                  child: Text('This is not a face'),
-                                ),
-                              ],
-                            ),
-                          );
-                        },
-                        controller: popoverFlagController,
-                        child: ShadButton.ghost(
-                          onPressed: popoverFlagController.toggle,
-                          child: Icon(
-                            LucideIcons.flag300,
-                            color: ShadTheme.of(
-                              context,
-                            ).colorScheme.destructive,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
+          Center(
+            child: ShadInput(
+              controller: textEditingController,
+              placeholder: const Text('Who is this?'),
+              onSubmitted: (val) =>
+                  notifier.register(textEditingController.text),
             ),
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            mainAxisSize: MainAxisSize.min,
+            spacing: 8,
+            children: [
+              ShadButton.ghost(
+                onPressed: notifier.searchDB,
+                child: const Icon(
+                  Icons.person_search,
+                  size: 24,
+                  color: Colors.blue,
+                ),
+              ),
+              Expanded(
+                child: ShadButton.outline(
+                  expands: true,
+                  onPressed: () =>
+                      notifier.register(textEditingController.text),
+                  enabled: textEditingController.text.isNotEmpty,
+                  child: const Text('Save'),
+                ),
+              ),
+            ],
           ),
         ],
       ),

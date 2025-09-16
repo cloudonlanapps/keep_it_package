@@ -20,18 +20,19 @@ class DetectedFacesNotifier extends AsyncNotifier<Map<String, DetectedFace>> {
   }
 
   void upsertFace(DetectedFace face) {
-    state = AsyncData({...state.value!, face.identity: face});
+    state = AsyncData({...state.value!, face.descriptor.identity: face});
   }
 
   void upsertFaces(List<DetectedFace> faces) {
     state = AsyncData({
       ...state.asData?.value ?? {},
-      ...{for (final e in faces) e.identity: e},
+      ...{for (final e in faces) e.descriptor.identity: e},
     });
   }
 
   void removeFace(DetectedFace face) {
-    final current = {...(state.asData?.value ?? {})}..remove(face.identity);
+    final current = {...(state.asData?.value ?? {})}
+      ..remove(face.descriptor.identity);
     state = AsyncData(current);
   }
 }

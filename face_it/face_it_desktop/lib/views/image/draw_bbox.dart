@@ -1,48 +1,70 @@
+import 'package:dotted_border/dotted_border.dart';
+import 'package:face_it_desktop/models/face/detected_face.dart';
 import 'package:face_it_desktop/providers/face_box_preferences.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../models/face/bbox.dart';
+import '../../providers/f_face.dart';
 
 class DrawBBox extends ConsumerWidget {
-  const DrawBBox({required this.bbox, super.key, this.label = 'New Face'});
-
-  final BBox bbox;
-  final String label;
+  const DrawBBox({required this.faceId, super.key});
+  final String faceId;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final face = ref
+        .watch(detectedFaceProvider(faceId))
+        .whenOrNull(data: (data) => data);
+
+    if (face == null) {
+      return const SizedBox.shrink();
+    }
+    if (face.status == FaceStatus.notFoundNotAFace) {
+      return DottedBorder(
+        options: const RectDottedBorderOptions(
+          dashPattern: [5, 5],
+          strokeWidth: 5,
+        ),
+        child: SizedBox(
+          width: face.descriptor.bbox.width,
+          height: face.descriptor.bbox.height,
+        ),
+      );
+    }
+
     final color = ref.watch(faceBoxPreferenceProvider.select((e) => e.color));
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Container(
-          width: bbox.xmax - bbox.xmin,
-          height: 100,
-          padding: const EdgeInsets.all(8),
-          alignment: Alignment.bottomCenter,
-          child: FittedBox(
-            child: GradientBackgroundText(
-              text: label,
-              gradient: LinearGradient(
-                colors: [color.withAlpha(0x80), color, color.withAlpha(0x80)],
+        if (face.status != FaceStatus.notFoundNotAFace)
+          Container(
+            width: face.descriptor.bbox.width,
+            height: 100,
+            padding: const EdgeInsets.all(8),
+            alignment: Alignment.bottomCenter,
+            child: FittedBox(
+              child: GradientBackgroundText(
+                text: face.label,
+                gradient: LinearGradient(
+                  colors: [color.withAlpha(0x80), color, color.withAlpha(0x80)],
+                ),
+                style: const TextStyle(
+                  fontSize: 40,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 5,
+                ),
+                borderRadius: BorderRadius.circular(10),
               ),
-              style: const TextStyle(
-                fontSize: 40,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-              ),
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-              borderRadius: BorderRadius.circular(10),
             ),
           ),
-        ),
         Container(
-          width: bbox.xmax - bbox.xmin,
-          height: bbox.ymax - bbox.ymin,
-          decoration: BoxDecoration(
-            border: Border.all(width: 10, color: color),
-          ),
+          width: face.descriptor.bbox.width,
+          height: face.descriptor.bbox.height,
+          decoration: BoxDecoration(border: Border.all(width: 5, color: color)),
         ),
       ],
     );
