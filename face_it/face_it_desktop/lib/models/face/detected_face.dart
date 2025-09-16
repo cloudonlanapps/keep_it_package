@@ -30,7 +30,7 @@ class DetectedFace {
     required this.guesses,
     required this.imageCache,
     required this.vectorCache,
-    required this.status,
+    required this.notAFace,
     this.landmarks,
     this.registeredFace,
     this.loading = false,
@@ -53,10 +53,7 @@ class DetectedFace {
                 .map((e) => GuessedPerson.fromMap(e as Map<String, dynamic>))
                 .toList()
           : null,
-      status: RecognitionStatus.values.firstWhere(
-        (e) => (map['status'] as String) == e.label,
-        orElse: () => throw ArgumentError('Invalid MediaType: ${map['name']}'),
-      ),
+      notAFace: (map['imageCache'] as int) != 0,
       imageCache: map['imageCache'] as String,
       vectorCache: map['vectorCache'] as String,
     );
@@ -69,7 +66,7 @@ class DetectedFace {
   final String image;
   final RegisteredFace? registeredFace;
   final List<GuessedPerson>? guesses;
-  final RecognitionStatus status;
+  final bool notAFace;
   final bool loading;
   final String imageCache;
   final String vectorCache;
@@ -80,7 +77,7 @@ class DetectedFace {
     String? image,
     ValueGetter<RegisteredFace?>? registeredFace,
     ValueGetter<List<GuessedPerson>?>? guesses,
-    RecognitionStatus? status,
+    bool? notAFace,
     bool? loading,
     String? imageCache,
     String? vectorCache,
@@ -93,7 +90,7 @@ class DetectedFace {
           ? registeredFace.call()
           : this.registeredFace,
       guesses: guesses != null ? guesses.call() : this.guesses,
-      status: status ?? this.status,
+      notAFace: notAFace ?? this.notAFace,
       loading: loading ?? this.loading,
       imageCache: imageCache ?? this.imageCache,
       vectorCache: vectorCache ?? this.vectorCache,
@@ -107,7 +104,7 @@ class DetectedFace {
       'image': image,
       'registeredFace': registeredFace?.toMap(),
       'guesses': guesses?.map((e) => e.toMap()).toList(),
-      'status': status.label,
+      'notAFace': notAFace ? 1 : 0,
     };
   }
 
@@ -115,7 +112,7 @@ class DetectedFace {
 
   @override
   String toString() {
-    return 'DetectedFace(bbox: $bbox, landmarks: $landmarks, image: $image, registeredFace: $registeredFace, guesses: $guesses, status: $status, loading: $loading, imageCache: $imageCache, vectorCache: $vectorCache)';
+    return 'DetectedFace(bbox: $bbox, landmarks: $landmarks, image: $image, registeredFace: $registeredFace, guesses: $guesses, notAFace: $notAFace, loading: $loading, imageCache: $imageCache, vectorCache: $vectorCache)';
   }
 
   @override
@@ -128,7 +125,7 @@ class DetectedFace {
         other.image == image &&
         other.registeredFace == registeredFace &&
         listEquals(other.guesses, guesses) &&
-        other.status == status &&
+        other.notAFace == notAFace &&
         other.loading == loading &&
         other.imageCache == imageCache &&
         other.vectorCache == vectorCache;
@@ -141,7 +138,7 @@ class DetectedFace {
         image.hashCode ^
         registeredFace.hashCode ^
         guesses.hashCode ^
-        status.hashCode ^
+        notAFace.hashCode ^
         loading.hashCode ^
         imageCache.hashCode ^
         vectorCache.hashCode;
