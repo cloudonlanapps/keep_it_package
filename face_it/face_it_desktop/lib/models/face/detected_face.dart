@@ -26,7 +26,7 @@ enum RecognitionStatus {
 class DetectedFace {
   const DetectedFace({
     required this.bbox,
-    required this.image,
+    required this.identity,
     required this.guesses,
     required this.imageCache,
     required this.vectorCache,
@@ -42,7 +42,8 @@ class DetectedFace {
       landmarks: map['landmarks'] != null
           ? FaceLandmarks.fromMap({'data': map['landmarks']})
           : null,
-      image: map['image'] as String,
+      // FIXME: Server need to send this as identity
+      identity: map['image'] as String,
       registeredFace: map['registeredFace'] != null
           ? RegisteredFace.fromMap(
               map['registeredFace'] as Map<String, dynamic>,
@@ -63,7 +64,7 @@ class DetectedFace {
       DetectedFace.fromMap(json.decode(source) as Map<String, dynamic>);
   final BBox bbox;
   final FaceLandmarks? landmarks;
-  final String image;
+  final String identity;
   final RegisteredFace? registeredFace;
   final List<GuessedPerson>? guesses;
   final bool notAFace;
@@ -74,7 +75,7 @@ class DetectedFace {
   DetectedFace copyWith({
     BBox? bbox,
     ValueGetter<FaceLandmarks?>? landmarks,
-    String? image,
+    String? identity,
     ValueGetter<RegisteredFace?>? registeredFace,
     ValueGetter<List<GuessedPerson>?>? guesses,
     bool? notAFace,
@@ -85,7 +86,7 @@ class DetectedFace {
     return DetectedFace(
       bbox: bbox ?? this.bbox,
       landmarks: landmarks != null ? landmarks.call() : this.landmarks,
-      image: image ?? this.image,
+      identity: identity ?? this.identity,
       registeredFace: registeredFace != null
           ? registeredFace.call()
           : this.registeredFace,
@@ -101,7 +102,7 @@ class DetectedFace {
     return <String, dynamic>{
       'bbox': bbox.toMap()['data'],
       'landmarks': landmarks?.toMap()['data'],
-      'image': image,
+      'identity': identity,
       'registeredFace': registeredFace?.toMap(),
       'guesses': guesses?.map((e) => e.toMap()).toList(),
       'notAFace': notAFace ? 1 : 0,
@@ -112,7 +113,7 @@ class DetectedFace {
 
   @override
   String toString() {
-    return 'DetectedFace(bbox: $bbox, landmarks: $landmarks, image: $image, registeredFace: $registeredFace, guesses: $guesses, notAFace: $notAFace, loading: $loading, imageCache: $imageCache, vectorCache: $vectorCache)';
+    return 'DetectedFace(bbox: $bbox, landmarks: $landmarks, identity: $identity, registeredFace: $registeredFace, guesses: $guesses, notAFace: $notAFace, loading: $loading, imageCache: $imageCache, vectorCache: $vectorCache)';
   }
 
   @override
@@ -122,7 +123,7 @@ class DetectedFace {
 
     return other.bbox == bbox &&
         other.landmarks == landmarks &&
-        other.image == image &&
+        other.identity == identity &&
         other.registeredFace == registeredFace &&
         listEquals(other.guesses, guesses) &&
         other.notAFace == notAFace &&
@@ -135,7 +136,7 @@ class DetectedFace {
   int get hashCode {
     return bbox.hashCode ^
         landmarks.hashCode ^
-        image.hashCode ^
+        identity.hashCode ^
         registeredFace.hashCode ^
         guesses.hashCode ^
         notAFace.hashCode ^
@@ -143,8 +144,6 @@ class DetectedFace {
         imageCache.hashCode ^
         vectorCache.hashCode;
   }
-
-  String get identity => image;
 
   String formatName(String name) {
     return name

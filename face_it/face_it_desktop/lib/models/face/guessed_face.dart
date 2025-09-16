@@ -1,4 +1,3 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
 
 import 'package:face_it_desktop/models/face/registered_person.dart';
@@ -7,6 +6,16 @@ import 'package:flutter/foundation.dart';
 @immutable
 class GuessedPerson {
   const GuessedPerson({required this.person, required this.confidence});
+
+  factory GuessedPerson.fromMap(Map<String, dynamic> map) {
+    return GuessedPerson(
+      person: RegisteredPerson.fromMap(map['person'] as Map<String, dynamic>),
+      confidence: map['confidence'] as double,
+    );
+  }
+
+  factory GuessedPerson.fromJson(String source) =>
+      GuessedPerson.fromMap(json.decode(source) as Map<String, dynamic>);
   final RegisteredPerson person;
   final double confidence;
 
@@ -37,17 +46,7 @@ class GuessedPerson {
     };
   }
 
-  factory GuessedPerson.fromMap(Map<String, dynamic> map) {
-    return GuessedPerson(
-      person: RegisteredPerson.fromMap(map['person'] as Map<String, dynamic>),
-      confidence: map['confidence'] as double,
-    );
-  }
-
   String toJson() => json.encode(toMap());
-
-  factory GuessedPerson.fromJson(String source) =>
-      GuessedPerson.fromMap(json.decode(source) as Map<String, dynamic>);
 
   int get confidencePercentage => (confidence * 100).toInt();
 }

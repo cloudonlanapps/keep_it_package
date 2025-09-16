@@ -157,7 +157,7 @@ class SessionCandidateNotifier
     map['vectorCache'] = vectorPath;
 
     final face = await searchDB(DetectedFace.fromMap(map), server);
-    print(face);
+
     return face;
   }
 
@@ -183,20 +183,16 @@ class SessionCandidateNotifier
                 item.containsKey('confidence'))
               item['name'].toString(): (item['confidence'] as num).toDouble(),
         };
-        for (final entry in map.entries) {
-          print('${entry.key}: ${entry.value}');
-        }
+
         final guesses = <GuessedPerson>[];
         for (final name in map.keys) {
           if (map[name]! > 0.5) {
             final personReply = await server.get('/store/person/$name');
             final person = await personReply.when(
               validResponse: (personJson) async {
-                print('personJson: $personJson');
                 return RegisteredPerson.fromJson(personJson as String);
               },
               errorResponse: (e, {st}) async {
-                print('personJson: $e');
                 return null;
               },
             );
@@ -207,7 +203,7 @@ class SessionCandidateNotifier
             }
           }
         }
-        print(guesses);
+
         if (guesses.isNotEmpty) {
           return face.copyWith(guesses: () => guesses);
         } else {
@@ -215,7 +211,6 @@ class SessionCandidateNotifier
         }
       },
       errorResponse: (e, {st}) async {
-        print('Search response: $e');
         return face;
       },
     );
