@@ -52,7 +52,7 @@ class SessionCandidateNotifier
       onProgress: (progress) {
         state = AsyncData(
           state.value!.copyWith(
-            uploadProgress: () => 'uploading ($progress %)',
+            uploadProgress: () => 'uploading (${(progress * 100).toInt()} %)',
           ),
         );
       },
@@ -81,7 +81,9 @@ class SessionCandidateNotifier
   }
 
   String? get identifier => state.value!.entity?.label;
-  Future<void> recognize() async {
+  Future<void> recognize({
+    Duration? minimumDelay = const Duration(seconds: 2),
+  }) async {
     if (state.value!.isUploaded) {
       state = AsyncData(state.value!.copyWith(isRecognizing: true));
 
@@ -118,7 +120,8 @@ class SessionCandidateNotifier
           );
           ref.read(messagesProvider.notifier).addMessage('$faces');
         }(),
-        Future<void>.delayed(const Duration(seconds: 2)), // fixed wait
+        if (minimumDelay != null)
+          Future<void>.delayed(minimumDelay), // fixed wait
       ]);
 
       state = AsyncData(state.value!.copyWith(isRecognizing: false));

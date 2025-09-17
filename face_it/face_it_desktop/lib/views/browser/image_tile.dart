@@ -27,6 +27,9 @@ class ImageTile extends ConsumerWidget {
       trailing: MediaPopover(file: file),
       onTap: () {
         ref.read(sessionFilesProvider.notifier).setActiveFile(file.path);
+        ref
+            .read(sessionCandidateProvider(file).notifier)
+            .recognize(minimumDelay: null);
       },
     );
   }
