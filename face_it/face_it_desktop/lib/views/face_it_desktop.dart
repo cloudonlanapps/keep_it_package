@@ -6,8 +6,9 @@ import '../cl_browser_panel/models/cl_browser_panal.dart';
 import '../cl_browser_panel/providers/cl_browser_panal.dart';
 import '../cl_browser_panel/views/cl_browser_panel_view.dart';
 import 'browser/image_browser.dart';
-import 'image/active_image.dart';
+import 'browser/saved_items_browser.dart';
 import 'logs/log_view.dart';
+import 'main_panel_view.dart';
 
 class FaceItDesktop extends ConsumerWidget {
   const FaceItDesktop({super.key});
@@ -28,7 +29,10 @@ class FaceItDesktop extends ConsumerWidget {
                     label: 'Images',
                     panelBuilder: (context) => const ImageBrowser(),
                   ),
-                  const CLBrowserPanal(label: 'Faces'),
+                  CLBrowserPanal(
+                    label: 'Saved Items',
+                    panelBuilder: (context) => const SavedItemsBrowser(),
+                  ),
                 ],
               ),
             ),
@@ -62,7 +66,7 @@ class FaceItDesktop0 extends ConsumerWidget {
                 id: 'mainPanel',
                 defaultSize: .6,
                 minSize: .2,
-                child: ActiveImage(),
+                child: MainPanelView(),
               ),
               ShadResizablePanel(
                 id: 'logView',

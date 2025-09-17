@@ -6,8 +6,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
+import '../../models/main_content_type.dart';
 import '../../providers/a_files.dart';
 import '../../providers/b_candidate.dart';
+import '../../providers/main_content_type.dart';
 
 class ImageTile extends ConsumerWidget {
   const ImageTile({required this.file, super.key});
@@ -26,10 +28,12 @@ class ImageTile extends ConsumerWidget {
       subtitle: FileStatus(file: file),
       trailing: MediaPopover(file: file),
       onTap: () {
-        ref.read(sessionFilesProvider.notifier).setActiveFile(file.path);
         ref
             .read(sessionCandidateProvider(file).notifier)
             .recognize(minimumDelay: null);
+        ref.read(activeMainContentTypeProvider.notifier).state =
+            MainContentType.images;
+        ref.read(sessionFilesProvider.notifier).setActiveFile(file.path);
       },
     );
   }
