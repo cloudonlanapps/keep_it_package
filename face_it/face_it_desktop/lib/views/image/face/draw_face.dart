@@ -58,6 +58,9 @@ class _DrawFace0State extends ConsumerState<DrawFace0> {
       return const SizedBox.shrink();
     }
 
+    if (face.status == FaceStatus.notFoundNotAFace) {
+      return const SizedBox.shrink();
+    }
     return ShadPopover(
       decoration: const ShadDecoration(
         color: Colors.transparent,
@@ -69,9 +72,11 @@ class _DrawFace0State extends ConsumerState<DrawFace0> {
         FaceStatus.notChecked => PopOverWhenReferenceFaceisNotAvailable(
           face: face,
         ),
-        FaceStatus.found => PopOverWhenReferenceFaceIsAvailable(face: face),
+        FaceStatus.found => PopOverWhenReferenceFaceIsAvailable(
+          faceId: face.descriptor.identity,
+        ),
         FaceStatus.foundConfirmed => PopOverWhenReferenceFaceIsAvailable(
-          face: face,
+          faceId: face.descriptor.identity,
         ),
         FaceStatus.notFound => PopOverWhenReferenceFaceisNotAvailable(
           face: face,

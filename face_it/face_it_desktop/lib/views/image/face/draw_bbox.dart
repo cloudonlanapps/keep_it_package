@@ -20,6 +20,9 @@ class DrawBBox extends ConsumerWidget {
       return const SizedBox.shrink();
     }
     if (face.status == FaceStatus.notFoundNotAFace) {
+      return const SizedBox.shrink();
+    }
+    if (face.status == FaceStatus.notFoundNotAFace) {
       return DottedBorder(
         options: const RectDottedBorderOptions(
           dashPattern: [5, 5],
@@ -31,36 +34,32 @@ class DrawBBox extends ConsumerWidget {
         ),
       );
     }
-
+    print('width in bbox is ${face.descriptor.bbox.width}');
     final color = ref.watch(faceBoxPreferenceProvider.select((e) => e.color));
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        if (face.status != FaceStatus.notFoundNotAFace)
-          Container(
-            width: face.descriptor.bbox.width,
-            height: 100,
-            padding: const EdgeInsets.all(8),
-            alignment: Alignment.bottomCenter,
-            child: FittedBox(
-              child: GradientBackgroundText(
-                text: face.label,
-                gradient: LinearGradient(
-                  colors: [color.withAlpha(0x80), color, color.withAlpha(0x80)],
-                ),
-                style: const TextStyle(
-                  fontSize: 40,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 10,
-                  vertical: 5,
-                ),
-                borderRadius: BorderRadius.circular(10),
+        Container(
+          width: face.descriptor.bbox.width,
+          height: 100,
+          padding: const EdgeInsets.all(8),
+          alignment: Alignment.bottomCenter,
+          child: FittedBox(
+            child: GradientBackgroundText(
+              text: face.label,
+              gradient: LinearGradient(
+                colors: [color.withAlpha(0x80), color, color.withAlpha(0x80)],
               ),
+              style: const TextStyle(
+                fontSize: 40,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+              borderRadius: BorderRadius.circular(10),
             ),
           ),
+        ),
         Container(
           width: face.descriptor.bbox.width,
           height: face.descriptor.bbox.height,
