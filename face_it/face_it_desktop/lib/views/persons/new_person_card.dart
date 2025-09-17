@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
 import '../../providers/f_face.dart';
-import '../../providers/face_box_preferences.dart';
 
 class NewPersonCard extends ConsumerStatefulWidget {
   const NewPersonCard({required this.faceId, super.key});
