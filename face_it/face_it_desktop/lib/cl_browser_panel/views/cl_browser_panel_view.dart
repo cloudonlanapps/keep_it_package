@@ -5,7 +5,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
 import '../../views/browser/server_selector.dart';
-import '../models/cl_browser_panal.dart';
 import '../providers/cl_browser_panal.dart';
 
 class CLBrowserPanelView extends ConsumerStatefulWidget {
@@ -21,7 +20,6 @@ class _CLBrowserPanelViewState extends ConsumerState<CLBrowserPanelView> {
   @override
   void initState() {
     scrollController = ScrollController();
-
     super.initState();
   }
 
