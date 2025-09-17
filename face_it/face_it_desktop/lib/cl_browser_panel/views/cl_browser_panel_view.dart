@@ -17,11 +17,11 @@ class CLBrowserPanelView extends ConsumerStatefulWidget {
 
 class _CLBrowserPanelViewState extends ConsumerState<CLBrowserPanelView> {
   late final ScrollController scrollController;
-  late List<CLBrowserPanal> panels;
+
   @override
   void initState() {
     scrollController = ScrollController();
-    panels = ref.read(clBrowserPanalProvider.select((v) => v.activePanels));
+
     super.initState();
   }
 
@@ -33,11 +33,9 @@ class _CLBrowserPanelViewState extends ConsumerState<CLBrowserPanelView> {
 
   @override
   Widget build(BuildContext context) {
-    ref.listen(clBrowserPanalProvider, (prev, curr) {
-      setState(() {
-        panels = curr.activePanels;
-      });
-    });
+    final panels = ref.watch(
+      clBrowserPanalProvider.select((e) => e.activePanels),
+    );
     return Column(
       children: [
         const ServerSelector(onDone: null),
