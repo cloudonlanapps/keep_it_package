@@ -84,7 +84,7 @@ class SessionCandidateNotifier
   Future<void> recognize({
     Duration? minimumDelay = const Duration(seconds: 2),
   }) async {
-    if (state.value!.isUploaded) {
+    if (state.value!.isUploaded && state.value!.faceIds == null) {
       state = AsyncData(state.value!.copyWith(isRecognizing: true));
 
       await Future.wait([
