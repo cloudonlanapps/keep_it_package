@@ -48,15 +48,11 @@ class CLBrowserPanals {
   final String? activePanelLabel;
 
   List<CLBrowserPanal> get activePanels {
-    if (activePanelLabel != null) {
-      return availablePanels
-          .map(
-            (e) =>
-                e.label == activePanelLabel ? e.copyWith(isExpanded: true) : e,
-          )
-          .toList();
-    }
-    return availablePanels;
+    return availablePanels
+        .map(
+          (e) => e.label == activePanelLabel ? e.copyWith(isExpanded: true) : e,
+        )
+        .toList();
   }
 
   CLBrowserPanals copyWith({
