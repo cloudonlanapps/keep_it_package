@@ -7,8 +7,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:vertical_percent_indicator/vertical_percent_indicator.dart';
 
-class WhenFaceisKnown extends ConsumerWidget {
-  const WhenFaceisKnown({required this.face, super.key});
+class PopOverWhenReferenceFaceIsAvailable extends ConsumerWidget {
+  const PopOverWhenReferenceFaceIsAvailable({required this.face, super.key});
   final DetectedFace face;
 
   @override

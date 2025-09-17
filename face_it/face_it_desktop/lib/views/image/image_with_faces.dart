@@ -10,7 +10,7 @@ import '../../providers/b_candidate.dart';
 import '../../providers/f_face.dart';
 import '../../providers/f_faces.dart';
 import '../../providers/face_box_preferences.dart';
-import 'draw_face.dart';
+import 'face/draw_face.dart';
 
 class ImageViewer extends ConsumerStatefulWidget {
   const ImageViewer({required this.image, super.key});

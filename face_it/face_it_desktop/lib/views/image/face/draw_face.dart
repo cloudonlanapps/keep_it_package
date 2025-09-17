@@ -1,14 +1,12 @@
-import 'package:face_it_desktop/models/face/detected_face.dart';
+import 'package:face_it_desktop/views/face_pop_over/bbox_is_not_a_face.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
-import '../../providers/f_face.dart';
-import '../../providers/face_box_preferences.dart';
-import '../face_view/known_face.dart';
-import '../face_view/unknown_face.dart';
-import '../face_view/when_face_is_known.dart';
-import '../face_view/when_face_is_not_known.dart';
+import '../../../models/face/detected_face.dart';
+import '../../../providers/f_face.dart';
+import '../../face_pop_over/ref_face_is_available.dart';
+import '../../face_pop_over/ref_face_is_not_available.dart';
 import 'draw_bbox.dart';
 
 class DrawFace extends Positioned {
@@ -68,46 +66,26 @@ class _DrawFace0State extends ConsumerState<DrawFace0> {
       padding: EdgeInsets.zero,
       controller: popoverController,
       popover: (context) => switch (face.status) {
-        FaceStatus.notChecked => WhenFaceisNotKnown(face: face),
-        FaceStatus.found => WhenFaceisKnown(face: face),
-        FaceStatus.foundConfirmed => WhenFaceisKnown(face: face),
-        FaceStatus.notFound => WhenFaceisNotKnown(face: face),
-        FaceStatus.notFoundNotAFace => NotImplementedPlaceholder(face: face),
-        FaceStatus.notFoundUnknown => WhenFaceisNotKnown(face: face),
+        FaceStatus.notChecked => PopOverWhenReferenceFaceisNotAvailable(
+          face: face,
+        ),
+        FaceStatus.found => PopOverWhenReferenceFaceIsAvailable(face: face),
+        FaceStatus.foundConfirmed => PopOverWhenReferenceFaceIsAvailable(
+          face: face,
+        ),
+        FaceStatus.notFound => PopOverWhenReferenceFaceisNotAvailable(
+          face: face,
+        ),
+        FaceStatus.notFoundNotAFace => PopOverWhenBboxIsNotAFace(face: face),
+        FaceStatus.notFoundUnknown => PopOverWhenReferenceFaceisNotAvailable(
+          face: face,
+        ),
       },
 
       child: GestureDetector(
         behavior: HitTestBehavior.translucent,
         onTap: popoverController.toggle,
         child: DrawBBox(faceId: face.descriptor.identity),
-      ),
-    );
-  }
-}
-
-class NotImplementedPlaceholder extends ConsumerWidget {
-  const NotImplementedPlaceholder({required this.face, super.key});
-  final DetectedFace face;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final color = ref.watch(faceBoxPreferenceProvider.select((e) => e.color));
-    return Card(
-      elevation: 8,
-      shadowColor: color,
-      margin: const EdgeInsets.all(4),
-      child: SizedBox(
-        height: 30,
-        child: ShadButton.link(
-          onPressed: () => ref
-              .read(detectedFaceProvider(face.descriptor.identity).notifier)
-              .isAFace(),
-          padding: const EdgeInsets.all(2),
-          child: Text(
-            'Mark This As A Face',
-            style: ShadTheme.of(context).textTheme.muted,
-          ),
-        ),
       ),
     );
   }

@@ -5,16 +5,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
-class WhenFaceisNotKnown extends ConsumerStatefulWidget {
-  const WhenFaceisNotKnown({required this.face, super.key});
+class PopOverWhenReferenceFaceisNotAvailable extends ConsumerStatefulWidget {
+  const PopOverWhenReferenceFaceisNotAvailable({required this.face, super.key});
   final DetectedFace face;
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() =>
-      _WhenFaceisNotKnownState();
+      PopOverWhenReferenceFaceisNotAvailableState();
 }
 
-class _WhenFaceisNotKnownState extends ConsumerState<WhenFaceisNotKnown> {
+class PopOverWhenReferenceFaceisNotAvailableState
+    extends ConsumerState<PopOverWhenReferenceFaceisNotAvailable> {
   late final ShadPopoverController popoverFlagController;
   late final TextEditingController textEditingController;
   late final FocusNode focusNode;
