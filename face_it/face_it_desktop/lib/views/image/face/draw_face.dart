@@ -1,13 +1,13 @@
-import 'package:face_it_desktop/views/face_pop_over/bbox_is_not_a_face.dart';
+import 'package:face_it_desktop/views/image/face/face_pop_over/bbox_is_not_a_face.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
 import '../../../models/face/detected_face.dart';
 import '../../../providers/f_face.dart';
-import '../../face_pop_over/ref_face_is_available.dart';
-import '../../face_pop_over/ref_face_is_not_available.dart';
 import 'draw_bbox.dart';
+import 'face_pop_over/ref_face_is_available.dart';
+import 'face_pop_over/ref_face_is_not_available.dart';
 
 class DrawFace extends Positioned {
   DrawFace.positioned({required DetectedFace face, super.key})
