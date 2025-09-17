@@ -1,13 +1,15 @@
-import 'package:face_it_desktop/views/image/face/face_pop_over/bbox_is_not_a_face.dart';
+import 'package:face_it_desktop/views/image/face/action_buttons.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
 import '../../../models/face/detected_face.dart';
 import '../../../providers/f_face.dart';
+import '../../persons/new_person_card.dart';
+import '../../persons/person_card.dart';
+
 import 'draw_bbox.dart';
-import 'face_pop_over/ref_face_is_available.dart';
-import 'face_pop_over/ref_face_is_not_available.dart';
 
 class DrawFace extends Positioned {
   DrawFace.positioned({required DetectedFace face, super.key})
@@ -54,13 +56,12 @@ class _DrawFace0State extends ConsumerState<DrawFace0> {
     final face = ref
         .watch(detectedFaceProvider(widget.faceId))
         .whenOrNull(data: (data) => data);
-    if (face == null) {
+    if (face == null || face.status == FaceStatus.notFoundNotAFace) {
       return const SizedBox.shrink();
     }
 
-    if (face.status == FaceStatus.notFoundNotAFace) {
-      return const SizedBox.shrink();
-    }
+    final faceId = face.descriptor.identity;
+
     return ShadPopover(
       decoration: const ShadDecoration(
         color: Colors.transparent,
@@ -68,29 +69,34 @@ class _DrawFace0State extends ConsumerState<DrawFace0> {
       ),
       padding: EdgeInsets.zero,
       controller: popoverController,
-      popover: (context) => switch (face.status) {
-        FaceStatus.notChecked => PopOverWhenReferenceFaceisNotAvailable(
-          face: face,
-        ),
-        FaceStatus.found => PopOverWhenReferenceFaceIsAvailable(
-          faceId: face.descriptor.identity,
-        ),
-        FaceStatus.foundConfirmed => PopOverWhenReferenceFaceIsAvailable(
-          faceId: face.descriptor.identity,
-        ),
-        FaceStatus.notFound => PopOverWhenReferenceFaceisNotAvailable(
-          face: face,
-        ),
-        FaceStatus.notFoundNotAFace => PopOverWhenBboxIsNotAFace(face: face),
-        FaceStatus.notFoundUnknown => PopOverWhenReferenceFaceisNotAvailable(
-          face: face,
-        ),
+      popover: (context) {
+        return SizedBox(
+          width: 350,
+          child: Column(
+            children: [
+              switch (face.status) {
+                FaceStatus.notChecked ||
+                FaceStatus.notFound ||
+                FaceStatus.notFoundUnknown => NewPersonCard(
+                  faceId: face.descriptor.identity,
+                ),
+
+                FaceStatus.found ||
+                FaceStatus.foundConfirmed => PersonCard(face: face),
+                FaceStatus.notFoundNotAFace => throw Exception(
+                  "Can't handle this state",
+                ),
+              },
+              ActionButtons(faceId: faceId),
+            ],
+          ),
+        );
       },
 
       child: GestureDetector(
         behavior: HitTestBehavior.translucent,
         onTap: popoverController.toggle,
-        child: DrawBBox(faceId: face.descriptor.identity),
+        child: DrawBBox(faceId: faceId),
       ),
     );
   }

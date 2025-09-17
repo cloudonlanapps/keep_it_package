@@ -34,7 +34,7 @@ class DrawBBox extends ConsumerWidget {
         ),
       );
     }
-    print('width in bbox is ${face.descriptor.bbox.width}');
+
     final color = ref.watch(faceBoxPreferenceProvider.select((e) => e.color));
     return Column(
       mainAxisSize: MainAxisSize.min,
