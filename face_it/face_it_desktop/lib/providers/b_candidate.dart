@@ -108,6 +108,7 @@ class SessionCandidateNotifier
             entity = entity.copyWith(width: () => width, height: () => height);
           }
           ref.read(detectedFacesProvider.notifier).upsertFaces(faces);
+          await searchDB(faces);
 
           state = AsyncData(
             state.value!.copyWith(
@@ -121,6 +122,18 @@ class SessionCandidateNotifier
       ]);
 
       state = AsyncData(state.value!.copyWith(isRecognizing: false));
+    }
+  }
+
+  Future<void> searchDB(List<DetectedFace> faces) async {
+    final server = await ref.read(activeAIServerProvider.future);
+    if (server != null) {
+      for (final face in faces) {
+        if (face.status == FaceStatus.notChecked) {
+          final updatedFace = await face.searchDB(server);
+          ref.read(detectedFacesProvider.notifier).upsertFace(updatedFace);
+        }
+      }
     }
   }
 
@@ -162,6 +175,7 @@ class SessionCandidateNotifier
     final face = DetectedFace.notChecked(
       descriptor: FaceDescriptor.fromMap(map),
     );
+
     return face;
   }
 }
