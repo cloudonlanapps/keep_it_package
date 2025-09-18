@@ -7,7 +7,7 @@ environment:
   sdk: ^3.8.1
 
 dependencies:
-  background_downloader: ^9.2.3
+  background_downloader: ^9.2.5
   cl_basic_types:
     path: ../../cl_basic_types
   cl_servers:
