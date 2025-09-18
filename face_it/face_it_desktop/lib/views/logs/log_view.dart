@@ -8,15 +8,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
-import '../../providers/messages.dart';
-
 class LogView extends ConsumerWidget {
   const LogView({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final messages = ref.watch(messagesProvider);
-    return MessageBox(messages: messages);
+    return const MessageBox(messages: []);
   }
 }
 
@@ -26,10 +23,12 @@ class MessageBox extends ConsumerStatefulWidget {
     super.key,
     this.horizontalScroller,
     this.verticalScroller,
+    this.onClear,
   });
   final List<String> messages;
   final ScrollController? verticalScroller;
   final ScrollController? horizontalScroller;
+  final void Function()? onClear;
 
   @override
   ConsumerState<MessageBox> createState() => _MessageBoxState();
@@ -108,10 +107,12 @@ class _MessageBoxState extends ConsumerState<MessageBox> {
   Widget build(BuildContext context) {
     return ShadContextMenuRegion(
       items: [
-        ShadContextMenuItem.inset(
-          onPressed: ref.watch(messagesProvider.notifier).clear,
-          child: const Text('clear'),
-        ),
+        if (widget.onClear != null)
+          ShadContextMenuItem.inset(
+            onPressed:
+                widget.onClear, // ref.watch(messagesProvider.notifier).clear,
+            child: const Text('clear'),
+          ),
       ],
       child: DecoratedBox(
         decoration: const BoxDecoration(color: Colors.black87),
