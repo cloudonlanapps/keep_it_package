@@ -47,7 +47,7 @@ class SessionNotifier extends AsyncNotifier<CLSocket?> {
         socket
           ..disconnect()
           ..dispose();
-        ref.read(sessionFilesProvider.notifier).clear();
+        //ref.read(sessionFilesProvider.notifier).clear();
         ref.read(preferredServerIdProvider.notifier).state = null;
       });
     ref.onDispose(() {

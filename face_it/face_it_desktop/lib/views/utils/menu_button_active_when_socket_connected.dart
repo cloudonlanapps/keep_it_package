@@ -27,3 +27,22 @@ class MenuButtonActiveWhenSocketConnected extends ConsumerWidget {
     );
   }
 }
+
+class MenuButton extends ConsumerWidget {
+  const MenuButton({required this.menuItem, super.key});
+
+  final CLMenuItem menuItem;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return ShadButton.outline(
+      onPressed: menuItem.onTap,
+      child: Text(
+        menuItem.title,
+        maxLines: 2,
+        textAlign: TextAlign.center,
+        softWrap: true,
+      ),
+    );
+  }
+}
