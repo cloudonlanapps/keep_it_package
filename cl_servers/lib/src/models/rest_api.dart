@@ -245,4 +245,18 @@ extension RESTAPi on CLServer {
       return StoreError.fromString(e.toString(), st: st);
     }
   }
+
+  Future<String?> downloadFile(String url, String targetFile) async {
+    final response = await get(url, outputFileName: targetFile);
+
+    return response.when(
+      validResponse: (result) async {
+        return result as String;
+      },
+      errorResponse: (e, {st}) async {
+        //print(e);
+        return null;
+      },
+    );
+  }
 }
