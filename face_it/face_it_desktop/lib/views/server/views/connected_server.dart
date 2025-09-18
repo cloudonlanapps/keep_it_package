@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
-import 'providers/preferred_ai_server.dart';
+import '../providers/server_preference.dart';
 
 class ConnectedServer extends ConsumerStatefulWidget {
   const ConnectedServer({required this.server, super.key});

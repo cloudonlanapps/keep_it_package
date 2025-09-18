@@ -1,11 +1,11 @@
 import 'package:cl_servers/cl_servers.dart' show CLServer;
 import 'package:colan_widgets/colan_widgets.dart';
-import 'package:face_it_desktop/views/server/server_tile.dart';
+import 'package:face_it_desktop/views/server/views/server_tile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
-import 'providers/preferred_ai_server.dart';
+import '../providers/server_preference.dart';
 
 class ServerSelect extends ConsumerStatefulWidget {
   const ServerSelect({required this.servers, super.key});
