@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
-import '../../views/browser/server_selector.dart';
 import '../providers/cl_browser_panal.dart';
 
 class CLBrowserPanelView extends ConsumerStatefulWidget {
@@ -36,7 +35,7 @@ class _CLBrowserPanelViewState extends ConsumerState<CLBrowserPanelView> {
     );
     return Column(
       children: [
-        const ServerSelector(onDone: null),
+        // FIXME: Server selector here
         Expanded(
           child: Column(
             children: [

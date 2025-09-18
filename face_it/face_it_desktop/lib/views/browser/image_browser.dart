@@ -6,7 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
-import '../utils/menu_button_active_when_socket_connected.dart';
+import '../utils/menu_button.dart';
 
 final ImagePicker _picker = ImagePicker();
 

@@ -6,9 +6,6 @@ import 'package:image_picker/image_picker.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
 import '../../providers/a_files.dart';
-import '../../providers/b_candidate.dart';
-import '../../providers/d_online_server.dart';
-import '../../providers/d_session_provider.dart';
 
 class MediaPopover extends ConsumerStatefulWidget {
   const MediaPopover({required this.file, super.key});
@@ -30,21 +27,6 @@ class _MediaPopoverState extends ConsumerState<MediaPopover> {
   @override
   Widget build(BuildContext context) {
     final textTheme = ShadTheme.of(context).textTheme;
-    final server = ref
-        .watch(activeAIServerProvider)
-        .whenOrNull(data: (server) => server);
-    final session = ref
-        .watch(sessionProvider)
-        .whenOrNull(data: (session) => session);
-
-    final canUpload = server != null && session?.socket.id != null;
-
-    final candidate = ref
-        .watch(sessionCandidateProvider(widget.file))
-        .whenOrNull(data: (data) => data);
-    final needUpload = candidate != null && candidate.entity == null;
-
-    //FIXME: Block if any activity
 
     return ShadPopover(
       controller: popoverController,
@@ -58,16 +40,7 @@ class _MediaPopoverState extends ConsumerState<MediaPopover> {
             Row(
               spacing: 8,
               children: [
-                if (needUpload)
-                  ShadIconButton.outline(
-                    enabled: canUpload,
-                    onPressed: canUpload ? popoverController.toggle : null,
-                    icon: const Icon(LucideIcons.upload300),
-                  )
-                else if (candidate != null)
-                  const ShadIconButton.ghost(
-                    icon: Icon(LucideIcons.check600, color: Colors.blue),
-                  ),
+                // FIXME: Network actions here, if needed
                 Expanded(child: Text(widget.file.name, style: textTheme.lead)),
                 ShadIconButton.outline(
                   onPressed: () {
