@@ -24,7 +24,7 @@ class SessionStatus extends ConsumerWidget {
         return Text.rich(
           TextSpan(
             children: [
-              TextSpan(text: 'AI Serice: ', style: textStyle),
+              TextSpan(text: 'AI Service: ', style: textStyle),
               if (session.socket.connected)
                 TextSpan(
                   text: 'Connected \nid: ${session.socket.id}',
