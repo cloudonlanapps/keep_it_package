@@ -8,3 +8,4 @@ export 'src/models/rest_api.dart' show RESTAPi;
 export 'src/providers/available_servers.dart' show availableServersProvider;
 export 'src/providers/network_scanner.dart' show networkScannerProvider;
 export 'src/providers/server_provider.dart' show serverProvider;
+export 'src/providers/socket_connection.dart' show socketConnectionProvider;

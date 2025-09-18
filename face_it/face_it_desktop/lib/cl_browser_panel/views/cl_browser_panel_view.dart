@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
+import '../../views/server/providers/preferred_ai_server.dart';
+import '../../views/server/server_selector.dart';
 import '../providers/cl_browser_panal.dart';
 
 class CLBrowserPanelView extends ConsumerStatefulWidget {
@@ -35,7 +37,11 @@ class _CLBrowserPanelViewState extends ConsumerState<CLBrowserPanelView> {
     );
     return Column(
       children: [
-        // FIXME: Server selector here
+        ServerSelector(
+          onDone: (server) =>
+              ref.read(preferredServerIdProvider.notifier).state =
+                  server.storeURL.uri,
+        ),
         Expanded(
           child: Column(
             children: [

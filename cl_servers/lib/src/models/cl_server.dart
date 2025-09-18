@@ -1,10 +1,6 @@
-import 'dart:async';
-
 import 'package:cl_basic_types/cl_basic_types.dart';
 import 'package:flutter/foundation.dart' hide ValueGetter;
 import 'package:http/http.dart' as http;
-
-import 'rest_api.dart';
 
 @immutable
 class CLServer {
@@ -60,7 +56,7 @@ class CLServer {
     ); */
   }
 
-  bool validatePingResponse(String responseBody) {
+  /* bool validatePingResponse(String responseBody) {
     // final info = jsonDecode(responseBody) as Map<String, dynamic>;
     //FIXME validatePingResponse
     return true;
@@ -72,17 +68,18 @@ class CLServer {
       final reply = await get('');
 
       updated = switch (reply) {
-        (final StoreResult<String> response) => copyWith(
-          connected: validatePingResponse(response.result),
+        (final StoreResult<dynamic> response) => copyWith(
+          connected: validatePingResponse(response.result as String),
         ),
         _ => copyWith(connected: false),
       };
     } catch (e) {
       updated = copyWith(connected: false);
     }
+    print('is updated wit hconnetced: ${updated.connected}');
 
     return updated;
-  }
+  } */
 
   Uri getEndpointURI(String endPoint) {
     return Uri.parse('$baseURL$endPoint');

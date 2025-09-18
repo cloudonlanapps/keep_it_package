@@ -45,16 +45,13 @@ class SocketConnectionNotifier extends FamilyAsyncNotifier<CLSocket?, Uri?>
       ..onDisconnect((_) {
         log('Disconnected');
         state = AsyncValue.data(CLSocket(socket: socket));
-        socket
-          ..disconnect()
-          ..dispose();
       });
     ref.onDispose(() {
       socket
         ..disconnect()
         ..dispose();
     });
-    Future.delayed(const Duration(seconds: 1), socket.connect);
+
     return CLSocket(socket: socket);
   }
 
