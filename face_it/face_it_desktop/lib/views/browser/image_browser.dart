@@ -1,5 +1,5 @@
 import 'package:colan_widgets/colan_widgets.dart';
-import 'package:face_it_desktop/providers/a_files.dart';
+import 'package:face_it_desktop/content_manager.dart/providers/candidates.dart';
 import 'package:face_it_desktop/views/browser/image_tile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -15,10 +15,10 @@ class ImageBrowser extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final files = ref.watch(sessionFilesProvider.select((e) => e.files));
+    final candidates = ref.watch(candidatesProvider.select((e) => e.items));
     return Column(
       children: [
-        if (files.isEmpty)
+        if (candidates.isEmpty)
           Expanded(
             child: Center(
               child: Text(
@@ -31,12 +31,12 @@ class ImageBrowser extends ConsumerWidget {
           Expanded(
             child: ListView.builder(
               // The number of items to build in the list
-              itemCount: files.length,
+              itemCount: candidates.length,
               shrinkWrap: true,
               // physics: const NeverScrollableScrollPhysics(),
               // The builder function that creates each item
               itemBuilder: (BuildContext context, int index) {
-                return ImageTile(file: files[index]);
+                return ImageTile(file: candidates[index].file);
               },
             ),
           ),
@@ -53,7 +53,7 @@ class ImageBrowser extends ConsumerWidget {
                 icon: Icons.abc,
                 onTap: () async {
                   ref
-                      .read(sessionFilesProvider.notifier)
+                      .read(candidatesProvider.notifier)
                       .append(await _picker.pickMultiImage());
                   return true;
                 },

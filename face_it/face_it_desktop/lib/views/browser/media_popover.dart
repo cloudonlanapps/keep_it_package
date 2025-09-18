@@ -5,7 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
-import '../../providers/a_files.dart';
+import '../../content_manager.dart/providers/candidates.dart';
 
 class MediaPopover extends ConsumerStatefulWidget {
   const MediaPopover({required this.file, super.key});
@@ -44,8 +44,8 @@ class _MediaPopoverState extends ConsumerState<MediaPopover> {
                 Expanded(child: Text(widget.file.name, style: textTheme.lead)),
                 ShadIconButton.outline(
                   onPressed: () {
-                    ref.read(sessionFilesProvider.notifier).remove([
-                      widget.file,
+                    ref.read(candidatesProvider.notifier).removeByPath([
+                      widget.file.path,
                     ]);
                     popoverController.toggle();
                   },

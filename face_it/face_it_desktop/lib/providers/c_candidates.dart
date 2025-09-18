@@ -1,19 +1,19 @@
-import 'dart:async';
+/* import 'dart:async';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../models/session_candidate.dart';
-import 'a_files.dart';
+import '../content_manager.dart/models/candidate.dart';
+import '../content_manager.dart/providers/candidates.dart';
 import 'b_candidate.dart';
 
 final sessionCandidatesProvider =
-    AsyncNotifierProvider<SessionCandidatesNotifier, List<SessionCandidate>>(
+    AsyncNotifierProvider<SessionCandidatesNotifier, List<Candidate>>(
       SessionCandidatesNotifier.new,
     );
 
-class SessionCandidatesNotifier extends AsyncNotifier<List<SessionCandidate>> {
+class SessionCandidatesNotifier extends AsyncNotifier<List<Candidate>> {
   @override
-  FutureOr<List<SessionCandidate>> build() async {
+  FutureOr<List<Candidate>> build() async {
     final asyncCandidates = await ref.watch(
       sessionAsyncCandidatesProvider.future,
     );
@@ -30,18 +30,18 @@ class SessionCandidatesNotifier extends AsyncNotifier<List<SessionCandidate>> {
 final sessionAsyncCandidatesProvider =
     AsyncNotifierProvider<
       SessionAsyncCandidatesNotifier,
-      List<AsyncValue<SessionCandidate>>
+      List<AsyncValue<Candidate>>
     >(SessionAsyncCandidatesNotifier.new);
 
 class SessionAsyncCandidatesNotifier
-    extends AsyncNotifier<List<AsyncValue<SessionCandidate>>> {
+    extends AsyncNotifier<List<AsyncValue<Candidate>>> {
   @override
-  FutureOr<List<AsyncValue<SessionCandidate>>> build() async {
+  FutureOr<List<AsyncValue<Candidate>>> build() async {
     // Watch the list of IDs
-    final files = ref.watch(sessionFilesProvider.select((e) => e.files));
+    final files = ref.watch(candidatesProvider.select((e) => e.items));
 
     // Create an empty list to store the results
-    final candidates = <AsyncValue<SessionCandidate>>[];
+    final candidates = <AsyncValue<Candidate>>[];
 
     // Loop through each ID and watch the corresponding provider
     for (final file in files) {
@@ -52,3 +52,4 @@ class SessionAsyncCandidatesNotifier
     return candidates;
   }
 }
+ */

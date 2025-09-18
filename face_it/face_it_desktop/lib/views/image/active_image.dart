@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
-import '../../providers/b_active_candidate.dart';
+import '../../content_manager.dart/providers/candidates.dart';
 import 'image_with_faces.dart';
 
 class ActiveImage extends ConsumerWidget {
@@ -11,7 +11,9 @@ class ActiveImage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final activeCandidate = ref.watch(activeCandidateProvider);
+    final activeCandidate = ref.watch(
+      candidatesProvider.select((candidates) => candidates.activeCandidate),
+    );
 
     return Column(
       children: [

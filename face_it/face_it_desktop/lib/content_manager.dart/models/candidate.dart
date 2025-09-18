@@ -20,40 +20,27 @@ enum MediaStatus {
 }
 
 @immutable
-class SessionCandidate {
-  const SessionCandidate({
-    required this.file,
-    this.entity,
-    this.status = MediaStatus.added,
-    this.uploadProgress,
-    this.faceIds,
-  });
+class Candidate {
+  const Candidate({required this.file, this.entity, this.faceIds});
   final XFile file;
-
   final CLEntity? entity;
-  final MediaStatus status;
-  final String? uploadProgress;
   final List<String>? faceIds;
 
-  SessionCandidate copyWith({
+  Candidate copyWith({
     XFile? file,
     ValueGetter<CLEntity?>? entity,
     MediaStatus? status,
     ValueGetter<String?>? uploadProgress,
     ValueGetter<List<String>?>? faceIds,
   }) {
-    return SessionCandidate(
+    return Candidate(
       file: file ?? this.file,
       entity: entity != null ? entity.call() : this.entity,
-      status: status ?? this.status,
-      uploadProgress: uploadProgress != null
-          ? uploadProgress.call()
-          : this.uploadProgress,
       faceIds: faceIds != null ? faceIds.call() : this.faceIds,
     );
   }
 
-  SessionCandidate entityFromMap(Map<String, dynamic> map) {
+  Candidate entityFromMap(Map<String, dynamic> map) {
     final entity = CLEntity(
       id: null,
       isCollection: false,
@@ -88,31 +75,25 @@ class SessionCandidate {
     return copyWith(entity: () => entity);
   }
 
-  SessionCandidate clearEntity() => copyWith(entity: () => null);
+  Candidate clearEntity() => copyWith(entity: () => null);
 
   @override
   String toString() {
-    return 'SessionCandidate(file: $file, entity: $entity, status: $status, uploadProgress: $uploadProgress, faceIds: $faceIds)';
+    return 'SessionCandidate(file: $file, entity: $entity, faceIds: $faceIds)';
   }
 
   @override
-  bool operator ==(covariant SessionCandidate other) {
+  bool operator ==(covariant Candidate other) {
     if (identical(this, other)) return true;
     final listEquals = const DeepCollectionEquality().equals;
 
     return other.file == file &&
         other.entity == entity &&
-        other.status == status &&
-        other.uploadProgress == uploadProgress &&
         listEquals(other.faceIds, faceIds);
   }
 
   @override
   int get hashCode {
-    return file.hashCode ^
-        entity.hashCode ^
-        status.hashCode ^
-        uploadProgress.hashCode ^
-        faceIds.hashCode;
+    return file.hashCode ^ entity.hashCode ^ faceIds.hashCode;
   }
 }
