@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
-import '../../providers/f_face.dart';
-
 class NewPersonCard extends ConsumerStatefulWidget {
   const NewPersonCard({required this.faceId, super.key});
   final String faceId;
