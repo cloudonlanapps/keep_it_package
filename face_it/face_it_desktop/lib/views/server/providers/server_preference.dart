@@ -11,6 +11,10 @@ class ServerPreferenceNotifier extends StateNotifier<ServerPreferences> {
   void toggleAutoConnect() {
     state = state.copyWith(autoConnect: !state.autoConnect);
   }
+
+  void toggleAutoUpload() {
+    state = state.copyWith(autoUpload: !state.autoUpload);
+  }
 }
 
 final serverPreferenceProvider =

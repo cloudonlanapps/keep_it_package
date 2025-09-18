@@ -5,7 +5,11 @@ import 'package:flutter/widgets.dart';
 
 @immutable
 class ServerPreferences {
-  const ServerPreferences({this.uri, this.autoConnect = true});
+  const ServerPreferences({
+    this.autoConnect = true,
+    this.autoUpload = true,
+    this.uri,
+  });
 
   factory ServerPreferences.fromMap(Map<String, dynamic> map) {
     return ServerPreferences(
@@ -13,6 +17,7 @@ class ServerPreferences {
           ? null
           : Uri.parse(map['preferredUri'] as String),
       autoConnect: map['autoConnect'] as bool,
+      autoUpload: map['autoUpload'] as bool,
     );
   }
 
@@ -20,18 +25,25 @@ class ServerPreferences {
       ServerPreferences.fromMap(json.decode(source) as Map<String, dynamic>);
   final Uri? uri;
   final bool autoConnect;
+  final bool autoUpload;
 
-  ServerPreferences copyWith({ValueGetter<Uri?>? uri, bool? autoConnect}) {
+  ServerPreferences copyWith({
+    ValueGetter<Uri?>? uri,
+    bool? autoConnect,
+    bool? autoUpload,
+  }) {
     return ServerPreferences(
       uri: uri != null ? uri.call() : this.uri,
       autoConnect: autoConnect ?? this.autoConnect,
+      autoUpload: autoUpload ?? this.autoUpload,
     );
   }
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
-      'preferredUri': uri?.toString(),
+      'uri': uri?.toString(),
       'autoConnect': autoConnect,
+      'autoUpload': autoUpload,
     };
   }
 
@@ -39,15 +51,17 @@ class ServerPreferences {
 
   @override
   String toString() =>
-      'ServerPreferences(preferredUri: $uri, autoConnect: $autoConnect)';
+      'ServerPreferences(uri: $uri, autoConnect: $autoConnect, autoUpload: $autoUpload)';
 
   @override
   bool operator ==(covariant ServerPreferences other) {
     if (identical(this, other)) return true;
 
-    return other.uri == uri && other.autoConnect == autoConnect;
+    return other.uri == uri &&
+        other.autoConnect == autoConnect &&
+        other.autoUpload == autoUpload;
   }
 
   @override
-  int get hashCode => uri.hashCode ^ autoConnect.hashCode;
+  int get hashCode => uri.hashCode ^ autoConnect.hashCode ^ autoUpload.hashCode;
 }

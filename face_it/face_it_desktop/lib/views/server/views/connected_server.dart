@@ -1,4 +1,5 @@
-import 'package:cl_servers/cl_servers.dart' show CLServer;
+import 'package:cl_servers/cl_servers.dart'
+    show CLServer, socketConnectionProvider;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
@@ -34,9 +35,7 @@ class _ConnectedServerState extends ConsumerState<ConnectedServer> {
 
   @override
   Widget build(BuildContext context) {
-    final autoConnect = ref.watch(
-      serverPreferenceProvider.select((e) => e.autoConnect),
-    );
+    final serverPreference = ref.watch(serverPreferenceProvider);
     return ShadPopover(
       controller: popoverController,
       popover: (context) => SizedBox(
@@ -50,7 +49,7 @@ class _ConnectedServerState extends ConsumerState<ConnectedServer> {
               onPressed: () => ref
                   .read(serverPreferenceProvider.notifier)
                   .toggleAutoConnect(),
-              leading: autoConnect
+              leading: serverPreference.autoConnect
                   ? const Icon(LucideIcons.squareCheck400)
                   : const Icon(LucideIcons.square400),
               child: const Align(
@@ -73,15 +72,16 @@ class _ConnectedServerState extends ConsumerState<ConnectedServer> {
                   ),
                 ),
               ),
-              onPressed: () => ref
-                  .read(serverPreferenceProvider.notifier)
-                  .updateServer(null),
+              onPressed: () {
+                ref.read(serverPreferenceProvider.notifier).updateServer(null);
+              },
             ),
           ],
         ),
       ),
       child: Tooltip(
-        message: "Online. (Session autoConnect ${autoConnect ? 'on' : 'off'})",
+        message:
+            "Online. (Session autoConnect ${serverPreference.autoConnect ? 'on' : 'off'})",
         child: GestureDetector(
           onTap: popoverController.toggle,
           child: Padding(
