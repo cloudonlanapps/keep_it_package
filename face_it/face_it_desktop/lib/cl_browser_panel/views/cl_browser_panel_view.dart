@@ -1,6 +1,7 @@
 import 'package:face_it_desktop/cl_browser_panel/views/cl_browser_container.dart';
 import 'package:face_it_desktop/cl_browser_panel/views/cl_browser_place_holder.dart';
 import 'package:face_it_desktop/views/server/views/server_manage_view.dart';
+import 'package:face_it_desktop/views/server/views/upload_monitor.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
@@ -40,6 +41,7 @@ class _CLBrowserPanelViewState extends ConsumerState<CLBrowserPanelView> {
         Expanded(
           child: Column(
             children: [
+              const UploadMonitor(),
               for (int index = 0; index < panels.length; index++) ...[
                 GestureDetector(
                   onTap: () => ref

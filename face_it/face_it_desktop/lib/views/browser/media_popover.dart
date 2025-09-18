@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -56,9 +58,11 @@ class _MediaPopoverState extends ConsumerState<MediaPopover> {
                     print('uploader: $uploader');
                     return;
                   }
-                  await ref
-                      .read(uploaderProvider.notifier)
-                      .upload(candidate.file.path, pref: pref);
+                  unawaited(
+                    ref
+                        .read(uploaderProvider.notifier)
+                        .upload(candidate.file.path, pref: pref),
+                  );
                   popoverController.hide();
                   return null;
                 },

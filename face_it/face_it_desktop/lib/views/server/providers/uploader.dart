@@ -30,6 +30,11 @@ class UploaderNotifier extends AsyncNotifier<Uploader> {
     String filePath, {
     required ServerPreferences pref,
   }) async {
+    if (state.value!.files[filePath]?.status == UploadStatus.success ||
+        state.value!.files[filePath]?.status == UploadStatus.uploading) {
+      // avoid redundent upload.
+      return;
+    }
     CLSocket? session;
     CLServer? server;
     session = ref
@@ -61,56 +66,73 @@ class UploaderNotifier extends AsyncNotifier<Uploader> {
       updates: Updates.progress, // request status and progress updates
     );
 
-    final result = await FileDownloader().upload(
-      task,
-      onProgress: (progress) {
-        final updated = state.value!.files[filePath]!.copyWith(
-          serverResponse: () => '${(progress * 100).toStringAsFixed(1)}%',
-        );
-        upsert(filePath: filePath, uploadState: updated);
-      },
+    unawaited(
+      FileDownloader()
+          .upload(
+            task,
+            onProgress: (progress) {
+              final updated = state.value!.files[filePath]!.copyWith(
+                serverResponse: () => '${(progress * 100).toStringAsFixed(1)}%',
+              );
+              upsert(filePath: filePath, uploadState: updated);
+            },
+          )
+          .then((result) {
+            if (result.responseBody?.isNotEmpty ?? false) {
+              try {
+                final clEntity = UploadState.entityFromMap(
+                  jsonDecode(result.responseBody!) as Map<String, dynamic>,
+                );
+                final updated = state.value!.files[filePath]!.copyWith(
+                  serverResponse: () => result.responseBody!,
+                  status: UploadStatus.success,
+                  entity: () => clEntity,
+                  error: () => null,
+                );
+                upsert(filePath: filePath, uploadState: updated);
+              } catch (e) {
+                final updated = state.value!.files[filePath]!.copyWith(
+                  serverResponse: () => null,
+                  status: UploadStatus.error,
+                  entity: () => null,
+                  error: e.toString,
+                );
+                upsert(filePath: filePath, uploadState: updated);
+              }
+            } else {
+              final updated = state.value!.files[filePath]!.copyWith(
+                serverResponse: () => null,
+                status: UploadStatus.error,
+                entity: () => null,
+                error: () => 'Empty response',
+              );
+              upsert(filePath: filePath, uploadState: updated);
+            }
+          }),
     );
-    if (result.responseBody?.isNotEmpty ?? false) {
-      try {
-        final clEntity = UploadState.entityFromMap(
-          jsonDecode(result.responseBody!) as Map<String, dynamic>,
-        );
-        final updated = state.value!.files[filePath]!.copyWith(
-          serverResponse: () => result.responseBody!,
-          status: UploadStatus.success,
-          entity: () => clEntity,
-          error: () => null,
-        );
-        upsert(filePath: filePath, uploadState: updated);
-      } catch (e) {
-        final updated = state.value!.files[filePath]!.copyWith(
-          serverResponse: () => null,
-          status: UploadStatus.error,
-          entity: () => null,
-          error: e.toString,
-        );
-        upsert(filePath: filePath, uploadState: updated);
-      }
-    } else {
-      final updated = state.value!.files[filePath]!.copyWith(
-        serverResponse: () => null,
-        status: UploadStatus.error,
-        entity: () => null,
-        error: () => 'Empty response',
-      );
-      upsert(filePath: filePath, uploadState: updated);
-    }
   }
 
   Future<void> upload(
     String filePath, {
     required ServerPreferences pref,
   }) async {
-    final newItem = UploadState(filePath: filePath);
-    upsert(
-      filePath: filePath,
-      uploadState: newItem.copyWith(status: UploadStatus.uploading),
-    );
+    if (!state.value!.files.keys.contains(filePath)) {
+      final newItem = UploadState(filePath: filePath);
+      upsert(
+        filePath: filePath,
+        uploadState: newItem.copyWith(status: UploadStatus.pending),
+      );
+    }
+
     await _upload(filePath, pref: pref);
+  }
+
+  Future<void> retry(ServerPreferences pref) async {
+    final pendingItems = state.value!.files.values.where(
+      (e) => e.status == UploadStatus.pending || e.status == UploadStatus.error,
+    );
+    for (final item in pendingItems) {
+      await _upload(item.filePath, pref: pref);
+    }
   }
 }
