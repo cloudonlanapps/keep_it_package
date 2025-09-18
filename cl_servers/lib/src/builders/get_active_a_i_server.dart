@@ -9,7 +9,7 @@ class GetActiveAIServer extends ConsumerWidget {
     required this.serverURI,
     required this.builder,
   });
-  final String? serverURI;
+  final Uri? serverURI;
   final Widget Function(CLServer? activeAIServer) builder;
 
   @override

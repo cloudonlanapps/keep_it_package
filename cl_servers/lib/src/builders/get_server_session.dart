@@ -9,7 +9,7 @@ class GetServerSession extends ConsumerWidget {
     required this.serverUri,
     required this.builder,
   });
-  final String? serverUri;
+  final Uri? serverUri;
   final Widget Function(CLSocket? socket) builder;
   @override
   Widget build(BuildContext context, WidgetRef ref) {

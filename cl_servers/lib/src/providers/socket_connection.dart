@@ -6,16 +6,17 @@ import 'package:socket_io_client/socket_io_client.dart' as io;
 
 import '../models/cl_socket.dart';
 import 'active_ai_server.dart';
+import 'socket_messages.dart';
 
 final socketConnectionProvider =
-    AsyncNotifierProviderFamily<SocketConnectionNotifier, CLSocket?, String?>(
+    AsyncNotifierProviderFamily<SocketConnectionNotifier, CLSocket?, Uri?>(
       SocketConnectionNotifier.new,
     );
 
-class SocketConnectionNotifier extends FamilyAsyncNotifier<CLSocket?, String?>
+class SocketConnectionNotifier extends FamilyAsyncNotifier<CLSocket?, Uri?>
     with CLLogger {
   @override
-  FutureOr<CLSocket?> build(String? arg) async {
+  FutureOr<CLSocket?> build(Uri? arg) async {
     final server = await ref.watch(activeAIServerProvider(arg).future);
     if (server == null) return null;
 
@@ -88,4 +89,14 @@ class SocketConnectionNotifier extends FamilyAsyncNotifier<CLSocket?, String?>
 
   @override
   String get logPrefix => "SessionNotifier";
+
+  @override
+  void log(
+    String message, {
+    int level = 0,
+    Object? error,
+    StackTrace? stackTrace,
+  }) {
+    ref.read(socketMessagesProvider.notifier).addMessage(message);
+  }
 }
