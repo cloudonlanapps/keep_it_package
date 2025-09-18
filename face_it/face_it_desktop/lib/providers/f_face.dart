@@ -1,10 +1,9 @@
 import 'dart:async';
 
-import 'package:face_it_desktop/models/face/registered_person.dart';
-import 'package:face_it_desktop/providers/d_online_server.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../models/face/detected_face.dart';
+import '../models/face/registered_person.dart';
 import 'f_faces.dart';
 
 final detectedFaceProvider =
@@ -60,24 +59,6 @@ class DetectedFaceNotifier extends FamilyAsyncNotifier<DetectedFace?, String> {
     final face = state.asData?.value;
     if (face == null) return;
     final updatedFace = face.removeConfirmation();
-    ref.read(detectedFacesProvider.notifier).upsertFace(updatedFace);
-  }
-
-  Future<void> register(String name) async {
-    final server = await ref.read(activeAIServerProvider.future);
-    if (server == null) return;
-    final face = state.asData?.value;
-    if (face == null) return;
-    final updatedFace = await face.register(server, name);
-    ref.read(detectedFacesProvider.notifier).upsertFace(updatedFace);
-  }
-
-  Future<void> searchDB() async {
-    final server = await ref.read(activeAIServerProvider.future);
-    if (server == null) return;
-    final face = state.asData?.value;
-    if (face == null) return;
-    final updatedFace = await face.searchDB(server);
     ref.read(detectedFacesProvider.notifier).upsertFace(updatedFace);
   }
 }

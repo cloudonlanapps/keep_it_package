@@ -49,16 +49,7 @@ class _NewPersonCardState extends ConsumerState<NewPersonCard> {
             Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                ShadButton.link(
-                  onPressed: () => ref
-                      .read(detectedFaceProvider(widget.faceId).notifier)
-                      .searchDB(),
-                  child: const Icon(
-                    Icons.person_search,
-                    size: 24,
-                    color: Colors.blue,
-                  ),
-                ),
+                // FIXME: Search dB Card when server is available
                 Expanded(
                   child: Padding(
                     padding: const EdgeInsets.all(8),
@@ -69,18 +60,11 @@ class _NewPersonCardState extends ConsumerState<NewPersonCard> {
                       autofocus: true,
                       placeholder: const Text('Who is this?'),
                       trailing: ShadButton.link(
-                        onPressed: () => ref
-                            .read(detectedFaceProvider(widget.faceId).notifier)
-                            .register(textEditingController.text),
+                        onPressed: register,
                         enabled: textEditingController.text.isNotEmpty,
                         child: const Icon(LucideIcons.check400),
                       ),
-                      onSubmitted: (val) =>
-                          () => ref
-                              .read(
-                                detectedFaceProvider(widget.faceId).notifier,
-                              )
-                              .register(textEditingController.text),
+                      onSubmitted: (val) => register(),
                     ),
                   ),
                 ),
@@ -90,5 +74,9 @@ class _NewPersonCardState extends ConsumerState<NewPersonCard> {
         ),
       ),
     );
+  }
+
+  void register() {
+    throw UnimplementedError();
   }
 }
