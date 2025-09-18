@@ -92,4 +92,11 @@ class UploadState {
     );
     return entity;
   }
+
+  String get statusString => switch (status) {
+    UploadStatus.pending => 'Waiting to upload',
+    UploadStatus.uploading => 'uploading: $serverResponse',
+    UploadStatus.success => 'Upload Successful',
+    UploadStatus.error => 'Upload Failed',
+  };
 }

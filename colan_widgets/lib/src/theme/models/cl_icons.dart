@@ -163,6 +163,8 @@ class CLIcons {
   final IconData darkMode = LucideIcons.moon;
   final IconData lightMode = LucideIcons.sun;
   final IconData textClear = LucideIcons.x;
+
+  final IconData imageUpload = LucideIcons.imageUp;
 }
 
 CLIcons clIcons = CLIcons();

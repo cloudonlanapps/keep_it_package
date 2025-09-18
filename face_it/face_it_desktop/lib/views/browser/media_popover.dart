@@ -1,11 +1,13 @@
-import 'dart:io';
-
+import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
 import '../../content_manager.dart/providers/candidates.dart';
+import '../server/providers/server_preference.dart';
+import '../server/providers/uploader.dart';
+import '../utils/pop_over_menu_item.dart';
 
 class MediaPopover extends ConsumerStatefulWidget {
   const MediaPopover({required this.file, super.key});
@@ -26,37 +28,56 @@ class _MediaPopoverState extends ConsumerState<MediaPopover> {
 
   @override
   Widget build(BuildContext context) {
-    final textTheme = ShadTheme.of(context).textTheme;
-
+    final candidate = ref.watch(
+      candidatesProvider.select(
+        (candidates) => candidates.itemByPath(widget.file.path),
+      ),
+    );
+    final pref = ref.watch(serverPreferenceProvider);
+    final uploader = ref
+        .watch(uploaderProvider)
+        .whenOrNull(data: (data) => data);
     return ShadPopover(
       controller: popoverController,
       popover: (context) => SizedBox(
-        width: 288,
+        width: 144,
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
-          spacing: 8,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
-              spacing: 8,
-              children: [
-                // FIXME: Network actions here, if needed
-                Expanded(child: Text(widget.file.name, style: textTheme.lead)),
-                ShadIconButton.outline(
-                  onPressed: () {
-                    ref.read(candidatesProvider.notifier).removeByPath([
-                      widget.file.path,
-                    ]);
-                    popoverController.toggle();
-                  },
-                  icon: Icon(
-                    LucideIcons.trash,
-                    color: ShadTheme.of(context).colorScheme.destructive,
-                  ),
-                ),
-              ],
+            PopOverMenuItem(
+              CLMenuItem(
+                title: 'Upload',
+                icon: clIcons.imageUpload,
+
+                onTap: () async {
+                  if (candidate == null || uploader == null) {
+                    print('candidate: $candidate');
+                    print('uploader: $uploader');
+                    return;
+                  }
+                  await ref
+                      .read(uploaderProvider.notifier)
+                      .upload(candidate.file.path, pref: pref);
+                  popoverController.hide();
+                  return null;
+                },
+              ),
             ),
-            Image.file(File(widget.file.path), width: 256),
+            PopOverMenuItem(
+              CLMenuItem(
+                title: 'Remove',
+                icon: clIcons.recycleBin,
+                onTap: () async {
+                  ref.read(candidatesProvider.notifier).removeByPath([
+                    widget.file.path,
+                  ]);
+                  popoverController.hide();
+                  return true;
+                },
+                isDestructive: true,
+              ),
+            ),
           ],
         ),
       ),

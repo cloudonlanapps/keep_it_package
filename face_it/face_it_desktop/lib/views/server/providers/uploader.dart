@@ -10,23 +10,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/upload_state.dart';
 import '../models/uploader.dart';
 
-final uploaderProvider =
-    AsyncNotifierProviderFamily<UploaderNotifier, Uploader, ServerPreferences>(
-      UploaderNotifier.new,
-    );
+final uploaderProvider = AsyncNotifierProvider<UploaderNotifier, Uploader>(
+  UploaderNotifier.new,
+);
 
-class UploaderNotifier
-    extends FamilyAsyncNotifier<Uploader, ServerPreferences> {
-  CLSocket? session;
-  CLServer? server;
+class UploaderNotifier extends AsyncNotifier<Uploader> {
   @override
-  FutureOr<Uploader> build(ServerPreferences args) {
-    session = ref
-        .watch(socketConnectionProvider(args))
-        .whenOrNull(data: (data) => data.socket.connected ? data : null);
-    server = ref
-        .watch(activeAIServerProvider(args))
-        .whenOrNull(data: (data) => (data?.connected ?? false) ? data : null);
+  FutureOr<Uploader> build() {
     return const Uploader({});
   }
 
@@ -36,23 +26,37 @@ class UploaderNotifier
     );
   }
 
-  Future<void> upload({required String filePath}) async {
-    if (server == null || session == null) {
+  Future<void> _upload(
+    String filePath, {
+    required ServerPreferences pref,
+  }) async {
+    CLSocket? session;
+    CLServer? server;
+    session = ref
+        .read(socketConnectionProvider(pref))
+        .whenOrNull(data: (data) => data.socket.connected ? data : null);
+    server = ref
+        .read(activeAIServerProvider(pref))
+        .whenOrNull(data: (data) => (data?.connected ?? false) ? data : null);
+    if (session == null || server == null) {
+      final updated = state.value!.files[filePath]!.copyWith(
+        serverResponse: () => null,
+        status: UploadStatus.pending,
+        entity: () => null,
+        error: () => server == null ? 'Server not found' : 'No Session running',
+      );
+      upsert(filePath: filePath, uploadState: updated);
       return;
     }
     final uploader = state.value!;
 
-    if (uploader.files.keys.contains(filePath)) {
+    if (!uploader.files.keys.contains(filePath)) {
       return;
     }
-    final newItem = UploadState(filePath: filePath);
-    upsert(
-      filePath: filePath,
-      uploadState: newItem.copyWith(status: UploadStatus.uploading),
-    );
+
     final task = UploadTask.fromFile(
-      file: File(newItem.filePath),
-      url: '${server!.storeURL.uri}/sessions/${session!.socket.id}/upload',
+      file: File(state.value!.files[filePath]!.filePath),
+      url: '${server.storeURL.uri}/sessions/${session.socket.id}/upload',
       fileField: 'media',
       updates: Updates.progress, // request status and progress updates
     );
@@ -96,5 +100,17 @@ class UploaderNotifier
       );
       upsert(filePath: filePath, uploadState: updated);
     }
+  }
+
+  Future<void> upload(
+    String filePath, {
+    required ServerPreferences pref,
+  }) async {
+    final newItem = UploadState(filePath: filePath);
+    upsert(
+      filePath: filePath,
+      uploadState: newItem.copyWith(status: UploadStatus.uploading),
+    );
+    await _upload(filePath, pref: pref);
   }
 }
