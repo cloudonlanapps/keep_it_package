@@ -8,6 +8,7 @@ enum MediaStatus {
   added,
   uploading,
   uploaded,
+
   failed;
 
   String get message => switch (this) {
@@ -26,7 +27,6 @@ class SessionCandidate {
     this.status = MediaStatus.added,
     this.uploadProgress,
     this.faceIds,
-    this.isRecognizing = false,
   });
   final XFile file;
 
@@ -34,7 +34,6 @@ class SessionCandidate {
   final MediaStatus status;
   final String? uploadProgress;
   final List<String>? faceIds;
-  final bool isRecognizing;
 
   SessionCandidate copyWith({
     XFile? file,
@@ -42,7 +41,6 @@ class SessionCandidate {
     MediaStatus? status,
     ValueGetter<String?>? uploadProgress,
     ValueGetter<List<String>?>? faceIds,
-    bool? isRecognizing,
   }) {
     return SessionCandidate(
       file: file ?? this.file,
@@ -52,7 +50,6 @@ class SessionCandidate {
           ? uploadProgress.call()
           : this.uploadProgress,
       faceIds: faceIds != null ? faceIds.call() : this.faceIds,
-      isRecognizing: isRecognizing ?? this.isRecognizing,
     );
   }
 
@@ -95,7 +92,7 @@ class SessionCandidate {
 
   @override
   String toString() {
-    return 'SessionCandidate(file: $file, entity: $entity, status: $status, uploadProgress: $uploadProgress, faceIds: $faceIds, isRecognizing: $isRecognizing)';
+    return 'SessionCandidate(file: $file, entity: $entity, status: $status, uploadProgress: $uploadProgress, faceIds: $faceIds)';
   }
 
   @override
@@ -107,8 +104,7 @@ class SessionCandidate {
         other.entity == entity &&
         other.status == status &&
         other.uploadProgress == uploadProgress &&
-        listEquals(other.faceIds, faceIds) &&
-        other.isRecognizing == isRecognizing;
+        listEquals(other.faceIds, faceIds);
   }
 
   @override
@@ -117,11 +113,6 @@ class SessionCandidate {
         entity.hashCode ^
         status.hashCode ^
         uploadProgress.hashCode ^
-        faceIds.hashCode ^
-        isRecognizing.hashCode;
+        faceIds.hashCode;
   }
-
-  String get statusString => status.message;
-
-  bool get isUploaded => entity?.label != null;
 }

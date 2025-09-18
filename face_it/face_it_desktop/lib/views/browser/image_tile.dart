@@ -28,9 +28,6 @@ class ImageTile extends ConsumerWidget {
       subtitle: FileStatus(file: file),
       trailing: MediaPopover(file: file),
       onTap: () {
-        ref
-            .read(sessionCandidateProvider(file).notifier)
-            .recognize(minimumDelay: null);
         ref.read(activeMainContentTypeProvider.notifier).state =
             MainContentType.images;
         ref.read(sessionFilesProvider.notifier).setActiveFile(file.path);
@@ -48,11 +45,11 @@ class FileStatus extends ConsumerWidget {
     final candidate = ref
         .watch(sessionCandidateProvider(file))
         .whenOrNull(data: (data) => data);
-    final fileStatus = candidate?.statusString;
+    const fileStatus = 'no activity';
     return candidate == null
         ? const SizedBox.shrink()
         : Text(
-            candidate.uploadProgress ?? fileStatus!,
+            candidate.uploadProgress ?? fileStatus,
             style: ShadTheme.of(context).textTheme.muted,
           );
   }

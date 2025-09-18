@@ -6,10 +6,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
-import '../../providers/b_candidate.dart';
-import '../../providers/c_candidates.dart';
-import '../../providers/d_online_server.dart';
-import '../../providers/d_session_provider.dart';
 import '../utils/menu_button_active_when_socket_connected.dart';
 
 final ImagePicker _picker = ImagePicker();
@@ -19,25 +15,6 @@ class ImageBrowser extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    ref.listen(sessionCandidatesProvider, (prev, curr) {
-      final server = ref
-          .read(activeAIServerProvider)
-          .whenOrNull(data: (server) => server);
-      final session = ref
-          .read(sessionProvider)
-          .whenOrNull(data: (session) => session);
-
-      final canUpload = server != null && session?.socket.id != null;
-      if (canUpload) {
-        if (curr.hasValue) {
-          for (final candidate in curr.value!) {
-            ref
-                .read(sessionCandidateProvider(candidate.file).notifier)
-                .upload(server, session!.socket.id!);
-          }
-        }
-      }
-    });
     final files = ref.watch(sessionFilesProvider.select((e) => e.files));
     return Column(
       children: [

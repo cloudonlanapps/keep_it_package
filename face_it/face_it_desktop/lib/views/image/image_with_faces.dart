@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:shimmer/shimmer.dart';
 
 import '../../models/face/bbox.dart';
 import '../../providers/b_candidate.dart';
@@ -40,9 +39,6 @@ class _ImageViewerState extends ConsumerState<ImageViewer> {
               .whenOrNull(data: (data) => data),
         )
         .toList();
-    final candidate = ref
-        .watch(sessionCandidateProvider(widget.image))
-        .whenOrNull(data: (data) => data);
 
     return LayoutBuilder(
       builder: (context, constrainedBox) {
@@ -63,17 +59,6 @@ class _ImageViewerState extends ConsumerState<ImageViewer> {
                       for (final face in faces) ...[
                         if (face != null) DrawFace.positioned(face: face),
                       ],
-                    if (candidate?.isRecognizing ?? false)
-                      Positioned.fill(
-                        child: Shimmer.fromColors(
-                          baseColor: Colors.grey[300]!.withAlpha(0xF0),
-                          highlightColor: Colors.grey[100]!.withAlpha(0xF0),
-                          direction: ShimmerDirection.ttb,
-                          child: Container(
-                            color: Colors.grey[300]!.withAlpha(0xF0),
-                          ),
-                        ),
-                      ),
                   ],
                 ),
               ),
@@ -84,17 +69,6 @@ class _ImageViewerState extends ConsumerState<ImageViewer> {
     );
   }
 }
-
-/* 
-if (boundingBoxes != null)
-                CustomPaint(
-                  painter: BboxPainter(
-                    bboxes: boundingBoxes,
-                    boxColor: const Color.fromARGB(255, 57, 255, 20),
-                  ),
-                  child:
-                      Container(), // A blank container to ensure the painter takes up the full size
-                ), */
 
 class BboxPainter extends CustomPainter {
   BboxPainter({
@@ -124,54 +98,3 @@ class BboxPainter extends CustomPainter {
     return oldDelegate.bboxes != bboxes;
   }
 }
-
-/* class _GradientBackgroundTextPainter extends CustomPainter {
-  _GradientBackgroundTextPainter({
-    required this.text,
-    required this.style,
-    required this.gradient,
-    required this.padding,
-    this.borderRadius,
-  });
-  final String text;
-  final TextStyle style;
-  final Gradient gradient;
-  final EdgeInsetsGeometry padding;
-  final BorderRadiusGeometry? borderRadius;
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final textSpan = TextSpan(text: text, style: style);
-
-    final textPainter = TextPainter(
-      text: textSpan,
-      textDirection: TextDirection.ltr,
-    )..layout();
-
-    final paint = Paint()
-      ..shader = gradient.createShader(
-        Rect.fromLTWH(0, 0, size.width, size.height),
-      );
-
-    final textRect =
-        Offset(padding.horizontal / 2, padding.vertical / 2) & textPainter.size;
-
-    if (borderRadius != null) {
-      canvas.drawRRect(
-        borderRadius!.resolve(TextDirection.ltr).toRRect(textRect),
-        paint,
-      );
-    } else {
-      canvas.drawRect(textRect, paint);
-    }
-  }
-
-  @override
-  bool shouldRepaint(covariant _GradientBackgroundTextPainter oldDelegate) {
-    return oldDelegate.text != text ||
-        oldDelegate.style != style ||
-        oldDelegate.gradient != gradient ||
-        oldDelegate.padding != padding ||
-        oldDelegate.borderRadius != borderRadius;
-  }
-} */

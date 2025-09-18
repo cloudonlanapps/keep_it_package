@@ -43,12 +43,9 @@ class _MediaPopoverState extends ConsumerState<MediaPopover> {
         .watch(sessionCandidateProvider(widget.file))
         .whenOrNull(data: (data) => data);
     final needUpload = candidate != null && candidate.entity == null;
-    if (candidate?.isRecognizing ?? false) {
-      return const ShadIconButton.outline(
-        enabled: false,
-        icon: CircularProgressIndicator.adaptive(),
-      );
-    }
+
+    //FIXME: Block if any activity
+
     return ShadPopover(
       controller: popoverController,
       popover: (context) => SizedBox(
@@ -64,18 +61,7 @@ class _MediaPopoverState extends ConsumerState<MediaPopover> {
                 if (needUpload)
                   ShadIconButton.outline(
                     enabled: canUpload,
-                    onPressed: canUpload
-                        ? () {
-                            ref
-                                .read(
-                                  sessionCandidateProvider(
-                                    widget.file,
-                                  ).notifier,
-                                )
-                                .upload(server, session!.socket.id!);
-                            popoverController.toggle();
-                          }
-                        : null,
+                    onPressed: canUpload ? popoverController.toggle : null,
                     icon: const Icon(LucideIcons.upload300),
                   )
                 else if (candidate != null)
