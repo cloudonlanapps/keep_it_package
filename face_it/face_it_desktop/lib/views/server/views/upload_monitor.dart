@@ -7,6 +7,7 @@ import 'package:shadcn_ui/shadcn_ui.dart';
 import '../../../content_manager.dart/providers/candidates.dart';
 import '../providers/server_preference.dart';
 import '../providers/uploader.dart';
+import 'upload_progress.dart';
 
 class UploadMonitor extends ConsumerWidget {
   const UploadMonitor({super.key});
@@ -59,17 +60,10 @@ class UploadMonitor extends ConsumerWidget {
         ),
       ),
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
-          if ((uploader?.countByStatus(UploadStatus.pending) ?? 0) > 0)
-            const UploadStatistics()
-          else
-            Center(
-              child: Text(
-                'Nothing to upload',
-                style: ShadTheme.of(context).textTheme.muted,
-              ),
-            ),
-          const Spacer(),
+          const Expanded(child: UploadProgressChart()),
+
           Align(
             alignment: Alignment.centerRight,
             child: ShadSwitch(
