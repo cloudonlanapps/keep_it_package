@@ -25,10 +25,19 @@ class UploadMonitor extends ConsumerWidget {
       })
       ..listen(serverPreferenceProvider, (prev, curr) {
         if (prev?.autoUpload != curr.autoUpload && curr.autoUpload == true) {
-          final candidates = ref.watch(
+          final candidates = ref.read(
             candidatesProvider.select((e) => e.items),
           );
           for (final filePath in candidates.map((e) => e.file.path)) {
+            ref
+                .read(uploaderProvider.notifier)
+                .upload(filePath, pref: serverPref);
+          }
+        }
+      })
+      ..listen(candidatesProvider, (prev, curr) {
+        if (serverPref.autoUpload) {
+          for (final filePath in curr.items.map((e) => e.file.path)) {
             ref
                 .read(uploaderProvider.notifier)
                 .upload(filePath, pref: serverPref);
