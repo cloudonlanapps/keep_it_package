@@ -88,7 +88,7 @@ class SocketConnectionNotifier extends FamilyAsyncNotifier<CLSocket?, Uri?>
   }
 
   @override
-  String get logPrefix => "SessionNotifier";
+  String get logPrefix => 'SessionNotifier';
 
   @override
   void log(

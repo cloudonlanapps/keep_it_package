@@ -46,7 +46,7 @@ extension RESTAPi on CLServer {
     Map<String, List<String>> files,
   ) async {
     // If file is given, we need to use MultiPart
-    final List<http.MultipartFile> multipartFiles = [];
+    final multipartFiles = <http.MultipartFile>[];
     for (final entry in files.entries) {
       final field = entry.key;
       final fileList = entry.value;

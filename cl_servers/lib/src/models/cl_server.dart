@@ -1,4 +1,3 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:async';
 
 import 'package:cl_basic_types/cl_basic_types.dart';
@@ -70,10 +69,10 @@ class CLServer {
   Future<CLServer> isConnected({http.Client? client}) async {
     CLServer updated;
     try {
-      final reply = await get("");
+      final reply = await get('');
 
       updated = switch (reply) {
-        (final StoreResult response) => copyWith(
+        (final StoreResult<String> response) => copyWith(
           connected: validatePingResponse(response.result),
         ),
         _ => copyWith(connected: false),

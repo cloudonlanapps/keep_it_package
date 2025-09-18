@@ -5,9 +5,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class GetActiveAIServer extends ConsumerWidget {
   const GetActiveAIServer({
-    super.key,
     required this.serverURI,
     required this.builder,
+    super.key,
   });
   final Uri? serverURI;
   final Widget Function(CLServer? activeAIServer) builder;
