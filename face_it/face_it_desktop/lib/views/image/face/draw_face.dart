@@ -1,14 +1,11 @@
-import 'package:face_it_desktop/views/image/face/action_buttons.dart';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
 import '../../../models/face/detected_face.dart';
 import '../../../providers/f_face.dart';
-import '../../persons/new_person_card.dart';
-import '../../persons/person_card.dart';
 
+import '../../faces/face_info_card.dart';
 import 'draw_bbox.dart';
 
 class DrawFace extends Positioned {
@@ -56,7 +53,9 @@ class _DrawFace0State extends ConsumerState<DrawFace0> {
     final face = ref
         .watch(detectedFaceProvider(widget.faceId))
         .whenOrNull(data: (data) => data);
-    if (face == null || face.status == FaceStatus.notFoundNotAFace) {
+    if (face == null ||
+        face.status == FaceStatus.notFoundNotAFace ||
+        face.status == FaceStatus.notFoundUnknown) {
       return const SizedBox.shrink();
     }
 
@@ -70,27 +69,7 @@ class _DrawFace0State extends ConsumerState<DrawFace0> {
       padding: EdgeInsets.zero,
       controller: popoverController,
       popover: (context) {
-        return SizedBox(
-          width: 350,
-          child: Column(
-            children: [
-              switch (face.status) {
-                FaceStatus.notChecked ||
-                FaceStatus.notFound ||
-                FaceStatus.notFoundUnknown => NewPersonCard(
-                  faceId: face.descriptor.identity,
-                ),
-
-                FaceStatus.found ||
-                FaceStatus.foundConfirmed => PersonCard(face: face),
-                FaceStatus.notFoundNotAFace => throw Exception(
-                  "Can't handle this state",
-                ),
-              },
-              ActionButtons(faceId: faceId),
-            ],
-          ),
-        );
+        return SizedBox(width: 350, child: FaceInfoCard(faceId: faceId));
       },
 
       child: GestureDetector(

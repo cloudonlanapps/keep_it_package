@@ -71,12 +71,14 @@ class ActionButtons extends ConsumerWidget {
       children: [
         Expanded(
           child: switch (face.status) {
-            FaceStatus.notChecked || FaceStatus.notFoundUnknown =>
-              PopoverButtonBase(menuItem: unknownPersonMenuItem),
+            FaceStatus.notChecked ||
+            FaceStatus.notFoundUnknown ||
+            FaceStatus.notFound => PopoverButtonBase(
+              menuItem: unknownPersonMenuItem,
+            ),
 
             FaceStatus.found ||
-            FaceStatus.foundConfirmed ||
-            FaceStatus.notFound => const SizedBox.shrink(),
+            FaceStatus.foundConfirmed => const SizedBox.shrink(),
             FaceStatus.notFoundNotAFace => throw Exception(
               "Can't handle this state",
             ),
