@@ -1,7 +1,13 @@
 import 'package:cl_servers/cl_servers.dart'
-    show CLServer, GetActiveAIServer, GetAvailableServers, GetServerSession;
+    show
+        CLServer,
+        GetActiveAIServer,
+        GetAvailableServers,
+        GetServerSession,
+        socketConnectionProvider;
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:face_it_desktop/views/server/connected_server.dart';
+import 'package:face_it_desktop/views/server/session_status.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
@@ -9,20 +15,18 @@ import 'package:shadcn_ui/shadcn_ui.dart';
 import 'providers/preferred_ai_server.dart';
 
 class ServerSelector extends ConsumerWidget {
-  const ServerSelector({required this.onDone, super.key});
-
-  final void Function(CLServer server)? onDone;
+  const ServerSelector({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final serverURI = ref.watch(preferredServerIdProvider);
+    final serverPreference = ref.watch(serverPreferenceProvider);
     const loadingWidget = Center(
       child: CircularProgressIndicator(color: Colors.blue),
     );
     const errorWidget = Center(child: Icon(LucideIcons.triangleAlert));
 
     return GetActiveAIServer(
-      serverURI: serverURI,
+      serverURI: serverPreference,
       builder: (activeAIServer) {
         return GetAvailableServers(
           serverType: 'ai.',
@@ -33,20 +37,23 @@ class ServerSelector extends ConsumerWidget {
               title: servers.isEmpty
                   ? Text(
                       'Server Not Available',
-                      style: ShadTheme.of(context).textTheme.p,
+                      style: ShadTheme.of(context).textTheme.small,
                       textAlign: TextAlign.end,
                     )
                   : activeAIServer != null
                   ? ConnectedServer(server: activeAIServer)
                   : null,
+              subtitle: const SessionStatus(),
               leading: const ShadAvatar(
                 'assets/icon/cloud_on_lan_128px_color.png',
                 backgroundColor: Colors.transparent,
                 size: Size.fromRadius((kMinInteractiveDimension / 2) - 6),
               ),
-              trailing: servers.isEmpty
+              trailing: (activeAIServer != null)
+                  ? const SessionConnectIcon()
+                  : servers.isEmpty
                   ? const ShadButton.ghost(
-                      leading: CircularProgressIndicator(color: Colors.red),
+                      leading: CircularProgressIndicator.adaptive(),
                     )
                   : ServerSelectorIcon(servers: servers),
             );
@@ -67,88 +74,50 @@ class ServerSelectorIcon extends ConsumerStatefulWidget {
 
 class ServerSelectorIconState extends ConsumerState<ServerSelectorIcon> {
   final popoverController = ShadPopoverController();
-  late Duration blinkDuration;
 
   @override
   void initState() {
-    popoverController.addListener(listener);
-    blinkDuration = popoverController.isOpen
-        ? Duration.zero
-        : const Duration(milliseconds: 500);
     super.initState();
   }
 
   @override
   void dispose() {
-    popoverController
-      ..removeListener(listener)
-      ..dispose();
-
+    popoverController.dispose();
     super.dispose();
-  }
-
-  void listener() {
-    setState(() {
-      blinkDuration = popoverController.isOpen
-          ? Duration.zero
-          : const Duration(milliseconds: 500);
-    });
   }
 
   @override
   Widget build(BuildContext context) {
-    final serverURI = ref.watch(preferredServerIdProvider);
-    return GetActiveAIServer(
-      serverURI: serverURI,
-      builder: (clServer) {
-        return GetServerSession(
-          serverUri: serverURI,
-          builder: (session) {
-            if (clServer != null) {
-              return Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  ShadButton.ghost(
-                    leading: clIcons.disconnectToServer.iconFormatted(
-                      color: ShadTheme.of(context).colorScheme.destructive,
-                    ),
-                    onPressed: () async {},
-                  ),
-                ],
-              );
-            }
-            return ShadPopover(
-              controller: popoverController,
-              popover: (context) => SizedBox(
-                width: 288,
-                child: ListView(
-                  shrinkWrap: true,
-                  children: widget.servers
-                      .map(
-                        (e) => ServerTile(
-                          server: e,
-                          onPressed: () async {
-                            ref.read(preferredServerIdProvider.notifier).state =
-                                e.storeURL.uri;
+    return ShadPopover(
+      controller: popoverController,
+      popover: (context) => SizedBox(
+        width: 288,
+        child: ListView(
+          shrinkWrap: true,
+          children: widget.servers
+              .map(
+                (e) => ServerTile(
+                  server: e,
+                  onPressed: () async {
+                    ref
+                        .read(serverPreferenceProvider.notifier)
+                        .updateServer(e.storeURL.uri);
 
-                            popoverController.toggle();
-                          },
-                        ),
-                      )
-                      .toList(),
+                    popoverController.toggle();
+                  },
                 ),
-              ),
-              child: ShadButton.ghost(
-                leading: clIcons.connectToServer.iconFormatted(),
-                onPressed: popoverController.toggle,
-                child: clServer == null
-                    ? const Text('Select Server')
-                    : null /* , */,
-              ),
-            );
-          },
-        );
-      },
+              )
+              .toList(),
+        ),
+      ),
+      child: ShadButton.ghost(
+        leading: clIcons.connectToServer.iconFormatted(),
+        onPressed: popoverController.toggle,
+        child: Text(
+          'Select Server',
+          style: ShadTheme.of(context).textTheme.small,
+        ),
+      ),
     );
   }
 }
@@ -180,6 +149,73 @@ class ServerTile extends ConsumerWidget {
         style: ShadTheme.of(context).textTheme.small,
       ),
       onTap: onPressed,
+    );
+  }
+}
+
+class SessionConnectIcon extends ConsumerWidget {
+  const SessionConnectIcon({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final serverPref = ref.watch(serverPreferenceProvider);
+    print('SessionConnectIcon');
+    ref.listen(socketConnectionProvider(serverPref), (prev, curr) {
+      if (serverPref.autoConnect) {
+        final session = curr.whenOrNull(data: (data) => data);
+        print('isSession Connected? ${session?.connected}');
+        if (session != null && !session.socket.connected) {
+          print('connecting');
+          session.socket.connect();
+        }
+      }
+    });
+    return GetServerSession(
+      serverUri: serverPref,
+      builder: (session) {
+        if (session == null) {
+          return Tooltip(
+            message: 'Server is not available. Try connecting to server',
+            child: Icon(
+              LucideIcons.triangleAlert400,
+              color: ShadTheme.of(context).colorScheme.destructive,
+            ),
+          );
+        }
+        final textStyle = ShadTheme.of(context).textTheme.small.copyWith(
+          color: ShadTheme.of(context).textTheme.muted.color,
+          fontSize: ShadTheme.of(context).textTheme.small.fontSize != null
+              ? ShadTheme.of(context).textTheme.small.fontSize! - 4
+              : ShadTheme.of(context).textTheme.small.fontSize,
+        );
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          spacing: 4,
+          children: [
+            Text(
+              serverPref.autoConnect
+                  ? session.socket.connected
+                        ? 'Connected'
+                        : 'Disconnected'
+                  : session.socket.connected
+                  ? 'Disconnect'
+                  : 'Connect',
+              style: textStyle,
+            ),
+            ShadSwitch(
+              enabled: !serverPref.autoConnect,
+              value: session.socket.connected,
+              onChanged: (v) {
+                if (session.socket.connected) {
+                  session.socket.disconnect();
+                } else {
+                  session.socket.connect();
+                }
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 }

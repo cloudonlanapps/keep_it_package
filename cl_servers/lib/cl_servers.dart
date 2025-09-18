@@ -5,6 +5,7 @@ export 'src/builders/get_server_session.dart' show GetServerSession;
 export 'src/models/cl_server.dart' show CLServer;
 export 'src/models/network_scanner.dart' show NetworkScanner;
 export 'src/models/rest_api.dart' show RESTAPi;
+export 'src/models/server_preferences.dart' show ServerPreferences;
 export 'src/providers/available_servers.dart' show availableServersProvider;
 export 'src/providers/network_scanner.dart' show networkScannerProvider;
 export 'src/providers/server_provider.dart' show serverProvider;

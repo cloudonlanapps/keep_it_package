@@ -98,6 +98,9 @@ class CLIcons {
   final IconData noNetwork = MdiIcons.accessPointNetworkOff;
   final IconData connectToServer = MdiIcons.accessPointPlus;
   final IconData disconnectToServer = MdiIcons.accessPointNetworkOff;
+  final IconData connectSocket = MdiIcons.accessPoint;
+  final IconData disconnectSocket = MdiIcons.accessPointNetworkOff;
+
   final IconData searchForServers = MdiIcons.rotate3DVariant;
   final IconData openNotes = MdiIcons.notebookEdit;
   final IconData closeNotes = MdiIcons.notebookCheck;

@@ -5,20 +5,26 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:socket_io_client/socket_io_client.dart' as io;
 
 import '../models/cl_socket.dart';
+import '../models/server_preferences.dart';
 import 'active_ai_server.dart';
 import 'socket_messages.dart';
 
 final socketConnectionProvider =
-    AsyncNotifierProviderFamily<SocketConnectionNotifier, CLSocket?, Uri?>(
-      SocketConnectionNotifier.new,
-    );
+    AsyncNotifierProviderFamily<
+      SocketConnectionNotifier,
+      CLSocket,
+      ServerPreferences
+    >(SocketConnectionNotifier.new);
 
-class SocketConnectionNotifier extends FamilyAsyncNotifier<CLSocket?, Uri?>
+class SocketConnectionNotifier
+    extends FamilyAsyncNotifier<CLSocket, ServerPreferences>
     with CLLogger {
   @override
-  FutureOr<CLSocket?> build(Uri? arg) async {
+  FutureOr<CLSocket> build(ServerPreferences arg) async {
     final server = await ref.watch(activeAIServerProvider(arg).future);
-    if (server == null) return null;
+    if (server == null) {
+      throw Exception('server not available');
+    }
 
     final uri = server.storeURL.uri;
     final socket = io.io(
@@ -51,6 +57,9 @@ class SocketConnectionNotifier extends FamilyAsyncNotifier<CLSocket?, Uri?>
         ..disconnect()
         ..dispose();
     });
+    if (arg.autoConnect) {
+      socket.connect();
+    }
 
     return CLSocket(socket: socket);
   }

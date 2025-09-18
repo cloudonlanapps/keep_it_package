@@ -1,5 +1,4 @@
 import 'package:cl_servers/cl_servers.dart' show CLServer;
-import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
@@ -35,6 +34,9 @@ class _ConnectedServerState extends ConsumerState<ConnectedServer> {
 
   @override
   Widget build(BuildContext context) {
+    final autoConnect = ref.watch(
+      serverPreferenceProvider.select((e) => e.autoConnect),
+    );
     return ShadPopover(
       controller: popoverController,
       popover: (context) => SizedBox(
@@ -45,39 +47,49 @@ class _ConnectedServerState extends ConsumerState<ConnectedServer> {
           children: [
             ShadButton.ghost(
               expands: true,
-              leading: Icon(
-                MdiIcons.lanDisconnect,
-                color: ShadTheme.of(context).colorScheme.destructive,
-              ),
-              child: const Align(
-                alignment: Alignment.centerLeft,
-                child: Text('Disconnect'),
-              ),
-              onPressed: () =>
-                  ref.read(preferredServerIdProvider.notifier).state = null,
-            ),
-            ShadButton.ghost(
-              expands: true,
-              leading: Icon(
-                MdiIcons.check,
-                color: ShadTheme.of(context).colorScheme.destructive,
-              ),
+              onPressed: () => ref
+                  .read(serverPreferenceProvider.notifier)
+                  .toggleAutoConnect(),
+              leading: autoConnect
+                  ? const Icon(LucideIcons.squareCheck400)
+                  : const Icon(LucideIcons.square400),
               child: const Align(
                 alignment: Alignment.centerLeft,
                 child: Text('AutoConnect'),
               ),
             ),
+            ShadButton.ghost(
+              expands: true,
+              leading: Icon(
+                MdiIcons.lanDisconnect,
+                color: ShadTheme.of(context).colorScheme.destructive,
+              ),
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  'Disconnect',
+                  style: ShadTheme.of(context).textTheme.small.copyWith(
+                    color: ShadTheme.of(context).colorScheme.destructive,
+                  ),
+                ),
+              ),
+              onPressed: () => ref
+                  .read(serverPreferenceProvider.notifier)
+                  .updateServer(null),
+            ),
           ],
         ),
       ),
-      child: GestureDetector(
-        onTap: popoverController.toggle,
-        child: Padding(
-          padding: const EdgeInsets.all(8),
-          child: Text(
-            widget.server.storeURL.uri.toString(),
-            style: ShadTheme.of(context).textTheme.small,
-            textAlign: TextAlign.center,
+      child: Tooltip(
+        message: "Online. (Session autoConnect ${autoConnect ? 'on' : 'off'})",
+        child: GestureDetector(
+          onTap: popoverController.toggle,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8),
+            child: Text(
+              widget.server.storeURL.uri.toString(),
+              style: ShadTheme.of(context).textTheme.small,
+            ),
           ),
         ),
       ),
