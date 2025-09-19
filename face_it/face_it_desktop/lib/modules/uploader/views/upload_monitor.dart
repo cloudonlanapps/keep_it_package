@@ -17,7 +17,7 @@ class UploadMonitor extends ConsumerWidget {
     AutoRetryUpload().watch(ref);
     AutoUploadMonitor().watch(ref);
 
-    ref.watch(uploaderProvider).whenOrNull(data: (data) => data);
+    ref.watch(uploaderProvider);
 
     return ShadCard(
       height: 180,

@@ -17,12 +17,10 @@ class MediaUploadStatusView extends ConsumerWidget {
         (candidates) => candidates.itemByPath(file.path),
       ),
     );
-    final uploader = ref
-        .watch(uploaderProvider)
-        .whenOrNull(data: (data) => data);
+    final uploader = ref.watch(uploaderProvider);
     final statusString =
-        uploader?.files[file.path]?.statusString ?? 'Not uploaded';
-    final error = uploader?.files[file.path]?.error;
+        uploader.files[file.path]?.statusString ?? 'Not uploaded';
+    final error = uploader.files[file.path]?.error;
     final msgWidget = Text(
       statusString,
       style: ShadTheme.of(context).textTheme.muted,

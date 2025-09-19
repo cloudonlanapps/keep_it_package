@@ -35,9 +35,7 @@ class MediaPopoverMenuState extends ConsumerState<MediaPopoverMenu> {
       ),
     );
 
-    final uploader = ref
-        .watch(uploaderProvider)
-        .whenOrNull(data: (data) => data);
+    ref.watch(uploaderProvider);
     return ShadPopover(
       controller: popoverController,
       popover: (context) => SizedBox(
@@ -52,7 +50,7 @@ class MediaPopoverMenuState extends ConsumerState<MediaPopoverMenu> {
                 icon: clIcons.imageUpload,
 
                 onTap: () async {
-                  if (candidate == null || uploader == null) {
+                  if (candidate == null) {
                     return;
                   }
                   unawaited(

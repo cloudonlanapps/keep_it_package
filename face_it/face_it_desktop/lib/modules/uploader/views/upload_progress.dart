@@ -26,11 +26,8 @@ class UploadProgressChartState extends ConsumerState<UploadProgressChart> {
 
   @override
   Widget build(BuildContext context) {
-    final uploader = ref
-        .watch(uploaderProvider)
-        .whenOrNull(data: (data) => data);
+    final uploader = ref.watch(uploaderProvider);
 
-    if (uploader == null) return const SizedBox.shrink();
     final candidates = ref.watch(mediaListProvider.select((e) => e.mediaList));
     const radius = 20.0;
     const radius2 = 20.0;

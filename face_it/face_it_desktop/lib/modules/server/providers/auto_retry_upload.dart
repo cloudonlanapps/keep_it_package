@@ -22,16 +22,16 @@ class AutoRetryUpload with CLLogger {
         if (wasConnected && !isConnected) {
           // Disconnected
           log('listening socketConnectionProvider:  Uploader reset');
-          ref.read(uploaderProvider.notifier).reset();
+          ref.read(uploaderProvider.notifier).resetNew();
         } else if (!wasConnected && isConnected) {
           // Connected
           log('listening socketConnectionProvider:  Uploader retry');
-          ref.read(uploaderProvider.notifier).retry();
+          ref.read(uploaderProvider.notifier).retryNew();
         }
       })
       ..listen(uploaderProvider, (prev, curr) {
         log(
-          'listening uploaderProvider: UploaderNotifier has ${curr.whenOrNull(data: (data) => data)?.count} items now; was having ${prev?.whenOrNull(data: (data) => data)?.count} items',
+          'listening uploaderProvider: UploaderNotifier has ${curr.count} items now; was having ${prev?.count} items',
         );
       });
   }

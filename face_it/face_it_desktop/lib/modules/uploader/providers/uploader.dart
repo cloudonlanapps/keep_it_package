@@ -4,61 +4,46 @@ import 'dart:io';
 
 import 'package:background_downloader/background_downloader.dart';
 import 'package:cl_basic_types/cl_basic_types.dart';
-import 'package:cl_servers/cl_servers.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../models/upload_state.dart';
 import '../models/upload_status.dart';
 import '../models/uploader.dart';
 
-final uploaderProvider = AsyncNotifierProvider<UploaderNotifier, Uploader>(
-  UploaderNotifier.new,
+final uploaderProvider = StateNotifierProvider<UploaderNotifier, Uploader>(
+  (ref) => UploaderNotifier(),
 );
 
-class UploaderNotifier extends AsyncNotifier<Uploader> with CLLogger {
+class UploaderNotifier extends StateNotifier<Uploader> with CLLogger {
+  UploaderNotifier() : super(const Uploader({}));
   @override
   String get logPrefix => 'UploaderNotifier';
 
-  @override
-  FutureOr<Uploader> build() {
-    log('New uploader!!');
-    ref.onDispose(() {
-      log('disposed.. Why?');
-    });
-    return const Uploader({});
-  }
-
   String add(String filePath) {
-    if (!state.value!.files.keys.contains(filePath)) {
-      state = AsyncValue.data(
-        Uploader({
-          ...state.value!.files,
-          filePath: UploadState(filePath: filePath),
-        }),
-      );
+    if (!state.files.keys.contains(filePath)) {
+      state = Uploader({
+        ...state.files,
+        filePath: UploadState(filePath: filePath),
+      });
     }
-    log(
-      'added 1 item into state (has ${state.value!.files.length}) total items',
-    );
+    log('added 1 item into state (has ${state.files.length}) total items');
     return filePath;
   }
 
   Iterable<String> addMultiple(Iterable<String> filePaths) {
     if (filePaths.isNotEmpty) {
       final newFilePaths = filePaths.where(
-        (filePath) => !state.value!.files.keys.contains(filePath),
+        (filePath) => !state.files.keys.contains(filePath),
       );
       if (newFilePaths.isNotEmpty) {
-        state = AsyncValue.data(
-          Uploader({
-            ...state.value!.files,
-            for (final file in newFilePaths) file: UploadState(filePath: file),
-          }),
-        );
+        state = Uploader({
+          ...state.files,
+          for (final file in newFilePaths) file: UploadState(filePath: file),
+        });
       }
     }
     log(
-      'added ${filePaths.length} items into state (has ${state.value!.files.length}) total items',
+      'added ${filePaths.length} items into state (has ${state.files.length}) total items',
     );
     return filePaths;
   }
@@ -79,44 +64,27 @@ class UploaderNotifier extends AsyncNotifier<Uploader> with CLLogger {
     required String filePath,
     required UploadState uploadState,
   }) {
-    state = AsyncValue.data(
-      Uploader({...state.value!.files, filePath: uploadState}),
-    );
+    state = Uploader({...state.files, filePath: uploadState});
   }
 
   Future<void> _upload(String filePath) async {
-    if (state.value!.files[filePath]?.status == UploadStatus.success ||
-        state.value!.files[filePath]?.status == UploadStatus.uploading) {
+    if (state.files[filePath]?.status == UploadStatus.success ||
+        state.files[filePath]?.status == UploadStatus.uploading) {
       // avoid redundent upload.
       return;
     }
-    CLSocket? session;
-    CLServer? server;
-    session = ref
-        .read(socketConnectionProvider)
-        .whenOrNull(data: (data) => data.socket.connected ? data : null);
-    server = ref
-        .read(activeAIServerProvider)
-        .whenOrNull(data: (data) => (data?.connected ?? false) ? data : null);
-    if (session == null || server == null) {
-      final updated = state.value!.files[filePath]!.copyWith(
-        serverResponse: () => null,
-        status: UploadStatus.pending,
-        entity: () => null,
-        error: () => server == null ? 'Server not found' : 'No Session running',
-      );
-      updateState(filePath: filePath, uploadState: updated);
-      return;
-    }
-    final uploader = state.value!;
+    return;
+
+    final uploader = state;
 
     if (!uploader.files.keys.contains(filePath)) {
       return;
     }
 
     final task = UploadTask.fromFile(
-      file: File(state.value!.files[filePath]!.filePath),
-      url: '${server.storeURL.uri}/sessions/${session.socket.id}/upload',
+      file: File(state.files[filePath]!.filePath),
+      url:
+          'FIXME', //'${server.storeURL.uri}/sessions/${session.socket.id}/upload',
       fileField: 'media',
       updates: Updates.progress, // request status and progress updates
     );
@@ -126,7 +94,7 @@ class UploaderNotifier extends AsyncNotifier<Uploader> with CLLogger {
           .upload(
             task,
             onProgress: (progress) {
-              final updated = state.value!.files[filePath]!.copyWith(
+              final updated = state.files[filePath]!.copyWith(
                 serverResponse: () => '${(progress * 100).toStringAsFixed(1)}%',
               );
               updateState(filePath: filePath, uploadState: updated);
@@ -138,7 +106,7 @@ class UploaderNotifier extends AsyncNotifier<Uploader> with CLLogger {
                 final clEntity = UploadState.entityFromMap(
                   jsonDecode(result.responseBody!) as Map<String, dynamic>,
                 );
-                final updated = state.value!.files[filePath]!.copyWith(
+                final updated = state.files[filePath]!.copyWith(
                   serverResponse: () => result.responseBody!,
                   status: UploadStatus.success,
                   entity: () => clEntity,
@@ -146,7 +114,7 @@ class UploaderNotifier extends AsyncNotifier<Uploader> with CLLogger {
                 );
                 updateState(filePath: filePath, uploadState: updated);
               } catch (e) {
-                final updated = state.value!.files[filePath]!.copyWith(
+                final updated = state.files[filePath]!.copyWith(
                   serverResponse: () => null,
                   status: UploadStatus.error,
                   entity: () => null,
@@ -155,7 +123,7 @@ class UploaderNotifier extends AsyncNotifier<Uploader> with CLLogger {
                 updateState(filePath: filePath, uploadState: updated);
               }
             } else {
-              final updated = state.value!.files[filePath]!.copyWith(
+              final updated = state.files[filePath]!.copyWith(
                 serverResponse: () => null,
                 status: UploadStatus.error,
                 entity: () => null,
@@ -167,45 +135,31 @@ class UploaderNotifier extends AsyncNotifier<Uploader> with CLLogger {
     );
   }
 
-  Future<void> retry() async {
-    final pendingItems = state.value!.files.values.where(
+  Future<void> retryNew() async {
+    final pendingItems = state.files.values.where(
       (e) => e.status == UploadStatus.pending || e.status == UploadStatus.error,
     );
     log(
-      'resetting ${pendingItems.length} pendingItems in state (has ${state.value!.files.length}) items',
+      'resetting ${pendingItems.length} pendingItems in state (has ${state.files.length}) items',
     );
     for (final item in pendingItems) {
       await _upload(item.filePath);
     }
   }
 
-  Future<void> reset() async {
-    final serverPref = ref.watch(serverPreferenceProvider);
-    final session = ref
-        .read(socketConnectionProvider)
-        .whenOrNull(data: (data) => data.socket.connected ? data : null);
-    final server = ref
-        .read(activeAIServerProvider)
-        .whenOrNull(data: (data) => (data?.connected ?? false) ? data : null);
-    final error = serverPref.uri == null
-        ? null
-        : server == null
-        ? 'Server not found'
-        : session == null
-        ? 'No Session running'
-        : null;
+  Future<void> resetNew() async {
     final items = {
-      for (final item in state.value!.files.entries)
+      for (final item in state.files.entries)
         item.key: item.value.copyWith(
           serverResponse: () => null,
           status: UploadStatus.pending,
           entity: () => null,
-          error: () => error,
+          error: () => null,
         ),
     };
     log(
-      'resetting ${items.length} items in state (had ${state.value!.files.length}) items',
+      'resetting ${items.length} items in state (had ${state.files.length}) items',
     );
-    state = AsyncValue.data(Uploader(items));
+    state = Uploader(items);
   }
 }
