@@ -53,11 +53,21 @@ class UploadMonitor extends ConsumerWidget {
     return ShadCard(
       height: 180,
       padding: const EdgeInsets.all(8),
-      title: Center(
-        child: Text(
-          'Upload Monitor',
-          style: ShadTheme.of(context).textTheme.small,
-        ),
+      title: Row(
+        spacing: 8,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Expanded(child: Container()),
+          Expanded(
+            child: Center(
+              child: Text(
+                'Upload Monitor',
+                style: ShadTheme.of(context).textTheme.small,
+              ),
+            ),
+          ),
+          Expanded(child: Container()),
+        ],
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
