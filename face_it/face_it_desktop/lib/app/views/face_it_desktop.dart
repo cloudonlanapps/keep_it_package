@@ -12,35 +12,45 @@ import '../../modules/content_manager/views/main/main_view.dart';
 import '../../modules/face_manager/views/saved_items_browser.dart';
 import '../../modules/media/views/media_browser.dart';
 
-class FaceItDesktop extends ConsumerWidget {
-  const FaceItDesktop({super.key});
+class FaceItDesktopApp extends ConsumerWidget {
+  const FaceItDesktopApp({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     ShadTheme.of(context);
-    return Scaffold(
-      appBar: AppBar(title: const Text('Detect Faces')),
-      body: ProviderScope(
-        overrides: [
-          clBrowserPanalProvider.overrideWith(
-            (ref) => CLBrowserPanalNotifier(
-              CLBrowserPanals(
-                activePanelLabel: 'Images',
-                availablePanels: [
-                  CLBrowserPanal(
-                    label: 'Images',
-                    panelBuilder: (context) => const MediaBrowser(),
-                  ),
-                  CLBrowserPanal(
-                    label: 'Saved Items',
-                    panelBuilder: (context) => const SavedItemsBrowser(),
-                  ),
-                ],
+    return ShadApp(
+      theme: ShadThemeData(
+        brightness: Brightness.light,
+        colorScheme: const ShadZincColorScheme.light(),
+      ),
+      darkTheme: ShadThemeData(
+        brightness: Brightness.dark,
+        colorScheme: const ShadZincColorScheme.dark(),
+      ),
+      home: Scaffold(
+        appBar: AppBar(title: const Text('Detect Faces')),
+        body: ProviderScope(
+          overrides: [
+            clBrowserPanalProvider.overrideWith(
+              (ref) => CLBrowserPanalNotifier(
+                CLBrowserPanals(
+                  activePanelLabel: 'Images',
+                  availablePanels: [
+                    CLBrowserPanal(
+                      label: 'Images',
+                      panelBuilder: (context) => const MediaBrowser(),
+                    ),
+                    CLBrowserPanal(
+                      label: 'Saved Items',
+                      panelBuilder: (context) => const SavedItemsBrowser(),
+                    ),
+                  ],
+                ),
               ),
             ),
-          ),
-        ],
-        child: const FaceItDesktop0(),
+          ],
+          child: const FaceItDesktop0(),
+        ),
       ),
     );
   }

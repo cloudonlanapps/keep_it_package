@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
-import '../../../main/models/main_content_type.dart';
-import '../../../main/providers/main_content_type.dart';
+import '../../../app/models/main_content_type.dart';
+import '../../../app/providers/main_content_type.dart';
 
 class SavedItemsBrowser extends ConsumerWidget {
   const SavedItemsBrowser({super.key});

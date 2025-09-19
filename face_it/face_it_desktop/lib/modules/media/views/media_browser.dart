@@ -6,11 +6,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
-import '../../../main/models/main_content_type.dart';
+import '../../../app/models/main_content_type.dart';
 import 'media.dart';
 import '../../uploader/views/upload_status.dart';
 import '../../utils/menu_button.dart';
-import '../../../main/providers/main_content_type.dart';
+import '../../../app/providers/main_content_type.dart';
 import 'media_popover_menu.dart';
 
 final ImagePicker _picker = ImagePicker();

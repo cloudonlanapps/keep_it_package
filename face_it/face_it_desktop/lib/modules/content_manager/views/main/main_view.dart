@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../../main/models/main_content_type.dart';
+import '../../../../app/models/main_content_type.dart';
+import '../../../../app/providers/main_content_type.dart';
 import '../../../face_manager/views/faces_view.dart';
-import '../../../media/views/media_view.dart';
-import '../../../../main/providers/main_content_type.dart';
 import '../../../face_manager/views/persons_view.dart';
+import '../../../media/views/media_view.dart';
 
 class MainPanelView extends ConsumerWidget {
   const MainPanelView({super.key});
