@@ -71,7 +71,7 @@ class VideoPlayerNotifier extends AutoDisposeAsyncNotifier<VideoPlayerState>
       }
       await controller.setVolume(universalConfig.audioVolume);
       await controller.seekTo(uriConfig.lastKnownPlayPosition);
-      await controller.setLooping(true); // FIXME: from configuration
+      await controller.setLooping(true); // FIXME: [LATER] from configuration
 
       if (autoPlay && !universalConfig.isManuallyPaused) {
         await controller.play();
