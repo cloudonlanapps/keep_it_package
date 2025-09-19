@@ -1,74 +1,80 @@
 import 'dart:async';
 
 import 'package:cl_basic_types/cl_basic_types.dart';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:socket_io_client/socket_io_client.dart' as io;
 
 import '../models/cl_socket.dart';
-import '../models/server_preferences.dart';
 import 'active_ai_server.dart';
-import 'socket_messages.dart';
+import 'server_preference.dart';
 
 final socketConnectionProvider =
-    AsyncNotifierProviderFamily<
-      SocketConnectionNotifier,
-      CLSocket,
-      ServerPreferences
-    >(SocketConnectionNotifier.new);
+    AsyncNotifierProvider<SocketConnectionNotifier, CLSocket>(
+      SocketConnectionNotifier.new,
+    );
 
-class SocketConnectionNotifier
-    extends FamilyAsyncNotifier<CLSocket, ServerPreferences>
-    with CLLogger {
+class SocketConnectionNotifier extends AsyncNotifier<CLSocket> with CLLogger {
+  io.Socket? socket;
   @override
-  FutureOr<CLSocket> build(ServerPreferences arg) async {
-    final server = await ref.watch(activeAIServerProvider(arg).future);
+  FutureOr<CLSocket> build() async {
+    log('dispose old socket');
+    socket
+      ?..off('disconnect', onDisconnect)
+      ..disconnect()
+      ..close()
+      ..dispose();
+    socket = null;
+    final server = await ref.watch(activeAIServerProvider.future);
     if (server == null) {
+      log('server not found, socket not created');
       throw Exception('server not available');
     }
+    log('Create a socket');
+    try {
+      socket = io.io(
+        '${server.storeURL.uri}',
+        io.OptionBuilder()
+            .setTransports(['websocket'])
+            .disableAutoConnect() // connect manually
+            .disableReconnection() // stop infinite retries
+            .build(),
+      );
+    } catch (e) {
+      log('Failed to connect to server: $e');
+      throw Exception('Failed to connect to server: $e');
+    }
+    if (socket == null) {
+      throw Exception('Failed to connect to server: Unknown Error');
+    }
 
-    final uri = server.storeURL.uri;
-    final socket = io.io(
-      uri.toString(),
-      io.OptionBuilder()
-          .setTransports(['websocket'])
-          .disableAutoConnect() // connect manually
-          .disableReconnection() // stop infinite retries
-          .build(),
-    );
-    socket
+    registerCallbacks(socket!);
+    final pref = ref.watch(serverPreferenceProvider);
+    if (pref.autoConnect) {
+      socket?.connect();
+    }
+
+    return CLSocket(socket: socket!);
+  }
+
+  void registerCallbacks(io.Socket soc) {
+    soc
       ..onConnect((_) {
-        log('Connected: session id ${socket.id}');
-        state = AsyncValue.data(CLSocket(socket: socket));
+        log('Connected: session id ${soc.id}');
+        state = AsyncValue.data(CLSocket(socket: soc));
       })
       ..onConnectError((err) {
         log('Error: session Connection Failed\n\t$err');
-
-        state = AsyncValue.data(CLSocket(socket: socket));
+        state = AsyncValue.data(CLSocket(socket: soc));
       })
       ..on('message', onReceiveMessage)
-      //..on('result', onReceiveMessage)
       ..on('progress', onReceiveMessage)
       ..on('disconnect', onDisconnect);
-    ref.onDispose(() {
-      socket
-        ..off(
-          'disconnect',
-          onDisconnect,
-        ) // required as we should not receive callback after dispose
-        ..disconnect()
-        ..dispose();
-    });
-    if (arg.autoConnect) {
-      socket.connect();
-    }
-
-    return CLSocket(socket: socket);
   }
 
   void onDisconnect(_) {
-    log('Disconnected');
-    final socket = state.value!.socket;
-    state = AsyncValue.data(CLSocket(socket: socket));
+    log('onDisconnect: update state');
+    ref.invalidateSelf();
   }
 
   void onReceiveMessage(dynamic data) {
@@ -103,7 +109,7 @@ class SocketConnectionNotifier
   @override
   String get logPrefix => 'SessionNotifier';
 
-  @override
+  /*  @override
   void log(
     String message, {
     int level = 0,
@@ -111,5 +117,5 @@ class SocketConnectionNotifier
     StackTrace? stackTrace,
   }) {
     ref.read(socketMessagesProvider.notifier).addMessage(message);
-  }
+  } */
 }

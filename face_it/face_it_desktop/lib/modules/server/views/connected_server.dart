@@ -1,10 +1,9 @@
-import 'package:cl_servers/cl_servers.dart' show CLServer;
+import 'package:cl_servers/cl_servers.dart'
+    show CLServer, serverPreferenceProvider;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
-
-import '../providers/server_preference.dart';
 
 class ConnectedServer extends ConsumerStatefulWidget {
   const ConnectedServer({required this.server, super.key});

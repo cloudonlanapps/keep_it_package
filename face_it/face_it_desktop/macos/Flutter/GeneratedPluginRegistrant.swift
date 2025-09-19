@@ -16,6 +16,7 @@ import shared_preferences_foundation
 import sqlite3_flutter_libs
 import video_compress
 import video_player_avfoundation
+import window_size
 
 func RegisterGeneratedPlugins(registry: FlutterPluginRegistry) {
   ClMediaToolsPlugin.register(with: registry.registrar(forPlugin: "ClMediaToolsPlugin"))
@@ -29,4 +30,5 @@ func RegisterGeneratedPlugins(registry: FlutterPluginRegistry) {
   Sqlite3FlutterLibsPlugin.register(with: registry.registrar(forPlugin: "Sqlite3FlutterLibsPlugin"))
   VideoCompressPlugin.register(with: registry.registrar(forPlugin: "VideoCompressPlugin"))
   FVPVideoPlayerPlugin.register(with: registry.registrar(forPlugin: "FVPVideoPlayerPlugin"))
+  WindowSizePlugin.register(with: registry.registrar(forPlugin: "WindowSizePlugin"))
 }

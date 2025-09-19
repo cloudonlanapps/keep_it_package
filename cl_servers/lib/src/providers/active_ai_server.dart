@@ -1,22 +1,24 @@
 import 'dart:async';
 
-import 'package:cl_servers/cl_servers.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-final activeAIServerProvider =
-    AsyncNotifierProviderFamily<
-      ActiveAIServerNotifier,
-      CLServer?,
-      ServerPreferences
-    >(ActiveAIServerNotifier.new);
+import '../models/cl_server.dart';
+import 'available_servers.dart';
+import 'server_preference.dart';
 
-class ActiveAIServerNotifier
-    extends FamilyAsyncNotifier<CLServer?, ServerPreferences> {
+final activeAIServerProvider =
+    AsyncNotifierProvider<ActiveAIServerNotifier, CLServer?>(
+      ActiveAIServerNotifier.new,
+    );
+
+class ActiveAIServerNotifier extends AsyncNotifier<CLServer?> {
   @override
-  FutureOr<CLServer?> build(ServerPreferences arg) async {
+  FutureOr<CLServer?> build() async {
+    final pref = ref.watch(serverPreferenceProvider);
+    if (pref.uri == null) return null;
     final servers = await ref.watch(availableServersProvider('ai.').future);
     final server = servers
-        .where((server) => server.storeURL.uri == arg.uri)
+        .where((server) => server.storeURL.uri == pref.uri)
         .firstOrNull;
 
     return server;

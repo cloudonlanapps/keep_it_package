@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
-import '../providers/server_preference.dart';
 import 'connected_server.dart';
 import 'server_select.dart';
 import 'session_connect.dart';
@@ -15,14 +14,12 @@ class ServerManageView extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final serverPreference = ref.watch(serverPreferenceProvider);
     const loadingWidget = Center(
       child: CircularProgressIndicator(color: Colors.blue),
     );
     const errorWidget = Center(child: Icon(LucideIcons.triangleAlert));
 
     return GetActiveAIServer(
-      serverURI: serverPreference,
       builder: (activeAIServer) {
         return GetAvailableServers(
           serverType: 'ai.',

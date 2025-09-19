@@ -1,6 +1,11 @@
 import 'package:cl_servers/cl_servers.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+final serverPreferenceProvider =
+    StateNotifierProvider<ServerPreferenceNotifier, ServerPreferences>((ref) {
+      return ServerPreferenceNotifier();
+    });
+
 class ServerPreferenceNotifier extends StateNotifier<ServerPreferences> {
   ServerPreferenceNotifier() : super(const ServerPreferences());
 
@@ -16,8 +21,3 @@ class ServerPreferenceNotifier extends StateNotifier<ServerPreferences> {
     state = state.copyWith(autoUpload: !state.autoUpload);
   }
 }
-
-final serverPreferenceProvider =
-    StateNotifierProvider<ServerPreferenceNotifier, ServerPreferences>((ref) {
-      return ServerPreferenceNotifier();
-    });

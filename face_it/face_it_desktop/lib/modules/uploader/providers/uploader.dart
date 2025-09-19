@@ -38,10 +38,10 @@ class UploaderNotifier extends AsyncNotifier<Uploader> {
     CLSocket? session;
     CLServer? server;
     session = ref
-        .read(socketConnectionProvider(pref))
+        .read(socketConnectionProvider)
         .whenOrNull(data: (data) => data.socket.connected ? data : null);
     server = ref
-        .read(activeAIServerProvider(pref))
+        .read(activeAIServerProvider)
         .whenOrNull(data: (data) => (data?.connected ?? false) ? data : null);
     if (session == null || server == null) {
       final updated = state.value!.files[filePath]!.copyWith(

@@ -4,7 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
 import '../../media/providers/candidates.dart';
-import '../../server/providers/server_preference.dart';
 import '../providers/uploader.dart';
 import 'upload_progress.dart';
 
@@ -15,7 +14,7 @@ class UploadMonitor extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final serverPref = ref.watch(serverPreferenceProvider);
     ref
-      ..listen(socketConnectionProvider(serverPref), (prev, curr) {
+      ..listen(socketConnectionProvider, (prev, curr) {
         if (curr.whenOrNull(
               data: (data) => data.socket.connected ? data : null,
             ) !=

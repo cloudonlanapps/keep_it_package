@@ -4,17 +4,13 @@ import 'package:socket_io_client/socket_io_client.dart' as io;
 
 @immutable
 class CLSocket {
-  const CLSocket({required this.socket, this.connected = false});
+  const CLSocket({required this.socket});
   final io.Socket socket;
-  final bool connected; //
 
   bool get isConnected => socket.connected;
 
   CLSocket copyWith({io.Socket? socket, bool? connected}) {
-    return CLSocket(
-      socket: socket ?? this.socket,
-      connected: connected ?? this.connected,
-    );
+    return CLSocket(socket: socket ?? this.socket);
   }
 
   void dispose() {
@@ -27,26 +23,12 @@ class CLSocket {
   bool operator ==(covariant CLSocket other) {
     if (identical(this, other)) return true;
 
-    return other.socket == socket && other.connected == connected;
+    return other.socket == socket;
   }
 
   @override
-  int get hashCode => socket.hashCode ^ connected.hashCode;
+  int get hashCode => socket.hashCode;
 
   @override
-  String toString() => 'ServerIO(socket: $socket, connected: $connected)';
+  String toString() => 'ServerIO(socket: $socket)';
 }
-
-/*
-  ServerIO addMessage(String msg) {
-    return copyWith(messages: [...messages, msg]);
-  }
-
-  bool sendMessage(msg) {
-    if (isConnected) {
-      socket.emit("message", msg);
-    }
-
-    return isConnected;
-  }
- */
