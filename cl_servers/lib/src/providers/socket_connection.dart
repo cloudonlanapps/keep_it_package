@@ -1,13 +1,10 @@
 import 'dart:async';
 
 import 'package:cl_basic_types/cl_basic_types.dart';
+import 'package:cl_servers/cl_servers.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:socket_io_client/socket_io_client.dart' as io;
-
-import '../models/cl_socket.dart';
-import 'active_ai_server.dart';
-import 'server_preference.dart';
 
 final socketConnectionProvider =
     AsyncNotifierProvider<SocketConnectionNotifier, CLSocket>(
@@ -18,18 +15,26 @@ class SocketConnectionNotifier extends AsyncNotifier<CLSocket> with CLLogger {
   io.Socket? socket;
   @override
   FutureOr<CLSocket> build() async {
-    log('dispose old socket');
-    socket
-      ?..off('disconnect', onDisconnect)
-      ..disconnect()
-      ..close()
-      ..dispose();
-    socket = null;
+    if (socket != null) {
+      log('dispose old socket');
+      socket
+        ?..off('disconnect', onDisconnect)
+        ..disconnect()
+        ..close()
+        ..dispose();
+      socket = null;
+    }
     final server = await ref.watch(activeAIServerProvider.future);
     if (server == null) {
       log('server not found, socket not created');
       throw Exception('server not available');
     }
+    await connect(server);
+
+    return CLSocket(socket: socket!);
+  }
+
+  Future<void> connect(CLServer server) async {
     log('Create a socket');
     try {
       socket = io.io(
@@ -49,12 +54,6 @@ class SocketConnectionNotifier extends AsyncNotifier<CLSocket> with CLLogger {
     }
 
     registerCallbacks(socket!);
-    final pref = ref.watch(serverPreferenceProvider);
-    if (pref.autoConnect) {
-      socket?.connect();
-    }
-
-    return CLSocket(socket: socket!);
   }
 
   void registerCallbacks(io.Socket soc) {

@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
-import '../../media/providers/candidates.dart';
+import '../../media/providers/auto_upload_monitor.dart';
+import '../../server/providers/auto_retry_upload.dart';
 import '../providers/uploader.dart';
 import 'upload_progress.dart';
 
@@ -13,36 +14,8 @@ class UploadMonitor extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final serverPref = ref.watch(serverPreferenceProvider);
-    ref
-      ..listen(socketConnectionProvider, (prev, curr) {
-        if (curr.whenOrNull(
-              data: (data) => data.socket.connected ? data : null,
-            ) !=
-            null) {
-          ref.read(uploaderProvider.notifier).retry(serverPref);
-        }
-      })
-      ..listen(serverPreferenceProvider, (prev, curr) {
-        if (prev?.autoUpload != curr.autoUpload && curr.autoUpload == true) {
-          final candidates = ref.read(
-            mediaListProvider.select((e) => e.mediaList),
-          );
-          for (final filePath in candidates.map((e) => e.file.path)) {
-            ref
-                .read(uploaderProvider.notifier)
-                .upload(filePath, pref: serverPref);
-          }
-        }
-      })
-      ..listen(mediaListProvider, (prev, curr) {
-        if (serverPref.autoUpload) {
-          for (final filePath in curr.mediaList.map((e) => e.file.path)) {
-            ref
-                .read(uploaderProvider.notifier)
-                .upload(filePath, pref: serverPref);
-          }
-        }
-      });
+    AutoRetryUpload().watch(ref);
+    AutoUploadMonitor().watch(ref);
 
     ref.watch(uploaderProvider).whenOrNull(data: (data) => data);
 

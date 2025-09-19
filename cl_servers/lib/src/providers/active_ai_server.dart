@@ -14,11 +14,11 @@ final activeAIServerProvider =
 class ActiveAIServerNotifier extends AsyncNotifier<CLServer?> {
   @override
   FutureOr<CLServer?> build() async {
-    final pref = ref.watch(serverPreferenceProvider);
-    if (pref.uri == null) return null;
+    final uri = ref.watch(serverPreferenceProvider.select((e) => e.uri));
+    if (uri == null) return null;
     final servers = await ref.watch(availableServersProvider('ai.').future);
     final server = servers
-        .where((server) => server.storeURL.uri == pref.uri)
+        .where((server) => server.storeURL.uri == uri)
         .firstOrNull;
 
     return server;

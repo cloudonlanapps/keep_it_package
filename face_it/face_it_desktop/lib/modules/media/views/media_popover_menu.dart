@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:cl_servers/cl_servers.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -35,7 +34,7 @@ class MediaPopoverMenuState extends ConsumerState<MediaPopoverMenu> {
         (candidates) => candidates.itemByPath(widget.file.path),
       ),
     );
-    final pref = ref.watch(serverPreferenceProvider);
+
     final uploader = ref
         .watch(uploaderProvider)
         .whenOrNull(data: (data) => data);
@@ -59,7 +58,7 @@ class MediaPopoverMenuState extends ConsumerState<MediaPopoverMenu> {
                   unawaited(
                     ref
                         .read(uploaderProvider.notifier)
-                        .upload(candidate.file.path, pref: pref),
+                        .upload(candidate.file.path),
                   );
                   popoverController.hide();
                   return null;

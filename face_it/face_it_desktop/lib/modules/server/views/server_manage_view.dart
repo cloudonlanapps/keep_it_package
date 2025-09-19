@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
+import '../providers/auto_connect_monitor.dart';
 import 'connected_server.dart';
 import 'server_select.dart';
 import 'session_connect.dart';
@@ -14,6 +15,7 @@ class ServerManageView extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    AutoConnectMonitor().watch(ref);
     const loadingWidget = Center(
       child: CircularProgressIndicator(color: Colors.blue),
     );

@@ -17,7 +17,6 @@ class FaceItDesktopApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    ShadTheme.of(context);
     return ShadApp(
       theme: ShadThemeData(
         brightness: Brightness.light,
