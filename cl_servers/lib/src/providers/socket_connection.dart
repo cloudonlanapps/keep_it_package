@@ -48,12 +48,13 @@ class SocketConnectionNotifier
       ..on('message', onReceiveMessage)
       //..on('result', onReceiveMessage)
       ..on('progress', onReceiveMessage)
-      ..onDisconnect((_) {
-        log('Disconnected');
-        state = AsyncValue.data(CLSocket(socket: socket));
-      });
+      ..on('disconnect', onDisconnect);
     ref.onDispose(() {
       socket
+        ..off(
+          'disconnect',
+          onDisconnect,
+        ) // required as we should not receive callback after dispose
         ..disconnect()
         ..dispose();
     });
@@ -62,6 +63,12 @@ class SocketConnectionNotifier
     }
 
     return CLSocket(socket: socket);
+  }
+
+  void onDisconnect(_) {
+    log('Disconnected');
+    final socket = state.value!.socket;
+    state = AsyncValue.data(CLSocket(socket: socket));
   }
 
   void onReceiveMessage(dynamic data) {
