@@ -1,5 +1,5 @@
-import 'package:face_it_desktop/modules/face_manager/models/detected_face.dart';
 import 'package:face_it_desktop/modules/face/views/draw_face.dart';
+import 'package:face_it_desktop/modules/face_manager/models/detected_face.dart';
 import 'package:flutter/material.dart';
 
 class FaceLayer extends StatelessWidget {

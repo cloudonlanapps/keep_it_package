@@ -1,16 +1,15 @@
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:face_it_desktop/modules/media/providers/candidates.dart';
-import 'package:face_it_desktop/modules/media/views/media_tile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
 import '../../../app/models/main_content_type.dart';
-import 'media.dart';
+import '../../../app/providers/main_content_type.dart';
 import '../../uploader/views/upload_status.dart';
 import '../../utils/menu_button.dart';
-import '../../../app/providers/main_content_type.dart';
+import 'media.dart';
 import 'media_popover_menu.dart';
 
 final ImagePicker _picker = ImagePicker();
