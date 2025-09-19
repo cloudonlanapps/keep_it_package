@@ -1,11 +1,13 @@
 import 'dart:async';
 
+import 'package:cl_servers/cl_servers.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
+import '../../server/providers/upload_url_provider.dart';
 import '../../uploader/providers/uploader.dart';
 import '../../utils/pop_over_menu_item.dart';
 import '../providers/candidates.dart';
@@ -36,6 +38,15 @@ class MediaPopoverMenuState extends ConsumerState<MediaPopoverMenu> {
     );
 
     ref.watch(uploaderProvider);
+    CLSocket? session;
+    CLServer? server;
+    session = ref
+        .watch(socketConnectionProvider)
+        .whenOrNull(data: (data) => data.socket.connected ? data : null);
+    server = ref
+        .watch(activeAIServerProvider)
+        .whenOrNull(data: (data) => (data?.connected ?? false) ? data : null);
+    final url = ref.watch(uploadURLProvider);
     return ShadPopover(
       controller: popoverController,
       popover: (context) => SizedBox(
@@ -49,18 +60,21 @@ class MediaPopoverMenuState extends ConsumerState<MediaPopoverMenu> {
                 title: 'Upload',
                 icon: clIcons.imageUpload,
 
-                onTap: () async {
-                  if (candidate == null) {
-                    return;
-                  }
-                  unawaited(
-                    ref
-                        .read(uploaderProvider.notifier)
-                        .upload(candidate.file.path),
-                  );
-                  popoverController.hide();
-                  return null;
-                },
+                onTap: (url != null)
+                    ? () async {
+                        if (candidate == null) {
+                          return;
+                        }
+
+                        unawaited(
+                          ref
+                              .read(uploaderProvider.notifier)
+                              .upload(candidate.file.path, url),
+                        );
+                        popoverController.hide();
+                        return null;
+                      }
+                    : null,
               ),
             ),
             PopOverMenuItem(

@@ -48,16 +48,17 @@ class UploaderNotifier extends StateNotifier<Uploader> with CLLogger {
     return filePaths;
   }
 
-  Future<void> uploadMultiple(Iterable<String> filePaths) async {
+  Future<void> uploadMultiple(Iterable<String> filePaths, String? url) async {
     if (filePaths.isEmpty) {
       return;
     }
-    //await Future.wait(addMultiple(filePaths).map(_upload));
-    addMultiple(filePaths);
+    final files = addMultiple(filePaths);
+    if (url == null) return;
+    await Future.wait(files.map((e) => _upload(e, url)));
   }
 
-  Future<void> upload(String filePath) async {
-    await _upload(add(filePath));
+  Future<void> upload(String filePath, String url) async {
+    await _upload(add(filePath), url);
   }
 
   void updateState({
@@ -67,13 +68,12 @@ class UploaderNotifier extends StateNotifier<Uploader> with CLLogger {
     state = Uploader({...state.files, filePath: uploadState});
   }
 
-  Future<void> _upload(String filePath) async {
+  Future<void> _upload(String filePath, String url) async {
     if (state.files[filePath]?.status == UploadStatus.success ||
         state.files[filePath]?.status == UploadStatus.uploading) {
       // avoid redundent upload.
       return;
     }
-    return;
 
     final uploader = state;
 
@@ -83,8 +83,7 @@ class UploaderNotifier extends StateNotifier<Uploader> with CLLogger {
 
     final task = UploadTask.fromFile(
       file: File(state.files[filePath]!.filePath),
-      url:
-          'FIXME', //'${server.storeURL.uri}/sessions/${session.socket.id}/upload',
+      url: url,
       fileField: 'media',
       updates: Updates.progress, // request status and progress updates
     );
@@ -135,7 +134,7 @@ class UploaderNotifier extends StateNotifier<Uploader> with CLLogger {
     );
   }
 
-  Future<void> retryNew() async {
+  Future<void> retryNew(String url) async {
     final pendingItems = state.files.values.where(
       (e) => e.status == UploadStatus.pending || e.status == UploadStatus.error,
     );
@@ -143,7 +142,7 @@ class UploaderNotifier extends StateNotifier<Uploader> with CLLogger {
       'resetting ${pendingItems.length} pendingItems in state (has ${state.files.length}) items',
     );
     for (final item in pendingItems) {
-      await _upload(item.filePath);
+      await _upload(item.filePath, url);
     }
   }
 
