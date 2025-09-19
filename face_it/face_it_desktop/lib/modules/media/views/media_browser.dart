@@ -57,19 +57,23 @@ class MediaBrowser extends ConsumerWidget {
           mainAxisSize: MainAxisSize.min,
           spacing: 8,
           children: [
-            const MenuButton(
-              menuItem: CLMenuItem(title: 'Import Folder', icon: Icons.abc),
+            const Expanded(
+              child: MenuButton(
+                menuItem: CLMenuItem(title: 'Import Folder', icon: Icons.abc),
+              ),
             ),
-            MenuButton(
-              menuItem: CLMenuItem(
-                title: 'Import Image',
-                icon: Icons.abc,
-                onTap: () async {
-                  ref
-                      .read(mediaListProvider.notifier)
-                      .append(await _picker.pickMultiImage());
-                  return true;
-                },
+            Expanded(
+              child: MenuButton(
+                menuItem: CLMenuItem(
+                  title: 'Import Image',
+                  icon: Icons.abc,
+                  onTap: () async {
+                    ref
+                        .read(mediaListProvider.notifier)
+                        .append(await _picker.pickMultiImage());
+                    return true;
+                  },
+                ),
               ),
             ),
           ],
