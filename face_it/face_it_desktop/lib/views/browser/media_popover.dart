@@ -54,8 +54,6 @@ class _MediaPopoverState extends ConsumerState<MediaPopover> {
 
                 onTap: () async {
                   if (candidate == null || uploader == null) {
-                    print('candidate: $candidate');
-                    print('uploader: $uploader');
                     return;
                   }
                   unawaited(

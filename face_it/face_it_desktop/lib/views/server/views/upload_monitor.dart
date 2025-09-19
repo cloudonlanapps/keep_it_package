@@ -46,9 +46,7 @@ class UploadMonitor extends ConsumerWidget {
         }
       });
 
-    final uploader = ref
-        .watch(uploaderProvider)
-        .whenOrNull(data: (data) => data);
+    ref.watch(uploaderProvider).whenOrNull(data: (data) => data);
 
     return ShadCard(
       height: 180,
