@@ -1,6 +1,7 @@
 import 'package:cl_basic_types/cl_basic_types.dart';
-import 'package:face_it_desktop/views/server/models/upload_status.dart';
 import 'package:flutter/foundation.dart' hide ValueGetter;
+
+import 'upload_status.dart';
 
 @immutable
 class UploadState {

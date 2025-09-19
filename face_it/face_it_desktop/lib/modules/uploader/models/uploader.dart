@@ -1,7 +1,8 @@
 import 'package:collection/collection.dart';
-import 'package:face_it_desktop/views/server/models/upload_state.dart';
-import 'package:face_it_desktop/views/server/models/upload_status.dart';
 import 'package:flutter/foundation.dart';
+
+import 'upload_state.dart';
+import 'upload_status.dart';
 
 @immutable
 class Uploader {

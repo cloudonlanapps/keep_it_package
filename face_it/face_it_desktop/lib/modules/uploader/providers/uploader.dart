@@ -4,10 +4,10 @@ import 'dart:io';
 
 import 'package:background_downloader/background_downloader.dart';
 import 'package:cl_servers/cl_servers.dart';
-import 'package:face_it_desktop/views/server/models/upload_status.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../models/upload_state.dart';
+import '../models/upload_status.dart';
 import '../models/uploader.dart';
 
 final uploaderProvider = AsyncNotifierProvider<UploaderNotifier, Uploader>(

@@ -1,4 +1,4 @@
-import 'package:face_it_desktop/views/settings/face_preferences_view.dart';
+import 'package:face_it_desktop/views/settings/views/face_preferences_view.dart';
 import 'package:flutter/material.dart';
 
 class QuickSettings extends StatelessWidget {

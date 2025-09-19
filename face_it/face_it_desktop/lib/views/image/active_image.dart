@@ -1,9 +1,9 @@
-import 'package:face_it_desktop/views/settings/quick_settings.dart';
+import 'package:face_it_desktop/views/settings/views/quick_settings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
-import '../../content_manager.dart/providers/candidates.dart';
+import '../../modules/content_manager/providers/candidates.dart';
 import 'image_with_faces.dart';
 
 class ActiveImage extends ConsumerWidget {

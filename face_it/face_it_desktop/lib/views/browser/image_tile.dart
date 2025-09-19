@@ -1,12 +1,12 @@
 import 'dart:io';
 
+import 'package:face_it_desktop/modules/uploader/views/upload_status.dart';
 import 'package:face_it_desktop/views/browser/media_popover.dart';
-import 'package:face_it_desktop/views/server/views/upload_status.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 
-import '../../content_manager.dart/providers/candidates.dart';
+import '../../modules/content_manager/providers/candidates.dart';
 import '../../models/main_content_type.dart';
 import '../../providers/main_content_type.dart';
 

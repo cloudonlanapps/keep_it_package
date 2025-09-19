@@ -6,9 +6,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
-import '../../content_manager.dart/providers/candidates.dart';
-import '../server/providers/server_preference.dart';
-import '../server/providers/uploader.dart';
+import '../../modules/content_manager/providers/candidates.dart';
+import '../../modules/uploader/providers/uploader.dart';
+import '../../modules/server/providers/server_preference.dart';
 import '../utils/pop_over_menu_item.dart';
 
 class MediaPopover extends ConsumerStatefulWidget {

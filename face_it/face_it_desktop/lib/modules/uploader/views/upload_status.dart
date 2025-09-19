@@ -1,4 +1,4 @@
-import 'package:face_it_desktop/content_manager.dart/providers/candidates.dart';
+import 'package:face_it_desktop/modules/content_manager/providers/candidates.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';

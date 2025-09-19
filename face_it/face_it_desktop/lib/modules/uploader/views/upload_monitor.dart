@@ -1,11 +1,10 @@
 import 'package:cl_servers/cl_servers.dart';
-import 'package:face_it_desktop/views/server/models/upload_status.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
-import '../../../content_manager.dart/providers/candidates.dart';
-import '../providers/server_preference.dart';
+import '../../content_manager/providers/candidates.dart';
+import '../../server/providers/server_preference.dart';
 import '../providers/uploader.dart';
 import 'upload_progress.dart';
 
@@ -91,22 +90,6 @@ class UploadMonitor extends ConsumerWidget {
           ),
         ],
       ),
-    );
-  }
-}
-
-class UploadStatistics extends ConsumerWidget {
-  const UploadStatistics({super.key});
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final uploader = ref
-        .watch(uploaderProvider)
-        .whenOrNull(data: (data) => data);
-
-    if (uploader == null) return const SizedBox.shrink();
-    return Text(
-      '${uploader.countByStatus(UploadStatus.pending)}/${uploader.count} items are pending',
     );
   }
 }

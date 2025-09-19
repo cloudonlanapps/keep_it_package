@@ -7,7 +7,7 @@ import 'package:image_picker/image_picker.dart';
 import '../../models/face/bbox.dart';
 import '../../providers/f_face.dart';
 import '../../providers/f_faces.dart';
-import '../../providers/face_box_preferences.dart';
+import '../settings/providers/face_box_preferences.dart';
 import 'face/draw_face.dart';
 
 class ImageViewer extends ConsumerStatefulWidget {

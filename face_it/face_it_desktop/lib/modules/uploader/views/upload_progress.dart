@@ -1,10 +1,10 @@
-import 'package:face_it_desktop/views/server/models/upload_status.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
-import '../../../content_manager.dart/providers/candidates.dart';
+import '../../content_manager/providers/candidates.dart';
+import '../models/upload_status.dart';
 import '../providers/uploader.dart';
 
 class UploadProgressChart extends ConsumerStatefulWidget {

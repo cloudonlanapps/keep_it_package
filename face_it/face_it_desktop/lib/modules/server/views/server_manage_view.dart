@@ -1,13 +1,14 @@
 import 'package:cl_servers/cl_servers.dart'
     show GetActiveAIServer, GetAvailableServers;
-import 'package:face_it_desktop/views/server/providers/server_preference.dart';
-import 'package:face_it_desktop/views/server/views/connected_server.dart';
-import 'package:face_it_desktop/views/server/views/server_select.dart';
-import 'package:face_it_desktop/views/server/views/session_connect.dart';
-import 'package:face_it_desktop/views/server/views/session_status.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
+
+import '../providers/server_preference.dart';
+import 'connected_server.dart';
+import 'server_select.dart';
+import 'session_connect.dart';
+import 'session_status.dart';
 
 class ServerManageView extends ConsumerWidget {
   const ServerManageView({super.key});
