@@ -6,20 +6,20 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
-import '../../providers/candidates.dart';
-import '../../../uploader/providers/uploader.dart';
-import '../../../server/providers/server_preference.dart';
-import '../../../utils/pop_over_menu_item.dart';
+import '../../server/providers/server_preference.dart';
+import '../../uploader/providers/uploader.dart';
+import '../../utils/pop_over_menu_item.dart';
+import '../providers/candidates.dart';
 
-class MediaPopover extends ConsumerStatefulWidget {
-  const MediaPopover({required this.file, super.key});
+class MediaPopoverMenu extends ConsumerStatefulWidget {
+  const MediaPopoverMenu({required this.file, super.key});
   final XFile file;
 
   @override
-  ConsumerState<MediaPopover> createState() => _MediaPopoverState();
+  ConsumerState<MediaPopoverMenu> createState() => MediaPopoverMenuState();
 }
 
-class _MediaPopoverState extends ConsumerState<MediaPopover> {
+class MediaPopoverMenuState extends ConsumerState<MediaPopoverMenu> {
   final popoverController = ShadPopoverController();
 
   @override
@@ -31,7 +31,7 @@ class _MediaPopoverState extends ConsumerState<MediaPopover> {
   @override
   Widget build(BuildContext context) {
     final candidate = ref.watch(
-      candidatesProvider.select(
+      mediaListProvider.select(
         (candidates) => candidates.itemByPath(widget.file.path),
       ),
     );
@@ -71,7 +71,7 @@ class _MediaPopoverState extends ConsumerState<MediaPopover> {
                 title: 'Remove',
                 icon: clIcons.recycleBin,
                 onTap: () async {
-                  ref.read(candidatesProvider.notifier).removeByPath([
+                  ref.read(mediaListProvider.notifier).removeByPath([
                     widget.file.path,
                   ]);
                   popoverController.hide();

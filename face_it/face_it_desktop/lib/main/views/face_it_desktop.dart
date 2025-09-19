@@ -7,10 +7,10 @@ import 'package:shadcn_ui/shadcn_ui.dart';
 import '../../modules/cl_browser_panel/models/cl_browser_panal.dart';
 import '../../modules/cl_browser_panel/providers/cl_browser_panal.dart';
 import '../../modules/cl_browser_panel/views/cl_browser_panel_view.dart';
-import '../../modules/content_manager/views/browser/content_browser.dart';
-import '../../modules/content_manager/views/browser/saved_items_browser.dart';
 import '../../modules/content_manager/views/logs/log_view.dart';
 import '../../modules/content_manager/views/main/main_view.dart';
+import '../../modules/face_manager/views/saved_items_browser.dart';
+import '../../modules/media/views/media_browser.dart';
 
 class FaceItDesktop extends ConsumerWidget {
   const FaceItDesktop({super.key});
@@ -29,7 +29,7 @@ class FaceItDesktop extends ConsumerWidget {
                 availablePanels: [
                   CLBrowserPanal(
                     label: 'Images',
-                    panelBuilder: (context) => const ContentBrowser(),
+                    panelBuilder: (context) => const MediaBrowser(),
                   ),
                   CLBrowserPanal(
                     label: 'Saved Items',

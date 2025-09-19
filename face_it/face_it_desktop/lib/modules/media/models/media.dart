@@ -20,27 +20,27 @@ enum MediaStatus {
 }
 
 @immutable
-class Candidate {
-  const Candidate({required this.file, this.entity, this.faceIds});
+class MediaModel {
+  const MediaModel({required this.file, this.entity, this.faceIds});
   final XFile file;
   final CLEntity? entity;
   final List<String>? faceIds;
 
-  Candidate copyWith({
+  MediaModel copyWith({
     XFile? file,
     ValueGetter<CLEntity?>? entity,
     MediaStatus? status,
     ValueGetter<String?>? uploadProgress,
     ValueGetter<List<String>?>? faceIds,
   }) {
-    return Candidate(
+    return MediaModel(
       file: file ?? this.file,
       entity: entity != null ? entity.call() : this.entity,
       faceIds: faceIds != null ? faceIds.call() : this.faceIds,
     );
   }
 
-  Candidate entityFromMap(Map<String, dynamic> map) {
+  MediaModel entityFromMap(Map<String, dynamic> map) {
     final entity = CLEntity(
       id: null,
       isCollection: false,
@@ -75,7 +75,7 @@ class Candidate {
     return copyWith(entity: () => entity);
   }
 
-  Candidate clearEntity() => copyWith(entity: () => null);
+  MediaModel clearEntity() => copyWith(entity: () => null);
 
   @override
   String toString() {
@@ -83,7 +83,7 @@ class Candidate {
   }
 
   @override
-  bool operator ==(covariant Candidate other) {
+  bool operator ==(covariant MediaModel other) {
     if (identical(this, other)) return true;
     final listEquals = const DeepCollectionEquality().equals;
 

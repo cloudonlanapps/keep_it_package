@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'face_descriptor.dart';
 import 'face_state_manager.dart';
 import 'guessed_face.dart';
-import '../../person/models/registered_person.dart';
+import 'registered_person.dart';
 
 ///     Face Transition
 ///

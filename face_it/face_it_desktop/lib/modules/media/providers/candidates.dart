@@ -1,20 +1,20 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 
-import '../models/candidates.dart';
+import '../models/media_list.dart';
 
-final candidatesProvider =
-    StateNotifierProvider<CandidatesNotifier, Candidates>((ref) {
-      return CandidatesNotifier();
+final mediaListProvider =
+    StateNotifierProvider<MediaListNotifier, MediaListModel>((ref) {
+      return MediaListNotifier();
     });
 
-class CandidatesNotifier extends StateNotifier<Candidates> {
-  CandidatesNotifier() : super(const Candidates([]));
+class MediaListNotifier extends StateNotifier<MediaListModel> {
+  MediaListNotifier() : super(const MediaListModel([]));
   void setActiveFile(String file) => state = state.setActiveFile(file);
 
   void append(List<XFile> files) => state = state.append(files);
 
   void removeByPath(List<String> pathsToRemove) =>
       state = state.removeByPath(pathsToRemove);
-  void clear() => state = const Candidates([]);
+  void clear() => state = const MediaListModel([]);
 }

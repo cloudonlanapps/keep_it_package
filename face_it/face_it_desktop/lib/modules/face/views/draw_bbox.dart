@@ -1,10 +1,10 @@
 import 'package:dotted_border/dotted_border.dart';
-import 'package:face_it_desktop/modules/face/models/detected_face.dart';
+import 'package:face_it_desktop/modules/face_manager/models/detected_face.dart';
 import 'package:face_it_desktop/modules/settings/providers/face_box_preferences.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../providers/f_face.dart';
+import '../../face_manager/providers/f_face.dart';
 
 class DrawBBox extends ConsumerWidget {
   const DrawBBox({required this.faceId, super.key});

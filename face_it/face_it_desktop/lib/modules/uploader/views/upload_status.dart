@@ -1,4 +1,4 @@
-import 'package:face_it_desktop/modules/content_manager/providers/candidates.dart';
+import 'package:face_it_desktop/modules/media/providers/candidates.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
@@ -6,14 +6,14 @@ import 'package:shadcn_ui/shadcn_ui.dart';
 
 import '../providers/uploader.dart';
 
-class UploadStatusView extends ConsumerWidget {
-  const UploadStatusView({required this.file, super.key});
+class MediaUploadStatusView extends ConsumerWidget {
+  const MediaUploadStatusView({required this.file, super.key});
   final XFile file;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final candidate = ref.watch(
-      candidatesProvider.select(
+      mediaListProvider.select(
         (candidates) => candidates.itemByPath(file.path),
       ),
     );

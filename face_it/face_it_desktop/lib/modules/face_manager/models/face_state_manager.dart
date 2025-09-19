@@ -1,7 +1,7 @@
 import 'package:cl_servers/cl_servers.dart';
 
 import 'detected_face.dart';
-import '../../person/models/registered_person.dart';
+import 'registered_person.dart';
 
 abstract interface class FaceStateManager {
   DetectedFace markNotAFace();

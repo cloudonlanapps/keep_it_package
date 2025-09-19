@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
-import '../../content_manager/providers/candidates.dart';
+import '../../media/providers/candidates.dart';
 import '../../server/providers/server_preference.dart';
 import '../providers/uploader.dart';
 import 'upload_progress.dart';
@@ -26,7 +26,7 @@ class UploadMonitor extends ConsumerWidget {
       ..listen(serverPreferenceProvider, (prev, curr) {
         if (prev?.autoUpload != curr.autoUpload && curr.autoUpload == true) {
           final candidates = ref.read(
-            candidatesProvider.select((e) => e.items),
+            mediaListProvider.select((e) => e.mediaList),
           );
           for (final filePath in candidates.map((e) => e.file.path)) {
             ref
@@ -35,9 +35,9 @@ class UploadMonitor extends ConsumerWidget {
           }
         }
       })
-      ..listen(candidatesProvider, (prev, curr) {
+      ..listen(mediaListProvider, (prev, curr) {
         if (serverPref.autoUpload) {
-          for (final filePath in curr.items.map((e) => e.file.path)) {
+          for (final filePath in curr.mediaList.map((e) => e.file.path)) {
             ref
                 .read(uploaderProvider.notifier)
                 .upload(filePath, pref: serverPref);

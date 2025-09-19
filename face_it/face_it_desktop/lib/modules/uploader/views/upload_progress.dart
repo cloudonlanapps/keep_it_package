@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
-import '../../content_manager/providers/candidates.dart';
+import '../../media/providers/candidates.dart';
 import '../models/upload_status.dart';
 import '../providers/uploader.dart';
 
@@ -31,7 +31,7 @@ class UploadProgressChartState extends ConsumerState<UploadProgressChart> {
         .whenOrNull(data: (data) => data);
 
     if (uploader == null) return const SizedBox.shrink();
-    final candidates = ref.watch(candidatesProvider.select((e) => e.items));
+    final candidates = ref.watch(mediaListProvider.select((e) => e.mediaList));
     const radius = 20.0;
     const radius2 = 20.0;
 

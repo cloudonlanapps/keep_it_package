@@ -4,10 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
-import '../models/detected_face.dart';
-import '../providers/f_face.dart';
-import '../../person/views/new_person_card.dart';
-import '../../person/views/person_card.dart';
+import '../../face_manager/models/detected_face.dart';
+import '../../face_manager/providers/f_face.dart';
+import '../../face_manager/views/new_person_card.dart';
+import '../../face_manager/views/person_card.dart';
 
 import 'draw_bbox.dart';
 
