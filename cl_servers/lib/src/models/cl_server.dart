@@ -3,7 +3,7 @@ import 'package:flutter/foundation.dart' hide ValueGetter;
 import 'package:http/http.dart' as http;
 
 @immutable
-class CLServer {
+class CLServer with CLLogger {
   const CLServer({required this.storeURL, this.connected = false, this.client});
 
   final CLUrl storeURL;
@@ -41,46 +41,6 @@ class CLServer {
     return storeURL.hashCode ^ connected.hashCode ^ client.hashCode;
   }
 
-  void log(
-    String message, {
-    int level = 0,
-    Object? error,
-    StackTrace? stackTrace,
-  }) {
-    /* dev.log(
-      message,
-      level: level,
-      error: error,
-      stackTrace: stackTrace,
-      name: 'Online Service: Registered Server',
-    ); */
-  }
-
-  /* bool validatePingResponse(String responseBody) {
-    // final info = jsonDecode(responseBody) as Map<String, dynamic>;
-    //FIXME validatePingResponse
-    return true;
-  }
-
-  Future<CLServer> isConnected({http.Client? client}) async {
-    CLServer updated;
-    try {
-      final reply = await get('');
-
-      updated = switch (reply) {
-        (final StoreResult<dynamic> response) => copyWith(
-          connected: validatePingResponse(response.result as String),
-        ),
-        _ => copyWith(connected: false),
-      };
-    } catch (e) {
-      updated = copyWith(connected: false);
-    }
-    print('is updated wit hconnetced: ${updated.connected}');
-
-    return updated;
-  } */
-
   Uri getEndpointURI(String endPoint) {
     return Uri.parse('$baseURL$endPoint');
   }
@@ -88,4 +48,7 @@ class CLServer {
   String get baseURL => '${storeURL.uri}';
   static int defaultTimeoutInSec = 3600;
   static http.Client defaultHttpClient = http.Client();
+
+  @override
+  String get logPrefix => 'CLServer';
 }
