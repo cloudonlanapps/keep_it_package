@@ -1,5 +1,4 @@
 import 'package:cl_basic_types/cl_basic_types.dart';
-import 'package:cl_servers/cl_servers.dart';
 import 'package:face_it_desktop/modules/server/providers/upload_url_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 

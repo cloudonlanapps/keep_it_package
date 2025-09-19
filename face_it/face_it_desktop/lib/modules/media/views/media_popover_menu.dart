@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:cl_servers/cl_servers.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -38,14 +37,7 @@ class MediaPopoverMenuState extends ConsumerState<MediaPopoverMenu> {
     );
 
     ref.watch(uploaderProvider);
-    CLSocket? session;
-    CLServer? server;
-    session = ref
-        .watch(socketConnectionProvider)
-        .whenOrNull(data: (data) => data.socket.connected ? data : null);
-    server = ref
-        .watch(activeAIServerProvider)
-        .whenOrNull(data: (data) => (data?.connected ?? false) ? data : null);
+
     final url = ref.watch(uploadURLProvider);
     return ShadPopover(
       controller: popoverController,
