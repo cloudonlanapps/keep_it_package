@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:cl_basic_types/cl_basic_types.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:window_size/window_size.dart';
 
 import 'app/views/face_it_desktop.dart';
@@ -53,6 +52,5 @@ class MyProviderObserver extends ProviderObserver with CLLogger {
   }
 
   @override
-  // TODO: implement logPrefix
   String get logPrefix => 'MyProviderObserver';
 }
