@@ -13,6 +13,7 @@ class PopOverMenuItem extends ConsumerWidget {
     return ShadButton.ghost(
       padding: EdgeInsets.zero,
       expands: true,
+      enabled: menuItem.onTap != null,
       leading: Icon(
         menuItem.icon,
         color: menuItem.isDestructive ? theme.colorScheme.destructive : null,
