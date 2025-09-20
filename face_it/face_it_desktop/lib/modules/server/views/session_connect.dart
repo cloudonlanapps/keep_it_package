@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
+import '../../uploader/providers/uploader.dart';
+
 class SessionConnect extends ConsumerWidget {
   const SessionConnect({super.key});
 
@@ -46,7 +48,10 @@ class SessionConnect extends ConsumerWidget {
               value: session.socket.connected,
               onChanged: (v) {
                 if (session.socket.connected) {
-                  session.socket.disconnect();
+                  ref
+                      .read(uploaderProvider.notifier)
+                      .cancelAllTasks()
+                      .then((_) => session.socket.disconnect());
                 } else {
                   session.socket.connect();
                 }

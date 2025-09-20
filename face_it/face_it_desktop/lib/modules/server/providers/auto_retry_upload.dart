@@ -9,7 +9,7 @@ class AutoRetryUpload with CLLogger {
   void watch(WidgetRef ref) {
     ref.listen(uploadURLProvider, (prev, curr) {
       if (prev == null && curr != null) {
-        ref.read(uploaderProvider.notifier).retryNew(curr);
+        ref.read(uploaderProvider.notifier).retryNew();
       } else if (prev != null && curr == null) {
         ref.read(uploaderProvider.notifier).resetNew();
       }

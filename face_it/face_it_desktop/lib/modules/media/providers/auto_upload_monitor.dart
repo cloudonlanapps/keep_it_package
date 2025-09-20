@@ -25,8 +25,8 @@ class AutoUploadMonitor with CLLogger {
             'listening serverPreferenceProvider: autoUpload $autoUpload ${files.length} files',
           );
           log('listening serverPreferenceProvider: trigger upload');
-          final url = ref.read(uploadURLProvider);
-          ref.read(uploaderProvider.notifier).uploadMultiple(files, url);
+
+          ref.read(uploaderProvider.notifier).uploadMultiple(files);
         }
       })
       ..listen(mediaListProvider, (prev, curr) {
@@ -38,10 +38,10 @@ class AutoUploadMonitor with CLLogger {
         );
         if (autoUpload && curr.mediaList.isNotEmpty) {
           log('listening serverPreferenceProvider: trigger upload');
-          final url = ref.read(uploadURLProvider);
+
           ref
               .read(uploaderProvider.notifier)
-              .uploadMultiple(curr.mediaList.map((e) => e.file.path), url);
+              .uploadMultiple(curr.mediaList.map((e) => e.file.path));
         }
       });
   }

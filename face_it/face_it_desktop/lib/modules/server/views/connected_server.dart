@@ -1,5 +1,6 @@
 import 'package:cl_servers/cl_servers.dart'
     show CLServer, serverPreferenceProvider;
+import 'package:face_it_desktop/modules/uploader/providers/uploader.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
@@ -71,6 +72,7 @@ class _ConnectedServerState extends ConsumerState<ConnectedServer> {
                 ),
               ),
               onPressed: () {
+                ref.read(uploaderProvider.notifier).cancelAllTasks();
                 ref.read(serverPreferenceProvider.notifier).updateServer(null);
               },
             ),

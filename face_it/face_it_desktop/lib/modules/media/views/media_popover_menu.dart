@@ -1,6 +1,8 @@
 import 'dart:async';
 
 import 'package:colan_widgets/colan_widgets.dart';
+import 'package:face_it_desktop/modules/uploader/models/upload_state.dart';
+import 'package:face_it_desktop/modules/uploader/models/upload_status.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
@@ -35,10 +37,61 @@ class MediaPopoverMenuState extends ConsumerState<MediaPopoverMenu> {
         (candidates) => candidates.itemByPath(widget.file.path),
       ),
     );
+    if (candidate == null) {
+      return const ShadIconButton.outline(
+        enabled: false,
+        icon: Icon(LucideIcons.ellipsis200),
+      );
+    }
 
-    ref.watch(uploaderProvider);
+    final uploadState = ref.watch(
+      uploaderProvider.select((e) => e.files[candidate.file.path]),
+    );
 
     final url = ref.watch(uploadURLProvider);
+
+    final uploadMenuItem = switch (uploadState) {
+      null => CLMenuItem(
+        title: 'Upload',
+        icon: clIcons.imageUpload,
+
+        onTap: (url != null)
+            ? () async {
+                unawaited(
+                  ref
+                      .read(uploaderProvider.notifier)
+                      .upload(candidate.file.path),
+                );
+                popoverController.hide();
+                return null;
+              }
+            : null,
+      ),
+      (final UploadState state) when state.status == UploadStatus.success =>
+        CLMenuItem(title: 'Uploaded', icon: clIcons.imageUpload),
+      (final UploadState state) when state.status == UploadStatus.pending =>
+        CLMenuItem(title: 'Cancel Upload', icon: clIcons.imageUpload),
+
+      (final UploadState state) when state.status == UploadStatus.error =>
+        CLMenuItem(
+          title: 'Retry Upload',
+          icon: clIcons.imageUpload,
+
+          onTap: (url != null)
+              ? () async {
+                  unawaited(
+                    ref
+                        .read(uploaderProvider.notifier)
+                        .upload(candidate.file.path),
+                  );
+                  popoverController.hide();
+                  return null;
+                }
+              : null,
+        ),
+      _ => null,
+    };
+
     return ShadPopover(
       controller: popoverController,
       popover: (context) => SizedBox(
@@ -47,28 +100,8 @@ class MediaPopoverMenuState extends ConsumerState<MediaPopoverMenu> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            PopOverMenuItem(
-              CLMenuItem(
-                title: 'Upload',
-                icon: clIcons.imageUpload,
+            if (uploadMenuItem != null) PopOverMenuItem(uploadMenuItem),
 
-                onTap: (url != null)
-                    ? () async {
-                        if (candidate == null) {
-                          return;
-                        }
-
-                        unawaited(
-                          ref
-                              .read(uploaderProvider.notifier)
-                              .upload(candidate.file.path, url),
-                        );
-                        popoverController.hide();
-                        return null;
-                      }
-                    : null,
-              ),
-            ),
             PopOverMenuItem(
               CLMenuItem(
                 title: 'Remove',
