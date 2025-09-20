@@ -1,1 +1,1 @@
-enum UploadStatus { pending, uploading, success, error }
+enum UploadStatus { pending, uploading, success, error, ignore }

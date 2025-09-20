@@ -104,5 +104,6 @@ class UploadProgressChartState extends ConsumerState<UploadProgressChart> {
     UploadStatus.uploading => Colors.blue,
     UploadStatus.success => Colors.green,
     UploadStatus.error => Colors.red,
+    UploadStatus.ignore => Colors.grey,
   };
 }

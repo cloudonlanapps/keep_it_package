@@ -5,7 +5,6 @@ import 'dart:io';
 import 'package:background_downloader/background_downloader.dart';
 import 'package:cl_basic_types/cl_basic_types.dart';
 import 'package:face_it_desktop/modules/server/providers/upload_url_provider.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../models/upload_state.dart';
@@ -23,12 +22,14 @@ class UploaderNotifier extends StateNotifier<Uploader> with CLLogger {
   String get logPrefix => 'UploaderNotifier';
 
   String add(String filePath) {
-    if (!state.files.keys.contains(filePath)) {
+    if (!state.files.keys.contains(filePath) ||
+        (state.files[filePath]!.status == UploadStatus.ignore)) {
       state = Uploader({
         ...state.files,
         filePath: UploadState(filePath: filePath),
       });
     }
+
     log('added 1 item into state (has ${state.files.length}) total items');
     return filePath;
   }
@@ -38,10 +39,16 @@ class UploaderNotifier extends StateNotifier<Uploader> with CLLogger {
       final newFilePaths = filePaths.where(
         (filePath) => !state.files.keys.contains(filePath),
       );
+      final forceAgain = filePaths.where(
+        (filePath) =>
+            state.files.keys.contains(filePath) &&
+            state.files[filePath]!.status == UploadStatus.ignore,
+      );
       if (newFilePaths.isNotEmpty) {
         state = Uploader({
           ...state.files,
-          for (final file in newFilePaths) file: UploadState(filePath: file),
+          for (final file in [...newFilePaths, ...forceAgain])
+            file: UploadState(filePath: file),
         });
       }
     }
@@ -64,18 +71,33 @@ class UploaderNotifier extends StateNotifier<Uploader> with CLLogger {
     await _upload(add(filePath));
   }
 
+  Future<void> cancel(String filePath) async {
+    state = Uploader({
+      ...state.files,
+      filePath: UploadState(filePath: filePath, status: UploadStatus.ignore),
+    });
+  }
+
   void updateState({
     required String filePath,
     required UploadState uploadState,
   }) {
-    state = Uploader({...state.files, filePath: uploadState});
+    if (state.files.keys.contains(filePath)) {
+      state = Uploader({...state.files, filePath: uploadState});
+    }
   }
 
   Future<void> _upload(String filePath) async {
-    if (state.files[filePath]?.status == UploadStatus.success ||
-        state.files[filePath]?.status == UploadStatus.uploading) {
-      // avoid redundent upload.
-      return;
+    switch (state.files[filePath]?.status) {
+      case null:
+      case UploadStatus.uploading:
+      case UploadStatus.success:
+      case UploadStatus.ignore:
+        return;
+      case UploadStatus.pending:
+      case UploadStatus.error: // Need to retry
+
+        break;
     }
 
     final uploader = state;
@@ -185,10 +207,13 @@ class UploaderNotifier extends StateNotifier<Uploader> with CLLogger {
   Future<void> retryNew() async {
     await resetNew();
 
-    final pendingItems = state.files.values;
+    final pendingItems = state.files.values.where(
+      (e) => e.status != UploadStatus.ignore,
+    );
     log(
       'resetting ${pendingItems.length} pendingItems in state (has ${state.files.length}) items',
     );
+
     for (final item in pendingItems) {
       await _upload(item.filePath);
     }
@@ -198,12 +223,14 @@ class UploaderNotifier extends StateNotifier<Uploader> with CLLogger {
     await cancelAllTasks();
     final items = {
       for (final item in state.files.entries)
-        item.key: item.value.copyWith(
-          serverResponse: () => null,
-          status: UploadStatus.pending,
-          entity: () => null,
-          error: () => null,
-        ),
+        item.key: item.value.status == UploadStatus.ignore
+            ? item.value
+            : item.value.copyWith(
+                serverResponse: () => null,
+                status: UploadStatus.pending,
+                entity: () => null,
+                error: () => null,
+              ),
     };
     log(
       'resetting ${items.length} items in state (had ${state.files.length}) items',

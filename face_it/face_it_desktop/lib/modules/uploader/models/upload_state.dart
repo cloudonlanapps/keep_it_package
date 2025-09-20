@@ -99,5 +99,6 @@ class UploadState {
     UploadStatus.uploading => 'uploading: $serverResponse',
     UploadStatus.success => 'Upload Successful',
     UploadStatus.error => 'Upload Failed',
+    UploadStatus.ignore => 'Manual upload only',
   };
 }
