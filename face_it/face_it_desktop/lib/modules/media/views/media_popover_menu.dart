@@ -100,7 +100,7 @@ class MediaPopoverMenuState extends ConsumerState<MediaPopoverMenu> {
                         UploadStatus.ignore => null,
                       }
                     : switch (uploadState.status) {
-                        UploadStatus.success => onUpload,
+                        UploadStatus.success => null,
                         UploadStatus.pending => onCancel,
                         UploadStatus.error => onUpload,
                         UploadStatus.uploading => null,
