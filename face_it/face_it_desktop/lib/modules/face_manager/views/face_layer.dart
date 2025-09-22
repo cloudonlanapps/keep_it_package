@@ -1,5 +1,5 @@
 import 'package:cl_servers/cl_servers.dart';
-import 'package:face_it_desktop/modules/face/views/draw_face.dart';
+import 'package:face_it_desktop/modules/face_manager/views/draw_face.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

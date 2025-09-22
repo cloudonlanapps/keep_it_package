@@ -1,4 +1,4 @@
-import 'package:face_it_desktop/modules/face/views/face_layer.dart';
+import 'package:face_it_desktop/modules/face_manager/views/face_layer.dart';
 import 'package:face_it_desktop/modules/media/views/media.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
