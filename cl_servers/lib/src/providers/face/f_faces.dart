@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:cl_basic_types/cl_basic_types.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../models/ai_task.dart';
@@ -12,7 +13,11 @@ final detectedFacesProvider =
       DetectedFacesNotifier.new,
     );
 
-class DetectedFacesNotifier extends AsyncNotifier<Map<String, DetectedFace>> {
+class DetectedFacesNotifier extends AsyncNotifier<Map<String, DetectedFace>>
+    with CLLogger {
+  @override
+  String get logPrefix => 'DetectedFacesNotifier';
+
   @override
   FutureOr<Map<String, DetectedFace>> build() async {
     return {};
@@ -38,18 +43,25 @@ class DetectedFacesNotifier extends AsyncNotifier<Map<String, DetectedFace>> {
   Future<List<String>> scanImage(
     String uploadedImageIdentity, {
     required String downloadPath,
+    required bool Function()? isStillRequired,
   }) async {
-    final faces = await ref
-        .read(socketConnectionProvider.notifier)
-        .recognize(
-          FaceRecTask(
-            identifier: uploadedImageIdentity,
-            priority: AITaskPriority.user,
-          ),
-          downloadPath: downloadPath,
-        );
-    upsertFaces(faces);
+    try {
+      final faces = await ref
+          .read(socketConnectionProvider.notifier)
+          .recognize(
+            FaceRecTask(
+              identifier: uploadedImageIdentity,
+              priority: AITaskPriority.user,
+              isStillRequired: isStillRequired,
+            ),
+            downloadPath: downloadPath,
+          );
+      upsertFaces(faces);
 
-    return faces.map((e) => e.descriptor.identity).toList();
+      return faces.map((e) => e.descriptor.identity).toList();
+    } catch (e) {
+      log('scan image failed with error: $e');
+      rethrow;
+    }
   }
 }

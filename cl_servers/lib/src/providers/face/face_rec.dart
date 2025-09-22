@@ -15,13 +15,17 @@ extension FaceRegExt on SocketConnectionNotifier {
     FaceRecTask task, {
     required String downloadPath,
   }) async {
-    final response = await addTask(task);
+    final Map<String, dynamic> response;
+
+    response = await addTask(task);
+    if (response.keys.contains('error')) {
+      log("Face Recognizer error: ${response['error']}");
+      throw Exception(response['error']);
+    }
 
     log(
       'Face Recognizer returned ${(response['faces'] as List<dynamic>).length} faces',
     );
-
-    // log('response: $response');
 
     final List<DetectedFace> faces;
     if (response['faces'] case final List<dynamic> facesList) {

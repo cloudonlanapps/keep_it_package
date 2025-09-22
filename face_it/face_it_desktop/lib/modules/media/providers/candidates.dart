@@ -21,4 +21,6 @@ class MediaListNotifier extends StateNotifier<MediaListModel> {
   void addFaces(String pathIdentity, List<String> faceIds) {
     state = state.addFaces(pathIdentity, faceIds);
   }
+
+  List<String>? getFaces(String pathIdentity) => state.getFaces(pathIdentity);
 }

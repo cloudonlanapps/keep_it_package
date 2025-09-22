@@ -101,6 +101,10 @@ class SocketConnectionNotifier extends AsyncNotifier<CLSocket> with CLLogger {
     AITask task, {
     required io.Socket socket,
   }) async {
+    if (task.isStillRequired != null) {
+      final isStillRequired = task.isStillRequired!();
+      if (!isStillRequired) return {'error': 'task cancelled'};
+    }
     final completer = Completer<Map<String, dynamic>>();
 
     void callback(dynamic data) {
@@ -111,6 +115,9 @@ class SocketConnectionNotifier extends AsyncNotifier<CLSocket> with CLLogger {
       }
     }
 
+    /// FIXME: [LATER] We may need to add more error checks here?
+    /// 1. server generated error
+    /// 2. time out
     socket
       ..on('result', callback)
       ..emit(task.taskType.name, task.identifier);

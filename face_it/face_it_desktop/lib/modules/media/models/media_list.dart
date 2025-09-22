@@ -101,6 +101,9 @@ class MediaListModel {
     }
   }
 
+  List<String>? getFaces(String pathIdentity) =>
+      mediaList.where((e) => e.file.path == pathIdentity).firstOrNull?.faceIds;
+
   MediaListModel addFaces(String pathIdentity, List<String> faceIds) {
     return copyWith(
       mediaList: [

@@ -25,6 +25,7 @@ abstract class AITask with CLLogger implements Comparable<AITask> {
     required this.identifier,
     required this.taskType,
     this.priority = AITaskPriority.auto,
+    this.isStillRequired,
   });
 
   @override
@@ -33,6 +34,7 @@ abstract class AITask with CLLogger implements Comparable<AITask> {
   final String identifier;
   final AITaskType taskType;
   final AITaskPriority priority; // lower number = higher priority
+  final bool Function()? isStillRequired;
 
   final Completer<Map<String, dynamic>> _completer = Completer();
 
@@ -47,6 +49,9 @@ abstract class AITask with CLLogger implements Comparable<AITask> {
 
 @immutable
 class FaceRecTask extends AITask {
-  FaceRecTask({required super.identifier, required super.priority})
-    : super(taskType: AITaskType.recognize);
+  FaceRecTask({
+    required super.identifier,
+    required super.priority,
+    super.isStillRequired,
+  }) : super(taskType: AITaskType.recognize);
 }
