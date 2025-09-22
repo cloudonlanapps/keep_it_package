@@ -7,14 +7,14 @@ import 'upload_status.dart';
 class UploadState {
   const UploadState({
     required this.filePath,
-    this.status = UploadStatus.pending,
+    this.uploadStatus = UploadStatus.pending,
     this.serverResponse,
     this.error,
     this.entity,
   });
 
   final String filePath;
-  final UploadStatus status;
+  final UploadStatus uploadStatus;
   final String? serverResponse;
   final CLEntity? entity;
   final String? error;
@@ -27,7 +27,7 @@ class UploadState {
   }) {
     return UploadState(
       filePath: filePath,
-      status: status ?? this.status,
+      uploadStatus: status ?? this.uploadStatus,
       serverResponse: serverResponse != null
           ? serverResponse.call()
           : this.serverResponse,
@@ -38,7 +38,7 @@ class UploadState {
 
   @override
   String toString() {
-    return 'UploadState( filePath: $filePath, status: $status, serverResponse: $serverResponse, error: $error)';
+    return 'UploadState( filePath: $filePath, status: $uploadStatus, serverResponse: $serverResponse, error: $error)';
   }
 
   @override
@@ -46,7 +46,7 @@ class UploadState {
     if (identical(this, other)) return true;
 
     return other.filePath == filePath &&
-        other.status == status &&
+        other.uploadStatus == uploadStatus &&
         other.serverResponse == serverResponse &&
         other.error == error;
   }
@@ -54,7 +54,7 @@ class UploadState {
   @override
   int get hashCode {
     return filePath.hashCode ^
-        status.hashCode ^
+        uploadStatus.hashCode ^
         serverResponse.hashCode ^
         error.hashCode;
   }
@@ -94,7 +94,7 @@ class UploadState {
     return entity;
   }
 
-  String get statusString => switch (status) {
+  String get statusString => switch (uploadStatus) {
     UploadStatus.pending => 'Waiting to upload',
     UploadStatus.uploading => 'uploading: $serverResponse',
     UploadStatus.success => 'Upload Successful',

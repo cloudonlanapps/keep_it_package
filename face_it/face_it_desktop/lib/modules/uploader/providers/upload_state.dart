@@ -36,7 +36,7 @@ class UploadStateNotifier extends StateNotifier<UploadState?> with CLLogger {
 
   bool get isScanReady {
     final status =
-        downloadPath != null && state?.status == UploadStatus.success;
+        downloadPath != null && state?.uploadStatus == UploadStatus.success;
 
     return status;
   }

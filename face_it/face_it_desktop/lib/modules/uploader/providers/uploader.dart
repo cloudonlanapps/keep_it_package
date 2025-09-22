@@ -23,7 +23,7 @@ class UploaderNotifier extends StateNotifier<Uploader> with CLLogger {
 
   String add(String filePath) {
     if (!state.files.keys.contains(filePath) ||
-        (state.files[filePath]!.status == UploadStatus.ignore)) {
+        (state.files[filePath]!.uploadStatus == UploadStatus.ignore)) {
       state = Uploader({
         ...state.files,
         filePath: UploadState(filePath: filePath),
@@ -42,7 +42,7 @@ class UploaderNotifier extends StateNotifier<Uploader> with CLLogger {
       final forceAgain = filePaths.where(
         (filePath) =>
             state.files.keys.contains(filePath) &&
-            state.files[filePath]!.status == UploadStatus.ignore,
+            state.files[filePath]!.uploadStatus == UploadStatus.ignore,
       );
       if (newFilePaths.isNotEmpty) {
         state = Uploader({
@@ -74,7 +74,10 @@ class UploaderNotifier extends StateNotifier<Uploader> with CLLogger {
   Future<void> cancel(String filePath) async {
     state = Uploader({
       ...state.files,
-      filePath: UploadState(filePath: filePath, status: UploadStatus.ignore),
+      filePath: UploadState(
+        filePath: filePath,
+        uploadStatus: UploadStatus.ignore,
+      ),
     });
   }
 
@@ -88,7 +91,7 @@ class UploaderNotifier extends StateNotifier<Uploader> with CLLogger {
   }
 
   Future<void> _upload(String filePath) async {
-    switch (state.files[filePath]?.status) {
+    switch (state.files[filePath]?.uploadStatus) {
       case null:
       case UploadStatus.uploading:
       case UploadStatus.success:
@@ -208,7 +211,7 @@ class UploaderNotifier extends StateNotifier<Uploader> with CLLogger {
     await resetNew();
 
     final pendingItems = state.files.values.where(
-      (e) => e.status != UploadStatus.ignore,
+      (e) => e.uploadStatus != UploadStatus.ignore,
     );
     log(
       'resetting ${pendingItems.length} pendingItems in state (has ${state.files.length}) items',
@@ -223,7 +226,7 @@ class UploaderNotifier extends StateNotifier<Uploader> with CLLogger {
     await cancelAllTasks();
     final items = {
       for (final item in state.files.entries)
-        item.key: item.value.status == UploadStatus.ignore
+        item.key: item.value.uploadStatus == UploadStatus.ignore
             ? item.value
             : item.value.copyWith(
                 serverResponse: () => null,
