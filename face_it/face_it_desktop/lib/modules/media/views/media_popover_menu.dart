@@ -8,7 +8,6 @@ import 'package:image_picker/image_picker.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
 import '../../server/providers/upload_url_provider.dart';
-import '../../uploader/providers/upload_state.dart';
 import '../../uploader/providers/uploader.dart';
 import '../../utils/pop_over_menu_item.dart';
 import '../providers/candidates.dart';
@@ -154,25 +153,10 @@ class FaceScannerContextMenu extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final isScanReady = ref
-        .watch(uploadStateProvider(filePath).notifier)
-        .isScanReady;
-
     return PopOverMenuItem(
       CLMenuItem(
         title: hasFaces ? 'Rescan for Face' : 'Scan For Face',
         icon: LucideIcons.scanFace,
-        onTap: isScanReady
-            ? () async {
-                unawaited(
-                  ref
-                      .read(uploadStateProvider(filePath).notifier)
-                      .scanForFace(forced: true),
-                );
-                onDone?.call();
-                return null;
-              }
-            : null,
       ),
     );
   }

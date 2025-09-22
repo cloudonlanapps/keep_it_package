@@ -16,7 +16,8 @@ extension FaceRegExt on SocketConnectionNotifier {
     required String downloadPath,
   }) async {
     final Map<String, dynamic> response;
-
+    log('add task to queue');
+    log('$task');
     response = await addTask(task);
     if (response.keys.contains('error')) {
       log("Face Recognizer error: ${response['error']}");

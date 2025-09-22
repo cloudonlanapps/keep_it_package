@@ -45,6 +45,7 @@ class DetectedFacesNotifier extends AsyncNotifier<Map<String, DetectedFace>>
     required String downloadPath,
     required bool Function()? isStillRequired,
   }) async {
+    log('scanForFace requested for identity $uploadedImageIdentity');
     try {
       final faces = await ref
           .read(socketConnectionProvider.notifier)

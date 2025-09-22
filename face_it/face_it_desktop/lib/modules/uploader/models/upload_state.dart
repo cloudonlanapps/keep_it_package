@@ -3,11 +3,21 @@ import 'package:flutter/foundation.dart' hide ValueGetter;
 
 import 'upload_status.dart';
 
+enum ActivityStatus {
+  premature,
+  pending,
+  processingNow,
+  success,
+  error,
+  ignore,
+}
+
 @immutable
-class UploadState {
+class UploadState with CLLogger {
   const UploadState({
     required this.filePath,
     this.uploadStatus = UploadStatus.pending,
+    this.faceRecStatus = ActivityStatus.premature,
     this.serverResponse,
     this.error,
     this.entity,
@@ -15,19 +25,25 @@ class UploadState {
 
   final String filePath;
   final UploadStatus uploadStatus;
+  final ActivityStatus faceRecStatus;
   final String? serverResponse;
   final CLEntity? entity;
   final String? error;
+  @override
+  String get logPrefix => 'UploadState';
 
   UploadState copyWith({
+    String? filePath,
     UploadStatus? uploadStatus,
+    ActivityStatus? faceRecStatus,
     ValueGetter<String?>? serverResponse,
     ValueGetter<CLEntity?>? entity,
     ValueGetter<String?>? error,
   }) {
     return UploadState(
-      filePath: filePath,
+      filePath: filePath ?? this.filePath,
       uploadStatus: uploadStatus ?? this.uploadStatus,
+      faceRecStatus: faceRecStatus ?? this.faceRecStatus,
       serverResponse: serverResponse != null
           ? serverResponse.call()
           : this.serverResponse,
@@ -38,7 +54,7 @@ class UploadState {
 
   @override
   String toString() {
-    return 'UploadState( filePath: $filePath, status: $uploadStatus, serverResponse: $serverResponse, error: $error)';
+    return 'UploadState(filePath: $filePath, uploadStatus: $uploadStatus, faceRecStatus: $faceRecStatus, serverResponse: $serverResponse, entity: $entity, error: $error)';
   }
 
   @override
@@ -47,7 +63,9 @@ class UploadState {
 
     return other.filePath == filePath &&
         other.uploadStatus == uploadStatus &&
+        other.faceRecStatus == faceRecStatus &&
         other.serverResponse == serverResponse &&
+        other.entity == entity &&
         other.error == error;
   }
 
@@ -55,7 +73,9 @@ class UploadState {
   int get hashCode {
     return filePath.hashCode ^
         uploadStatus.hashCode ^
+        faceRecStatus.hashCode ^
         serverResponse.hashCode ^
+        entity.hashCode ^
         error.hashCode;
   }
 

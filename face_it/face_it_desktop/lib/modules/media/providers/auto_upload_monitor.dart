@@ -49,15 +49,27 @@ class AutoUploadMonitor with CLLogger {
   String get logPrefix => 'AutoUploadMonitor';
 }
 
-/**
- * 
- ..listen(serverPreferenceProvider.select((e) => e.autoUpload), (
+class AutoFaceRecgMonitor with CLLogger {
+  @override
+  String get logPrefix => 'AutoFaceRecMonitor';
+
+  void watch(WidgetRef ref) {
+    ref
+      ..listen(serverPreferenceProvider.select((e) => e.autoFaceRecg), (
         prev,
-        curr,
+        autoFaceRecg,
       ) {
-        final url = ref.read(uploadURLProvider);
-        if (prev != curr && curr && url != null) {
-          ref.read(uploaderProvider.notifier).retryNew(url);
+        if (prev != autoFaceRecg && autoFaceRecg) {
+          // Trigger here
+        }
+      })
+      ..listen(uploaderProvider, (prev, curr) {
+        final autoFaceRecg = ref.read(
+          serverPreferenceProvider.select((e) => e.autoFaceRecg),
+        );
+        if (autoFaceRecg) {
+          // Trigger here
         }
       });
- */
+  }
+}
