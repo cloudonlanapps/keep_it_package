@@ -20,14 +20,14 @@ class UploadState {
   final String? error;
 
   UploadState copyWith({
-    UploadStatus? status,
+    UploadStatus? uploadStatus,
     ValueGetter<String?>? serverResponse,
     ValueGetter<CLEntity?>? entity,
     ValueGetter<String?>? error,
   }) {
     return UploadState(
       filePath: filePath,
-      uploadStatus: status ?? this.uploadStatus,
+      uploadStatus: uploadStatus ?? this.uploadStatus,
       serverResponse: serverResponse != null
           ? serverResponse.call()
           : this.serverResponse,

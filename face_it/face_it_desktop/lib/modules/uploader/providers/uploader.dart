@@ -124,7 +124,7 @@ class UploaderNotifier extends StateNotifier<Uploader> with CLLogger {
     log('$filePath: error: $e');
     final updated = state.files[filePath]!.copyWith(
       serverResponse: () => null,
-      status: UploadStatus.error,
+      uploadStatus: UploadStatus.error,
       entity: () => null,
       error: () => e ?? 'Empty response',
     );
@@ -135,7 +135,7 @@ class UploaderNotifier extends StateNotifier<Uploader> with CLLogger {
     log('$filePath: error: $e');
     final updated = state.files[filePath]!.copyWith(
       serverResponse: () => null,
-      status: UploadStatus.pending,
+      uploadStatus: UploadStatus.pending,
       entity: () => null,
       error: () => e ?? 'Empty response',
     );
@@ -152,7 +152,7 @@ class UploaderNotifier extends StateNotifier<Uploader> with CLLogger {
     log('$filePath: response: ${clEntity.label}');
     final updated = state.files[filePath]!.copyWith(
       serverResponse: () => response,
-      status: UploadStatus.success,
+      uploadStatus: UploadStatus.success,
       entity: () => clEntity,
       error: () => null,
     );
@@ -230,7 +230,7 @@ class UploaderNotifier extends StateNotifier<Uploader> with CLLogger {
             ? item.value
             : item.value.copyWith(
                 serverResponse: () => null,
-                status: UploadStatus.pending,
+                uploadStatus: UploadStatus.pending,
                 entity: () => null,
                 error: () => null,
               ),
