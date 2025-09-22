@@ -161,9 +161,11 @@ class FaceScannerContextMenu extends ConsumerWidget {
         icon: LucideIcons.scanFace,
         onTap: isScanReady
             ? () async {
-                await ref
-                    .read(uploadStateProvider(filePath).notifier)
-                    .scanForFace();
+                unawaited(
+                  ref
+                      .read(uploadStateProvider(filePath).notifier)
+                      .scanForFace(),
+                );
                 onDone?.call();
                 return null;
               }
