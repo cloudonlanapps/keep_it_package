@@ -1,7 +1,8 @@
 import 'dart:convert';
 
-import 'package:face_it_desktop/modules/face_manager/models/registered_person.dart';
 import 'package:flutter/foundation.dart';
+
+import 'registered_person.dart';
 
 @immutable
 class GuessedPerson {

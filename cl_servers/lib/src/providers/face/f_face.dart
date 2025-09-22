@@ -2,8 +2,8 @@ import 'dart:async';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../models/detected_face.dart';
-import '../models/registered_person.dart';
+import '../../../cl_servers.dart';
+import '../../models/face/registered_person.dart';
 import 'f_faces.dart';
 
 final detectedFaceProvider =

@@ -1,6 +1,5 @@
+import 'package:cl_servers/cl_servers.dart';
 import 'package:colan_widgets/colan_widgets.dart';
-import 'package:face_it_desktop/modules/face_manager/models/detected_face.dart';
-import 'package:face_it_desktop/modules/face_manager/providers/f_face.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';

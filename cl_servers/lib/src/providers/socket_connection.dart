@@ -13,6 +13,12 @@ final socketConnectionProvider =
 
 class SocketConnectionNotifier extends AsyncNotifier<CLSocket> with CLLogger {
   io.Socket? socket;
+  bool isProcessing = false;
+  final List<AITask> queue = [];
+
+  @override
+  String get logPrefix => 'SessionNotifier';
+
   @override
   FutureOr<CLSocket> build() async {
     if (socket != null) {
@@ -85,19 +91,29 @@ class SocketConnectionNotifier extends AsyncNotifier<CLSocket> with CLLogger {
     state.value!.socket.emit(type, map);
   }
 
-  Future<Map<String, dynamic>> aitask(String identifier, String task) async {
-    final socket = state.value!.socket;
+  Future<Map<String, dynamic>> addTask(AITask task) {
+    queue.add(task);
+    processNext();
+    return task.result;
+  }
+
+  Future<Map<String, dynamic>> process(
+    AITask task, {
+    required io.Socket socket,
+  }) async {
     final completer = Completer<Map<String, dynamic>>();
 
     void callback(dynamic data) {
       final map = data as Map<String, dynamic>;
-      if (map.keys.contains('identifier') && map['identifier'] == identifier) {
+      if (map.keys.contains('identifier') &&
+          map['identifier'] == task.identifier) {
         completer.complete(map);
       }
     }
 
-    socket.on('result', callback);
-    state.value!.socket.emit(task, identifier);
+    socket
+      ..on('result', callback)
+      ..emit(task.taskType.name, task.identifier);
 
     final result = await completer.future;
     socket.off('result', callback);
@@ -105,16 +121,24 @@ class SocketConnectionNotifier extends AsyncNotifier<CLSocket> with CLLogger {
     return result;
   }
 
-  @override
-  String get logPrefix => 'SessionNotifier';
+  Future<void> processNext() async {
+    if (socket == null) return;
+    if (isProcessing) return;
+    if (queue.isEmpty) return;
 
-  /*  @override
-  void log(
-    String message, {
-    int level = 0,
-    Object? error,
-    StackTrace? stackTrace,
-  }) {
-    ref.read(socketMessagesProvider.notifier).addMessage(message);
-  } */
+    // Pick the request with the highest priority (lowest number)
+    queue.sort((a, b) => a.compareTo(b));
+    final req = queue.removeAt(0);
+
+    isProcessing = true;
+    try {
+      final result = await process(req, socket: socket!);
+      req.complete(result);
+    } catch (e) {
+      req.complete({'error': '$e'});
+    } finally {
+      isProcessing = false;
+      await processNext();
+    }
+  }
 }

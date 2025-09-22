@@ -4,8 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
-import '../../face_manager/providers/f_face.dart';
-import '../../face_manager/providers/f_faces.dart';
 import '../../settings/providers/face_box_preferences.dart';
 import '../../settings/views/quick_settings.dart';
 import '../providers/candidates.dart';
@@ -23,19 +21,10 @@ class _ContentViewerState extends ConsumerState<MediaViewer> {
     final activeCandidate = ref.watch(
       mediaListProvider.select((candidates) => candidates.activeCandidate),
     );
-    ref.watch(detectedFacesProvider);
-    final showFaceBoxes = ref.watch(
-      faceBoxPreferenceProvider.select((e) => e.enabled),
-    );
-    final faceIds = <String>[];
 
-    final faces = faceIds
-        .map(
-          (e) => ref
-              .watch(detectedFaceProvider(e))
-              .whenOrNull(data: (data) => data),
-        )
-        .toList();
+    final showFaceBoxes =
+        ref.watch(faceBoxPreferenceProvider.select((e) => e.enabled)) &&
+        (activeCandidate?.faceIds?.isNotEmpty ?? false);
 
     return Column(
       children: [
@@ -63,10 +52,8 @@ class _ContentViewerState extends ConsumerState<MediaViewer> {
                               alignment: Alignment.topLeft,
                               child: Media(filePath: activeCandidate.file.path),
                             ),
-                            FaceLayer(
-                              showFaceBoxes: showFaceBoxes,
-                              faces: faces,
-                            ),
+                            if (showFaceBoxes)
+                              FaceLayer(faceIds: activeCandidate.faceIds!),
                           ],
                         ),
                       ),

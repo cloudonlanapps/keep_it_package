@@ -1,11 +1,10 @@
+import 'package:cl_servers/cl_servers.dart';
 import 'package:face_it_desktop/modules/face/views/action_buttons.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
-import '../../face_manager/models/detected_face.dart';
-import '../../face_manager/providers/f_face.dart';
 import '../../face_manager/views/new_person_card.dart';
 import '../../face_manager/views/person_card.dart';
 
