@@ -2,7 +2,8 @@ export 'src/builders/get_active_a_i_server.dart' show GetActiveAIServer;
 export 'src/builders/get_available_servers.dart' show GetAvailableServers;
 export 'src/builders/get_nw_scanner.dart' show GetNetworkScanner;
 export 'src/builders/get_server_session.dart' show GetServerSession;
-export 'src/models/ai_task.dart' show AITask, AITaskType, FaceRecTask;
+export 'src/models/ai_task.dart'
+    show AITask, AITaskPriority, AITaskType, FaceRecTask;
 export 'src/models/cl_server.dart' show CLServer;
 export 'src/models/cl_socket.dart' show CLSocket;
 export 'src/models/face/detected_face.dart' show DetectedFace, FaceStatus;
@@ -13,6 +14,7 @@ export 'src/providers/active_ai_server.dart' show activeAIServerProvider;
 export 'src/providers/available_servers.dart' show availableServersProvider;
 export 'src/providers/face/f_face.dart' show detectedFaceProvider;
 export 'src/providers/face/f_faces.dart';
+export 'src/providers/face/face_rec.dart' show FaceRegExt;
 export 'src/providers/network_scanner.dart' show networkScannerProvider;
 export 'src/providers/server_preference.dart' show serverPreferenceProvider;
 export 'src/providers/server_provider.dart' show serverProvider;

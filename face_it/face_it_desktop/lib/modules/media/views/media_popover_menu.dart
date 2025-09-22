@@ -8,6 +8,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
 import '../../server/providers/upload_url_provider.dart';
+import '../../uploader/providers/upload_state.dart';
 import '../../uploader/providers/uploader.dart';
 import '../../utils/pop_over_menu_item.dart';
 import '../providers/candidates.dart';
@@ -48,6 +49,7 @@ class MediaPopoverMenuState extends ConsumerState<MediaPopoverMenu> {
         (candidates) => candidates.itemByPath(widget.file.path),
       ),
     );
+
     if (candidate == null) {
       return const ShadIconButton.outline(
         enabled: false,
@@ -108,6 +110,10 @@ class MediaPopoverMenuState extends ConsumerState<MediaPopoverMenu> {
                       },
               ),
             ),
+            FaceScannerContextMenu(
+              filePath: candidate.file.path,
+              onDone: popoverController.hide,
+            ),
 
             PopOverMenuItem(
               CLMenuItem(
@@ -129,6 +135,39 @@ class MediaPopoverMenuState extends ConsumerState<MediaPopoverMenu> {
       child: ShadIconButton.outline(
         onPressed: popoverController.toggle,
         icon: const Icon(LucideIcons.ellipsis200),
+      ),
+    );
+  }
+}
+
+class FaceScannerContextMenu extends ConsumerWidget {
+  const FaceScannerContextMenu({
+    required this.filePath,
+    required this.onDone,
+    super.key,
+  });
+  final String filePath;
+  final void Function()? onDone;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final isScanReady = ref
+        .watch(uploadStateProvider(filePath).notifier)
+        .isScanReady;
+
+    return PopOverMenuItem(
+      CLMenuItem(
+        title: 'Scan For Face',
+        icon: LucideIcons.scanFace,
+        onTap: isScanReady
+            ? () async {
+                await ref
+                    .read(uploadStateProvider(filePath).notifier)
+                    .scanForFace();
+                onDone?.call();
+                return null;
+              }
+            : null,
       ),
     );
   }

@@ -52,8 +52,8 @@ class _ContentViewerState extends ConsumerState<MediaViewer> {
                               alignment: Alignment.topLeft,
                               child: Media(filePath: activeCandidate.file.path),
                             ),
-                            if (showFaceBoxes)
-                              FaceLayer(faceIds: activeCandidate.faceIds!),
+                            //if (showFaceBoxes)
+                            //FaceLayer(faceIds: activeCandidate.faceIds!),
                           ],
                         ),
                       ),

@@ -3,12 +3,12 @@ import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path/path.dart' as p;
 
-import '../models/ai_task.dart' show FaceRecTask;
-import '../models/face/detected_face.dart';
-import '../models/face/face_descriptor.dart';
-import '../models/rest_api.dart';
-import 'active_ai_server.dart';
-import 'socket_connection.dart';
+import '../../models/ai_task.dart' show FaceRecTask;
+import '../../models/face/detected_face.dart';
+import '../../models/face/face_descriptor.dart';
+import '../../models/rest_api.dart';
+import '../active_ai_server.dart';
+import '../socket_connection.dart';
 
 extension FaceRegExt on SocketConnectionNotifier {
   Future<List<DetectedFace>> recognize(
@@ -16,6 +16,12 @@ extension FaceRegExt on SocketConnectionNotifier {
     required String downloadPath,
   }) async {
     final response = await addTask(task);
+
+    log(
+      'Face Recognizer returned ${(response['faces'] as List<dynamic>).length} faces',
+    );
+
+    // log('response: $response');
 
     final List<DetectedFace> faces;
     if (response['faces'] case final List<dynamic> facesList) {
@@ -32,6 +38,7 @@ extension FaceRegExt on SocketConnectionNotifier {
     } else {
       faces = [];
     }
+    log('detected Faces: ${faces.length}');
     return faces;
   }
 
@@ -68,7 +75,17 @@ extension FaceRegExt on SocketConnectionNotifier {
 
     final facePath = await server.downloadFile(faceUrl, faceFileName);
     final vectorPath = await server.downloadFile(vectorUrl, vectorFilename);
-    if (facePath == null || vectorPath == null) return null;
+
+    if (facePath == null || vectorPath == null) {
+      if (facePath == null) {
+        log('$identity - failed to download face image');
+      }
+      if (vectorPath == null) {
+        log('$identity - failed to download face vector');
+      }
+      return null;
+    }
+    log('$identity - face downloaded from session');
     map['imageCache'] = facePath;
     map['vectorCache'] = vectorPath;
     map['imageId'] = identity;
@@ -76,6 +93,7 @@ extension FaceRegExt on SocketConnectionNotifier {
     final face = DetectedFace.notChecked(
       descriptor: FaceDescriptor.fromMap(map),
     );
+
     final updatedFace = await face.searchDB(server);
     return updatedFace;
   }

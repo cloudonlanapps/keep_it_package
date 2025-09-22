@@ -17,4 +17,8 @@ class MediaListNotifier extends StateNotifier<MediaListModel> {
   void removeByPath(List<String> pathsToRemove) =>
       state = state.removeByPath(pathsToRemove);
   void clear() => state = const MediaListModel([]);
+
+  void addFaces(String pathIdentity, List<String> faceIds) {
+    state = state.addFaces(pathIdentity, faceIds);
+  }
 }

@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../cl_servers.dart';
+import '../../models/face/detected_face.dart';
 import '../../models/face/registered_person.dart';
 import 'f_faces.dart';
 

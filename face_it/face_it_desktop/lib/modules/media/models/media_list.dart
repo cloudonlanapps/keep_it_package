@@ -100,4 +100,16 @@ class MediaListModel {
       return itemByPath(activeMediaId!);
     }
   }
+
+  MediaListModel addFaces(String pathIdentity, List<String> faceIds) {
+    return copyWith(
+      mediaList: [
+        ...mediaList.map(
+          (e) => e.file.path == pathIdentity
+              ? e.copyWith(faceIds: () => faceIds)
+              : e,
+        ),
+      ],
+    );
+  }
 }

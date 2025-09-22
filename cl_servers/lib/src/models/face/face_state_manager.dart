@@ -1,5 +1,4 @@
-import 'package:cl_servers/cl_servers.dart';
-
+import '../cl_server.dart';
 import 'detected_face.dart';
 import 'registered_person.dart';
 
