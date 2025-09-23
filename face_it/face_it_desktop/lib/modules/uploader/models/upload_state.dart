@@ -121,8 +121,41 @@ class UploadState with CLLogger {
     UploadStatus.error => 'Upload Failed',
     UploadStatus.ignore => 'Manual upload only',
   };
-  bool get isScanReady {
+  bool get faceScanPossible {
     return uploadStatus == UploadStatus.success &&
-        faceRecgStatus == ActivityStatus.premature;
+        switch (faceRecgStatus) {
+          ActivityStatus.premature ||
+          ActivityStatus.error ||
+          ActivityStatus.success => true,
+
+          ActivityStatus.pending ||
+          ActivityStatus.processingNow ||
+          ActivityStatus.ignore => false,
+        };
+  }
+
+  bool get faceScanNeeded {
+    return uploadStatus == UploadStatus.success &&
+        switch (faceRecgStatus) {
+          ActivityStatus.premature => true,
+
+          ActivityStatus.pending ||
+          ActivityStatus.processingNow ||
+          ActivityStatus.ignore ||
+          ActivityStatus.error ||
+          ActivityStatus.success => false,
+        };
+  }
+
+  bool get faceScanInProgress {
+    return uploadStatus == UploadStatus.success &&
+        switch (faceRecgStatus) {
+          ActivityStatus.pending || ActivityStatus.processingNow => true,
+
+          ActivityStatus.premature ||
+          ActivityStatus.ignore ||
+          ActivityStatus.error ||
+          ActivityStatus.success => false,
+        };
   }
 }

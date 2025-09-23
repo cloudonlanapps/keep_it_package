@@ -42,6 +42,14 @@ class AutoUploadMonitor with CLLogger {
               .read(uploaderProvider.notifier)
               .uploadMultiple(curr.mediaList.map((e) => e.file.path));
         }
+      })
+      ..listen(uploaderProvider, (prev, curr) {
+        final autoFaceRecg = ref.read(
+          serverPreferenceProvider.select((e) => e.autoFaceRecg),
+        );
+        if (autoFaceRecg) {
+          ref.read(uploaderProvider.notifier).faceRecgAllEligible();
+        }
       });
   }
 

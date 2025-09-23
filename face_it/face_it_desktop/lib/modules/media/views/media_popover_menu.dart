@@ -166,7 +166,7 @@ class FaceScannerContextMenu extends ConsumerWidget {
                 unawaited(
                   ref
                       .read(uploaderProvider.notifier)
-                      .scanForFace(filePath, forced: true),
+                      .scanForFaceByPath(filePath, forced: true),
                 );
                 onDone?.call();
                 return null;
