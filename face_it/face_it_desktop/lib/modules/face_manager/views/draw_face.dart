@@ -1,14 +1,12 @@
 import 'package:cl_servers/cl_servers.dart';
 import 'package:face_it_desktop/modules/face_manager/views/action_buttons.dart';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
+import 'draw_bbox.dart';
 import 'new_person_card.dart';
 import 'person_card.dart';
-
-import 'draw_bbox.dart';
 
 class DrawFace extends Positioned {
   DrawFace.positioned({required DetectedFace face, super.key})

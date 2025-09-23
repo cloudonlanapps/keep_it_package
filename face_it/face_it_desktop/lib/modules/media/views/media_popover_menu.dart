@@ -76,14 +76,14 @@ class MediaPopoverMenuState extends ConsumerState<MediaPopoverMenu> {
                 title: uploadState == null
                     ? 'Upload'
                     : (url == null)
-                    ? switch (uploadState.status) {
+                    ? switch (uploadState.uploadStatus) {
                         UploadStatus.success => 'Uploaded',
                         UploadStatus.pending => 'Cancel Upload',
                         UploadStatus.error => "Can't upload",
                         UploadStatus.uploading => 'Cancel Upload',
                         UploadStatus.ignore => "Can't upload",
                       }
-                    : switch (uploadState.status) {
+                    : switch (uploadState.uploadStatus) {
                         UploadStatus.success => 'Uploaded',
                         UploadStatus.pending => 'Cancel Upload',
                         UploadStatus.error => 'Retry Upload',
@@ -94,14 +94,14 @@ class MediaPopoverMenuState extends ConsumerState<MediaPopoverMenu> {
                 onTap: uploadState == null
                     ? onUpload
                     : (url == null)
-                    ? switch (uploadState.status) {
+                    ? switch (uploadState.uploadStatus) {
                         UploadStatus.success => null,
                         UploadStatus.pending => onCancel,
                         UploadStatus.error => null,
                         UploadStatus.uploading => onCancel,
                         UploadStatus.ignore => null,
                       }
-                    : switch (uploadState.status) {
+                    : switch (uploadState.uploadStatus) {
                         UploadStatus.success => null,
                         UploadStatus.pending => onCancel,
                         UploadStatus.error => onUpload,

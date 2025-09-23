@@ -30,5 +30,5 @@ class Uploader {
   int get count => files.length;
 
   int countByStatus(UploadStatus status) =>
-      files.values.where((e) => e.status == status).length;
+      files.values.where((e) => e.uploadStatus == status).length;
 }

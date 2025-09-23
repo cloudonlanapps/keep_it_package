@@ -3,31 +3,47 @@ import 'package:flutter/foundation.dart' hide ValueGetter;
 
 import 'upload_status.dart';
 
+enum ActivityStatus {
+  premature,
+  pending,
+  processingNow,
+  success,
+  error,
+  ignore,
+}
+
 @immutable
-class UploadState {
+class UploadState with CLLogger {
   const UploadState({
     required this.filePath,
-    this.status = UploadStatus.pending,
+    this.uploadStatus = UploadStatus.pending,
+    this.faceRecgStatus = ActivityStatus.premature,
     this.serverResponse,
     this.error,
     this.entity,
   });
 
   final String filePath;
-  final UploadStatus status;
+  final UploadStatus uploadStatus;
+  final ActivityStatus faceRecgStatus;
   final String? serverResponse;
   final CLEntity? entity;
   final String? error;
+  @override
+  String get logPrefix => 'UploadState';
 
   UploadState copyWith({
-    UploadStatus? status,
+    String? filePath,
+    UploadStatus? uploadStatus,
+    ActivityStatus? faceRecgStatus,
     ValueGetter<String?>? serverResponse,
     ValueGetter<CLEntity?>? entity,
     ValueGetter<String?>? error,
   }) {
     return UploadState(
-      filePath: filePath,
-      status: status ?? this.status,
+      filePath: filePath ?? this.filePath,
+      uploadStatus: uploadStatus ?? this.uploadStatus,
+      faceRecgStatus: faceRecgStatus ?? this.faceRecgStatus,
       serverResponse: serverResponse != null
           ? serverResponse.call()
           : this.serverResponse,
@@ -38,7 +54,7 @@ class UploadState {
 
   @override
   String toString() {
-    return 'UploadState( filePath: $filePath, status: $status, serverResponse: $serverResponse, error: $error)';
+    return 'UploadState(filePath: $filePath, uploadStatus: $uploadStatus, faceRecgStatus: $faceRecgStatus, serverResponse: $serverResponse, entity: $entity, error: $error)';
   }
 
   @override
@@ -46,16 +62,20 @@ class UploadState {
     if (identical(this, other)) return true;
 
     return other.filePath == filePath &&
-        other.status == status &&
+        other.uploadStatus == uploadStatus &&
+        other.faceRecgStatus == faceRecgStatus &&
         other.serverResponse == serverResponse &&
+        other.entity == entity &&
         other.error == error;
   }
 
   @override
   int get hashCode {
     return filePath.hashCode ^
-        status.hashCode ^
+        uploadStatus.hashCode ^
+        faceRecgStatus.hashCode ^
         serverResponse.hashCode ^
+        entity.hashCode ^
         error.hashCode;
   }
 
@@ -94,7 +114,7 @@ class UploadState {
     return entity;
   }
 
-  String get statusString => switch (status) {
+  String get statusString => switch (uploadStatus) {
     UploadStatus.pending => 'Waiting to upload',
     UploadStatus.uploading => 'uploading: $serverResponse',
     UploadStatus.success => 'Upload Successful',
