@@ -4,10 +4,12 @@ import 'dart:io';
 
 import 'package:background_downloader/background_downloader.dart';
 import 'package:cl_basic_types/cl_basic_types.dart';
+import 'package:cl_servers/cl_servers.dart' show detectedFacesProvider;
 import 'package:content_store/content_store.dart';
 import 'package:face_it_desktop/modules/server/providers/upload_url_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../media/providers/candidates.dart';
 import '../models/upload_state.dart';
 import '../models/upload_status.dart';
 import '../models/uploader.dart';
@@ -18,14 +20,14 @@ final uploaderProvider = StateNotifierProvider<UploaderNotifier, Uploader>((
   final tempDirectory = ref
       .watch(deviceDirectoriesProvider)
       .whenOrNull(data: (data) => data.temporary.path);
-  return UploaderNotifier(ref, tempDirectory: tempDirectory);
+  return UploaderNotifier(ref, downloadPath: tempDirectory);
 });
 
 class UploaderNotifier extends StateNotifier<Uploader> with CLLogger {
-  UploaderNotifier(this.ref, {required this.tempDirectory})
+  UploaderNotifier(this.ref, {required this.downloadPath})
     : super(const Uploader({}));
   final Ref ref;
-  final String? tempDirectory;
+  final String? downloadPath;
   @override
   String get logPrefix => 'UploaderNotifier';
 
@@ -122,7 +124,7 @@ class UploaderNotifier extends StateNotifier<Uploader> with CLLogger {
       file: File(state.files[filePath]!.filePath),
       url: url,
       fileField: 'media',
-      updates: Updates.progress, // request uploadStatus and progress updates
+      updates: Updates.progress, // request status and progress updates
     );
 
     unawaited(startUpload(task));
@@ -254,5 +256,62 @@ class UploaderNotifier extends StateNotifier<Uploader> with CLLogger {
     await FileDownloader().cancelTasksWithIds(
       (await FileDownloader().allTasks()).map((t) => t.taskId).toList(),
     );
+  }
+
+  UploadState? getStateByPath(String filePath) {
+    return state.files[filePath];
+  }
+
+  bool isScanReady(String filePath) {
+    final fileState = getStateByPath(filePath);
+    if (fileState == null) return false;
+    return downloadPath != null && fileState.isScanReady;
+  }
+
+  Future<bool> scanForFace(String filePath, {bool forced = false}) async {
+    // File is not yet uplaoded, return quitely
+    final fileState = getStateByPath(filePath);
+    if (fileState == null) return false;
+    try {
+      if (downloadPath != null && fileState.isScanReady) {
+        if (fileState.entity!.label == null) {
+          throw Exception(
+            "state can't be marked as success when no identity was provided",
+          );
+        }
+        final faceIds = await ref
+            .read(detectedFacesProvider.notifier)
+            .scanImage(
+              fileState.entity!.label!,
+              downloadPath: downloadPath!,
+              isStillRequired: forced
+                  ? null
+                  : () {
+                      /// IF we had face already, even if it is empty
+                      /// we should skip
+                      final faces = ref.read(
+                        mediaListProvider.select(
+                          (e) => e.getFaces(fileState.filePath),
+                        ),
+                      );
+                      if (faces != null) {
+                        log(
+                          'Cancel requested as faces are already available: faces: $faces',
+                        );
+                      }
+                      return faces == null;
+                    },
+            );
+
+        ref
+            .read(mediaListProvider.notifier)
+            .addFaces(fileState.filePath, faceIds);
+        return true;
+      }
+      return false;
+    } catch (e) {
+      log('face scan aborted for ${fileState.filePath}');
+      return false;
+    }
   }
 }

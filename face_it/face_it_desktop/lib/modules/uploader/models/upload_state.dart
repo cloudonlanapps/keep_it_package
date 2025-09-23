@@ -121,4 +121,8 @@ class UploadState with CLLogger {
     UploadStatus.error => 'Upload Failed',
     UploadStatus.ignore => 'Manual upload only',
   };
+  bool get isScanReady {
+    return uploadStatus == UploadStatus.success &&
+        faceRecgStatus == ActivityStatus.premature;
+  }
 }
