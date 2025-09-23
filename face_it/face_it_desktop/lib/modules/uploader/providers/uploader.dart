@@ -4,6 +4,7 @@ import 'dart:io';
 
 import 'package:background_downloader/background_downloader.dart';
 import 'package:cl_basic_types/cl_basic_types.dart';
+import 'package:content_store/content_store.dart';
 import 'package:face_it_desktop/modules/server/providers/upload_url_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -11,13 +12,20 @@ import '../models/upload_state.dart';
 import '../models/upload_status.dart';
 import '../models/uploader.dart';
 
-final uploaderProvider = StateNotifierProvider<UploaderNotifier, Uploader>(
-  UploaderNotifier.new,
-);
+final uploaderProvider = StateNotifierProvider<UploaderNotifier, Uploader>((
+  ref,
+) {
+  final tempDirectory = ref
+      .watch(deviceDirectoriesProvider)
+      .whenOrNull(data: (data) => data.temporary.path);
+  return UploaderNotifier(ref, tempDirectory: tempDirectory);
+});
 
 class UploaderNotifier extends StateNotifier<Uploader> with CLLogger {
-  UploaderNotifier(this.ref) : super(const Uploader({}));
+  UploaderNotifier(this.ref, {required this.tempDirectory})
+    : super(const Uploader({}));
   final Ref ref;
+  final String? tempDirectory;
   @override
   String get logPrefix => 'UploaderNotifier';
 
