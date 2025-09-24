@@ -57,7 +57,7 @@ class MediaPopoverMenuState extends ConsumerState<MediaPopoverMenu> {
     }
 
     final uploadState = ref.watch(
-      uploaderProvider.select((e) => e.files[candidate.file.path]),
+      uploaderProvider.select((e) => e.files[candidate.path]),
     );
 
     final url = ref.watch(uploadURLProvider);
@@ -110,7 +110,7 @@ class MediaPopoverMenuState extends ConsumerState<MediaPopoverMenu> {
               ),
             ),
             FaceScannerContextMenu(
-              filePath: candidate.file.path,
+              filePath: candidate.path,
               onDone: popoverController.hide,
               hasFaces: false, //FIXME
             ),

@@ -41,13 +41,13 @@ class MediaBrowser extends ConsumerWidget {
               // The builder function that creates each item
               itemBuilder: (BuildContext context, int index) {
                 return MediaTile(
-                  file: candidates[index].file,
+                  file: candidates[index],
                   onTap: () {
                     ref.read(activeMainContentTypeProvider.notifier).state =
                         MainContentType.images;
                     ref
                         .read(mediaListProvider.notifier)
-                        .setActiveFile(candidates[index].file.path);
+                        .setActiveFile(candidates[index].path);
                   },
                 );
               },

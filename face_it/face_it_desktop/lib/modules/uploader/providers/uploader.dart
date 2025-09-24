@@ -9,7 +9,6 @@ import 'package:content_store/content_store.dart';
 import 'package:face_it_desktop/modules/server/providers/upload_url_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../media/providers/candidates.dart';
 import '../models/upload_state.dart';
 import '../models/upload_status.dart';
 import '../models/uploader.dart';

@@ -3,8 +3,6 @@ import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart' hide ValueGetter;
 import 'package:image_picker/image_picker.dart';
 
-import 'media.dart';
-
 /// Maintains the list of files provided by user.
 /// user can add or remove the files
 /// duplicates are ignored.
@@ -12,11 +10,11 @@ import 'media.dart';
 @immutable
 class MediaListModel {
   const MediaListModel(this.mediaList, {this.activeMediaId});
-  final List<MediaModel> mediaList;
+  final List<XFile> mediaList;
   final String? activeMediaId;
 
   MediaListModel copyWith({
-    List<MediaModel>? mediaList,
+    List<XFile>? mediaList,
     ValueGetter<String?>? activeMediaId,
   }) {
     return MediaListModel(
@@ -39,33 +37,31 @@ class MediaListModel {
   @override
   int get hashCode => mediaList.hashCode ^ activeMediaId.hashCode;
 
-  MediaModel? get activeFile => activeMediaId == null
+  XFile? get activeFile => activeMediaId == null
       ? null
-      : mediaList.where((item) => item.file.path == activeMediaId).firstOrNull;
+      : mediaList.where((item) => item.path == activeMediaId).firstOrNull;
 
   MediaListModel setActiveFile(String? value) {
     if (value == null) {
       return copyWith(activeMediaId: () => null);
     }
     final activeFileUpdated = mediaList
-        .where((e) => e.file.path == value)
+        .where((e) => e.path == value)
         .firstOrNull
-        ?.file
-        .path;
+        ?.path;
     return copyWith(activeMediaId: () => activeFileUpdated);
   }
 
   MediaListModel append(List<XFile> newFiles) {
     final uniqueImages = newFiles
-        .map((file) => MediaModel(file: file))
-        .where((e) => !mediaList.map((c) => c.file.path).contains(e.file.path));
+        .map((file) => file)
+        .where((e) => !mediaList.map((c) => c.path).contains(e.path));
     final filesUpdated = [...mediaList, ...uniqueImages];
 
     final activeFileUpdated = filesUpdated
-        .where((e) => e.file.path == activeMediaId)
+        .where((e) => e.path == activeMediaId)
         .firstOrNull
-        ?.file
-        .path;
+        ?.path;
 
     return copyWith(
       mediaList: filesUpdated,
@@ -75,14 +71,13 @@ class MediaListModel {
 
   MediaListModel removeByPath(List<String> pathsToRemove) {
     final filesUpdated = mediaList
-        .where((e) => !pathsToRemove.contains(e.file.path))
+        .where((e) => !pathsToRemove.contains(e.path))
         .toList();
 
     final activeFileUpdated = filesUpdated
-        .where((e) => e.file.path == activeMediaId)
+        .where((e) => e.path == activeMediaId)
         .firstOrNull
-        ?.file
-        .path;
+        ?.path;
 
     return copyWith(
       mediaList: filesUpdated,
@@ -90,10 +85,10 @@ class MediaListModel {
     );
   }
 
-  MediaModel? itemByPath(String path) =>
-      mediaList.where((item) => item.file.path == path).firstOrNull;
+  XFile? itemByPath(String path) =>
+      mediaList.where((item) => item.path == path).firstOrNull;
 
-  MediaModel? get activeCandidate {
+  XFile? get activeCandidate {
     if (activeMediaId == null) {
       return null;
     } else {

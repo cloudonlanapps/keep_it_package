@@ -1,10 +1,8 @@
-import 'package:face_it_desktop/modules/face_manager/views/face_layer.dart';
 import 'package:face_it_desktop/modules/media/views/media.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
-import '../../settings/providers/face_box_preferences.dart';
 import '../../settings/views/quick_settings.dart';
 import '../providers/candidates.dart';
 
@@ -22,8 +20,8 @@ class _ContentViewerState extends ConsumerState<MediaViewer> {
       mediaListProvider.select((candidates) => candidates.activeCandidate),
     );
 
-    final showFaceBoxes =
-        ref.watch(faceBoxPreferenceProvider.select((e) => e.enabled)) && false;
+    /* final showFaceBoxes =
+        ref.watch(faceBoxPreferenceProvider.select((e) => e.enabled)) && false; */
     // FIXME face
 
     return Column(
@@ -50,12 +48,13 @@ class _ContentViewerState extends ConsumerState<MediaViewer> {
                           children: [
                             Align(
                               alignment: Alignment.topLeft,
-                              child: Media(filePath: activeCandidate.file.path),
+                              child: Media(filePath: activeCandidate.path),
                             ),
-                            if (showFaceBoxes)
+                            /*  if (showFaceBoxes)
                               const Positioned.fill(
-                                child: FaceLayer(faceIds: []), //FIXME
-                              ),
+                                child: FaceLayer(faceIds: []),
+                              ), */
+                            //FIXME
                           ],
                         ),
                       ),

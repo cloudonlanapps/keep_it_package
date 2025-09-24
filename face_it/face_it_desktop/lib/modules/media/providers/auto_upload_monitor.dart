@@ -16,9 +16,7 @@ class AutoUploadMonitor with CLLogger {
         if (autoUpload && prev != autoUpload) {
           // upload all files from the media
           final files = ref.read(
-            mediaListProvider.select(
-              (e) => e.mediaList.map((e) => e.file.path),
-            ),
+            mediaListProvider.select((e) => e.mediaList.map((e) => e.path)),
           );
           log(
             'listening serverPreferenceProvider: autoUpload $autoUpload ${files.length} files',
@@ -41,7 +39,7 @@ class AutoUploadMonitor with CLLogger {
 
           ref
               .read(uploaderProvider.notifier)
-              .uploadMultiple(curr.map((e) => e.file.path));
+              .uploadMultiple(curr.map((e) => e.path));
         }
       })
     /* ..listen(uploaderProvider, (prev, curr) {
