@@ -308,9 +308,9 @@ class UploaderNotifier extends StateNotifier<Uploader> with CLLogger {
 
       /// IF we had face already, even if it is empty
       /// we should skip
-      final faces = ref.read(
+      const faces = null; /* ref.read(
         mediaListProvider.select((e) => e.getFaces(fileState.filePath)),
-      );
+      ); */ // FIXME
 
       if (faces != null) {
         if (fileStateNow.faceRecgStatus != ActivityStatus.success) {
@@ -350,9 +350,9 @@ class UploaderNotifier extends StateNotifier<Uploader> with CLLogger {
                     isStillRequired(fileState, forced: forced),
               )
               .then((faceIds) {
-                ref
+                /* ref
                     .read(mediaListProvider.notifier)
-                    .addFaces(fileState.filePath, faceIds);
+                    .addFaces(fileState.filePath, faceIds); */ //FIXME
                 updateFaceRecgStatus(fileState, ActivityStatus.success);
               })
               .catchError((e) {

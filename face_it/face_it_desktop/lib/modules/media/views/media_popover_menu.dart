@@ -112,7 +112,7 @@ class MediaPopoverMenuState extends ConsumerState<MediaPopoverMenu> {
             FaceScannerContextMenu(
               filePath: candidate.file.path,
               onDone: popoverController.hide,
-              hasFaces: candidate.faceIds != null,
+              hasFaces: false, //FIXME
             ),
 
             PopOverMenuItem(

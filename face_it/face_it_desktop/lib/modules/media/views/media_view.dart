@@ -23,8 +23,8 @@ class _ContentViewerState extends ConsumerState<MediaViewer> {
     );
 
     final showFaceBoxes =
-        ref.watch(faceBoxPreferenceProvider.select((e) => e.enabled)) &&
-        (activeCandidate?.faceIds?.isNotEmpty ?? false);
+        ref.watch(faceBoxPreferenceProvider.select((e) => e.enabled)) && false;
+    // FIXME face
 
     return Column(
       children: [
@@ -53,10 +53,8 @@ class _ContentViewerState extends ConsumerState<MediaViewer> {
                               child: Media(filePath: activeCandidate.file.path),
                             ),
                             if (showFaceBoxes)
-                              Positioned.fill(
-                                child: FaceLayer(
-                                  faceIds: activeCandidate.faceIds!,
-                                ),
+                              const Positioned.fill(
+                                child: FaceLayer(faceIds: []), //FIXME
                               ),
                           ],
                         ),

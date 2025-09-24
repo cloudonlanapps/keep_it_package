@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:cl_basic_types/cl_basic_types.dart';
-
+import 'package:collection/collection.dart';
 import 'package:meta/meta.dart';
 
 @immutable
@@ -26,6 +26,7 @@ class CLEntity {
     required this.duration,
     required this.isHidden,
     required this.pin,
+    required this.faces,
   });
 
   factory CLEntity.fromMap(Map<String, dynamic> map) {
@@ -57,6 +58,7 @@ class CLEntity {
       duration: map['duration'] != null ? map['duration'] as double : null,
       isHidden: (map['isHidden'] ?? 0) != 0,
       pin: map['pin'] != null ? map['pin'] as String : null,
+      faces: map['faces'] != null ? map['faces'] as List<String> : null,
     );
   }
 
@@ -92,6 +94,7 @@ class CLEntity {
       duration: null,
       isHidden: false,
       pin: null,
+      faces: null,
     );
   }
 
@@ -112,6 +115,7 @@ class CLEntity {
     double? duration,
     bool isHidden = false,
     String? pin,
+    List<String>? faces,
   }) {
     final addedDate = DateTime.now();
     final updatedDate = addedDate;
@@ -135,6 +139,7 @@ class CLEntity {
       duration: duration,
       isHidden: isHidden,
       pin: pin,
+      faces: faces,
     );
   }
 
@@ -161,6 +166,7 @@ class CLEntity {
 
   final bool isHidden;
   final String? pin;
+  final List<String>? faces;
 
   CLEntity copyWith({
     ValueGetter<int?>? id,
@@ -182,6 +188,7 @@ class CLEntity {
     ValueGetter<double?>? duration,
     bool? isHidden,
     ValueGetter<String?>? pin,
+    ValueGetter<List<String>?>? faces,
   }) {
     return CLEntity(
       id: id != null ? id.call() : this.id,
@@ -203,17 +210,19 @@ class CLEntity {
       duration: duration != null ? duration.call() : this.duration,
       isHidden: isHidden ?? this.isHidden,
       pin: pin != null ? pin.call() : this.pin,
+      faces: faces != null ? faces() : this.faces,
     );
   }
 
   @override
   String toString() {
-    return 'CLEntity(id: $id, isCollection: $isCollection, addedDate: $addedDate, updatedDate: $updatedDate, isDeleted: $isDeleted, label: $label, description: $description, parentId: $parentId, md5: $md5, fileSize: $fileSize, mimeType: $mimeType, type: $type, extension: $extension, createDate: $createDate, height: $height, width: $width, duration: $duration, isHidden: $isHidden, pin: $pin)';
+    return 'CLEntity(id: $id, isCollection: $isCollection, addedDate: $addedDate, updatedDate: $updatedDate, isDeleted: $isDeleted, label: $label, description: $description, parentId: $parentId, md5: $md5, fileSize: $fileSize, mimeType: $mimeType, type: $type, extension: $extension, createDate: $createDate, height: $height, width: $width, duration: $duration, isHidden: $isHidden, pin: $pin, faces: $faces)';
   }
 
   @override
   bool operator ==(covariant CLEntity other) {
     if (identical(this, other)) return true;
+    final listEquals = const DeepCollectionEquality().equals;
 
     return other.id == id &&
         other.isCollection == isCollection &&
@@ -233,7 +242,8 @@ class CLEntity {
         other.width == width &&
         other.duration == duration &&
         other.isHidden == isHidden &&
-        other.pin == pin;
+        other.pin == pin &&
+        listEquals(other.faces, faces);
   }
 
   @override
@@ -256,7 +266,8 @@ class CLEntity {
         width.hashCode ^
         duration.hashCode ^
         isHidden.hashCode ^
-        pin.hashCode;
+        pin.hashCode ^
+        faces.hashCode;
   }
 
   DateTime get sortDate => createDate ?? updatedDate;
@@ -288,6 +299,7 @@ class CLEntity {
       duration: duration,
       isHidden: isHidden,
       pin: pin,
+      faces: faces,
     );
   }
 
@@ -312,6 +324,7 @@ class CLEntity {
       'duration': duration,
       'isHidden': isHidden,
       'pin': pin,
+      'faces': faces,
     };
   }
 
@@ -338,6 +351,7 @@ class CLEntity {
       'duration': duration,
       'isHidden': isHidden,
       'pin': pin,
+      'faces': faces,
     }..removeWhere((key, value) => value == null);
   }
 
@@ -365,7 +379,7 @@ class CLEntity {
 
   bool isSame(covariant CLEntity other) {
     if (identical(this, other)) return true;
-
+    final listEquals = const DeepCollectionEquality().equals;
     return other.id == id &&
         other.isCollection == isCollection &&
         other.isDeleted == isDeleted &&
@@ -382,12 +396,13 @@ class CLEntity {
         other.width == width &&
         other.duration == duration &&
         other.isHidden == isHidden &&
-        other.pin == pin;
+        other.pin == pin &&
+        listEquals(other.faces, faces);
   }
 
   bool isContentSame(covariant CLEntity other) {
     if (identical(this, other)) return true;
-
+    final listEquals = const DeepCollectionEquality().equals;
     return other.id == id &&
         other.isCollection == isCollection &&
         other.isDeleted == isDeleted &&
@@ -402,9 +417,14 @@ class CLEntity {
         other.createDate == createDate &&
         other.height == height &&
         other.width == width &&
-        other.duration == duration;
+        other.duration == duration &&
+        listEquals(other.faces, faces);
   }
 
   String? get path => isCollection ? null : '$mimeType/$md5$extension';
   String? get previewPath => isCollection ? null : '$path.tn.jpg';
+
+  CLEntity updateFaces(ValueGetter<List<String>?> faces) {
+    return copyWith(faces: faces);
+  }
 }

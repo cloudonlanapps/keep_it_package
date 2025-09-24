@@ -110,6 +110,7 @@ class UploadState with CLLogger {
       duration: map['duration'] != null ? map['duration'] as double : null,
       isHidden: (map['isHidden'] ?? 0) != 0,
       pin: map['pin'] != null ? map['pin'] as String : null,
+      faces: map['faces'] != null ? map['faces'] as List<String> : null,
     );
     return entity;
   }

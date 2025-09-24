@@ -1,5 +1,4 @@
 import 'package:cl_basic_types/cl_basic_types.dart';
-import 'package:collection/collection.dart';
 
 import 'package:flutter/material.dart' hide ValueGetter;
 import 'package:image_picker/image_picker.dart';
@@ -21,79 +20,38 @@ enum MediaStatus {
 
 @immutable
 class MediaModel {
-  const MediaModel({required this.file, this.entity, this.faceIds});
+  const MediaModel({required this.file, this.entity});
   final XFile file;
   final CLEntity? entity;
-  final List<String>? faceIds;
 
   MediaModel copyWith({
     XFile? file,
     ValueGetter<CLEntity?>? entity,
     MediaStatus? status,
     ValueGetter<String?>? uploadProgress,
-    ValueGetter<List<String>?>? faceIds,
   }) {
     return MediaModel(
       file: file ?? this.file,
       entity: entity != null ? entity.call() : this.entity,
-      faceIds: faceIds != null ? faceIds.call() : this.faceIds,
     );
-  }
-
-  MediaModel entityFromMap(Map<String, dynamic> map) {
-    final entity = CLEntity(
-      id: null,
-      isCollection: false,
-      addedDate: DateTime.fromMillisecondsSinceEpoch(
-        (map['addedDate'] ?? 0) as int,
-      ),
-      updatedDate: DateTime.fromMillisecondsSinceEpoch(
-        (map['updatedDate'] ?? 0) as int,
-      ),
-      isDeleted: (map['isDeleted'] ?? 0) != 0,
-      label: map['file_identifier'] != null
-          ? map['file_identifier'] as String
-          : null,
-      description: map['description'] != null
-          ? map['description'] as String
-          : null,
-      parentId: map['parentId'] != null ? map['parentId'] as int : null,
-      md5: map['md5'] != null ? map['md5'] as String : null,
-      fileSize: map['fileSize'] != null ? map['fileSize'] as int : null,
-      mimeType: map['mimeType'] != null ? map['mimeType'] as String : null,
-      type: map['type'] != null ? map['type'] as String : null,
-      extension: map['extension'] != null ? map['extension'] as String : null,
-      createDate: map['createDate'] != null
-          ? DateTime.fromMillisecondsSinceEpoch((map['createDate'] ?? 0) as int)
-          : null,
-      height: map['height'] != null ? map['height'] as int : null,
-      width: map['width'] != null ? map['width'] as int : null,
-      duration: map['duration'] != null ? map['duration'] as double : null,
-      isHidden: (map['isHidden'] ?? 0) != 0,
-      pin: map['pin'] != null ? map['pin'] as String : null,
-    );
-    return copyWith(entity: () => entity);
   }
 
   MediaModel clearEntity() => copyWith(entity: () => null);
 
   @override
   String toString() {
-    return 'SessionCandidate(file: $file, entity: $entity, faceIds: $faceIds)';
+    return 'SessionCandidate(file: $file, entity: $entity)';
   }
 
   @override
   bool operator ==(covariant MediaModel other) {
     if (identical(this, other)) return true;
-    final listEquals = const DeepCollectionEquality().equals;
 
-    return other.file == file &&
-        other.entity == entity &&
-        listEquals(other.faceIds, faceIds);
+    return other.file == file && other.entity == entity;
   }
 
   @override
   int get hashCode {
-    return file.hashCode ^ entity.hashCode ^ faceIds.hashCode;
+    return file.hashCode ^ entity.hashCode;
   }
 }
