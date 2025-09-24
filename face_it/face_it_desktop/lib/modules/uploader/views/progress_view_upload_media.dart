@@ -1,5 +1,4 @@
 import 'package:background_downloader/background_downloader.dart';
-import 'package:face_it_desktop/modules/uploader/models/upload_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
