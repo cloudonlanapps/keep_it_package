@@ -6,9 +6,10 @@ import 'package:background_downloader/background_downloader.dart';
 import 'package:cl_basic_types/cl_basic_types.dart';
 import 'package:cl_servers/cl_servers.dart' show detectedFacesProvider;
 import 'package:content_store/content_store.dart';
-import 'package:face_it_desktop/modules/server/providers/upload_url_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../server/providers/upload_url_provider.dart';
+import '../models/upload_progress.dart';
 import '../models/upload_state.dart';
 import '../models/upload_status.dart';
 import '../models/uploader.dart';
@@ -181,8 +182,24 @@ class UploaderNotifier extends StateNotifier<Uploader> with CLLogger {
           task,
 
           onProgress: (progress) {
+            final uploadProgress =
+                state.files[filePath]!.uploadProgress?.copyWith(
+                  progress: progress,
+                ) ??
+                UploadProgress(TaskStatus.running, progress);
             final updated = state.files[filePath]!.copyWith(
-              serverResponse: () => '${(progress * 100).toStringAsFixed(1)}%',
+              uploadProgress: () => uploadProgress,
+            );
+            updateState(filePath: filePath, uploadState: updated);
+          },
+          onStatus: (status) {
+            final uploadProgress =
+                state.files[filePath]!.uploadProgress?.copyWith(
+                  status: status,
+                ) ??
+                UploadProgress(status, 0);
+            final updated = state.files[filePath]!.copyWith(
+              uploadProgress: () => uploadProgress,
             );
             updateState(filePath: filePath, uploadState: updated);
           },

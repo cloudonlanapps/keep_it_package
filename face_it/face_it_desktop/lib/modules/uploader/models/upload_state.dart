@@ -2,6 +2,7 @@ import 'package:cl_basic_types/cl_basic_types.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart' hide ValueGetter;
 
+import 'upload_progress.dart';
 import 'upload_status.dart';
 
 enum ActivityStatus {
@@ -23,10 +24,12 @@ class UploadState with CLLogger {
     this.error,
     this.identity,
     this.faces,
+    this.uploadProgress,
   });
 
   final String filePath;
   final UploadStatus uploadStatus;
+  final UploadProgress? uploadProgress;
   final ActivityStatus faceRecgStatus;
   final String? serverResponse;
   final String? identity;
@@ -38,6 +41,7 @@ class UploadState with CLLogger {
   UploadState copyWith({
     String? filePath,
     UploadStatus? uploadStatus,
+    ValueGetter<UploadProgress?>? uploadProgress,
     ActivityStatus? faceRecgStatus,
     ValueGetter<String?>? serverResponse,
     ValueGetter<String?>? identity,
@@ -47,6 +51,9 @@ class UploadState with CLLogger {
     return UploadState(
       filePath: filePath ?? this.filePath,
       uploadStatus: uploadStatus ?? this.uploadStatus,
+      uploadProgress: uploadProgress != null
+          ? uploadProgress.call()
+          : this.uploadProgress,
       faceRecgStatus: faceRecgStatus ?? this.faceRecgStatus,
       serverResponse: serverResponse != null
           ? serverResponse.call()
@@ -59,7 +66,7 @@ class UploadState with CLLogger {
 
   @override
   String toString() {
-    return 'UploadState(filePath: $filePath, uploadStatus: $uploadStatus, faceRecgStatus: $faceRecgStatus, serverResponse: $serverResponse, identity: $identity, error: $error, faces: $faces)';
+    return 'UploadState(filePath: $filePath, uploadStatus: $uploadStatus, uploadProgress: $uploadProgress, faceRecgStatus: $faceRecgStatus, serverResponse: $serverResponse, identity: $identity, error: $error, faces: $faces)';
   }
 
   @override
@@ -69,6 +76,7 @@ class UploadState with CLLogger {
 
     return other.filePath == filePath &&
         other.uploadStatus == uploadStatus &&
+        other.uploadProgress == uploadProgress &&
         other.faceRecgStatus == faceRecgStatus &&
         other.serverResponse == serverResponse &&
         other.identity == identity &&
@@ -80,6 +88,7 @@ class UploadState with CLLogger {
   int get hashCode {
     return filePath.hashCode ^
         uploadStatus.hashCode ^
+        uploadProgress.hashCode ^
         faceRecgStatus.hashCode ^
         serverResponse.hashCode ^
         identity.hashCode ^
