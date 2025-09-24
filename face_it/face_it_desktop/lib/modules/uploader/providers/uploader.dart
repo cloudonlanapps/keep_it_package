@@ -134,7 +134,7 @@ class UploaderNotifier extends StateNotifier<Uploader> with CLLogger {
     final updated = state.files[filePath]!.copyWith(
       serverResponse: () => null,
       uploadStatus: UploadStatus.error,
-      entity: () => null,
+      identity: () => null,
       error: () => e ?? 'Empty response',
     );
     updateState(filePath: filePath, uploadState: updated);
@@ -147,7 +147,7 @@ class UploaderNotifier extends StateNotifier<Uploader> with CLLogger {
     final updated = state.files[filePath]!.copyWith(
       serverResponse: () => null,
       uploadStatus: UploadStatus.pending,
-      entity: () => null,
+      identity: () => null,
       error: () => e ?? 'Empty response',
     );
     updateState(filePath: filePath, uploadState: updated);
@@ -157,14 +157,17 @@ class UploaderNotifier extends StateNotifier<Uploader> with CLLogger {
     if (response == null || (response.isEmpty)) {
       throw Exception('Empty response');
     }
-    final clEntity = UploadState.entityFromMap(
-      jsonDecode(response) as Map<String, dynamic>,
-    );
+    final map = jsonDecode(response);
+    final identity =
+        (map as Map<String, dynamic>?)?['file_identifier'] as String?;
+    if (identity == null) {
+      throw Exception('file_identifier not found');
+    }
     //log('$filePath: response: ${clEntity.label}');
     final updated = state.files[filePath]!.copyWith(
       serverResponse: () => response,
       uploadStatus: UploadStatus.success,
-      entity: () => clEntity,
+      identity: () => identity,
       error: () => null,
     );
     updateState(filePath: filePath, uploadState: updated);
@@ -242,8 +245,9 @@ class UploaderNotifier extends StateNotifier<Uploader> with CLLogger {
             ? item.value
             : item.value.copyWith(
                 serverResponse: () => null,
-                uploadStatus: UploadStatus.pending,
-                entity: () => null,
+                uploadStatus: UploadStatus
+                    .pending, // if face is required, we may move this to ignore
+                identity: () => null,
                 error: () => null,
               ),
     };
@@ -333,17 +337,12 @@ class UploaderNotifier extends StateNotifier<Uploader> with CLLogger {
   Future<bool> scanForFace(UploadState fileState, {bool forced = false}) async {
     try {
       if (downloadPath != null && fileState.faceScanPossible) {
-        if (fileState.entity!.label == null) {
-          throw Exception(
-            "state can't be marked as success when no identity was provided",
-          );
-        }
         updateFaceRecgStatus(fileState, ActivityStatus.pending);
         unawaited(
           ref
               .read(detectedFacesProvider.notifier)
               .scanImage(
-                fileState.entity!.label!,
+                fileState.identity!,
                 downloadPath: downloadPath!,
                 isStillRequired: () =>
                     isStillRequired(fileState, forced: forced),

@@ -20,14 +20,14 @@ class UploadState with CLLogger {
     this.faceRecgStatus = ActivityStatus.premature,
     this.serverResponse,
     this.error,
-    this.entity,
+    this.identity,
   });
 
   final String filePath;
   final UploadStatus uploadStatus;
   final ActivityStatus faceRecgStatus;
   final String? serverResponse;
-  final CLEntity? entity;
+  final String? identity;
   final String? error;
   @override
   String get logPrefix => 'UploadState';
@@ -37,7 +37,7 @@ class UploadState with CLLogger {
     UploadStatus? uploadStatus,
     ActivityStatus? faceRecgStatus,
     ValueGetter<String?>? serverResponse,
-    ValueGetter<CLEntity?>? entity,
+    ValueGetter<String?>? identity,
     ValueGetter<String?>? error,
   }) {
     return UploadState(
@@ -47,14 +47,14 @@ class UploadState with CLLogger {
       serverResponse: serverResponse != null
           ? serverResponse.call()
           : this.serverResponse,
-      entity: entity != null ? entity.call() : this.entity,
+      identity: identity != null ? identity.call() : this.identity,
       error: error != null ? error.call() : this.error,
     );
   }
 
   @override
   String toString() {
-    return 'UploadState(filePath: $filePath, uploadStatus: $uploadStatus, faceRecgStatus: $faceRecgStatus, serverResponse: $serverResponse, entity: $entity, error: $error)';
+    return 'UploadState(filePath: $filePath, uploadStatus: $uploadStatus, faceRecgStatus: $faceRecgStatus, serverResponse: $serverResponse, identity: $identity, error: $error)';
   }
 
   @override
@@ -65,7 +65,7 @@ class UploadState with CLLogger {
         other.uploadStatus == uploadStatus &&
         other.faceRecgStatus == faceRecgStatus &&
         other.serverResponse == serverResponse &&
-        other.entity == entity &&
+        other.identity == identity &&
         other.error == error;
   }
 
@@ -75,44 +75,8 @@ class UploadState with CLLogger {
         uploadStatus.hashCode ^
         faceRecgStatus.hashCode ^
         serverResponse.hashCode ^
-        entity.hashCode ^
+        identity.hashCode ^
         error.hashCode;
-  }
-
-  static CLEntity entityFromMap(Map<String, dynamic> map) {
-    final entity = CLEntity(
-      id: null,
-      isCollection: false,
-      addedDate: DateTime.fromMillisecondsSinceEpoch(
-        (map['addedDate'] ?? 0) as int,
-      ),
-      updatedDate: DateTime.fromMillisecondsSinceEpoch(
-        (map['updatedDate'] ?? 0) as int,
-      ),
-      isDeleted: (map['isDeleted'] ?? 0) != 0,
-      label: map['file_identifier'] != null
-          ? map['file_identifier'] as String
-          : null,
-      description: map['description'] != null
-          ? map['description'] as String
-          : null,
-      parentId: map['parentId'] != null ? map['parentId'] as int : null,
-      md5: map['md5'] != null ? map['md5'] as String : null,
-      fileSize: map['fileSize'] != null ? map['fileSize'] as int : null,
-      mimeType: map['mimeType'] != null ? map['mimeType'] as String : null,
-      type: map['type'] != null ? map['type'] as String : null,
-      extension: map['extension'] != null ? map['extension'] as String : null,
-      createDate: map['createDate'] != null
-          ? DateTime.fromMillisecondsSinceEpoch((map['createDate'] ?? 0) as int)
-          : null,
-      height: map['height'] != null ? map['height'] as int : null,
-      width: map['width'] != null ? map['width'] as int : null,
-      duration: map['duration'] != null ? map['duration'] as double : null,
-      isHidden: (map['isHidden'] ?? 0) != 0,
-      pin: map['pin'] != null ? map['pin'] as String : null,
-      faces: map['faces'] != null ? map['faces'] as List<String> : null,
-    );
-    return entity;
   }
 
   String get statusString => switch (uploadStatus) {
@@ -124,6 +88,7 @@ class UploadState with CLLogger {
   };
   bool get faceScanPossible {
     return uploadStatus == UploadStatus.success &&
+        identity != null &&
         switch (faceRecgStatus) {
           ActivityStatus.premature ||
           ActivityStatus.error ||
