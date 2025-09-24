@@ -1,4 +1,5 @@
 import 'package:cl_basic_types/cl_basic_types.dart';
+import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart' hide ValueGetter;
 
 import 'upload_status.dart';
@@ -21,6 +22,7 @@ class UploadState with CLLogger {
     this.serverResponse,
     this.error,
     this.identity,
+    this.faces,
   });
 
   final String filePath;
@@ -29,6 +31,7 @@ class UploadState with CLLogger {
   final String? serverResponse;
   final String? identity;
   final String? error;
+  final List<String>? faces;
   @override
   String get logPrefix => 'UploadState';
 
@@ -39,6 +42,7 @@ class UploadState with CLLogger {
     ValueGetter<String?>? serverResponse,
     ValueGetter<String?>? identity,
     ValueGetter<String?>? error,
+    ValueGetter<List<String>?>? faces,
   }) {
     return UploadState(
       filePath: filePath ?? this.filePath,
@@ -49,24 +53,27 @@ class UploadState with CLLogger {
           : this.serverResponse,
       identity: identity != null ? identity.call() : this.identity,
       error: error != null ? error.call() : this.error,
+      faces: faces != null ? faces.call() : this.faces,
     );
   }
 
   @override
   String toString() {
-    return 'UploadState(filePath: $filePath, uploadStatus: $uploadStatus, faceRecgStatus: $faceRecgStatus, serverResponse: $serverResponse, identity: $identity, error: $error)';
+    return 'UploadState(filePath: $filePath, uploadStatus: $uploadStatus, faceRecgStatus: $faceRecgStatus, serverResponse: $serverResponse, identity: $identity, error: $error, faces: $faces)';
   }
 
   @override
   bool operator ==(covariant UploadState other) {
     if (identical(this, other)) return true;
+    final listEquals = const DeepCollectionEquality().equals;
 
     return other.filePath == filePath &&
         other.uploadStatus == uploadStatus &&
         other.faceRecgStatus == faceRecgStatus &&
         other.serverResponse == serverResponse &&
         other.identity == identity &&
-        other.error == error;
+        other.error == error &&
+        listEquals(other.faces, faces);
   }
 
   @override
@@ -76,7 +83,8 @@ class UploadState with CLLogger {
         faceRecgStatus.hashCode ^
         serverResponse.hashCode ^
         identity.hashCode ^
-        error.hashCode;
+        error.hashCode ^
+        faces.hashCode;
   }
 
   String get statusString => switch (uploadStatus) {

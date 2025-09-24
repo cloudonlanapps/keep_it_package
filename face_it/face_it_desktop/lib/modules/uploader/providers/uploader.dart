@@ -270,10 +270,17 @@ class UploaderNotifier extends StateNotifier<Uploader> with CLLogger {
 
   void updateFaceRecgStatus(
     UploadState fileState,
-    ActivityStatus faceRecgStatus,
-  ) {
+    ActivityStatus faceRecgStatus, {
+    List<String>? faces,
+  }) {
+    if (faceRecgStatus == ActivityStatus.success && faces == null) {
+      throw Exception(
+        'faces must be provided when successed. if no face, pass empty list',
+      );
+    }
     final updated = state.files[fileState.filePath]!.copyWith(
       faceRecgStatus: faceRecgStatus,
+      faces: () => faces,
     );
     updateState(filePath: fileState.filePath, uploadState: updated);
   }
@@ -311,9 +318,7 @@ class UploaderNotifier extends StateNotifier<Uploader> with CLLogger {
 
       /// IF we had face already, even if it is empty
       /// we should skip
-      const faces = null; /* ref.read(
-        mediaListProvider.select((e) => e.getFaces(fileState.filePath)),
-      ); */ // FIXME
+      final faces = fileStateNow.faces;
 
       if (faces != null) {
         if (fileStateNow.faceRecgStatus != ActivityStatus.success) {
@@ -351,7 +356,11 @@ class UploaderNotifier extends StateNotifier<Uploader> with CLLogger {
                 /* ref
                     .read(mediaListProvider.notifier)
                     .addFaces(fileState.filePath, faceIds); */ //FIXME
-                updateFaceRecgStatus(fileState, ActivityStatus.success);
+                updateFaceRecgStatus(
+                  fileState,
+                  ActivityStatus.success,
+                  faces: faceIds,
+                );
               })
               .catchError((e) {
                 updateFaceRecgStatus(fileState, ActivityStatus.error);
