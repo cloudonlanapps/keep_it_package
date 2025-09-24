@@ -31,7 +31,7 @@ class UploaderNotifier extends StateNotifier<Uploader> with CLLogger {
   @override
   String get logPrefix => 'UploaderNotifier';
 
-  String add(String filePath) {
+  UploadState add(String filePath) {
     if (!state.files.keys.contains(filePath) ||
         (state.files[filePath]!.uploadStatus == UploadStatus.ignore)) {
       state = Uploader({
@@ -41,10 +41,10 @@ class UploaderNotifier extends StateNotifier<Uploader> with CLLogger {
     }
 
     log('added 1 item into state (has ${state.files.length}) total items');
-    return filePath;
+    return state.files[filePath]!;
   }
 
-  Iterable<String> addMultiple(Iterable<String> filePaths) {
+  Iterable<UploadState> addMultiple(Iterable<String> filePaths) {
     if (filePaths.isNotEmpty) {
       final newFilePaths = filePaths.where(
         (filePath) => !state.files.keys.contains(filePath),
@@ -54,6 +54,8 @@ class UploaderNotifier extends StateNotifier<Uploader> with CLLogger {
             state.files.keys.contains(filePath) &&
             state.files[filePath]!.uploadStatus == UploadStatus.ignore,
       );
+      log('new files found ${newFilePaths.length}');
+      log('focing files with ignore: ${forceAgain.length}');
       if (newFilePaths.isNotEmpty) {
         state = Uploader({
           ...state.files,
@@ -65,7 +67,7 @@ class UploaderNotifier extends StateNotifier<Uploader> with CLLogger {
     log(
       'added ${filePaths.length} items into state (has ${state.files.length}) total items',
     );
-    return filePaths;
+    return state.files.values;
   }
 
   Future<void> uploadMultiple(Iterable<String> filePaths) async {
@@ -74,11 +76,19 @@ class UploaderNotifier extends StateNotifier<Uploader> with CLLogger {
     }
     final files = addMultiple(filePaths);
 
-    await Future.wait(files.map(_upload));
+    final filesNotYetuploaded = files.where((e) => e.uploadRequired);
+    if (filesNotYetuploaded.isEmpty) return;
+    log('${filesNotYetuploaded.length} file(s) require upload. triggering');
+    await Future.wait(filesNotYetuploaded.map((e) => _upload(e.filePath)));
   }
 
   Future<void> upload(String filePath) async {
-    await _upload(add(filePath));
+    final fileState = add(filePath);
+
+    if (fileState.uploadRequired) {
+      log('file(s) require upload. triggering');
+      await _upload(fileState.filePath);
+    }
   }
 
   Future<void> cancel(String filePath) async {
@@ -101,18 +111,6 @@ class UploaderNotifier extends StateNotifier<Uploader> with CLLogger {
   }
 
   Future<void> _upload(String filePath) async {
-    switch (state.files[filePath]?.uploadStatus) {
-      case null:
-      case UploadStatus.uploading:
-      case UploadStatus.success:
-      case UploadStatus.ignore:
-        return;
-      case UploadStatus.pending:
-      case UploadStatus.error: // Need to retry
-
-        break;
-    }
-
     final uploader = state;
 
     if (!uploader.files.keys.contains(filePath)) {
@@ -131,7 +129,9 @@ class UploaderNotifier extends StateNotifier<Uploader> with CLLogger {
   }
 
   void updateUploadError(String filePath, String? e) {
-    log('$filePath: error: $e');
+    if (e != null) {
+      log('$filePath: error: $e');
+    }
     final updated = state.files[filePath]!.copyWith(
       serverResponse: () => null,
       uploadStatus: UploadStatus.error,
@@ -142,7 +142,9 @@ class UploaderNotifier extends StateNotifier<Uploader> with CLLogger {
   }
 
   void updateUploadPending(String filePath, String? e) {
-    log('$filePath: error: $e');
+    if (e != null) {
+      log('$filePath: error: $e');
+    }
     final updated = state.files[filePath]!.copyWith(
       serverResponse: () => null,
       uploadStatus: UploadStatus.pending,
@@ -159,7 +161,7 @@ class UploaderNotifier extends StateNotifier<Uploader> with CLLogger {
     final clEntity = UploadState.entityFromMap(
       jsonDecode(response) as Map<String, dynamic>,
     );
-    log('$filePath: response: ${clEntity.label}');
+    //log('$filePath: response: ${clEntity.label}');
     final updated = state.files[filePath]!.copyWith(
       serverResponse: () => response,
       uploadStatus: UploadStatus.success,
@@ -188,7 +190,7 @@ class UploaderNotifier extends StateNotifier<Uploader> with CLLogger {
           updateUploadError(filePath, '$e'); // may not be required?
           return TaskStatusUpdate(task, TaskStatus.failed, TaskException('$e'));
         });
-    log('${task.filename}: ${result.status}');
+    //log('${task.filename}: ${result.status}');
     final url = ref.read(uploadURLProvider);
     if (url == null) {
       updateUploadPending(filePath, null);
@@ -223,6 +225,7 @@ class UploaderNotifier extends StateNotifier<Uploader> with CLLogger {
     final pendingItems = state.files.values.where(
       (e) => e.uploadStatus != UploadStatus.ignore,
     );
+    if (pendingItems.isEmpty) return;
     log(
       'resetting ${pendingItems.length} pendingItems in state (has ${state.files.length}) items',
     );
@@ -375,6 +378,10 @@ class UploaderNotifier extends StateNotifier<Uploader> with CLLogger {
 
   void faceRecgAllEligible() {
     final eligible = state.files.values.where((e) => e.faceScanNeeded);
+    if (eligible.isEmpty) return;
+    log(
+      'faceRecgAllEligible: Found ${eligible.length} eligible files that require face Recg. triggering',
+    );
     for (final fileState in eligible) {
       scanForFace(fileState);
     }

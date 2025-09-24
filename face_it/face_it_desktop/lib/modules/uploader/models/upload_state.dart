@@ -158,4 +158,17 @@ class UploadState with CLLogger {
           ActivityStatus.success => false,
         };
   }
+
+  bool get uploadRequired {
+    switch (uploadStatus) {
+      case UploadStatus.uploading:
+      case UploadStatus.success:
+      case UploadStatus.ignore:
+        return false;
+      case UploadStatus.pending:
+      case UploadStatus.error: // Need to retry
+
+        return true;
+    }
+  }
 }

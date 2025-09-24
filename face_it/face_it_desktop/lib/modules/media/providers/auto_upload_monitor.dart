@@ -28,29 +28,31 @@ class AutoUploadMonitor with CLLogger {
           ref.read(uploaderProvider.notifier).uploadMultiple(files);
         }
       })
-      ..listen(mediaListProvider, (prev, curr) {
+      ..listen(mediaListProvider.select((e) => e.mediaList), (prev, curr) {
         final autoUpload = ref.read(
           serverPreferenceProvider.select((e) => e.autoUpload),
         );
         log(
-          'listening mediaListProvider: autoUpload: $autoUpload, ${curr.mediaList.length} files',
+          'listening mediaListProvider: autoUpload: $autoUpload, ${curr.length} files',
         );
-        if (autoUpload && curr.mediaList.isNotEmpty) {
+
+        if (autoUpload && curr.isNotEmpty) {
           log('listening serverPreferenceProvider: trigger upload');
 
           ref
               .read(uploaderProvider.notifier)
-              .uploadMultiple(curr.mediaList.map((e) => e.file.path));
+              .uploadMultiple(curr.map((e) => e.file.path));
         }
       })
-      ..listen(uploaderProvider, (prev, curr) {
+    /* ..listen(uploaderProvider, (prev, curr) {
         final autoFaceRecg = ref.read(
           serverPreferenceProvider.select((e) => e.autoFaceRecg),
         );
         if (autoFaceRecg) {
           ref.read(uploaderProvider.notifier).faceRecgAllEligible();
         }
-      });
+      }) */
+    ;
   }
 
   @override
