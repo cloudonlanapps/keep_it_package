@@ -37,29 +37,31 @@ class UploadProgressViewState extends ConsumerState<ProgressViewFaceRecg> {
     return ShadPopover(
       controller: popoverController,
       popover: (context) {
-        return ShadCard(
-          width: 120,
-          padding: EdgeInsets.zero,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.center,
-            spacing: 8,
-            children: ActivityStatus.values.map((e) {
-              return Row(
-                spacing: 8,
-                children: [
-                  Container(
-                    width: 16,
-                    height: 16,
-                    decoration: BoxDecoration(
-                      border: Border.all(),
-                      color: colors(e),
+        return SizedBox(
+          width: 150,
+          child: Padding(
+            padding: const EdgeInsets.all(8),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.center,
+              spacing: 8,
+              children: ActivityStatus.values.map((e) {
+                return Row(
+                  spacing: 8,
+                  children: [
+                    Container(
+                      width: 16,
+                      height: 16,
+                      decoration: BoxDecoration(
+                        border: Border.all(),
+                        color: colors(e),
+                      ),
                     ),
-                  ),
-                  Text(e.name, style: ShadTheme.of(context).textTheme.small),
-                ],
-              );
-            }).toList(),
+                    Text(e.name, style: ShadTheme.of(context).textTheme.small),
+                  ],
+                );
+              }).toList(),
+            ),
           ),
         );
       },
