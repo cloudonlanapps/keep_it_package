@@ -1,21 +1,21 @@
+import 'package:face_it_desktop/modules/uploader/models/upload_state.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
 import '../../media/providers/candidates.dart';
-import '../models/upload_status.dart';
 import '../providers/uploader.dart';
 
-class UploadProgressChart extends ConsumerStatefulWidget {
-  const UploadProgressChart({super.key});
+class ProgressViewFaceRecg extends ConsumerStatefulWidget {
+  const ProgressViewFaceRecg({super.key});
 
   @override
-  ConsumerState<UploadProgressChart> createState() =>
-      UploadProgressChartState();
+  ConsumerState<ProgressViewFaceRecg> createState() =>
+      UploadProgressViewState();
 }
 
-class UploadProgressChartState extends ConsumerState<UploadProgressChart> {
+class UploadProgressViewState extends ConsumerState<ProgressViewFaceRecg> {
   final popoverController = ShadPopoverController();
 
   @override
@@ -26,9 +26,11 @@ class UploadProgressChartState extends ConsumerState<UploadProgressChart> {
 
   @override
   Widget build(BuildContext context) {
-    final uploader = ref.watch(uploaderProvider);
-
     final candidates = ref.watch(mediaListProvider.select((e) => e.mediaList));
+    if (candidates.isEmpty) {
+      return const SizedBox.shrink();
+    }
+    final uploader = ref.watch(uploaderProvider);
     const radius = 20.0;
     const radius2 = 20.0;
 
@@ -42,7 +44,7 @@ class UploadProgressChartState extends ConsumerState<UploadProgressChart> {
             mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.center,
             spacing: 8,
-            children: UploadStatus.values.map((e) {
+            children: ActivityStatus.values.map((e) {
               return Row(
                 spacing: 8,
                 children: [
@@ -72,16 +74,19 @@ class UploadProgressChartState extends ConsumerState<UploadProgressChart> {
                 PieChart(
                   PieChartData(
                     sections: [
-                      for (final status in UploadStatus.values)
+                      for (final status in ActivityStatus.values)
                         PieChartSectionData(
-                          value: uploader.countByStatus(status).toDouble(),
+                          value: uploader
+                              .faceRecgCountByStatus(status)
+                              .toDouble(),
                           color: colors(status),
                           radius: radius,
                           showTitle: false,
                           title: status.name,
                         ),
                       PieChartSectionData(
-                        value: (candidates.length - uploader.count).toDouble(),
+                        value: (candidates.length - uploader.faceRecCount)
+                            .toDouble(),
                         color: Colors.grey,
                         radius: radius,
                         showTitle: false,
@@ -99,11 +104,12 @@ class UploadProgressChartState extends ConsumerState<UploadProgressChart> {
     );
   }
 
-  Color colors(UploadStatus status) => switch (status) {
-    UploadStatus.pending => Colors.blueGrey,
-    UploadStatus.uploading => Colors.blue,
-    UploadStatus.success => Colors.green,
-    UploadStatus.error => Colors.red,
-    UploadStatus.ignore => Colors.grey,
+  Color colors(ActivityStatus status) => switch (status) {
+    ActivityStatus.premature => Colors.blueGrey.shade300,
+    ActivityStatus.pending => Colors.blueGrey,
+    ActivityStatus.processingNow => Colors.blue,
+    ActivityStatus.success => Colors.green,
+    ActivityStatus.error => Colors.red,
+    ActivityStatus.ignore => Colors.grey,
   };
 }

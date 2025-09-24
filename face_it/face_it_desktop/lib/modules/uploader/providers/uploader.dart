@@ -262,10 +262,13 @@ class UploaderNotifier extends StateNotifier<Uploader> with CLLogger {
             ? item.value
             : item.value.copyWith(
                 serverResponse: () => null,
-                uploadStatus: UploadStatus
-                    .pending, // if face is required, we may move this to ignore
+                uploadStatus: item.value.allDone
+                    ? UploadStatus.ignore
+                    : UploadStatus
+                          .pending, // if face is required, we may move this to ignore
                 identity: () => null,
                 error: () => null,
+                uploadProgress: () => null,
               ),
     };
     log(

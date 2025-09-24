@@ -1,5 +1,5 @@
 import 'package:face_it_desktop/modules/server/views/server_manage_view.dart';
-import 'package:face_it_desktop/modules/uploader/views/upload_monitor.dart';
+import 'package:face_it_desktop/modules/uploader/views/monitor_upload.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
@@ -11,6 +11,7 @@ import '../../modules/content_manager/views/logs/log_view.dart';
 import '../../modules/content_manager/views/main/main_view.dart';
 import '../../modules/face_manager/views/saved_items_browser.dart';
 import '../../modules/media/views/media_browser.dart';
+import '../../modules/uploader/views/monitor_face_recg.dart';
 
 class FaceItDesktopApp extends ConsumerWidget {
   const FaceItDesktopApp({super.key});
@@ -72,7 +73,7 @@ class FaceItDesktop0 extends ConsumerWidget {
                 minSize: .1,
                 maxSize: .2,
                 child: CLBrowserPanelView(
-                  leading: [ServerManageView(), UploadMonitor()],
+                  leading: [ServerManageView(), Monitors()],
                 ),
               ),
               ShadResizablePanel(
@@ -91,6 +92,24 @@ class FaceItDesktop0 extends ConsumerWidget {
           ),
         ),
       ],
+    );
+  }
+}
+
+class Monitors extends StatelessWidget {
+  const Monitors({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const Padding(
+      padding: EdgeInsets.all(8),
+      child: Row(
+        spacing: 8,
+        children: [
+          Expanded(child: MonitorUpload()),
+          Expanded(child: MonitorFaceRecg()),
+        ],
+      ),
     );
   }
 }

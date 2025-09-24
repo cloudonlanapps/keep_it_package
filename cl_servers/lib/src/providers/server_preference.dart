@@ -20,4 +20,8 @@ class ServerPreferenceNotifier extends StateNotifier<ServerPreferences> {
   void toggleAutoUpload() {
     state = state.copyWith(autoUpload: !state.autoUpload);
   }
+
+  void toggleAutoFaceRecg() {
+    state = state.copyWith(autoFaceRecg: !state.autoFaceRecg);
+  }
 }

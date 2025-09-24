@@ -154,4 +154,6 @@ class UploadState with CLLogger {
         return true;
     }
   }
+
+  bool get allDone => faces != null;
 }

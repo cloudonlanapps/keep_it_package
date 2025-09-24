@@ -1,5 +1,6 @@
 import 'package:face_it_desktop/modules/media/views/media_popover_menu.dart';
-import 'package:face_it_desktop/modules/uploader/views/upload_status.dart';
+import 'package:face_it_desktop/modules/uploader/views/progress_view_face_recg_media.dart';
+import 'package:face_it_desktop/modules/uploader/views/progress_view_upload_media.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
@@ -17,9 +18,28 @@ class MediaTile extends ConsumerWidget {
       contentPadding: const EdgeInsets.symmetric(vertical: 8),
       leading: Media(filePath: file.path, width: 64, height: 64),
       title: Text(file.name, overflow: TextOverflow.ellipsis, maxLines: 2),
-      subtitle: MediaUploadStatusView(file: file),
+      subtitle: MediaProgressBars(file: file),
       trailing: MediaPopoverMenu(file: file),
       onTap: onTap,
+    );
+  }
+}
+
+class MediaProgressBars extends StatelessWidget {
+  const MediaProgressBars({required this.file, super.key});
+
+  final XFile file;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      spacing: 8,
+      children: [
+        Expanded(child: ProgressViewUploadMedia(file: file)),
+        Expanded(child: ProgressViewFaceRecgMedia(file: file)),
+        Expanded(child: Container()),
+        Expanded(child: Container()),
+      ],
     );
   }
 }

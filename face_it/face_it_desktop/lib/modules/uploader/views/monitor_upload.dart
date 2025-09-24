@@ -6,10 +6,10 @@ import 'package:shadcn_ui/shadcn_ui.dart';
 import '../../media/providers/auto_upload_monitor.dart';
 import '../../server/providers/auto_retry_upload.dart';
 import '../providers/uploader.dart';
-import 'upload_progress.dart';
+import 'progress_view_upload.dart';
 
-class UploadMonitor extends ConsumerWidget {
-  const UploadMonitor({super.key});
+class MonitorUpload extends ConsumerWidget {
+  const MonitorUpload({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -22,26 +22,16 @@ class UploadMonitor extends ConsumerWidget {
     return ShadCard(
       height: 180,
       padding: const EdgeInsets.all(8),
-      title: Row(
-        spacing: 8,
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Expanded(child: Container()),
-          Expanded(
-            child: Center(
-              child: Text(
-                'Upload Monitor',
-                style: ShadTheme.of(context).textTheme.small,
-              ),
-            ),
-          ),
-          Expanded(child: Container()),
-        ],
+      title: Center(
+        child: Text(
+          'Upload Monitor',
+          style: ShadTheme.of(context).textTheme.small,
+        ),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Expanded(child: UploadProgressChart()),
+          const Expanded(child: ProgressViewUpload()),
 
           Align(
             alignment: Alignment.centerRight,

@@ -27,8 +27,12 @@ class Uploader {
   @override
   int get hashCode => files.hashCode;
 
-  int get count => files.length;
+  int get uploadCount => files.length;
 
-  int countByStatus(UploadStatus status) =>
+  int uploadCountByStatus(UploadStatus status) =>
       files.values.where((e) => e.uploadStatus == status).length;
+
+  int get faceRecCount => files.length;
+  int faceRecgCountByStatus(ActivityStatus status) =>
+      files.values.where((e) => e.faceRecgStatus == status).length;
 }
