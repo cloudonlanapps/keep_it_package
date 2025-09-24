@@ -70,6 +70,7 @@ class _DrawFace0State extends ConsumerState<DrawFace0> {
         return SizedBox(
           width: 350,
           child: Column(
+            mainAxisSize: MainAxisSize.min,
             children: [
               switch (face.status) {
                 FaceStatus.notChecked ||
