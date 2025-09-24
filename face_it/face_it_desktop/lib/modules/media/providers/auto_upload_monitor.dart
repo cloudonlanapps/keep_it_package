@@ -42,15 +42,14 @@ class AutoUploadMonitor with CLLogger {
               .uploadMultiple(curr.map((e) => e.path));
         }
       })
-    /* ..listen(uploaderProvider, (prev, curr) {
+      ..listen(uploaderProvider, (prev, curr) {
         final autoFaceRecg = ref.read(
           serverPreferenceProvider.select((e) => e.autoFaceRecg),
         );
         if (autoFaceRecg) {
           ref.read(uploaderProvider.notifier).faceRecgAllEligible();
         }
-      }) */
-    ;
+      });
   }
 
   @override

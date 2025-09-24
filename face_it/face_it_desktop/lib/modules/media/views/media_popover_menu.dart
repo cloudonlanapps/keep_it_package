@@ -112,7 +112,6 @@ class MediaPopoverMenuState extends ConsumerState<MediaPopoverMenu> {
             FaceScannerContextMenu(
               filePath: candidate.path,
               onDone: popoverController.hide,
-              hasFaces: false, //FIXME
             ),
 
             PopOverMenuItem(
@@ -144,19 +143,21 @@ class FaceScannerContextMenu extends ConsumerWidget {
   const FaceScannerContextMenu({
     required this.filePath,
     required this.onDone,
-    required this.hasFaces,
     super.key,
   });
   final String filePath;
   final void Function()? onDone;
-  final bool hasFaces;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final isScanReady = ref
         .watch(uploaderProvider.notifier)
         .isScanReady(filePath);
-
+    final hasFaces = ref.watch(
+      uploaderProvider.select(
+        (e) => e.files[filePath]?.faces?.isNotEmpty ?? false,
+      ),
+    );
     return PopOverMenuItem(
       CLMenuItem(
         title: hasFaces ? 'Rescan for Face' : 'Scan For Face',
