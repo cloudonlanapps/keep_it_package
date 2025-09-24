@@ -15,7 +15,7 @@ class ServerLabel extends ConsumerWidget {
       case 'http':
       case 'https':
         color =
-            Colors.green; // TODO(anandas): When offline support, change to red
+            Colors.green; // FIXME: [LATER] When offline support, change to red
       default:
         color = Colors.grey.shade400;
     }

@@ -373,9 +373,6 @@ class UploaderNotifier extends StateNotifier<Uploader> with CLLogger {
                     isStillRequired(fileState, forced: forced),
               )
               .then((faceIds) {
-                /* ref
-                    .read(mediaListProvider.notifier)
-                    .addFaces(fileState.filePath, faceIds); */ //FIXME
                 updateFaceRecgStatus(
                   fileState,
                   ActivityStatus.success,
