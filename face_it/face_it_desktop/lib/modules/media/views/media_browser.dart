@@ -7,10 +7,8 @@ import 'package:shadcn_ui/shadcn_ui.dart';
 
 import '../../../app/models/main_content_type.dart';
 import '../../../app/providers/main_content_type.dart';
-import '../../uploader/views/upload_status.dart';
 import '../../utils/menu_button.dart';
-import 'media.dart';
-import 'media_popover_menu.dart';
+import 'media_tile.dart';
 
 final ImagePicker _picker = ImagePicker();
 
@@ -79,24 +77,6 @@ class MediaBrowser extends ConsumerWidget {
           ],
         ),
       ],
-    );
-  }
-}
-
-class MediaTile extends ConsumerWidget {
-  const MediaTile({required this.file, required this.onTap, super.key});
-  final XFile file;
-  final void Function()? onTap;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return ListTile(
-      contentPadding: const EdgeInsets.symmetric(vertical: 8),
-      leading: Media(filePath: file.path, width: 64, height: 64),
-      title: Text(file.name, overflow: TextOverflow.ellipsis, maxLines: 2),
-      subtitle: MediaUploadStatusView(file: file),
-      trailing: MediaPopoverMenu(file: file),
-      onTap: onTap,
     );
   }
 }
