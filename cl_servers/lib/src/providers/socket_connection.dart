@@ -14,6 +14,7 @@ final socketConnectionProvider =
 class SocketConnectionNotifier extends AsyncNotifier<CLSocket> with CLLogger {
   io.Socket? socket;
   bool isProcessing = false;
+  int count = 0;
   final List<AITask> queue = [];
 
   @override
@@ -92,6 +93,7 @@ class SocketConnectionNotifier extends AsyncNotifier<CLSocket> with CLLogger {
   }
 
   Future<Map<String, dynamic>> addTask(AITask task) {
+    log('${task.identifier}: added into the queue');
     queue.add(task);
     processNext();
     return task.result;
@@ -102,8 +104,15 @@ class SocketConnectionNotifier extends AsyncNotifier<CLSocket> with CLLogger {
     required io.Socket socket,
   }) async {
     if (task.isStillRequired != null) {
+      log('${task.identifier}: check if this task is required');
       final isStillRequired = task.isStillRequired!();
-      if (!isStillRequired) return {'error': 'task cancelled'};
+      if (!isStillRequired) {
+        log(
+          '${task.identifier}: user canceled this task, returning with error',
+        );
+        log('process cancelled by user');
+        return {'error': 'task cancelled'};
+      }
     }
     final completer = Completer<Map<String, dynamic>>();
 
@@ -118,20 +127,44 @@ class SocketConnectionNotifier extends AsyncNotifier<CLSocket> with CLLogger {
     /// FIXME: [LATER] We may need to add more error checks here?
     /// 1. server generated error
     /// 2. time out
+    log('${task.identifier}: request sending to server');
     socket
       ..on('result', callback)
       ..emit(task.taskType.name, task.identifier);
-
+    log('${task.identifier}: waiting for the response');
     final result = await completer.future;
-    socket.off('result', callback);
 
+    socket.off('result', callback);
+    log('${task.identifier}: response received $result');
     return result;
   }
 
-  Future<void> processNext() async {
-    if (socket == null) return;
-    if (isProcessing) return;
-    if (queue.isEmpty) return;
+  Future<void> processNext({int? myCount}) async {
+    final int triggerCount;
+    if (myCount == null) {
+      triggerCount = count;
+      count++;
+      if (isProcessing) {
+        log(
+          'processNext-$triggerCount: unable to start as its already running',
+        );
+        return;
+      }
+    } else {
+      triggerCount = myCount;
+    }
+
+    if (socket == null) {
+      isProcessing = false;
+      log('processNext-$triggerCount: unable to start as socket == null');
+      return;
+    }
+
+    if (queue.isEmpty) {
+      isProcessing = false;
+      log('processNext-$triggerCount: unable to start as queue is empty');
+      return;
+    }
 
     // Pick the request with the highest priority (lowest number)
     queue.sort((a, b) => a.compareTo(b));
@@ -139,13 +172,22 @@ class SocketConnectionNotifier extends AsyncNotifier<CLSocket> with CLLogger {
 
     isProcessing = true;
     try {
+      log('processNext-$triggerCount: process started for ${req.identifier}');
       final result = await process(req, socket: socket!);
+      log('processNext-$triggerCount: process completed for ${req.identifier}');
       req.complete(result);
     } catch (e) {
+      log(
+        'processNext-$triggerCount: process completed with error for ${req.identifier}',
+      );
       req.complete({'error': '$e'});
     } finally {
-      isProcessing = false;
-      await processNext();
+      log('processNext-$triggerCount: sleep 200msec');
+      await Future<void>.delayed(const Duration(milliseconds: 200));
+      log('processNext-$triggerCount: looking for next item}');
+      // continue next within the same context
+      await processNext(myCount: triggerCount);
     }
+    log('processNext-$triggerCount: returned');
   }
 }
