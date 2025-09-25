@@ -1,7 +1,3 @@
-import 'package:cl_basic_types/cl_basic_types.dart';
-import 'package:face_it_desktop/modules/server/views/server_manage_view.dart';
-import 'package:face_it_desktop/modules/uploader/providers/uploader.dart';
-import 'package:face_it_desktop/modules/uploader/views/monitor_upload.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
@@ -13,7 +9,8 @@ import '../../modules/content_manager/views/logs/log_view.dart';
 import '../../modules/content_manager/views/main/main_view.dart';
 import '../../modules/face_manager/views/saved_items_browser.dart';
 import '../../modules/media/views/media_browser.dart';
-import '../../modules/uploader/views/monitor_face_recg.dart';
+import '../../modules/server/views/server_manage_view.dart';
+import '../../modules/uploader/views/monitor_upload.dart';
 
 class FaceItDesktopApp extends ConsumerWidget {
   const FaceItDesktopApp({super.key});
@@ -103,39 +100,19 @@ class Monitors extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Column(
+    return Column(
       children: [
         Padding(
-          padding: EdgeInsets.all(8),
+          padding: const EdgeInsets.all(8),
           child: Row(
             spacing: 8,
             children: [
-              Expanded(child: MonitorUpload()),
-              Expanded(child: MonitorFaceRecg()),
+              const Expanded(child: MonitorUpload()),
+              Expanded(child: Container()),
             ],
           ),
         ),
-        DebugDump(),
       ],
     );
   }
-}
-
-class DebugDump extends ConsumerWidget with CLLogger {
-  const DebugDump({super.key});
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final uploader = ref.watch(uploaderProvider);
-
-    return ShadButton.secondary(
-      child: const Text('Dump'),
-      onPressed: () {
-        log(uploader.currentStatus);
-      },
-    );
-  }
-
-  @override
-  String get logPrefix => 'DebugDump';
 }

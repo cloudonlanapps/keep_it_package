@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:background_downloader/background_downloader.dart';
 import 'package:cl_basic_types/cl_basic_types.dart';
-import 'package:cl_servers/cl_servers.dart' show detectedFacesProvider;
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:content_store/content_store.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -37,10 +36,7 @@ class UploaderNotifier extends StateNotifier<Uploader> with CLLogger {
 
       for (final filePath in filePaths) {
         if (!state.files.containsKey(filePath)) {
-          updatedFiles[filePath] = UploadState(
-            filePath: filePath,
-            ignored: false,
-          );
+          updatedFiles[filePath] = UploadState(filePath: filePath);
         }
         if (state.files.containsKey(filePath) &&
             getFileState(filePath)!.ignored) {
@@ -208,7 +204,7 @@ class UploaderNotifier extends StateNotifier<Uploader> with CLLogger {
     final url = ref.read(uploadURLProvider);
     if (url == null) return;
     log('retry: valid url found (url: $url)');
-    log(state.currentStatus);
+
     final pendingItems = state.files.values.where((e) => e.uploadPending);
     if (pendingItems.isEmpty) return;
     log('retry ${pendingItems.length} pendingItems');
@@ -236,131 +232,7 @@ class UploaderNotifier extends StateNotifier<Uploader> with CLLogger {
   }
 
   UploadState? getFileState(String filePath) {
-    return state.files[filePath];
-  }
-
-  void updateFaceRecgStatus(
-    UploadState fileState,
-    ActivityStatus faceRecgStatus, {
-    List<String>? faces,
-  }) {
-    if (faceRecgStatus == ActivityStatus.success && faces == null) {
-      throw Exception(
-        'faces must be provided when successed. if no face, pass empty list',
-      );
-    }
-    final updated = state.files[fileState.filePath]!.copyWith(
-      faceRecgStatus: faceRecgStatus,
-      faces: () => faces,
-    );
-    updateState(filePath: fileState.filePath, uploadState: updated);
-  }
-
-  bool isScanReady(String filePath) {
-    final fileState = getFileState(filePath);
-    if (fileState == null) return false;
-    final result = downloadPath != null && fileState.faceScanPossible;
-    if (!result) {
-      log('isScanReady: failed');
-      log('isScanReady: uploadProgress = ${fileState.uploadProgress}');
-      log('isScanReady: faceRecgStatus = ${fileState.faceRecgStatus}');
-      log('isScanReady: downloadPath = $downloadPath');
-    } else {
-      log('isScanReady: $result');
-    }
-    return result;
-  }
-
-  bool isStillRequired(UploadState fileState, {bool forced = false}) {
-    if (!forced) {
-      final fileStateNow = getFileState(fileState.filePath);
-      if (fileStateNow == null) {
-        log('isStillRequired: false, reason: fileStateNow ==null');
-        return false;
-      }
-      if (fileStateNow.faceRecgStatus != ActivityStatus.pending) {
-        log(
-          'isStillRequired: false, reason: faceRecgStatus:${fileStateNow.faceRecgStatus}',
-        );
-
-        return false;
-      }
-
-      /// IF we had face already, even if it is empty
-      /// we should skip
-      final faces = fileStateNow.faces;
-
-      if (faces != null) {
-        if (fileStateNow.faceRecgStatus != ActivityStatus.success) {
-          log(
-            'isStillRequired: faces found but faceRecgStatus is not set to success. Setting now.',
-          );
-          // There are faces, we don't need to force? review this logic while testing
-          updateFaceRecgStatus(fileState, ActivityStatus.success);
-        }
-        log(
-          'isStillRequired: false, reason: faces are already available: faces: $faces',
-        );
-        return false;
-      }
-    }
-    updateFaceRecgStatus(fileState, ActivityStatus.processingNow);
-    log('isStillRequired: true');
-    return true;
-  }
-
-  Future<bool> scanForFace(UploadState fileState, {bool forced = false}) async {
-    try {
-      if (downloadPath != null && fileState.faceScanPossible) {
-        updateFaceRecgStatus(fileState, ActivityStatus.pending);
-        unawaited(
-          ref
-              .read(detectedFacesProvider.notifier)
-              .scanImage(
-                fileState.identity!,
-                downloadPath: downloadPath!,
-                isStillRequired: () =>
-                    isStillRequired(fileState, forced: forced),
-              )
-              .then((faceIds) {
-                updateFaceRecgStatus(
-                  fileState,
-                  ActivityStatus.success,
-                  faces: faceIds,
-                );
-              })
-              .catchError((e) {
-                updateFaceRecgStatus(fileState, ActivityStatus.error);
-              }),
-        );
-
-        return true;
-      }
-      return false;
-    } catch (e) {
-      log('face scan aborted for ${fileState.filePath}');
-      return false;
-    }
-  }
-
-  Future<bool> scanForFaceByPath(String filePath, {bool forced = false}) async {
-    // File is not yet uplaoded, return quitely
-    final fileState = getFileState(filePath);
-    if (fileState == null) return false;
-    return scanForFace(fileState, forced: forced);
-  }
-
-  void faceRecgAllEligible() {
-    final eligible = state.files.values.where((e) {
-      return e.identity != null && e.faceRecgStatus == ActivityStatus.premature;
-    });
-    if (eligible.isEmpty) return;
-    log(
-      'faceRecgAllEligible: Found ${eligible.length} eligible files that require face Recg. triggering',
-    );
-    for (final fileState in eligible) {
-      scanForFace(fileState);
-    }
+    return state.getFileState(filePath);
   }
 }
 

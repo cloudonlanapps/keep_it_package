@@ -64,38 +64,9 @@ class AutoUploadMonitor with CLLogger {
             ref.read(uploaderProvider.notifier).uploadMultiple(filesToUpload);
           }
         }
-      })
-      ..listen(uploaderProvider, (prev, curr) {
-        final autoFaceRecg = ref.read(
-          serverPreferenceProvider.select((e) => e.autoFaceRecg),
-        );
-        if (autoFaceRecg) {
-          ref.read(uploaderProvider.notifier).faceRecgAllEligible();
-        }
-      })
-      ..listen(serverPreferenceProvider.select((e) => e.autoFaceRecg), (
-        prev,
-        autoFaceRecg,
-      ) {
-        if (autoFaceRecg && prev != autoFaceRecg) {
-          ref.read(uploaderProvider.notifier).faceRecgAllEligible();
-        }
       });
   }
 
   @override
   String get logPrefix => 'AutoUploadMonitor';
 }
-
-/**
- * 
- ..listen(serverPreferenceProvider.select((e) => e.autoUpload), (
-        prev,
-        curr,
-      ) {
-        final url = ref.read(uploadURLProvider);
-        if (prev != curr && curr && url != null) {
-          ref.read(uploaderProvider.notifier).retryNew(url);
-        }
-      });
- */

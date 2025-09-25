@@ -1,4 +1,3 @@
-import 'package:background_downloader/background_downloader.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 
@@ -29,23 +28,7 @@ class Uploader {
 
   int get uploadCount => files.length;
 
-  int uploadCountByStatus(TaskStatus? status) =>
-      files.values.where((e) => e.uploadProgress?.status == status).length;
-
-  int get faceRecCount => files.length;
-  int faceRecgCountByStatus(ActivityStatus status) =>
-      files.values.where((e) => e.faceRecgStatus == status).length;
-
-  String get currentStatus {
-    final map = <String, int>{};
-    for (final status in [...TaskStatus.values]) {
-      map[status.name] = uploadCountByStatus(status);
-    }
-    map['notQueued'] = uploadCountByStatus(null);
-    final map2 = <ActivityStatus, int>{};
-    for (final status in ActivityStatus.values) {
-      map2[status] = faceRecgCountByStatus(status);
-    }
-    return '$map, $map2';
+  UploadState? getFileState(String filePath) {
+    return files[filePath];
   }
 }

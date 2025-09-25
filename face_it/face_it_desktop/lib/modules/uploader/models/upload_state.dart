@@ -1,11 +1,26 @@
 import 'package:background_downloader/background_downloader.dart';
 import 'package:cl_basic_types/cl_basic_types.dart';
-import 'package:collection/collection.dart';
-import 'package:flutter/foundation.dart' hide ValueGetter;
+import 'package:flutter/material.dart' hide ValueGetter;
 
 import 'upload_progress.dart';
 
-enum UploadStatus { notQueued, ignored, pending, complete, running, failed }
+enum UploadStatus {
+  notQueued,
+  ignored,
+  pending,
+  complete,
+  running,
+  failed;
+
+  Color get color => switch (this) {
+    notQueued => Colors.grey,
+    ignored => Colors.orange,
+    pending => Colors.yellow,
+    complete => Colors.green,
+    running => Colors.blue,
+    failed => Colors.red,
+  };
+}
 
 enum ActivityStatus {
   premature,
@@ -20,14 +35,11 @@ enum ActivityStatus {
 class UploadState with CLLogger {
   const UploadState({
     required this.filePath,
-
-    required this.ignored,
-    this.faceRecgStatus = ActivityStatus.premature,
-    this.serverResponse,
-    this.error,
-    this.identity,
-    this.faces,
     this.uploadProgress,
+    this.serverResponse,
+    this.identity,
+    this.error,
+    this.ignored = false,
   });
 
   final String filePath;
@@ -38,57 +50,46 @@ class UploadState with CLLogger {
   final String? error;
   final bool ignored;
 
-  final ActivityStatus faceRecgStatus;
-  final List<String>? faces;
   @override
   String get logPrefix => 'UploadState';
 
   UploadState copyWith({
     String? filePath,
-
     ValueGetter<UploadProgress?>? uploadProgress,
-    ActivityStatus? faceRecgStatus,
     ValueGetter<String?>? serverResponse,
     ValueGetter<String?>? identity,
     ValueGetter<String?>? error,
-    ValueGetter<List<String>?>? faces,
     bool? ignored,
   }) {
     return UploadState(
       filePath: filePath ?? this.filePath,
-
       uploadProgress: uploadProgress != null
           ? uploadProgress.call()
           : this.uploadProgress,
-      faceRecgStatus: faceRecgStatus ?? this.faceRecgStatus,
       serverResponse: serverResponse != null
           ? serverResponse.call()
           : this.serverResponse,
       identity: identity != null ? identity.call() : this.identity,
       error: error != null ? error.call() : this.error,
-      faces: faces != null ? faces.call() : this.faces,
       ignored: ignored ?? this.ignored,
     );
   }
 
   @override
   String toString() {
-    return 'UploadState(filePath: $filePath, uploadProgress: $uploadProgress, serverResponse: $serverResponse, identity: $identity, error: $error, ignored: $ignored, faceRecgStatus: $faceRecgStatus, faces: $faces)';
+    return 'UploadState(filePath: $filePath, uploadProgress: $uploadProgress, serverResponse: $serverResponse, identity: $identity, error: $error, ignored: $ignored)';
   }
 
   @override
   bool operator ==(covariant UploadState other) {
     if (identical(this, other)) return true;
-    final listEquals = const DeepCollectionEquality().equals;
 
     return other.filePath == filePath &&
         other.uploadProgress == uploadProgress &&
         other.serverResponse == serverResponse &&
         other.identity == identity &&
         other.error == error &&
-        other.ignored == ignored &&
-        other.faceRecgStatus == faceRecgStatus &&
-        listEquals(other.faces, faces);
+        other.ignored == ignored;
   }
 
   @override
@@ -98,38 +99,8 @@ class UploadState with CLLogger {
         serverResponse.hashCode ^
         identity.hashCode ^
         error.hashCode ^
-        ignored.hashCode ^
-        faceRecgStatus.hashCode ^
-        faces.hashCode;
+        ignored.hashCode;
   }
-
-  bool get faceScanPossible {
-    return identity != null &&
-        identity != null &&
-        switch (faceRecgStatus) {
-          ActivityStatus.premature ||
-          ActivityStatus.error ||
-          ActivityStatus.success => true,
-
-          ActivityStatus.pending ||
-          ActivityStatus.processingNow ||
-          ActivityStatus.ignore => false,
-        };
-  }
-
-  bool get faceScanInProgress {
-    return identity != null &&
-        switch (faceRecgStatus) {
-          ActivityStatus.pending || ActivityStatus.processingNow => true,
-
-          ActivityStatus.premature ||
-          ActivityStatus.ignore ||
-          ActivityStatus.error ||
-          ActivityStatus.success => false,
-        };
-  }
-
-  bool get allDone => faces != null;
 
   bool get uploadPending {
     if (ignored) return false;
@@ -144,7 +115,7 @@ class UploadState with CLLogger {
     }
   }
 
-  UploadState get reset => UploadState(filePath: filePath, ignored: false);
+  UploadState get reset => UploadState(filePath: filePath);
 
   UploadState get setUploadStatusUploading => copyWith(
     serverResponse: () => null,

@@ -1,11 +1,10 @@
-import 'package:face_it_desktop/modules/media/views/media_popover_menu.dart';
-import 'package:face_it_desktop/modules/uploader/views/progress_view_face_recg_media.dart';
-import 'package:face_it_desktop/modules/uploader/views/progress_view_upload_media.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 
+import '../../uploader/views/progress_view_upload_media.dart';
 import 'media.dart';
+import 'media_popover_menu.dart';
 
 class MediaTile extends ConsumerWidget {
   const MediaTile({required this.file, required this.onTap, super.key});
@@ -38,7 +37,7 @@ class MediaProgressBars extends StatelessWidget {
           spacing: 8,
           children: [
             Expanded(child: ProgressViewUploadMedia(file: file)),
-            Expanded(child: ProgressViewFaceRecgMedia(file: file)),
+            Expanded(child: Container()),
             Expanded(child: Container()),
             Expanded(child: Container()),
           ],

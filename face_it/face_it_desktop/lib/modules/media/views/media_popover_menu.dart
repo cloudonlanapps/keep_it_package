@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:cl_basic_types/cl_basic_types.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
@@ -78,10 +76,6 @@ class MediaPopoverMenuState extends ConsumerState<MediaPopoverMenu>
                 },
               ),
             ),
-            FaceScannerContextMenu(
-              filePath: candidate.path,
-              onDone: popoverController.hide,
-            ),
 
             PopOverMenuItem(
               CLMenuItem(
@@ -103,45 +97,6 @@ class MediaPopoverMenuState extends ConsumerState<MediaPopoverMenu>
       child: ShadIconButton.outline(
         onPressed: popoverController.toggle,
         icon: const Icon(LucideIcons.ellipsis200),
-      ),
-    );
-  }
-}
-
-class FaceScannerContextMenu extends ConsumerWidget {
-  const FaceScannerContextMenu({
-    required this.filePath,
-    required this.onDone,
-    super.key,
-  });
-  final String filePath;
-  final void Function()? onDone;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final isScanReady = ref
-        .watch(uploaderProvider.notifier)
-        .isScanReady(filePath);
-    final hasFaces = ref.watch(
-      uploaderProvider.select(
-        (e) => e.files[filePath]?.faces?.isNotEmpty ?? false,
-      ),
-    );
-    return PopOverMenuItem(
-      CLMenuItem(
-        title: hasFaces ? 'Rescan for Face' : 'Scan For Face',
-        icon: LucideIcons.scanFace,
-        onTap: isScanReady
-            ? () async {
-                unawaited(
-                  ref
-                      .read(uploaderProvider.notifier)
-                      .scanForFaceByPath(filePath, forced: true),
-                );
-                onDone?.call();
-                return null;
-              }
-            : null,
       ),
     );
   }

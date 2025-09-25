@@ -1,4 +1,4 @@
-import 'package:background_downloader/background_downloader.dart';
+import 'package:face_it_desktop/modules/uploader/models/upload_state.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -32,6 +32,12 @@ class UploadProgressViewState extends ConsumerState<ProgressViewUpload> {
     if (candidates.isEmpty) {
       return const SizedBox.shrink();
     }
+    final files = candidates.map((e) => uploader.getFileState(e.path));
+
+    int uploadCountByStatus(UploadStatus status) {
+      return files.where((e) => e.uploadStatus == status).length;
+    }
+
     const radius = 20.0;
     const radius2 = 20.0;
 
@@ -49,7 +55,7 @@ class UploadProgressViewState extends ConsumerState<ProgressViewUpload> {
               mainAxisAlignment: MainAxisAlignment.center,
               spacing: 8,
               children: [
-                for (final e in [null, ...TaskStatus.values])
+                for (final e in UploadStatus.values)
                   Row(
                     spacing: 8,
                     children: [
@@ -58,11 +64,11 @@ class UploadProgressViewState extends ConsumerState<ProgressViewUpload> {
                         height: 16,
                         decoration: BoxDecoration(
                           border: Border.all(),
-                          color: colors(e),
+                          color: e.color,
                         ),
                       ),
                       Text(
-                        e?.name ?? 'not Queued',
+                        e.name,
                         style: ShadTheme.of(context).textTheme.small,
                       ),
                     ],
@@ -83,19 +89,10 @@ class UploadProgressViewState extends ConsumerState<ProgressViewUpload> {
                 PieChart(
                   PieChartData(
                     sections: [
-                      PieChartSectionData(
-                        value: uploader.uploadCountByStatus(null).toDouble(),
-                        color: colors(null),
-                        radius: radius,
-                        showTitle: false,
-                        title: 'notQueued',
-                      ),
-                      for (final status in TaskStatus.values)
+                      for (final status in UploadStatus.values)
                         PieChartSectionData(
-                          value: uploader
-                              .uploadCountByStatus(status)
-                              .toDouble(),
-                          color: colors(status),
+                          value: uploadCountByStatus(status).toDouble(),
+                          color: status.color,
                           radius: radius,
                           showTitle: false,
                           title: status.name,
@@ -119,17 +116,4 @@ class UploadProgressViewState extends ConsumerState<ProgressViewUpload> {
       ),
     );
   }
-
-  Color colors(TaskStatus? status) => switch (status) {
-    null || TaskStatus.notFound => Colors.grey,
-
-    TaskStatus.enqueued ||
-    TaskStatus.running ||
-    TaskStatus.waitingToRetry ||
-    TaskStatus.paused => Colors.blue,
-
-    TaskStatus.complete => Colors.green,
-
-    TaskStatus.failed || TaskStatus.canceled => Colors.red,
-  };
 }
