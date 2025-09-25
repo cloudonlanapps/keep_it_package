@@ -102,15 +102,18 @@ class SocketConnectionNotifier extends AsyncNotifier<CLSocket> with CLLogger {
   Future<Map<String, dynamic>> process(
     AITask task, {
     required io.Socket socket,
+    required int processId,
   }) async {
     if (task.isStillRequired != null) {
-      log('${task.identifier}: check if this task is required');
+      log(
+        'processNext-$processId: ${task.identifier}: check if this task is required',
+      );
       final isStillRequired = task.isStillRequired!();
       if (!isStillRequired) {
         log(
-          '${task.identifier}: user canceled this task, returning with error',
+          'processNext-$processId: ${task.identifier}: user canceled this task, returning with error',
         );
-        log('process cancelled by user');
+
         return {'error': 'task cancelled'};
       }
     }
@@ -120,6 +123,7 @@ class SocketConnectionNotifier extends AsyncNotifier<CLSocket> with CLLogger {
       final map = data as Map<String, dynamic>;
       if (map.keys.contains('identifier') &&
           map['identifier'] == task.identifier) {
+        log('processNext-$processId: ${task.identifier} completed');
         completer.complete(map);
       }
     }
@@ -127,42 +131,46 @@ class SocketConnectionNotifier extends AsyncNotifier<CLSocket> with CLLogger {
     /// FIXME: [LATER] We may need to add more error checks here?
     /// 1. server generated error
     /// 2. time out
-    log('${task.identifier}: request sending to server');
+    log(
+      'processNext-$processId: ${task.identifier}: request sending to server',
+    );
     socket
       ..on('result', callback)
       ..emit(task.taskType.name, task.identifier);
-    log('${task.identifier}: waiting for the response');
+    log(
+      'processNext-$processId:  ${task.identifier}: waiting for the response',
+    );
     final result = await completer.future;
 
     socket.off('result', callback);
-    log('${task.identifier}: response received $result');
+    log(
+      'processNext-$processId: ${task.identifier}: response received $result',
+    );
     return result;
   }
 
   Future<void> processNext({int? myCount}) async {
-    final int triggerCount;
+    final int processId;
     if (myCount == null) {
-      triggerCount = count;
+      processId = count;
       count++;
       if (isProcessing) {
-        log(
-          'processNext-$triggerCount: unable to start as its already running',
-        );
+        log('processNext-$processId: unable to start as its already running');
         return;
       }
     } else {
-      triggerCount = myCount;
+      processId = myCount;
     }
 
     if (socket == null) {
       isProcessing = false;
-      log('processNext-$triggerCount: unable to start as socket == null');
+      log('processNext-$processId: unable to start as socket == null');
       return;
     }
 
     if (queue.isEmpty) {
       isProcessing = false;
-      log('processNext-$triggerCount: unable to start as queue is empty');
+      log('processNext-$processId: unable to start as queue is empty');
       return;
     }
 
@@ -172,22 +180,22 @@ class SocketConnectionNotifier extends AsyncNotifier<CLSocket> with CLLogger {
 
     isProcessing = true;
     try {
-      log('processNext-$triggerCount: process started for ${req.identifier}');
-      final result = await process(req, socket: socket!);
-      log('processNext-$triggerCount: process completed for ${req.identifier}');
+      log('processNext-$processId: process started for ${req.identifier}');
+      final result = await process(req, socket: socket!, processId: processId);
+      log('processNext-$processId: process completed for ${req.identifier}');
       req.complete(result);
     } catch (e) {
       log(
-        'processNext-$triggerCount: process completed with error for ${req.identifier}',
+        'processNext-$processId: process completed with error for ${req.identifier}',
       );
       req.complete({'error': '$e'});
     } finally {
-      log('processNext-$triggerCount: sleep 200msec');
+      log('processNext-$processId: sleep 200msec');
       await Future<void>.delayed(const Duration(milliseconds: 200));
-      log('processNext-$triggerCount: looking for next item}');
+      log('processNext-$processId: looking for next item}');
       // continue next within the same context
-      await processNext(myCount: triggerCount);
+      await processNext(myCount: processId);
     }
-    log('processNext-$triggerCount: returned');
+    log('processNext-$processId: returned');
   }
 }
