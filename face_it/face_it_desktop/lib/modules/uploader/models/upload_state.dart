@@ -151,16 +151,7 @@ class UploadState with CLLogger {
     }
   }
 
-  UploadState get setUploadStatusPending => copyWith(
-    serverResponse: () => null,
-    uploadStatus: UploadStatus.pending,
-    identity: () => null,
-    error: () => null,
-    // Need to review
-    faceRecgStatus: faces == null
-        ? ActivityStatus.premature
-        : ActivityStatus.success,
-  );
+  UploadState get reset => UploadState(filePath: filePath);
 
   UploadState get setUploadStatusUploading => copyWith(
     serverResponse: () => null,

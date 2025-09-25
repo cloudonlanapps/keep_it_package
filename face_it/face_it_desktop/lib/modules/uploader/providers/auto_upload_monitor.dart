@@ -1,10 +1,9 @@
 import 'package:cl_basic_types/cl_basic_types.dart';
 import 'package:cl_servers/cl_servers.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:path/path.dart' as p;
 
-import 'uploader.dart';
 import '../../media/providers/candidates.dart';
+import 'uploader.dart';
 
 ///       Algo
 /// When autoUpload state is changed to on

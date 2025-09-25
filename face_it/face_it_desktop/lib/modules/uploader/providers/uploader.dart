@@ -146,10 +146,7 @@ class UploaderNotifier extends StateNotifier<Uploader> with CLLogger {
   }
 
   void onReset(String filePath) {
-    updateState(
-      filePath: filePath,
-      uploadState: getFileState(filePath)!.setUploadStatusPending,
-    );
+    updateState(filePath: filePath, uploadState: getFileState(filePath)!.reset);
   }
 
   void onUploadCompleted(
@@ -224,7 +221,7 @@ class UploaderNotifier extends StateNotifier<Uploader> with CLLogger {
     for (final item in state.files.entries) {
       items[item.key] = item.value.uploadStatus == UploadStatus.ignore
           ? item.value
-          : item.value.setUploadStatusPending;
+          : item.value.reset;
       log(
         'reset ${item.value.filePath}: status reset to ${items[item.key]!.uploadStatus} ',
       );
