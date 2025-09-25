@@ -35,4 +35,16 @@ class Uploader {
   int get faceRecCount => files.length;
   int faceRecgCountByStatus(ActivityStatus status) =>
       files.values.where((e) => e.faceRecgStatus == status).length;
+
+  String get currentStatus {
+    final map = <UploadStatus, int>{};
+    for (final status in UploadStatus.values) {
+      map[status] = uploadCountByStatus(status);
+    }
+    final map2 = <ActivityStatus, int>{};
+    for (final status in ActivityStatus.values) {
+      map2[status] = faceRecgCountByStatus(status);
+    }
+    return '$map, $map2';
+  }
 }

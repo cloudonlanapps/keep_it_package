@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
-import '../../media/providers/auto_upload_monitor.dart';
+import '../providers/auto_upload_monitor.dart';
 import '../../server/providers/auto_retry_upload.dart';
 import '../providers/uploader.dart';
 import 'progress_view_upload.dart';

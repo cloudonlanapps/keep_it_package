@@ -1,3 +1,4 @@
+import 'package:background_downloader/background_downloader.dart';
 import 'package:cl_basic_types/cl_basic_types.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart' hide ValueGetter;
@@ -117,19 +118,6 @@ class UploadState with CLLogger {
         };
   }
 
-  bool get faceScanNeeded {
-    return uploadStatus == UploadStatus.success &&
-        switch (faceRecgStatus) {
-          ActivityStatus.premature => true,
-
-          ActivityStatus.pending ||
-          ActivityStatus.processingNow ||
-          ActivityStatus.ignore ||
-          ActivityStatus.error ||
-          ActivityStatus.success => false,
-        };
-  }
-
   bool get faceScanInProgress {
     return uploadStatus == UploadStatus.success &&
         switch (faceRecgStatus) {
@@ -142,18 +130,97 @@ class UploadState with CLLogger {
         };
   }
 
-  bool get uploadRequired {
-    switch (uploadStatus) {
-      case UploadStatus.uploading:
-      case UploadStatus.success:
-      case UploadStatus.ignore:
-        return false;
-      case UploadStatus.pending:
-      case UploadStatus.error: // Need to retry
+  bool get allDone => faces != null;
 
-        return true;
+  bool get uploadPending {
+    if (identity != null) {
+      if (uploadStatus != UploadStatus.success &&
+          uploadProgress?.status == TaskStatus.complete &&
+          uploadProgress?.progress == 1.0) {
+        return false;
+      }
+      throw Exception('when having identity, state must have a valid status');
+    } else {
+      return switch (uploadStatus) {
+        UploadStatus.pending => true,
+        UploadStatus.uploading => false,
+        UploadStatus.success => throw Exception('Unexpected state'),
+        UploadStatus.error => false,
+        UploadStatus.ignore => false,
+      };
     }
   }
 
-  bool get allDone => faces != null;
+  UploadState get setUploadStatusPending => copyWith(
+    serverResponse: () => null,
+    uploadStatus: UploadStatus.pending,
+    identity: () => null,
+    error: () => null,
+    // Need to review
+    faceRecgStatus: faces == null
+        ? ActivityStatus.premature
+        : ActivityStatus.success,
+  );
+
+  UploadState get setUploadStatusUploading => copyWith(
+    serverResponse: () => null,
+    uploadStatus: UploadStatus.uploading,
+    identity: () => null,
+    error: () => null,
+  );
+  UploadState get setUploadStatusIgnore => copyWith(
+    serverResponse: () => null,
+    uploadStatus: UploadStatus.uploading,
+    identity: () => null,
+    error: () => null,
+  );
+
+  UploadState setUploadError(String e) {
+    return copyWith(
+      serverResponse: () => null,
+      uploadStatus: UploadStatus.error,
+      identity: () => null,
+      error: () => e,
+    );
+  }
+
+  UploadState setIdentity(
+    String identity,
+    Map<String, dynamic> serverResponse,
+  ) {
+    return copyWith(
+      serverResponse: () => serverResponse.toString(),
+      uploadStatus: UploadStatus.success,
+      identity: () => identity,
+      error: () => null,
+    );
+  }
+
+  UploadState resetUploadError() {
+    if (uploadStatus == UploadStatus.error) {
+      return copyWith(
+        serverResponse: () => null,
+        uploadStatus: UploadStatus.pending,
+        identity: () => null,
+        error: () => null,
+      );
+    }
+
+    return this;
+  }
+
+  UploadState setProgress(double progress) {
+    return copyWith(
+      uploadProgress: () =>
+          uploadProgress?.copyWith(progress: progress) ??
+          UploadProgress(TaskStatus.running, progress),
+    );
+  }
+
+  UploadState setStatus(TaskStatus status) {
+    return copyWith(
+      uploadProgress: () =>
+          uploadProgress?.copyWith(status: status) ?? UploadProgress(status, 0),
+    );
+  }
 }

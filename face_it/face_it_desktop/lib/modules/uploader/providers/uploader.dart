@@ -7,9 +7,9 @@ import 'package:cl_basic_types/cl_basic_types.dart';
 import 'package:cl_servers/cl_servers.dart' show detectedFacesProvider;
 import 'package:content_store/content_store.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:path/path.dart' as p;
 
 import '../../server/providers/upload_url_provider.dart';
-import '../models/upload_progress.dart';
 import '../models/upload_state.dart';
 import '../models/upload_status.dart';
 import '../models/uploader.dart';
@@ -31,43 +31,30 @@ class UploaderNotifier extends StateNotifier<Uploader> with CLLogger {
   @override
   String get logPrefix => 'UploaderNotifier';
 
-  UploadState add(String filePath) {
-    if (!state.files.keys.contains(filePath) ||
-        (state.files[filePath]!.uploadStatus == UploadStatus.ignore)) {
-      state = Uploader({
-        ...state.files,
-        filePath: UploadState(filePath: filePath),
-      });
-    }
-
-    log('added 1 item into state (has ${state.files.length}) total items');
-    return state.files[filePath]!;
-  }
-
-  Iterable<UploadState> addMultiple(Iterable<String> filePaths) {
+  Iterable<String> addMultiple(Iterable<String> filePaths) {
     if (filePaths.isNotEmpty) {
-      final newFilePaths = filePaths.where(
-        (filePath) => !state.files.keys.contains(filePath),
-      );
-      final forceAgain = filePaths.where(
-        (filePath) =>
-            state.files.keys.contains(filePath) &&
-            state.files[filePath]!.uploadStatus == UploadStatus.ignore,
-      );
-      log('new files found ${newFilePaths.length}');
-      log('focing files with ignore: ${forceAgain.length}');
-      if (newFilePaths.isNotEmpty) {
-        state = Uploader({
-          ...state.files,
-          for (final file in [...newFilePaths, ...forceAgain])
-            file: UploadState(filePath: file),
-        });
+      final updatedFiles = <String, UploadState>{};
+
+      for (final filePath in filePaths) {
+        if (!state.files.containsKey(filePath)) {
+          updatedFiles[filePath] = UploadState(filePath: filePath);
+        } else if (getFileState(filePath)!.uploadStatus ==
+            UploadStatus.ignore) {
+          updatedFiles[filePath] = getFileState(
+            filePath,
+          )!.copyWith(uploadStatus: UploadStatus.pending);
+        }
+      }
+
+      if (updatedFiles.isNotEmpty) {
+        state = Uploader({...state.files, ...updatedFiles});
       }
     }
-    log(
-      'added ${filePaths.length} items into state (has ${state.files.length}) total items',
-    );
-    return state.files.values;
+
+    return filePaths
+        .map((e) => state.files[e]!)
+        .where((e) => e.uploadPending)
+        .map((e) => e.filePath);
   }
 
   Future<void> uploadMultiple(Iterable<String> filePaths) async {
@@ -75,19 +62,22 @@ class UploaderNotifier extends StateNotifier<Uploader> with CLLogger {
       return;
     }
     final files = addMultiple(filePaths);
+    if (files.isNotEmpty) {
+      log('${files.length} file(s) require upload. triggering');
+      await Future.wait(files.map(_upload));
+    }
+  }
 
-    final filesNotYetuploaded = files.where((e) => e.uploadRequired);
-    if (filesNotYetuploaded.isEmpty) return;
-    log('${filesNotYetuploaded.length} file(s) require upload. triggering');
-    await Future.wait(filesNotYetuploaded.map((e) => _upload(e.filePath)));
+  String? add(String filePath) {
+    return addMultiple([filePath]).firstOrNull;
   }
 
   Future<void> upload(String filePath) async {
-    final fileState = add(filePath);
+    final file = add(filePath);
 
-    if (fileState.uploadRequired) {
-      log('file(s) require upload. triggering');
-      await _upload(fileState.filePath);
+    if (file != null) {
+      log('file $filePath require upload. triggering');
+      await _upload(file);
     }
   }
 
@@ -105,172 +95,140 @@ class UploaderNotifier extends StateNotifier<Uploader> with CLLogger {
     required String filePath,
     required UploadState uploadState,
   }) {
-    if (state.files.keys.contains(filePath)) {
+    if (state.files.keys.contains(filePath) &&
+        getFileState(filePath) != uploadState) {
+      log('updateState: $filePath: $uploadState');
       state = Uploader({...state.files, filePath: uploadState});
+    } else {
+      log('updateState: $filePath:state update deferred as no change');
     }
   }
 
   Future<void> _upload(String filePath) async {
+    final fileName = p.basename(filePath);
+    final logPrefix = '_upload $fileName:';
     final uploader = state;
 
+    log('$logPrefix Request Received');
+
     if (!uploader.files.keys.contains(filePath)) {
+      log('$logPrefix fileState not found');
       return;
     }
-    final url = ref.read(uploadURLProvider);
-    if (url == null) return;
-    final task = UploadTask.fromFile(
-      file: File(state.files[filePath]!.filePath),
-      url: url,
-      fileField: 'media',
-      updates: Updates.progress, // request status and progress updates
-    );
+    final fileState = getFileState(filePath)!;
 
-    unawaited(startUpload(task));
-  }
-
-  void updateUploadError(String filePath, String? e) {
-    if (e != null) {
-      log('$filePath: error: $e');
+    if (!fileState.uploadPending) {
+      log('$logPrefix File already uploaded, reset to retry, use force');
     }
-    final updated = state.files[filePath]!.copyWith(
-      serverResponse: () => null,
-      uploadStatus: UploadStatus.error,
-      identity: () => null,
-      error: () => e ?? 'Empty response',
-    );
-    updateState(filePath: filePath, uploadState: updated);
-  }
 
-  void updateUploadPending(String filePath, String? e) {
-    if (e != null) {
-      log('$filePath: error: $e');
-    }
-    final updated = state.files[filePath]!.copyWith(
-      serverResponse: () => null,
-      uploadStatus: UploadStatus.pending,
-      identity: () => null,
-      error: () => e ?? 'Empty response',
-    );
-    updateState(filePath: filePath, uploadState: updated);
-  }
-
-  void updateUploadResponse(String filePath, String? response) {
-    if (response == null || (response.isEmpty)) {
-      throw Exception('Empty response');
-    }
-    final map = jsonDecode(response);
-    final identity =
-        (map as Map<String, dynamic>?)?['file_identifier'] as String?;
-    if (identity == null) {
-      throw Exception('file_identifier not found');
-    }
-    //log('$filePath: response: ${clEntity.label}');
-    final updated = state.files[filePath]!.copyWith(
-      serverResponse: () => response,
-      uploadStatus: UploadStatus.success,
-      identity: () => identity,
-      error: () => null,
-    );
-    updateState(filePath: filePath, uploadState: updated);
-  }
-
-  Future<void> startUpload(UploadTask task) async {
-    final filePath = await task.filePath();
-
-    final result = await FileDownloader()
-        .upload(
-          task,
-
-          onProgress: (progress) {
-            final uploadProgress =
-                state.files[filePath]!.uploadProgress?.copyWith(
-                  progress: progress,
-                ) ??
-                UploadProgress(TaskStatus.running, progress);
-            final updated = state.files[filePath]!.copyWith(
-              uploadProgress: () => uploadProgress,
-            );
-            updateState(filePath: filePath, uploadState: updated);
-          },
-          onStatus: (status) {
-            final uploadProgress =
-                state.files[filePath]!.uploadProgress?.copyWith(
-                  status: status,
-                ) ??
-                UploadProgress(status, 0);
-            final updated = state.files[filePath]!.copyWith(
-              uploadProgress: () => uploadProgress,
-            );
-            updateState(filePath: filePath, uploadState: updated);
-          },
-        )
-        .catchError((dynamic e) async {
-          log('${task.filename}: Exception occured: $e');
-          updateUploadError(filePath, '$e'); // may not be required?
-          return TaskStatusUpdate(task, TaskStatus.failed, TaskException('$e'));
-        });
-    //log('${task.filename}: ${result.status}');
     final url = ref.read(uploadURLProvider);
     if (url == null) {
-      updateUploadPending(filePath, null);
-    } else if (result.status.isFinalState) {
-      switch (result.status) {
-        case TaskStatus.complete:
-          try {
-            updateUploadResponse(filePath, result.responseBody);
-          } catch (e) {
-            updateUploadError(filePath, '$e');
-          }
+      log('$logPrefix unable to start the upload as network not found');
+      return;
+    }
+    updateState(
+      filePath: filePath,
+      uploadState: fileState.setUploadStatusUploading,
+    );
 
-        case TaskStatus.failed:
-          updateUploadError(filePath, '${result.exception}');
+    log('$logPrefix startUpload called in async mode');
+    unawaited(
+      BackgroundDownloaderWrap.startUpload(
+        filePath,
+        url,
+        onUpdateProgress: cbUpdateProgress,
+        onUpdateStatus: cbUpdateStatus,
+        onUploadError: cbUploadError,
+        onUploadCompleted: onUploadCompleted,
+        onReset: onReset,
+      ),
+    );
+  }
 
-        case TaskStatus.canceled:
-          updateUploadPending(filePath, null);
+  void onReset(String filePath) {
+    updateState(
+      filePath: filePath,
+      uploadState: getFileState(filePath)!.setUploadStatusPending,
+    );
+  }
 
-        case TaskStatus.enqueued:
-        case TaskStatus.running:
-        case TaskStatus.notFound:
-        case TaskStatus.waitingToRetry:
-        case TaskStatus.paused:
-          break;
-      }
+  void onUploadCompleted(
+    String filePath,
+    String identity,
+    Map<String, dynamic> map,
+  ) {
+    final fileState = getFileState(filePath);
+    if (fileState == null) return;
+    final url = ref.read(uploadURLProvider);
+    if (url == null) {
+      return onReset(filePath);
+    }
+    updateState(
+      filePath: filePath,
+      uploadState: fileState.setIdentity(identity, map),
+    );
+  }
+
+  void cbUploadError(String filePath, String error) {
+    final fileState = getFileState(filePath);
+    if (fileState == null) return;
+    final url = ref.read(uploadURLProvider);
+    if (url == null) {
+      return onReset(filePath);
+    }
+    updateState(
+      filePath: filePath,
+      uploadState: fileState.setUploadError(error),
+    );
+  }
+
+  void cbUpdateStatus(String filePath, TaskStatus status) {
+    final fileState = getFileState(filePath);
+    if (fileState == null) return;
+    final url = ref.read(uploadURLProvider);
+    if (url != null) {
+      updateState(filePath: filePath, uploadState: fileState.setStatus(status));
+    }
+  }
+
+  void cbUpdateProgress(String filePath, double progress) {
+    final fileState = getFileState(filePath);
+    if (fileState == null) return;
+    final url = ref.read(uploadURLProvider);
+    if (url != null) {
+      updateState(
+        filePath: filePath,
+        uploadState: fileState.setProgress(progress),
+      );
     }
   }
 
   Future<void> retryNew() async {
-    await resetNew();
-
-    final pendingItems = state.files.values.where(
-      (e) => e.uploadStatus != UploadStatus.ignore,
-    );
+    final url = ref.read(uploadURLProvider);
+    if (url == null) return;
+    log('retry: valid url found (url: $url)');
+    log(state.currentStatus);
+    final pendingItems = state.files.values.where((e) => e.uploadPending);
     if (pendingItems.isEmpty) return;
-    log(
-      'resetting ${pendingItems.length} pendingItems in state (has ${state.files.length}) items',
-    );
+    log('retry ${pendingItems.length} pendingItems');
 
     for (final item in pendingItems) {
+      log('retry ${item.filePath}: invoke _upload');
       await _upload(item.filePath);
     }
   }
 
   Future<void> resetNew() async {
     await cancelAllTasks();
-    final items = {
-      for (final item in state.files.entries)
-        item.key: item.value.uploadStatus == UploadStatus.ignore
-            ? item.value
-            : item.value.copyWith(
-                serverResponse: () => null,
-                uploadStatus: item.value.allDone
-                    ? UploadStatus.ignore
-                    : UploadStatus
-                          .pending, // if face is required, we may move this to ignore
-                identity: () => null,
-                error: () => null,
-                uploadProgress: () => null,
-              ),
-    };
+    final items = <String, UploadState>{};
+    for (final item in state.files.entries) {
+      items[item.key] = item.value.uploadStatus == UploadStatus.ignore
+          ? item.value
+          : item.value.setUploadStatusPending;
+      log(
+        'reset ${item.value.filePath}: status reset to ${items[item.key]!.uploadStatus} ',
+      );
+    }
     log(
       'resetting ${items.length} items in state (had ${state.files.length}) items',
     );
@@ -284,7 +242,7 @@ class UploaderNotifier extends StateNotifier<Uploader> with CLLogger {
     );
   }
 
-  UploadState? getStateByPath(String filePath) {
+  UploadState? getFileState(String filePath) {
     return state.files[filePath];
   }
 
@@ -306,7 +264,7 @@ class UploaderNotifier extends StateNotifier<Uploader> with CLLogger {
   }
 
   bool isScanReady(String filePath) {
-    final fileState = getStateByPath(filePath);
+    final fileState = getFileState(filePath);
     if (fileState == null) return false;
     final result = downloadPath != null && fileState.faceScanPossible;
     if (!result) {
@@ -322,15 +280,14 @@ class UploaderNotifier extends StateNotifier<Uploader> with CLLogger {
 
   bool isStillRequired(UploadState fileState, {bool forced = false}) {
     if (!forced) {
-      final fileStateNow = getStateByPath(fileState.filePath);
+      final fileStateNow = getFileState(fileState.filePath);
       if (fileStateNow == null) {
         log('isStillRequired: false, reason: fileStateNow ==null');
         return false;
       }
-      if (!fileStateNow.faceScanNeeded &&
-          fileStateNow.faceRecgStatus != ActivityStatus.pending) {
+      if (fileStateNow.faceRecgStatus != ActivityStatus.pending) {
         log(
-          'isStillRequired: false, reason: fileStateNow.faceScanNeeded:${fileStateNow.faceScanNeeded}',
+          'isStillRequired: false, reason: faceRecgStatus:${fileStateNow.faceRecgStatus}',
         );
 
         return false;
@@ -395,13 +352,16 @@ class UploaderNotifier extends StateNotifier<Uploader> with CLLogger {
 
   Future<bool> scanForFaceByPath(String filePath, {bool forced = false}) async {
     // File is not yet uplaoded, return quitely
-    final fileState = getStateByPath(filePath);
+    final fileState = getFileState(filePath);
     if (fileState == null) return false;
     return scanForFace(fileState, forced: forced);
   }
 
   void faceRecgAllEligible() {
-    final eligible = state.files.values.where((e) => e.faceScanNeeded);
+    final eligible = state.files.values.where((e) {
+      return e.uploadStatus == UploadStatus.success &&
+          e.faceRecgStatus == ActivityStatus.premature;
+    });
     if (eligible.isEmpty) return;
     log(
       'faceRecgAllEligible: Found ${eligible.length} eligible files that require face Recg. triggering',
@@ -409,5 +369,98 @@ class UploaderNotifier extends StateNotifier<Uploader> with CLLogger {
     for (final fileState in eligible) {
       scanForFace(fileState);
     }
+  }
+}
+
+class BackgroundDownloaderWrap {
+  static Future<void> startUpload(
+    String filePath,
+    String url, {
+    required void Function(String filePath, double progress) onUpdateProgress,
+    required void Function(String filePath, TaskStatus status) onUpdateStatus,
+    required void Function(String filePath, String error) onUploadError,
+    required void Function(String filePath) onReset,
+    required void Function(
+      String filePath,
+      String identity,
+      Map<String, dynamic> map,
+    )
+    onUploadCompleted,
+    void Function(String msg)? log,
+  }) async {
+    final fileName = p.basename(filePath);
+    final logPrefix = 'uploader $fileName:';
+    final task = UploadTask.fromFile(
+      file: File(filePath),
+      url: url,
+      fileField: 'media',
+      updates: Updates.statusAndProgress,
+    );
+
+    log?.call('$logPrefix Enqueue the task');
+
+    await FileDownloader()
+        .upload(
+          task,
+
+          onProgress: (progress) {
+            log?.call('$logPrefix progress $progress');
+            onUpdateProgress(filePath, progress);
+          },
+          onStatus: (status) {
+            log?.call('$logPrefix status $status');
+            onUpdateStatus(filePath, status);
+          },
+        )
+        .catchError((dynamic e) async {
+          log?.call('$logPrefix catchError: Exception $e');
+
+          return TaskStatusUpdate(task, TaskStatus.failed, TaskException('$e'));
+        })
+        .then((result) {
+          switch (result.status) {
+            case TaskStatus.enqueued:
+            case TaskStatus.running:
+            case TaskStatus.notFound:
+            case TaskStatus.waitingToRetry:
+            case TaskStatus.paused:
+              log?.call('$logPrefix Unexpected, returning non finite state');
+              throw Exception('returned a non finite state');
+            case TaskStatus.failed:
+              log?.call('$logPrefix failed, ${result.exception}');
+              onUploadError(filePath, '${result.exception}');
+            case TaskStatus.canceled:
+              log?.call('$logPrefix cancelled');
+              onReset(filePath);
+            case TaskStatus.complete:
+              final response = result.responseBody;
+              if (response == null) {
+                log?.call('$logPrefix failed, null response');
+                onUploadError(filePath, 'Null Response');
+              } else if (response.isEmpty) {
+                log?.call('$logPrefix failed, empty response');
+                onUploadError(
+                  filePath,
+                  '${result.exception ?? 'Empty Response'}',
+                );
+              } else {
+                try {
+                  final map = jsonDecode(response);
+                  final identity =
+                      (map as Map<String, dynamic>?)?['file_identifier']
+                          as String?;
+                  if (identity == null) {
+                    return onUploadError(filePath, 'missing identity');
+                  }
+                  onUploadCompleted(filePath, identity, map!);
+                } catch (e) {
+                  return onUploadError(
+                    filePath,
+                    'invalid response from server',
+                  );
+                }
+              }
+          }
+        });
   }
 }

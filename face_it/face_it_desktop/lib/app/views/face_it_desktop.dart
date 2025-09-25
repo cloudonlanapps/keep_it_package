@@ -1,4 +1,6 @@
+import 'package:cl_basic_types/cl_basic_types.dart';
 import 'package:face_it_desktop/modules/server/views/server_manage_view.dart';
+import 'package:face_it_desktop/modules/uploader/providers/uploader.dart';
 import 'package:face_it_desktop/modules/uploader/views/monitor_upload.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -101,15 +103,39 @@ class Monitors extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Padding(
-      padding: EdgeInsets.all(8),
-      child: Row(
-        spacing: 8,
-        children: [
-          Expanded(child: MonitorUpload()),
-          Expanded(child: MonitorFaceRecg()),
-        ],
-      ),
+    return const Column(
+      children: [
+        Padding(
+          padding: EdgeInsets.all(8),
+          child: Row(
+            spacing: 8,
+            children: [
+              Expanded(child: MonitorUpload()),
+              Expanded(child: MonitorFaceRecg()),
+            ],
+          ),
+        ),
+        DebugDump(),
+      ],
     );
   }
+}
+
+class DebugDump extends ConsumerWidget with CLLogger {
+  const DebugDump({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final uploader = ref.watch(uploaderProvider);
+
+    return ShadButton.secondary(
+      child: const Text('Dump'),
+      onPressed: () {
+        log(uploader.currentStatus);
+      },
+    );
+  }
+
+  @override
+  String get logPrefix => 'DebugDump';
 }
