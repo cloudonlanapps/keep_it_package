@@ -32,13 +32,17 @@ class MediaProgressBars extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      spacing: 8,
+    return Column(
       children: [
-        Expanded(child: ProgressViewUploadMedia(file: file)),
-        Expanded(child: ProgressViewFaceRecgMedia(file: file)),
-        Expanded(child: Container()),
-        Expanded(child: Container()),
+        Row(
+          spacing: 8,
+          children: [
+            Expanded(child: ProgressViewUploadMedia(file: file)),
+            Expanded(child: ProgressViewFaceRecgMedia(file: file)),
+            Expanded(child: Container()),
+            Expanded(child: Container()),
+          ],
+        ),
       ],
     );
   }

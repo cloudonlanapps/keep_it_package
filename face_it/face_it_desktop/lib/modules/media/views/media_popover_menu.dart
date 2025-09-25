@@ -1,15 +1,12 @@
 import 'dart:async';
 
-import 'package:background_downloader/background_downloader.dart';
 import 'package:cl_basic_types/cl_basic_types.dart';
 import 'package:colan_widgets/colan_widgets.dart';
-import 'package:face_it_desktop/modules/uploader/models/upload_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
-import '../../server/providers/upload_url_provider.dart';
 import '../../uploader/providers/uploader.dart';
 import '../../utils/pop_over_menu_item.dart';
 import '../providers/candidates.dart';
@@ -35,18 +32,6 @@ class MediaPopoverMenuState extends ConsumerState<MediaPopoverMenu>
     super.dispose();
   }
 
-  Future<bool> onUpload() async {
-    unawaited(ref.read(uploaderProvider.notifier).upload(widget.file.path));
-    popoverController.hide();
-    return true;
-  }
-
-  Future<bool> onCancel() async {
-    unawaited(ref.read(uploaderProvider.notifier).cancel(widget.file.path));
-    popoverController.hide();
-    return true;
-  }
-
   @override
   Widget build(BuildContext context) {
     final candidate = ref.watch(
@@ -66,41 +51,6 @@ class MediaPopoverMenuState extends ConsumerState<MediaPopoverMenu>
       uploaderProvider.select((e) => e.files[candidate.path]),
     );
 
-    final url = ref.watch(uploadURLProvider);
-    final uploadMenuItem = CLMenuItem(
-      title: 'Upload',
-      icon: clIcons.imageUpload,
-      onTap: onUpload,
-    );
-    final uploadCancelMenuItem = CLMenuItem(
-      title: 'Cancel Upload',
-      icon: clIcons.imageUpload,
-      onTap: onCancel,
-    );
-    final uploadedMenuItem = CLMenuItem(
-      title: 'Uploaded',
-      icon: clIcons.imageUpload,
-    );
-
-    final menuItem = switch (uploadState) {
-      null => uploadMenuItem,
-      (final UploadState _) when uploadState.ignored => uploadMenuItem,
-      (final UploadState _) when uploadState.uploadProgress == null =>
-        uploadCancelMenuItem,
-      (final UploadState _)
-          when uploadState.uploadProgress?.status == TaskStatus.complete =>
-        uploadedMenuItem,
-
-      _ => CLMenuItem(
-        title: 'unexpected',
-        icon: clIcons.imageUpload,
-        onTap: () async {
-          log(ref.read(uploaderProvider).currentStatus);
-          return true;
-        },
-      ),
-    };
-
     return ShadPopover(
       controller: popoverController,
       popover: (context) => SizedBox(
@@ -109,10 +59,17 @@ class MediaPopoverMenuState extends ConsumerState<MediaPopoverMenu>
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            PopOverMenuItem(menuItem),
+            PopOverMenuItem(
+              ref
+                  .read(uploaderProvider.notifier)
+                  .getUploadContextMenuItem(
+                    widget.file.path,
+                    onDone: popoverController.hide,
+                  ),
+            ),
             PopOverMenuItem(
               CLMenuItem(
-                title: 'dump',
+                title: 'debug-dump',
                 icon: LucideIcons.ambulance,
                 onTap: () async {
                   log(uploadState.toString());

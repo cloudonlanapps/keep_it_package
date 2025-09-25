@@ -40,7 +40,7 @@ class UploadProgressViewState extends ConsumerState<ProgressViewUpload> {
       padding: EdgeInsets.zero,
       popover: (context) {
         return ShadCard(
-          width: 120,
+          width: 150,
           padding: EdgeInsets.zero,
           child: Padding(
             padding: const EdgeInsets.all(8),

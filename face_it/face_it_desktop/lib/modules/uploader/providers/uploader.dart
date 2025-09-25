@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:background_downloader/background_downloader.dart';
 import 'package:cl_basic_types/cl_basic_types.dart';
 import 'package:cl_servers/cl_servers.dart' show detectedFacesProvider;
+import 'package:colan_widgets/colan_widgets.dart';
 import 'package:content_store/content_store.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path/path.dart' as p;
@@ -360,5 +361,55 @@ class UploaderNotifier extends StateNotifier<Uploader> with CLLogger {
     for (final fileState in eligible) {
       scanForFace(fileState);
     }
+  }
+}
+
+extension MenuExtUploader on UploaderNotifier {
+  CLMenuItem getUploadContextMenuItem(
+    String filePath, {
+    void Function()? onDone,
+  }) {
+    final fileState = getFileState(filePath);
+    final uploadMenuItem = CLMenuItem(
+      title: 'Upload',
+      icon: clIcons.imageUpload,
+      onTap: () async {
+        await upload(filePath);
+        onDone?.call();
+        return true;
+      },
+    );
+    final retryMenuItem = CLMenuItem(
+      title: 'Re-Upload',
+      icon: clIcons.imageUpload,
+      onTap: () async {
+        await upload(filePath);
+        onDone?.call();
+        return true;
+      },
+    );
+    final uploadCancelMenuItem = CLMenuItem(
+      title: 'Cancel Upload',
+      icon: clIcons.imageUpload,
+      onTap: () async {
+        await cancel(filePath);
+        onDone?.call();
+        return true;
+      },
+    );
+    final uploadedMenuItem = CLMenuItem(
+      title: 'Uploaded',
+      icon: clIcons.imageUpload,
+    );
+    final menuItem = switch (fileState.uploadStatus) {
+      UploadStatus.notQueued => uploadMenuItem,
+      UploadStatus.ignored => uploadMenuItem,
+      UploadStatus.pending => uploadCancelMenuItem,
+      UploadStatus.complete => uploadedMenuItem,
+      UploadStatus.running => uploadCancelMenuItem,
+      UploadStatus.failed => retryMenuItem,
+    };
+
+    return menuItem;
   }
 }

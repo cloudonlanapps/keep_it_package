@@ -5,6 +5,8 @@ import 'package:flutter/foundation.dart' hide ValueGetter;
 
 import 'upload_progress.dart';
 
+enum UploadStatus { notQueued, ignored, pending, complete, running, failed }
+
 enum ActivityStatus {
   premature,
   pending,
@@ -204,5 +206,30 @@ class UploadState with CLLogger {
       uploadProgress: () =>
           uploadProgress?.copyWith(status: status) ?? UploadProgress(status, 0),
     );
+  }
+}
+
+/// Note this extension is for nullable,
+/// we can't merge it with the class
+extension StausManipulatorOnUploaderState on UploadState? {
+  UploadStatus get uploadStatus {
+    return switch (this) {
+      null => UploadStatus.notQueued,
+      final UploadState _ when this!.ignored => UploadStatus.ignored,
+      final UploadState _ when this!.uploadProgress == null =>
+        UploadStatus.pending,
+      _ => switch (this!.uploadProgress!.status) {
+        TaskStatus.complete => UploadStatus.complete,
+        TaskStatus.enqueued => UploadStatus.pending,
+
+        TaskStatus.running => UploadStatus.running,
+        TaskStatus.waitingToRetry => UploadStatus.running,
+        TaskStatus.paused => UploadStatus.running,
+
+        TaskStatus.notFound => UploadStatus.failed,
+        TaskStatus.failed => UploadStatus.failed,
+        TaskStatus.canceled => UploadStatus.failed,
+      },
+    };
   }
 }
