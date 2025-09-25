@@ -133,4 +133,14 @@ class BackgroundDownloaderWrap {
       onUploadError(filePath, 'System or Network Error: $e');
     }
   }
+
+  static Future<void> cancel(String filePath) async {
+    final currentTasks = await FileDownloader().allTasks();
+    for (final task in currentTasks) {
+      final fname = await task.filePath();
+      if (fname == filePath) {
+        await FileDownloader().cancelTasksWithIds([task.taskId]);
+      }
+    }
+  }
 }

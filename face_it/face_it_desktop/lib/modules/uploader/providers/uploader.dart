@@ -9,7 +9,7 @@ import 'package:path/path.dart' as p;
 
 import '../../server/providers/upload_url_provider.dart';
 import '../models/upload_state.dart';
-import '../models/upload_status.dart';
+
 import '../models/uploader.dart';
 import 'background_downloader_wrap.dart';
 
@@ -36,12 +36,14 @@ class UploaderNotifier extends StateNotifier<Uploader> with CLLogger {
 
       for (final filePath in filePaths) {
         if (!state.files.containsKey(filePath)) {
-          updatedFiles[filePath] = UploadState(filePath: filePath);
-        } else if (getFileState(filePath)!.uploadStatus ==
-            UploadStatus.ignore) {
-          updatedFiles[filePath] = getFileState(
-            filePath,
-          )!.copyWith(uploadStatus: UploadStatus.pending);
+          updatedFiles[filePath] = UploadState(
+            filePath: filePath,
+            ignored: false,
+          );
+        }
+        if (state.files.containsKey(filePath) &&
+            getFileState(filePath)!.ignored) {
+          updatedFiles[filePath] = getFileState(filePath)!.reset;
         }
       }
 
@@ -81,13 +83,15 @@ class UploaderNotifier extends StateNotifier<Uploader> with CLLogger {
   }
 
   Future<void> cancel(String filePath) async {
-    state = Uploader({
-      ...state.files,
-      filePath: UploadState(
-        filePath: filePath,
-        uploadStatus: UploadStatus.ignore,
-      ),
-    });
+    await BackgroundDownloaderWrap.cancel(filePath);
+
+    final fileState = getFileState(filePath);
+    if (fileState == null) return;
+
+    updateState(
+      filePath: filePath,
+      uploadState: fileState.copyWith(ignored: true),
+    );
   }
 
   void updateState({
@@ -216,19 +220,11 @@ class UploaderNotifier extends StateNotifier<Uploader> with CLLogger {
 
   Future<void> resetNew() async {
     await cancelAllTasks();
-    final items = <String, UploadState>{};
-    for (final item in state.files.entries) {
-      items[item.key] = item.value.uploadStatus == UploadStatus.ignore
-          ? item.value
-          : item.value.reset;
-      log(
-        'reset ${item.value.filePath}: status reset to ${items[item.key]!.uploadStatus} ',
-      );
-    }
-    log(
-      'resetting ${items.length} items in state (had ${state.files.length}) items',
-    );
-    state = Uploader(items);
+
+    log('resetting state');
+    state = Uploader({
+      for (final item in state.files.entries) item.key: item.value.reset,
+    });
   }
 
   Future<void> cancelAllTasks() async {
@@ -265,7 +261,7 @@ class UploaderNotifier extends StateNotifier<Uploader> with CLLogger {
     final result = downloadPath != null && fileState.faceScanPossible;
     if (!result) {
       log('isScanReady: failed');
-      log('isScanReady: uploadStatus = ${fileState.uploadStatus}');
+      log('isScanReady: uploadProgress = ${fileState.uploadProgress}');
       log('isScanReady: faceRecgStatus = ${fileState.faceRecgStatus}');
       log('isScanReady: downloadPath = $downloadPath');
     } else {
@@ -355,8 +351,7 @@ class UploaderNotifier extends StateNotifier<Uploader> with CLLogger {
 
   void faceRecgAllEligible() {
     final eligible = state.files.values.where((e) {
-      return e.uploadStatus == UploadStatus.success &&
-          e.faceRecgStatus == ActivityStatus.premature;
+      return e.identity != null && e.faceRecgStatus == ActivityStatus.premature;
     });
     if (eligible.isEmpty) return;
     log(

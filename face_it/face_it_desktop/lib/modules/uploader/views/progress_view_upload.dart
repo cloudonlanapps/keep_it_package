@@ -1,10 +1,10 @@
+import 'package:background_downloader/background_downloader.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
 import '../../media/providers/candidates.dart';
-import '../models/upload_status.dart';
 import '../providers/uploader.dart';
 
 class ProgressViewUpload extends ConsumerStatefulWidget {
@@ -48,22 +48,26 @@ class UploadProgressViewState extends ConsumerState<ProgressViewUpload> {
               mainAxisSize: MainAxisSize.min,
               mainAxisAlignment: MainAxisAlignment.center,
               spacing: 8,
-              children: UploadStatus.values.map((e) {
-                return Row(
-                  spacing: 8,
-                  children: [
-                    Container(
-                      width: 16,
-                      height: 16,
-                      decoration: BoxDecoration(
-                        border: Border.all(),
-                        color: colors(e),
+              children: [
+                for (final e in [null, ...TaskStatus.values])
+                  Row(
+                    spacing: 8,
+                    children: [
+                      Container(
+                        width: 16,
+                        height: 16,
+                        decoration: BoxDecoration(
+                          border: Border.all(),
+                          color: colors(e),
+                        ),
                       ),
-                    ),
-                    Text(e.name, style: ShadTheme.of(context).textTheme.small),
-                  ],
-                );
-              }).toList(),
+                      Text(
+                        e?.name ?? 'not Queued',
+                        style: ShadTheme.of(context).textTheme.small,
+                      ),
+                    ],
+                  ),
+              ],
             ),
           ),
         );
@@ -79,7 +83,14 @@ class UploadProgressViewState extends ConsumerState<ProgressViewUpload> {
                 PieChart(
                   PieChartData(
                     sections: [
-                      for (final status in UploadStatus.values)
+                      PieChartSectionData(
+                        value: uploader.uploadCountByStatus(null).toDouble(),
+                        color: colors(null),
+                        radius: radius,
+                        showTitle: false,
+                        title: 'notQueued',
+                      ),
+                      for (final status in TaskStatus.values)
                         PieChartSectionData(
                           value: uploader
                               .uploadCountByStatus(status)
@@ -109,11 +120,16 @@ class UploadProgressViewState extends ConsumerState<ProgressViewUpload> {
     );
   }
 
-  Color colors(UploadStatus status) => switch (status) {
-    UploadStatus.pending => Colors.blueGrey,
-    UploadStatus.uploading => Colors.blue,
-    UploadStatus.success => Colors.green,
-    UploadStatus.error => Colors.red,
-    UploadStatus.ignore => Colors.grey,
+  Color colors(TaskStatus? status) => switch (status) {
+    null || TaskStatus.notFound => Colors.grey,
+
+    TaskStatus.enqueued ||
+    TaskStatus.running ||
+    TaskStatus.waitingToRetry ||
+    TaskStatus.paused => Colors.blue,
+
+    TaskStatus.complete => Colors.green,
+
+    TaskStatus.failed || TaskStatus.canceled => Colors.red,
   };
 }

@@ -1,7 +1,9 @@
 import 'dart:async';
 
+import 'package:background_downloader/background_downloader.dart';
+import 'package:cl_basic_types/cl_basic_types.dart';
 import 'package:colan_widgets/colan_widgets.dart';
-import 'package:face_it_desktop/modules/uploader/models/upload_status.dart';
+import 'package:face_it_desktop/modules/uploader/models/upload_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
@@ -20,8 +22,12 @@ class MediaPopoverMenu extends ConsumerStatefulWidget {
   ConsumerState<MediaPopoverMenu> createState() => MediaPopoverMenuState();
 }
 
-class MediaPopoverMenuState extends ConsumerState<MediaPopoverMenu> {
+class MediaPopoverMenuState extends ConsumerState<MediaPopoverMenu>
+    with CLLogger {
   final popoverController = ShadPopoverController();
+
+  @override
+  String get logPrefix => 'MediaPopoverMenuState';
 
   @override
   void dispose() {
@@ -61,6 +67,39 @@ class MediaPopoverMenuState extends ConsumerState<MediaPopoverMenu> {
     );
 
     final url = ref.watch(uploadURLProvider);
+    final uploadMenuItem = CLMenuItem(
+      title: 'Upload',
+      icon: clIcons.imageUpload,
+      onTap: onUpload,
+    );
+    final uploadCancelMenuItem = CLMenuItem(
+      title: 'Cancel Upload',
+      icon: clIcons.imageUpload,
+      onTap: onCancel,
+    );
+    final uploadedMenuItem = CLMenuItem(
+      title: 'Uploaded',
+      icon: clIcons.imageUpload,
+    );
+
+    final menuItem = switch (uploadState) {
+      null => uploadMenuItem,
+      (final UploadState _) when uploadState.ignored => uploadMenuItem,
+      (final UploadState _) when uploadState.uploadProgress == null =>
+        uploadCancelMenuItem,
+      (final UploadState _)
+          when uploadState.uploadProgress?.status == TaskStatus.complete =>
+        uploadedMenuItem,
+
+      _ => CLMenuItem(
+        title: 'unexpected',
+        icon: clIcons.imageUpload,
+        onTap: () async {
+          log(ref.read(uploaderProvider).currentStatus);
+          return true;
+        },
+      ),
+    };
 
     return ShadPopover(
       controller: popoverController,
@@ -70,43 +109,16 @@ class MediaPopoverMenuState extends ConsumerState<MediaPopoverMenu> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            PopOverMenuItem(menuItem),
             PopOverMenuItem(
               CLMenuItem(
-                title: uploadState == null
-                    ? 'Upload'
-                    : (url == null)
-                    ? switch (uploadState.uploadStatus) {
-                        UploadStatus.success => 'Uploaded',
-                        UploadStatus.pending => 'Cancel Upload',
-                        UploadStatus.error => "Can't upload",
-                        UploadStatus.uploading => 'Cancel Upload',
-                        UploadStatus.ignore => "Can't upload",
-                      }
-                    : switch (uploadState.uploadStatus) {
-                        UploadStatus.success => 'Uploaded',
-                        UploadStatus.pending => 'Cancel Upload',
-                        UploadStatus.error => 'Retry Upload',
-                        UploadStatus.uploading => 'uploading',
-                        UploadStatus.ignore => 'Upload',
-                      },
-                icon: clIcons.imageUpload,
-                onTap: uploadState == null
-                    ? onUpload
-                    : (url == null)
-                    ? switch (uploadState.uploadStatus) {
-                        UploadStatus.success => null,
-                        UploadStatus.pending => onCancel,
-                        UploadStatus.error => null,
-                        UploadStatus.uploading => onCancel,
-                        UploadStatus.ignore => null,
-                      }
-                    : switch (uploadState.uploadStatus) {
-                        UploadStatus.success => null,
-                        UploadStatus.pending => onCancel,
-                        UploadStatus.error => onUpload,
-                        UploadStatus.uploading => null,
-                        UploadStatus.ignore => onUpload,
-                      },
+                title: 'dump',
+                icon: LucideIcons.ambulance,
+                onTap: () async {
+                  log(uploadState.toString());
+                  popoverController.hide();
+                  return true;
+                },
               ),
             ),
             FaceScannerContextMenu(
