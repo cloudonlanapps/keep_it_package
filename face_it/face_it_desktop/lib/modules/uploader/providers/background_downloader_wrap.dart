@@ -4,24 +4,43 @@ import 'dart:io';
 import 'package:background_downloader/background_downloader.dart';
 import 'package:path/path.dart' as p;
 
+typedef ProgressCallback = void Function(String filePath, double progress);
+typedef StatusCallback = void Function(String filePath, TaskStatus status);
+typedef ErrorCallback = void Function(String filePath, String error);
+typedef ResetCallback = void Function(String filePath);
+typedef CompletedCallback =
+    void Function(
+      String filePath,
+      String identity,
+      Map<String, dynamic> responseMap,
+    );
+typedef LogCallback = void Function(String msg);
+
+// Imports remain the same
+
+// ... typedefs defined above ...
+
 class BackgroundDownloaderWrap {
   static Future<void> startUpload(
     String filePath,
     String url, {
-    required void Function(String filePath, double progress) onUpdateProgress,
-    required void Function(String filePath, TaskStatus status) onUpdateStatus,
-    required void Function(String filePath, String error) onUploadError,
-    required void Function(String filePath) onReset,
-    required void Function(
-      String filePath,
-      String identity,
-      Map<String, dynamic> map,
-    )
-    onUploadCompleted,
-    void Function(String msg)? log,
+    required ProgressCallback onUpdateProgress,
+    required StatusCallback onUpdateStatus,
+    required ErrorCallback onUploadError,
+    required ResetCallback onReset,
+    required CompletedCallback onUploadCompleted,
+    LogCallback? log,
   }) async {
     final fileName = p.basename(filePath);
     final logPrefix = 'uploader $fileName:';
+
+    // Check if the file exists before creating the task
+    if (!File(filePath).existsSync()) {
+      onUploadError(filePath, 'File not found at path: $filePath');
+      log?.call('$logPrefix ERROR: File not found');
+      return;
+    }
+
     final task = UploadTask.fromFile(
       file: File(filePath),
       url: url,
@@ -31,68 +50,87 @@ class BackgroundDownloaderWrap {
 
     log?.call('$logPrefix Enqueue the task');
 
-    await FileDownloader()
-        .upload(
-          task,
+    try {
+      final result = await FileDownloader().upload(
+        task,
+        onProgress: (progress) {
+          log?.call('$logPrefix progress $progress');
+          onUpdateProgress(filePath, progress);
+        },
+        onStatus: (status) {
+          log?.call('$logPrefix status $status');
+          onUpdateStatus(filePath, status);
+        },
+      );
 
-          onProgress: (progress) {
-            log?.call('$logPrefix progress $progress');
-            onUpdateProgress(filePath, progress);
-          },
-          onStatus: (status) {
-            log?.call('$logPrefix status $status');
-            onUpdateStatus(filePath, status);
-          },
-        )
-        .catchError((dynamic e) async {
-          log?.call('$logPrefix catchError: Exception $e');
+      switch (result.status) {
+        case TaskStatus.complete:
+          // --- SUCCESS HANDLING ---
+          final response = result.responseBody;
 
-          return TaskStatusUpdate(task, TaskStatus.failed, TaskException('$e'));
-        })
-        .then((result) {
-          switch (result.status) {
-            case TaskStatus.enqueued:
-            case TaskStatus.running:
-            case TaskStatus.notFound:
-            case TaskStatus.waitingToRetry:
-            case TaskStatus.paused:
-              log?.call('$logPrefix Unexpected, returning non finite state');
-              throw Exception('returned a non finite state');
-            case TaskStatus.failed:
-              log?.call('$logPrefix failed, ${result.exception}');
-              onUploadError(filePath, '${result.exception}');
-            case TaskStatus.canceled:
-              log?.call('$logPrefix cancelled');
-              onReset(filePath);
-            case TaskStatus.complete:
-              final response = result.responseBody;
-              if (response == null) {
-                log?.call('$logPrefix failed, null response');
-                onUploadError(filePath, 'Null Response');
-              } else if (response.isEmpty) {
-                log?.call('$logPrefix failed, empty response');
-                onUploadError(
-                  filePath,
-                  '${result.exception ?? 'Empty Response'}',
-                );
-              } else {
-                try {
-                  final map = jsonDecode(response);
-                  final identity =
-                      (map as Map<String, dynamic>?)?['file_identifier']
-                          as String?;
-                  if (identity == null) {
-                    return onUploadError(filePath, 'missing identity');
-                  }
-                  onUploadCompleted(filePath, identity, map!);
-                } catch (e) {
-                  return onUploadError(
-                    filePath,
-                    'invalid response from server',
-                  );
-                }
-              }
+          if (response == null || response.isEmpty) {
+            log?.call('$logPrefix failed, empty/null response');
+            return onUploadError(
+              filePath,
+              'Server returned empty or null response',
+            );
           }
-        });
+
+          try {
+            final map = jsonDecode(response) as Map<String, dynamic>;
+            final identity = map['file_identifier'] as String?;
+
+            if (identity == null) {
+              log?.call('$logPrefix failed, missing identity in response');
+              return onUploadError(
+                filePath,
+                'Server response is missing "file_identifier"',
+              );
+            }
+
+            onUploadCompleted(filePath, identity, map);
+          } on FormatException catch (e) {
+            log?.call('$logPrefix failed, JSON decoding error: $e');
+            return onUploadError(filePath, 'Invalid JSON response from server');
+          } catch (e) {
+            log?.call(
+              '$logPrefix failed with unexpected error in response parsing: $e',
+            );
+            return onUploadError(
+              filePath,
+              'Unexpected error during response processing: ${e.runtimeType}',
+            );
+          }
+
+        case TaskStatus.failed:
+          log?.call('$logPrefix failed, ${result.exception}');
+          onUploadError(
+            filePath,
+            '${result.exception ?? 'Upload failed with unknown error'}',
+          );
+
+        case TaskStatus.canceled:
+          log?.call('$logPrefix cancelled');
+          onReset(filePath);
+
+        case TaskStatus.enqueued:
+        case TaskStatus.running:
+        case TaskStatus.notFound:
+        case TaskStatus.waitingToRetry:
+        case TaskStatus.paused:
+          // Handles enqueued, running, notFound, waitingToRetry, paused
+          log?.call(
+            '$logPrefix Unexpected, returned non-finite state: ${result.status}',
+          );
+          // Treat non-finite states after 'await upload' as a failure for cleanup/re-try purposes
+          onUploadError(
+            filePath,
+            'Upload process terminated unexpectedly with status: ${result.status}',
+          );
+      }
+    } catch (e) {
+      log?.call('$logPrefix Top-level exception: $e');
+      onUploadError(filePath, 'System or Network Error: $e');
+    }
   }
 }
