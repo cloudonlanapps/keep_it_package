@@ -4,6 +4,9 @@ import 'package:face_it_desktop/modules/settings/providers/face_box_preferences.
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../models/detected_face.dart';
+import '../providers/f_face.dart';
+
 class DrawBBox extends ConsumerWidget {
   const DrawBBox({required this.faceId, super.key});
   final String faceId;

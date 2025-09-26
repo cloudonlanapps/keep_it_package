@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'package:cl_servers/cl_servers.dart';
 import 'package:dotted_border/dotted_border.dart';
 
 import 'package:face_it_desktop/modules/settings/providers/face_box_preferences.dart';
@@ -7,6 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:vertical_percent_indicator/vertical_percent_indicator.dart';
+
+import '../models/detected_face.dart';
 
 class PersonCard extends ConsumerWidget {
   const PersonCard({required this.face, super.key});

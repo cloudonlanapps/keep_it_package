@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
+import '../models/detected_face.dart';
+import '../providers/f_face.dart';
 import 'draw_bbox.dart';
 import 'new_person_card.dart';
 import 'person_card.dart';

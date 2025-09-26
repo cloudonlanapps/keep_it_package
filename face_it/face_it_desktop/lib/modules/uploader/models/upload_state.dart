@@ -22,15 +22,6 @@ enum UploadStatus {
   };
 }
 
-enum ActivityStatus {
-  premature,
-  pending,
-  processingNow,
-  success,
-  error,
-  ignore,
-}
-
 @immutable
 class UploadState with CLLogger {
   const UploadState({
