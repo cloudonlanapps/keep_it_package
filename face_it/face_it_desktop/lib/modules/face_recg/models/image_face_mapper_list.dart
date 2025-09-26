@@ -22,6 +22,11 @@ class ImageFaceMapperList {
       status: mappers.where((e) => e.status == status).length,
   };
 
+  int get count => mappers.length;
+
+  int countByStatus(ActivityStatus status) =>
+      mappers.where((e) => e.status == status).length;
+
   @override
   bool operator ==(covariant ImageFaceMapperList other) {
     if (identical(this, other)) return true;

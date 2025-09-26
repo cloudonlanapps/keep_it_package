@@ -5,6 +5,7 @@ import 'package:shadcn_ui/shadcn_ui.dart';
 import '../../modules/cl_browser_panel/models/cl_browser_panal.dart';
 import '../../modules/cl_browser_panel/providers/cl_browser_panal.dart';
 import '../../modules/cl_browser_panel/views/cl_browser_panel_view.dart';
+import '../../modules/face_recg/views/monitor_face_recg.dart';
 import '../../modules/media/views/media_browser.dart';
 import '../../modules/server/views/server_manage_view.dart';
 import '../../modules/uploader/views/monitor_upload.dart';
@@ -95,15 +96,15 @@ class Monitors extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
+    return const Column(
       children: [
         Padding(
-          padding: const EdgeInsets.all(8),
+          padding: EdgeInsets.all(8),
           child: Row(
             spacing: 8,
             children: [
-              const Expanded(child: MonitorUpload()),
-              Expanded(child: Container()),
+              Expanded(child: MonitorUpload()),
+              Expanded(child: MonitorFaceRecg()),
             ],
           ),
         ),
