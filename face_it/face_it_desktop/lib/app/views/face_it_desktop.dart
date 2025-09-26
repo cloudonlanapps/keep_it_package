@@ -9,7 +9,7 @@ import '../../modules/face_recg/views/monitor_face_recg.dart';
 import '../../modules/media/views/media_browser.dart';
 import '../../modules/server/views/server_manage_view.dart';
 import '../../modules/uploader/views/monitor_upload.dart';
-import 'log_view.dart';
+
 import 'main_view.dart';
 
 class FaceItDesktopApp extends ConsumerWidget {
@@ -64,9 +64,9 @@ class FaceItDesktop0 extends ConsumerWidget {
             children: [
               ShadResizablePanel(
                 id: 'explorer',
-                defaultSize: .2,
-                minSize: .1,
-                maxSize: .2,
+                defaultSize: .4,
+                minSize: .2,
+                maxSize: .4,
                 child: CLBrowserPanelView(
                   leading: [ServerManageView(), Monitors()],
                 ),
@@ -77,12 +77,12 @@ class FaceItDesktop0 extends ConsumerWidget {
                 minSize: .2,
                 child: MainPanelView(),
               ),
-              ShadResizablePanel(
+              /* ShadResizablePanel(
                 id: 'logView',
                 defaultSize: .2,
                 minSize: .1,
                 child: LogView(),
-              ),
+              ), */
             ],
           ),
         ),
