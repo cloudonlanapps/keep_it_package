@@ -13,9 +13,6 @@ final socketConnectionProvider =
 
 class SocketConnectionNotifier extends AsyncNotifier<CLSocket> with CLLogger {
   io.Socket? socket;
-  bool isProcessing = false;
-  int count = 0;
-  final List<AITask> queue = [];
 
   @override
   String get logPrefix => 'SessionNotifier';

@@ -2,8 +2,6 @@ export 'src/builders/get_active_a_i_server.dart' show GetActiveAIServer;
 export 'src/builders/get_available_servers.dart' show GetAvailableServers;
 export 'src/builders/get_nw_scanner.dart' show GetNetworkScanner;
 export 'src/builders/get_server_session.dart' show GetServerSession;
-export 'src/models/ai_task.dart'
-    show AITask, AITaskPriority, AITaskType, FaceRecTask;
 export 'src/models/cl_server.dart' show CLServer;
 export 'src/models/cl_socket.dart' show CLSocket;
 export 'src/models/network_scanner.dart' show NetworkScanner;
