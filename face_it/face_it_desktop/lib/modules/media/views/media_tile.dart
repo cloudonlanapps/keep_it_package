@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 
+import '../../face_recg/views/progress_view_facerecg_media.dart';
 import '../../uploader/views/progress_view_upload_media.dart';
 import 'media.dart';
 import 'media_popover_menu.dart';
@@ -37,7 +38,7 @@ class MediaProgressBars extends StatelessWidget {
           spacing: 8,
           children: [
             Expanded(child: ProgressViewUploadMedia(file: file)),
-            Expanded(child: Container()),
+            Expanded(child: ProgressViewFaceRecgMedia(file: file)),
             Expanded(child: Container()),
             Expanded(child: Container()),
           ],
