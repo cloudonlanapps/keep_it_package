@@ -3,8 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../app/models/main_content_type.dart';
 import '../../../../app/providers/main_content_type.dart';
-import '../../../face_manager/views/faces_view.dart';
-import '../../../face_manager/views/persons_view.dart';
+
 import '../../../media/views/media_view.dart';
 
 class MainPanelView extends ConsumerWidget {
@@ -15,8 +14,6 @@ class MainPanelView extends ConsumerWidget {
     final activeMainContentType = ref.watch(activeMainContentTypeProvider);
     return switch (activeMainContentType) {
       MainContentType.images => const MediaViewer(),
-      MainContentType.faces => const FacesView(),
-      MainContentType.persons => const PersonsView(),
     };
   }
 }

@@ -7,7 +7,6 @@ import '../../modules/cl_browser_panel/providers/cl_browser_panal.dart';
 import '../../modules/cl_browser_panel/views/cl_browser_panel_view.dart';
 import '../../modules/content_manager/views/logs/log_view.dart';
 import '../../modules/content_manager/views/main/main_view.dart';
-import '../../modules/face_manager/views/saved_items_browser.dart';
 import '../../modules/media/views/media_browser.dart';
 import '../../modules/server/views/server_manage_view.dart';
 import '../../modules/uploader/views/monitor_upload.dart';
@@ -38,10 +37,6 @@ class FaceItDesktopApp extends ConsumerWidget {
                     CLBrowserPanal(
                       label: 'Images',
                       panelBuilder: (context) => const MediaBrowser(),
-                    ),
-                    CLBrowserPanal(
-                      label: 'Saved Items',
-                      panelBuilder: (context) => const SavedItemsBrowser(),
                     ),
                   ],
                 ),

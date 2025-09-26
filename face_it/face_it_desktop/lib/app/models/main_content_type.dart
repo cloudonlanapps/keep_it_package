@@ -1,1 +1,1 @@
-enum MainContentType { images, faces, persons }
+enum MainContentType { images }
