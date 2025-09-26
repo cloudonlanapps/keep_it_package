@@ -12,44 +12,65 @@ import '../models/image_face_mapper_list.dart';
 import 'f_faces.dart';
 import 'scheduler_notifier.dart';
 
+final faceRecgProvider =
+    StateNotifierProvider<FaceRecgNotifier, ImageFaceMapperList>((ref) {
+      return FaceRecgNotifier(ref);
+    });
+
 class FaceRecgNotifier extends StateNotifier<ImageFaceMapperList>
     with CLLogger {
   FaceRecgNotifier(this.ref) : super(const ImageFaceMapperList([]));
   final Ref ref;
-  void addImage(String image) {
-    state = state.insertImage(image);
+
+  void _updateState(ImageFaceMapperList newState) {
+    state = newState;
+    if (state.ready.isNotEmpty) {
+      for (final item in state.ready) {
+        recognize(item.image);
+      }
+      ref.read(schedulerNotifierProvider.notifier).processNext();
+    }
+    log('$state');
+  }
+
+  void addImage(String image, {String? serverId}) {
+    _updateState(state.insertImage(image, serverId: serverId));
   }
 
   void removeImage(String image) {
-    state = state.removeImage(image);
+    _updateState(state.removeImage(image));
   }
 
   void setSessionId(String image, String serverId) {
-    state = state.setSessionId(image, serverId);
+    _updateState(state.setSessionId(image, serverId));
+  }
+
+  void clearSessionId(String image) {
+    _updateState(state.clearSessionId(image));
   }
 
   void setError(String image, String error) {
-    state = state.setError(image, error);
+    _updateState(state.setError(image, error));
   }
 
   void setIsProcessing(String image) {
-    state = state.setIsProcessing(image);
+    _updateState(state.setIsProcessing(image));
   }
 
   void setFaces(String image, List<String> faceIds) {
-    state = state.setFaces(image, faceIds);
+    _updateState(state.setFaces(image, faceIds));
   }
 
   void reset(String image) {
-    state = state.reset(image);
+    _updateState(state.reset(image));
   }
 
   void resetAll() {
-    state = state.resetAll();
+    _updateState(state.resetAll());
   }
 
-  void clearSessionId() {
-    state = state.clearSessionId();
+  void clearAllSessionId() {
+    _updateState(state.clearAllSessionId());
   }
 
   void recognize(
@@ -64,7 +85,8 @@ class FaceRecgNotifier extends StateNotifier<ImageFaceMapperList>
     }
     final candidate = switch (mapper.status) {
       ActivityStatus.premature => null,
-      ActivityStatus.pending => mapper,
+      ActivityStatus.ready => mapper,
+      ActivityStatus.pending => null, // check if we need to change priority
       ActivityStatus.processingNow => null,
       ActivityStatus.success => retry ? mapper : null, // introduce force
       ActivityStatus.error => retry ? mapper : null, // introduce force
@@ -72,19 +94,25 @@ class FaceRecgNotifier extends StateNotifier<ImageFaceMapperList>
     if (candidate == null) {
       return;
     }
-    if (mapper.status != ActivityStatus.pending) {
-      state = state.reset(mapper.image);
-    }
+    state = state.setIsPushed(mapper.image);
     ref
         .read(schedulerNotifierProvider.notifier)
         .pushTask(
           FaceRecTask(
-            identifier: image,
+            identifier: mapper.sessionIdentity!,
             priority: priority,
             pre: (identifier) async {
-              final mapper = state.getMapper(identifier);
-              if (mapper == null) return false;
-              if (mapper.status != ActivityStatus.pending) return false;
+              final mapper = state.getMapper(image);
+              if (mapper == null) {
+                log('pre failed as mapper not found');
+                return false;
+              }
+              if (mapper.status != ActivityStatus.pending) {
+                log(
+                  'pre failed as mapper is not in pending state. current status: ${mapper.status}',
+                );
+                return false;
+              }
 
               state = state.setIsProcessing(image);
               return true;
@@ -92,15 +120,12 @@ class FaceRecgNotifier extends StateNotifier<ImageFaceMapperList>
             post: (identifier, resultMap) async {
               if (resultMap.keys.contains('faces')) {
                 log(
-                  '$identifier found ${(resultMap['faces'] as List<dynamic>).length} faces',
+                  '$image found ${(resultMap['faces'] as List<dynamic>).length} faces',
                 );
-                await getFaces(identifier, resultMap['faces'] as List<dynamic>);
+                await getFaces(image, resultMap['faces'] as List<dynamic>);
               }
               if (resultMap.keys.contains('error')) {
-                state = state.setError(
-                  identifier,
-                  resultMap['error'].toString(),
-                );
+                state = state.setError(image, resultMap['error'].toString());
               } else {}
               return false;
             },
@@ -129,6 +154,7 @@ class FaceRecgNotifier extends StateNotifier<ImageFaceMapperList>
         }
       }
     }
+    log('$image: Detected faces ${faces.map((e) => e.descriptor.identity)}');
     ref.read(detectedFacesProvider.notifier).upsertFaces(faces);
     state = state.setFaces(
       image,

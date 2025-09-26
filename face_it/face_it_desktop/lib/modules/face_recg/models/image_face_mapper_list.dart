@@ -14,7 +14,13 @@ class ImageFaceMapperList {
   }
 
   @override
-  String toString() => 'ImageFaceMapperList(mappers: $mappers)';
+  String toString() =>
+      'ImageFaceMapperList(mappers: ${mappers.length}), status: $status';
+
+  Map<ActivityStatus, int> get status => {
+    for (final status in ActivityStatus.values)
+      status: mappers.where((e) => e.status == status).length,
+  };
 
   @override
   bool operator ==(covariant ImageFaceMapperList other) {
@@ -27,9 +33,24 @@ class ImageFaceMapperList {
   @override
   int get hashCode => mappers.hashCode;
 
-  ImageFaceMapperList insertImage(String image) {
-    if (hasImage(image)) return this;
-    final updated = [...mappers, ImageFaceMapper(image: image)];
+  ImageFaceMapperList insertImage(String image, {String? serverId}) {
+    final List<ImageFaceMapper> updated;
+    if (hasImage(image)) {
+      if (serverId != null) {
+        updated = [
+          ...mappers.map(
+            (e) => e.image == image ? e.setSessionId(serverId) : e,
+          ),
+        ];
+      } else {
+        updated = mappers;
+      }
+    } else {
+      updated = [
+        ...mappers,
+        ImageFaceMapper(image: image, sessionIdentity: serverId),
+      ];
+    }
     return copyWith(mappers: updated);
   }
 
@@ -47,6 +68,14 @@ class ImageFaceMapperList {
     return copyWith(mappers: updated);
   }
 
+  ImageFaceMapperList clearSessionId(String image) {
+    if (!hasImage(image)) return this;
+    final updated = [
+      ...mappers.map((e) => e.image == image ? e.setSessionId(null) : e),
+    ];
+    return copyWith(mappers: updated);
+  }
+
   ImageFaceMapperList setError(String image, String error) {
     if (!hasImage(image)) return this;
     final updated = [
@@ -59,6 +88,14 @@ class ImageFaceMapperList {
     if (!hasImage(image)) return this;
     final updated = [
       ...mappers.map((e) => e.image == image ? e.setIsProcessing() : e),
+    ];
+    return copyWith(mappers: updated);
+  }
+
+  ImageFaceMapperList setIsPushed(String image) {
+    if (!hasImage(image)) return this;
+    final updated = [
+      ...mappers.map((e) => e.image == image ? e.setIsPushed() : e),
     ];
     return copyWith(mappers: updated);
   }
@@ -82,7 +119,7 @@ class ImageFaceMapperList {
     return copyWith(mappers: updated);
   }
 
-  ImageFaceMapperList clearSessionId() {
+  ImageFaceMapperList clearAllSessionId() {
     final updated = [...mappers.map((e) => e.setSessionId(null))];
     return copyWith(mappers: updated);
   }
@@ -99,6 +136,6 @@ class ImageFaceMapperList {
     return mappers.where((e) => e.image == image).isNotEmpty;
   }
 
-  List<ImageFaceMapper> get pending =>
-      mappers.where((e) => e.status == ActivityStatus.pending).toList();
+  List<ImageFaceMapper> get ready =>
+      mappers.where((e) => e.status == ActivityStatus.ready).toList();
 }

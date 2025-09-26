@@ -31,7 +31,7 @@ class SchedulerNotifier extends StateNotifier<List<AITask>> with CLLogger {
   }
 
   @override
-  String get logPrefix => throw UnimplementedError();
+  String get logPrefix => 'SchedulerNotifier';
 
   Future<void> processNext({int? myCount}) async {
     final int processId;

@@ -7,6 +7,7 @@ import 'package:content_store/content_store.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path/path.dart' as p;
 
+import '../../face_recg/providers/face_recg.dart';
 import '../../server/providers/upload_url_provider.dart';
 import '../models/upload_state.dart';
 
@@ -147,6 +148,7 @@ class UploaderNotifier extends StateNotifier<Uploader> with CLLogger {
 
   void onReset(String filePath) {
     updateState(filePath: filePath, uploadState: getFileState(filePath)!.reset);
+    ref.read(faceRecgProvider.notifier).clearSessionId(filePath);
   }
 
   void onUploadCompleted(
@@ -164,6 +166,7 @@ class UploaderNotifier extends StateNotifier<Uploader> with CLLogger {
       filePath: filePath,
       uploadState: fileState.setIdentity(identity, map),
     );
+    ref.read(faceRecgProvider.notifier).addImage(filePath, serverId: identity);
   }
 
   void cbUploadError(String filePath, String error) {
@@ -177,6 +180,7 @@ class UploaderNotifier extends StateNotifier<Uploader> with CLLogger {
       filePath: filePath,
       uploadState: fileState.setUploadError(error),
     );
+    ref.read(faceRecgProvider.notifier).clearSessionId(filePath);
   }
 
   void cbUpdateStatus(String filePath, TaskStatus status) {
@@ -222,6 +226,7 @@ class UploaderNotifier extends StateNotifier<Uploader> with CLLogger {
     state = Uploader({
       for (final item in state.files.entries) item.key: item.value.reset,
     });
+    ref.read(faceRecgProvider.notifier).clearAllSessionId();
   }
 
   Future<void> cancelAllTasks() async {

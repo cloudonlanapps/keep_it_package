@@ -1,13 +1,13 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 
-enum ActivityStatus { premature, pending, processingNow, success, error }
+enum ActivityStatus { premature, ready, pending, processingNow, success, error }
 
 @immutable
 class ImageFaceMapper {
   const ImageFaceMapper({
     required this.image,
-    this.isProcessing = false,
+    this.isProcessing = 0,
     this.sessionIdentity,
     this.faceIds,
     this.error,
@@ -16,14 +16,14 @@ class ImageFaceMapper {
   final String? sessionIdentity;
   final List<String>? faceIds;
   final String? error;
-  final bool isProcessing;
+  final int isProcessing;
 
   ImageFaceMapper copyWith({
     String? source,
     ValueGetter<String?>? sessionIdentity,
     ValueGetter<List<String>?>? faceIds,
     ValueGetter<String?>? error,
-    bool? isProcessing,
+    int? isProcessing,
   }) {
     return ImageFaceMapper(
       image: source ?? image,
@@ -66,8 +66,11 @@ class ImageFaceMapper {
     return switch (this) {
       (_) when faceIds != null => ActivityStatus.success,
       (_) when error != null => ActivityStatus.error,
-      (_) when isProcessing => ActivityStatus.processingNow,
-      (_) when sessionIdentity != null => ActivityStatus.pending,
+      (_) when (sessionIdentity != null) && isProcessing == 2 =>
+        ActivityStatus.processingNow,
+      (_) when (sessionIdentity != null) && isProcessing == 1 =>
+        ActivityStatus.pending,
+      (_) when sessionIdentity != null => ActivityStatus.ready,
       _ => ActivityStatus.premature,
     };
   }
@@ -82,39 +85,31 @@ class ImageFaceMapper {
     return copyWith(
       sessionIdentity: () => sessionIdentity,
       error: () => null,
-      isProcessing: false,
+      isProcessing: 0,
     );
   }
 
   ImageFaceMapper setError(String error) {
     // Setting an error will clear isProcessing and faceIds
-    return copyWith(
-      error: () => error,
-      isProcessing: false,
-      faceIds: () => null,
-    );
+    return copyWith(error: () => error, isProcessing: 0, faceIds: () => null);
+  }
+
+  ImageFaceMapper setIsPushed() {
+    return copyWith(error: () => null, isProcessing: 1, faceIds: () => null);
   }
 
   ImageFaceMapper setIsProcessing() {
-    return copyWith(error: () => null, isProcessing: true, faceIds: () => null);
+    return copyWith(error: () => null, isProcessing: 2, faceIds: () => null);
   }
 
   ImageFaceMapper setFaces(List<String> faceIds) {
-    return copyWith(
-      faceIds: () => faceIds,
-      error: () => null,
-      isProcessing: false,
-    );
+    return copyWith(faceIds: () => faceIds, error: () => null, isProcessing: 0);
   }
 
   ImageFaceMapper reset() {
-    if (isProcessing) {
+    if (isProcessing == 2) {
       return this;
     }
-    return copyWith(
-      faceIds: () => null,
-      error: () => null,
-      isProcessing: false,
-    );
+    return copyWith(faceIds: () => null, error: () => null, isProcessing: 0);
   }
 }
