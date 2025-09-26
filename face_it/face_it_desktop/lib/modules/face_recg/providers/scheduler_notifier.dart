@@ -19,7 +19,7 @@ class SchedulerNotifier extends StateNotifier<List<AITask>> with CLLogger {
     log('${task.identifier}: added into the queue');
     final updated = [...state, task]..sort((a, b) => a.compareTo(b));
     state = updated;
-    processNext();
+    _processNext();
     return task.result;
   }
 
@@ -33,54 +33,57 @@ class SchedulerNotifier extends StateNotifier<List<AITask>> with CLLogger {
   @override
   String get logPrefix => 'SchedulerNotifier';
 
-  Future<void> processNext({int? myCount}) async {
+  Future<bool> _processNext({int? myCount}) async {
     final int processId;
     if (myCount == null) {
       processId = count;
       count++;
       if (isProcessing) {
         log('processNext-$processId: unable to start as its already running');
-        return;
+        return false;
       }
     } else {
       processId = myCount;
     }
-    final socket = ref
-        .read(socketConnectionProvider)
-        .whenOrNull(data: (data) => data)
-        ?.socket;
-    if (socket == null || !socket.connected) {
-      isProcessing = false;
-      log('processNext-$processId: unable to start as socket not connected');
-      return;
-    }
-    final req = popTask();
-
-    if (req == null) {
-      isProcessing = false;
-      log('processNext-$processId: terminating as the queue is empty');
-      return;
-    }
-
     isProcessing = true;
-    try {
-      log('processNext-$processId: process started for ${req.identifier}');
-      final result = await process(req, socket: socket, processId: processId);
-      log('processNext-$processId: process completed for ${req.identifier}');
-      req.complete(result);
-    } catch (e) {
-      log(
-        'processNext-$processId: process completed with error for ${req.identifier}',
-      );
-      req.complete({'error': '$e'});
-    } finally {
-      log('processNext-$processId: sleep 200msec');
-      await Future<void>.delayed(const Duration(milliseconds: 200));
-      log('processNext-$processId: looking for next item}');
-      // continue next within the same context
-      await processNext(myCount: processId);
+    while (isProcessing) {
+      final socket = ref
+          .read(socketConnectionProvider)
+          .whenOrNull(data: (data) => data)
+          ?.socket;
+      if (socket == null || !socket.connected) {
+        isProcessing = false;
+        log('processNext-$processId: unable to start as socket not connected');
+        return false;
+      }
+      log('processNext-$processId: Pop a task}');
+      final req = popTask();
+
+      if (req == null) {
+        log('processNext-$processId: no task found}');
+        isProcessing = false;
+        break;
+      }
+
+      try {
+        log('processNext-$processId: process started for ${req.identifier}');
+        final result = await process(req, socket: socket, processId: processId);
+        log('processNext-$processId: process completed for ${req.identifier}');
+        req.complete(result);
+      } catch (e) {
+        log(
+          'processNext-$processId: process completed with error for ${req.identifier}',
+        );
+        req.complete({'error': '$e'});
+      } finally {
+        log('processNext-$processId: sleep 200msec');
+        await Future<void>.delayed(const Duration(milliseconds: 200));
+
+        // continue next within the same context
+      }
     }
-    log('processNext-$processId: returned');
+    log('processNext-$processId: terminating as the queue is empty');
+    return true;
   }
 
   Future<Map<String, dynamic>> process(

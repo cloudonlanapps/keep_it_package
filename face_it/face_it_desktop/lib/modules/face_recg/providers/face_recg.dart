@@ -28,9 +28,7 @@ class FaceRecgNotifier extends StateNotifier<ImageFaceMapperList>
       for (final item in state.ready) {
         recognize(item.image);
       }
-      ref.read(schedulerNotifierProvider.notifier).processNext();
     }
-    log('$state');
   }
 
   void addImage(String image, {String? serverId}) {
