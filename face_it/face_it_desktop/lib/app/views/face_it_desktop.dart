@@ -5,11 +5,11 @@ import 'package:shadcn_ui/shadcn_ui.dart';
 import '../../modules/cl_browser_panel/models/cl_browser_panal.dart';
 import '../../modules/cl_browser_panel/providers/cl_browser_panal.dart';
 import '../../modules/cl_browser_panel/views/cl_browser_panel_view.dart';
-import '../../modules/content_manager/views/logs/log_view.dart';
-import '../../modules/content_manager/views/main/main_view.dart';
 import '../../modules/media/views/media_browser.dart';
 import '../../modules/server/views/server_manage_view.dart';
 import '../../modules/uploader/views/monitor_upload.dart';
+import 'log_view.dart';
+import 'main_view.dart';
 
 class FaceItDesktopApp extends ConsumerWidget {
   const FaceItDesktopApp({super.key});
