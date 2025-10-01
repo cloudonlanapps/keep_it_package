@@ -38,15 +38,18 @@ class MediaBrowser extends ConsumerWidget {
               // physics: const NeverScrollableScrollPhysics(),
               // The builder function that creates each item
               itemBuilder: (BuildContext context, int index) {
-                return MediaTile(
-                  file: candidates[index],
-                  onTap: () {
-                    ref.read(activeMainContentTypeProvider.notifier).state =
-                        MainContentType.images;
-                    ref
-                        .read(mediaListProvider.notifier)
-                        .setActiveFile(candidates[index].path);
-                  },
+                return Padding(
+                  padding: const EdgeInsets.all(8),
+                  child: MediaTile(
+                    file: candidates[index],
+                    onTap: () {
+                      ref.read(activeMainContentTypeProvider.notifier).state =
+                          MainContentType.images;
+                      ref
+                          .read(mediaListProvider.notifier)
+                          .setActiveFile(candidates[index].path);
+                    },
+                  ),
                 );
               },
             ),
