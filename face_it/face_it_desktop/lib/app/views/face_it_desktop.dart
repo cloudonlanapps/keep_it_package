@@ -64,7 +64,7 @@ class FaceItDesktop0 extends ConsumerWidget {
             children: [
               ShadResizablePanel(
                 id: 'explorer',
-                defaultSize: .4,
+                defaultSize: .2,
                 minSize: .2,
                 maxSize: .4,
                 child: CLBrowserPanelView(
@@ -73,7 +73,7 @@ class FaceItDesktop0 extends ConsumerWidget {
               ),
               ShadResizablePanel(
                 id: 'mainPanel',
-                defaultSize: .6,
+                defaultSize: .8,
                 minSize: .2,
                 child: MainPanelView(),
               ),
