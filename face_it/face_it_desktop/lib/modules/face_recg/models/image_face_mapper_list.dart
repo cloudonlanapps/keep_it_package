@@ -133,8 +133,9 @@ class ImageFaceMapperList {
     return mappers.where((e) => e.image == image).firstOrNull;
   }
 
-  List<String>? getFaceIds(String image) {
-    return mappers.where((e) => e.image == image).firstOrNull?.faceIds;
+  List<String> getFaceIds(String? image) {
+    if (image == null) return [];
+    return mappers.where((e) => e.image == image).firstOrNull?.faceIds ?? [];
   }
 
   bool hasFaces(String image) {

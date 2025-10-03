@@ -27,12 +27,10 @@ class _ContentViewerState extends ConsumerState<MediaViewer> {
     final List<String>? faces;
     if (activeCandidate != null) {
       faces = ref.watch(
-        faceRecgProvider.select(
-          (e) => e.getFaceIds(activeCandidate.path) ?? [],
-        ),
+        faceRecgProvider.select((e) => e.getFaceIds(activeCandidate.path)),
       );
       showFaceBoxes =
-          ref.watch(faceBoxPreferenceProvider.select((e) => e.enabled)) &&
+          ref.watch(faceBoxPreferenceProvider.select((e) => e.showFaces)) &&
           faces != null;
     } else {
       showFaceBoxes = false;

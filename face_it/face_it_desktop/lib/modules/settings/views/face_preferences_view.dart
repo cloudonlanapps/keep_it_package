@@ -21,16 +21,29 @@ class FacePreferencesView extends ConsumerWidget {
             spacing: 8,
             children: [
               const Text('Faces'),
-
               SizedBox(
                 width: 32,
                 child: FittedBox(
                   child: ShadSwitch(
-                    value: faceBoxPreferences.enabled,
+                    value: faceBoxPreferences.showFaces,
                     onChanged: (value) {
                       ref
                           .read(faceBoxPreferenceProvider.notifier)
-                          .toggle(enable: value);
+                          .toggleShowFaces(showFaces: value);
+                    },
+                  ),
+                ),
+              ),
+              const Text('Unknown Faces'),
+              SizedBox(
+                width: 32,
+                child: FittedBox(
+                  child: ShadSwitch(
+                    value: faceBoxPreferences.showUnknownFaces,
+                    onChanged: (value) {
+                      ref
+                          .read(faceBoxPreferenceProvider.notifier)
+                          .toggleShowUnknownFaces(showUnknownFaces: value);
                     },
                   ),
                 ),

@@ -12,29 +12,24 @@ import 'person_card.dart';
 class DrawFace extends Positioned {
   DrawFace.positioned({required DetectedFace face, super.key})
     : super(
-        child: face.status == FaceStatus.notFoundNotAFace
-            ? SizedBox(
-                width: face.descriptor.bbox.width,
-                height: face.descriptor.bbox.height,
-
-                child: DrawFace0(faceId: face.descriptor.identity),
-              )
-            : SizedBox(
-                width: face.descriptor.bbox.width,
-                height: face.descriptor.bbox.height + 100,
-
-                child: DrawFace0(faceId: face.descriptor.identity),
-              ),
+        child: SizedBox(
+          width: face.descriptor.bbox.width,
+          height: face.descriptor.bbox.height + 100,
+          child: DrawFace0(
+            face: face,
+            /* key: ValueKey(
+              face.descriptor.identity.hashCode ^ face.status.hashCode,
+            ), */
+          ),
+        ),
         left: face.descriptor.bbox.xmin,
-        top:
-            face.descriptor.bbox.ymin -
-            (face.status == FaceStatus.notFoundNotAFace ? 0 : 100),
+        top: face.descriptor.bbox.ymin - 100,
       );
 }
 
 class DrawFace0 extends ConsumerStatefulWidget {
-  const DrawFace0({required this.faceId, super.key});
-  final String faceId;
+  const DrawFace0({required this.face, super.key});
+  final DetectedFace face;
 
   @override
   ConsumerState<DrawFace0> createState() => _DrawFace0State();
@@ -51,12 +46,7 @@ class _DrawFace0State extends ConsumerState<DrawFace0> {
 
   @override
   Widget build(BuildContext context) {
-    final face = ref
-        .watch(detectedFaceProvider(widget.faceId))
-        .whenOrNull(data: (data) => data);
-    if (face == null || face.status == FaceStatus.notFoundNotAFace) {
-      return const SizedBox.shrink();
-    }
+    final face = widget.face;
 
     final faceId = face.descriptor.identity;
 
@@ -68,34 +58,48 @@ class _DrawFace0State extends ConsumerState<DrawFace0> {
       padding: EdgeInsets.zero,
       controller: popoverController,
       popover: (context) {
-        return SizedBox(
-          width: 350,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              switch (face.status) {
-                FaceStatus.notChecked ||
-                FaceStatus.notFound ||
-                FaceStatus.notFoundUnknown => NewPersonCard(
-                  faceId: face.descriptor.identity,
-                ),
-
-                FaceStatus.found ||
-                FaceStatus.foundConfirmed => PersonCard(face: face),
-                FaceStatus.notFoundNotAFace => throw Exception(
-                  "Can't handle this state",
-                ),
-              },
-              ActionButtons(faceId: faceId),
-            ],
-          ),
-        );
+        return FacePopOver(faceId: faceId, onDone: popoverController.hide);
       },
 
       child: GestureDetector(
         behavior: HitTestBehavior.translucent,
         onTap: popoverController.toggle,
-        child: DrawBBox(faceId: faceId),
+        child: FaceBBox(faceId: faceId),
+      ),
+    );
+  }
+}
+
+class FacePopOver extends ConsumerWidget {
+  const FacePopOver({required this.faceId, super.key, this.onDone});
+
+  final String faceId;
+  final void Function()? onDone;
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final face = ref
+        .watch(detectedFaceProvider(faceId))
+        .whenOrNull(data: (data) => data);
+
+    return SizedBox(
+      width: 350,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          switch (face?.status) {
+            null => const SizedBox.shrink(),
+            FaceStatus.notFoundNotAFace => const SizedBox.shrink(),
+            FaceStatus.notChecked ||
+            FaceStatus.notFound ||
+            FaceStatus.notFoundUnknown => NewPersonCard(
+              faceId: face!.descriptor.identity,
+            ),
+
+            FaceStatus.found ||
+            FaceStatus.foundConfirmed => PersonCard(face: face!),
+          },
+          ActionButtons(faceId: faceId, onDone: onDone),
+        ],
       ),
     );
   }

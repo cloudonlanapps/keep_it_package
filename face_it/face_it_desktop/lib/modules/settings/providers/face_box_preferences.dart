@@ -10,8 +10,12 @@ final faceBoxPreferenceProvider =
 class FaceBoxPreferenceNotifier extends StateNotifier<FaceBoxPreferences> {
   FaceBoxPreferenceNotifier() : super(const FaceBoxPreferences());
 
-  void toggle({required bool enable}) {
-    state = state.copyWith(enabled: enable);
+  void toggleShowFaces({required bool showFaces}) {
+    state = state.copyWith(showFaces: showFaces);
+  }
+
+  void toggleShowUnknownFaces({required bool showUnknownFaces}) {
+    state = state.copyWith(showUnknownFaces: showUnknownFaces);
   }
 
   void updateColor(int index) {

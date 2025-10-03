@@ -6,8 +6,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/detected_face.dart';
 import '../providers/f_face.dart';
 
-class DrawBBox extends ConsumerWidget {
-  const DrawBBox({required this.faceId, super.key});
+class FaceBBox extends ConsumerWidget {
+  const FaceBBox({required this.faceId, super.key});
   final String faceId;
 
   @override
@@ -19,21 +19,6 @@ class DrawBBox extends ConsumerWidget {
     if (face == null) {
       return const SizedBox.shrink();
     }
-    if (face.status == FaceStatus.notFoundNotAFace) {
-      return const SizedBox.shrink();
-    }
-    if (face.status == FaceStatus.notFoundNotAFace) {
-      return DottedBorder(
-        options: const RectDottedBorderOptions(
-          dashPattern: [5, 5],
-          strokeWidth: 5,
-        ),
-        child: SizedBox(
-          width: face.descriptor.bbox.width,
-          height: face.descriptor.bbox.height,
-        ),
-      );
-    }
 
     final color = ref.watch(faceBoxPreferenceProvider.select((e) => e.color));
     return Column(
@@ -44,27 +29,51 @@ class DrawBBox extends ConsumerWidget {
           height: 100,
           padding: const EdgeInsets.all(8),
           alignment: Alignment.bottomCenter,
-          child: FittedBox(
-            child: GradientBackgroundText(
-              text: face.label,
-              gradient: LinearGradient(
-                colors: [color.withAlpha(0x80), color, color.withAlpha(0x80)],
+          child: (face.status == FaceStatus.notFoundNotAFace)
+              ? null
+              : FittedBox(
+                  child: GradientBackgroundText(
+                    text: face.label,
+                    gradient: LinearGradient(
+                      colors: [
+                        color.withAlpha(0x80),
+                        color,
+                        color.withAlpha(0x80),
+                      ],
+                    ),
+                    style: const TextStyle(
+                      fontSize: 40,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 5,
+                    ),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+        ),
+        if (face.status == FaceStatus.notFoundNotAFace)
+          SizedBox(
+            width: face.descriptor.bbox.width,
+            height: face.descriptor.bbox.height,
+            child: DottedBorder(
+              options: const RectDottedBorderOptions(
+                dashPattern: [5, 5],
+                strokeWidth: 5,
               ),
-              style: const TextStyle(
-                fontSize: 40,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-              ),
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-              borderRadius: BorderRadius.circular(10),
+              child: Container(),
+            ),
+          )
+        else
+          Container(
+            width: face.descriptor.bbox.width,
+            height: face.descriptor.bbox.height,
+            decoration: BoxDecoration(
+              border: Border.all(width: 5, color: color),
             ),
           ),
-        ),
-        Container(
-          width: face.descriptor.bbox.width,
-          height: face.descriptor.bbox.height,
-          decoration: BoxDecoration(border: Border.all(width: 5, color: color)),
-        ),
       ],
     );
   }

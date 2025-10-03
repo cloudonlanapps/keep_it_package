@@ -7,8 +7,9 @@ import '../models/detected_face.dart';
 import '../providers/f_face.dart';
 
 class ActionButtons extends ConsumerWidget {
-  const ActionButtons({required this.faceId, super.key});
+  const ActionButtons({required this.faceId, super.key, this.onDone});
   final String faceId;
+  final void Function()? onDone;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -26,6 +27,7 @@ class ActionButtons extends ConsumerWidget {
         ref
             .read(detectedFaceProvider(face.descriptor.identity).notifier)
             .markNotAFace();
+        onDone?.call();
         return true;
       },
     );
@@ -36,6 +38,7 @@ class ActionButtons extends ConsumerWidget {
         ref
             .read(detectedFaceProvider(face.descriptor.identity).notifier)
             .markAsUnknown();
+        onDone?.call();
         return true;
       },
     );
@@ -52,6 +55,7 @@ class ActionButtons extends ConsumerWidget {
               .read(detectedFaceProvider(face.descriptor.identity).notifier)
               .rejectTaggedPerson(face.guesses![0].person);
         }
+        onDone?.call();
         return null;
       },
     );
@@ -62,6 +66,7 @@ class ActionButtons extends ConsumerWidget {
         ref
             .read(detectedFaceProvider(face.descriptor.identity).notifier)
             .isAFace();
+        onDone?.call();
         return null;
       },
     );
@@ -80,9 +85,7 @@ class ActionButtons extends ConsumerWidget {
 
             FaceStatus.found ||
             FaceStatus.foundConfirmed => const SizedBox.shrink(),
-            FaceStatus.notFoundNotAFace => throw Exception(
-              "Can't handle this state",
-            ),
+            FaceStatus.notFoundNotAFace => const SizedBox.shrink(),
           },
         ),
 

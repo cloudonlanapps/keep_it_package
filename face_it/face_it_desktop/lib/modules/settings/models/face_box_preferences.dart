@@ -2,14 +2,24 @@ import 'package:flutter/material.dart';
 
 @immutable
 class FaceBoxPreferences {
-  const FaceBoxPreferences({this.enabled = true, this.colorIndex = 0});
-  final bool enabled;
+  const FaceBoxPreferences({
+    this.showFaces = true,
+    this.colorIndex = 0,
+    this.showUnknownFaces = false,
+  });
+  final bool showFaces;
   final int colorIndex;
+  final bool showUnknownFaces;
 
-  FaceBoxPreferences copyWith({bool? enabled, int? colorIndex}) {
+  FaceBoxPreferences copyWith({
+    bool? showFaces,
+    int? colorIndex,
+    bool? showUnknownFaces,
+  }) {
     return FaceBoxPreferences(
-      enabled: enabled ?? this.enabled,
+      showFaces: showFaces ?? this.showFaces,
       colorIndex: colorIndex ?? this.colorIndex,
+      showUnknownFaces: showUnknownFaces ?? this.showUnknownFaces,
     );
   }
 
@@ -17,11 +27,14 @@ class FaceBoxPreferences {
   bool operator ==(covariant FaceBoxPreferences other) {
     if (identical(this, other)) return true;
 
-    return other.enabled == enabled && other.colorIndex == colorIndex;
+    return other.showFaces == showFaces &&
+        other.colorIndex == colorIndex &&
+        other.showUnknownFaces == showUnknownFaces;
   }
 
   @override
-  int get hashCode => enabled.hashCode ^ colorIndex.hashCode;
+  int get hashCode =>
+      showFaces.hashCode ^ colorIndex.hashCode ^ showUnknownFaces.hashCode;
 
   // Dont add More than 8 colors
   static List<Color> colors = [
@@ -34,4 +47,8 @@ class FaceBoxPreferences {
   ];
 
   Color get color => colors[colorIndex];
+
+  @override
+  String toString() =>
+      'FaceBoxPreferences(showFaces: $showFaces, colorIndex: $colorIndex, showUnknownFaces: $showUnknownFaces)';
 }
