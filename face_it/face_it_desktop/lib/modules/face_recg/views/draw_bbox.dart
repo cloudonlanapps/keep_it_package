@@ -66,6 +66,23 @@ class FaceBBox extends ConsumerWidget {
               child: Container(),
             ),
           )
+        else if ([
+          FaceStatus.notFoundUnknown,
+          FaceStatus.notFound,
+          FaceStatus.notChecked,
+        ].contains(face.status))
+          SizedBox(
+            width: face.descriptor.bbox.width,
+            height: face.descriptor.bbox.height,
+            child: DottedBorder(
+              options: RectDottedBorderOptions(
+                dashPattern: [5, 5],
+                strokeWidth: 5,
+                color: color,
+              ),
+              child: Container(),
+            ),
+          )
         else
           Container(
             width: face.descriptor.bbox.width,

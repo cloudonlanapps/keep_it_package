@@ -25,20 +25,24 @@ class FaceLayer extends ConsumerWidget {
               .watch(detectedFaceProvider(e))
               .whenOrNull(data: (data) => data),
         )
-        .where(
-          (e) =>
-              e != null && showUnknownFaces ||
-              ![
-                FaceStatus.notFoundUnknown,
-                FaceStatus.notFoundNotAFace,
-              ].contains(e?.status),
-        )
+        .where((e) => e != null)
         .cast<DetectedFace>()
         .toList();
 
+    final visibleFaces = showUnknownFaces
+        ? faces
+        : faces.where(
+            (e) => ![
+              FaceStatus.notFoundUnknown,
+              FaceStatus.notFoundNotAFace,
+              FaceStatus.notChecked,
+              FaceStatus.notFound,
+            ].contains(e.status),
+          );
+
     return Stack(
       children: [
-        for (final face in faces) ...[
+        for (final face in visibleFaces) ...[
           DrawFace.positioned(
             face: face,
             key: ValueKey(face.descriptor.identity),
