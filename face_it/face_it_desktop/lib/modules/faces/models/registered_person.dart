@@ -15,13 +15,18 @@ class RegisteredPerson {
   });
 
   factory RegisteredPerson.fromMap(Map<String, dynamic> map) {
-    return RegisteredPerson(
-      id: map['id'] as int,
-      name: map['name'] as String,
-      keyFaceId: map['keyFaceId'] != null ? map['keyFaceId'] as String : null,
-      isHidden: (map['isHidden'] as int) != 0,
-      faces: (map['faces'] as List<dynamic>).cast<String>(),
-    );
+    try {
+      return RegisteredPerson(
+        id: map['id'] as int,
+        name: map['name'] as String,
+        keyFaceId: map['keyFaceId'] != null ? map['keyFaceId'] as String : null,
+        isHidden: (map['isHidden'] as int) != 0,
+        faces: (map['faces'] as List<dynamic>).cast<String>(),
+      );
+    } catch (e) {
+      print('Here is the error!!');
+      rethrow;
+    }
   }
 
   factory RegisteredPerson.fromJson(String source) =>

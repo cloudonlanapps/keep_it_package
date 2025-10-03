@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:cl_servers/cl_servers.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../models/registered_person.dart';
 import '../models/registered_persons.dart';
 
 final registeredPersonsProvider =
@@ -37,6 +38,12 @@ class RegisteredPersonsNotifier extends AsyncNotifier<RegisteredPersons> {
         },
       );
       return persons;
+    }
+  }
+
+  void setActive(RegisteredPerson person) {
+    if (state.hasValue) {
+      state = AsyncData(state.asData!.value.setActive(person.id));
     }
   }
 }

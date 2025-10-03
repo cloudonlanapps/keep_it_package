@@ -46,10 +46,11 @@ class _DrawFace0State extends ConsumerState<DrawFace0> {
 
   @override
   Widget build(BuildContext context) {
-    final face = widget.face;
-
-    final faceId = face.descriptor.identity;
-
+    final faceId = widget.face.descriptor.identity;
+    final face = ref
+        .watch(detectedFaceProvider(faceId))
+        .whenOrNull(data: (data) => data);
+    if (face == null) return const SizedBox.shrink();
     return ShadPopover(
       decoration: const ShadDecoration(
         color: Colors.transparent,
@@ -64,7 +65,7 @@ class _DrawFace0State extends ConsumerState<DrawFace0> {
       child: GestureDetector(
         behavior: HitTestBehavior.translucent,
         onTap: popoverController.toggle,
-        child: FaceBBox(faceId: faceId),
+        child: FaceBBox(faceId: face.descriptor.identity),
       ),
     );
   }

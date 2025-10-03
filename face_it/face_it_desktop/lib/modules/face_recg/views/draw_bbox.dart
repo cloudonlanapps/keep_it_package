@@ -1,3 +1,4 @@
+import 'package:cl_basic_types/cl_basic_types.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:face_it_desktop/modules/settings/providers/face_box_preferences.dart';
 import 'package:flutter/material.dart';
@@ -6,9 +7,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/detected_face.dart';
 import '../providers/f_face.dart';
 
-class FaceBBox extends ConsumerWidget {
+class FaceBBox extends ConsumerWidget with CLLogger {
   const FaceBBox({required this.faceId, super.key});
   final String faceId;
+  @override
+  String get logPrefix => 'FaceBBox';
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -16,6 +19,7 @@ class FaceBBox extends ConsumerWidget {
         .watch(detectedFaceProvider(faceId))
         .whenOrNull(data: (data) => data);
 
+    log('draw bbox for  $face');
     if (face == null) {
       return const SizedBox.shrink();
     }

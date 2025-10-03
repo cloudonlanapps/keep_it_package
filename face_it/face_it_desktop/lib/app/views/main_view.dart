@@ -1,3 +1,4 @@
+import 'package:face_it_desktop/modules/faces/views/person_viewer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -13,6 +14,7 @@ class MainPanelView extends ConsumerWidget {
     final activeMainContentType = ref.watch(activeMainContentTypeProvider);
     return switch (activeMainContentType) {
       MainContentType.images => const MediaViewer(),
+      MainContentType.person => const PersonViewer(),
     };
   }
 }

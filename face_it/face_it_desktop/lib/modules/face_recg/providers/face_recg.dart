@@ -218,6 +218,10 @@ class FaceRecgNotifier extends StateNotifier<ImageFaceMapperList>
     );
 
     final updatedFace = await face.searchDB(server);
+    log('$identity - FACE RECG RESULT: status: ${updatedFace.status}');
+    log(
+      '$identity - FACE RECG RESULT: person: ${updatedFace.guesses?.firstOrNull?.person.name}',
+    );
     return updatedFace;
   }
 

@@ -6,6 +6,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:shadcn_ui/shadcn_ui.dart';
 
+import '../../../app/models/main_content_type.dart';
+import '../../../app/providers/main_content_type.dart';
 import '../providers/registered_persons.dart';
 
 class FacesBrowser extends ConsumerWidget {
@@ -65,12 +67,24 @@ class PersonTile extends ConsumerWidget {
       leading: faceUri == null
           ? null
           : Image.network(faceUri.toString(), width: 64, height: 64),
+      subtitle: Text(
+        ' ${person.faces.length} faces registerred',
+        style: ShadTheme.of(context).textTheme.muted.copyWith(
+          fontSize: ShadTheme.of(context).textTheme.small.fontSize,
+        ),
+      ),
+
       /* leading: Media(filePath: file.path, width: 64, height: 64),
       
       subtitle: ,
       trailing: MediaPopoverMenu(file: file),
       onTap: onTap, */
       title: Text(person.name.capitalizeFirstLetter()),
+      onTap: () {
+        ref.read(activeMainContentTypeProvider.notifier).state =
+            MainContentType.person;
+        ref.read(registeredPersonsProvider.notifier).setActive(person);
+      },
     );
   }
 }
