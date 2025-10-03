@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:collection/collection.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 
 @immutable
@@ -7,16 +9,18 @@ class RegisteredPerson {
   const RegisteredPerson({
     required this.id,
     required this.name,
-    required this.keyFaceId,
     required this.isHidden,
+    required this.faces,
+    this.keyFaceId,
   });
 
   factory RegisteredPerson.fromMap(Map<String, dynamic> map) {
     return RegisteredPerson(
       id: map['id'] as int,
       name: map['name'] as String,
-      keyFaceId: map['keyFaceId'] as String,
-      isHidden: map['isHidden'] as int != 0,
+      keyFaceId: map['keyFaceId'] != null ? map['keyFaceId'] as String : null,
+      isHidden: (map['isHidden'] as int) != 0,
+      faces: (map['faces'] as List<dynamic>).cast<String>(),
     );
   }
 
@@ -24,20 +28,23 @@ class RegisteredPerson {
       RegisteredPerson.fromMap(json.decode(source) as Map<String, dynamic>);
   final int id;
   final String name;
-  final String keyFaceId;
+  final String? keyFaceId;
   final bool isHidden;
+  final List<String> faces;
 
   RegisteredPerson copyWith({
     int? id,
     String? name,
-    String? keyFaceId,
+    ValueGetter<String?>? keyFaceId,
     bool? isHidden,
+    List<String>? faces,
   }) {
     return RegisteredPerson(
       id: id ?? this.id,
       name: name ?? this.name,
-      keyFaceId: keyFaceId ?? this.keyFaceId,
+      keyFaceId: keyFaceId != null ? keyFaceId.call() : this.keyFaceId,
       isHidden: isHidden ?? this.isHidden,
+      faces: faces ?? this.faces,
     );
   }
 
@@ -47,6 +54,7 @@ class RegisteredPerson {
       'name': name,
       'keyFaceId': keyFaceId,
       'isHidden': isHidden ? 1 : 0,
+      'faces': faces,
     };
   }
 
@@ -54,21 +62,27 @@ class RegisteredPerson {
 
   @override
   String toString() {
-    return 'RegisteredPerson(id: $id, name: $name, keyFaceId: $keyFaceId, isHidden: $isHidden)';
+    return 'RegisteredPerson(id: $id, name: $name, keyFaceId: $keyFaceId, isHidden: $isHidden, faces: $faces)';
   }
 
   @override
   bool operator ==(covariant RegisteredPerson other) {
     if (identical(this, other)) return true;
+    final listEquals = const DeepCollectionEquality().equals;
 
     return other.id == id &&
         other.name == name &&
         other.keyFaceId == keyFaceId &&
-        other.isHidden == isHidden;
+        other.isHidden == isHidden &&
+        listEquals(other.faces, faces);
   }
 
   @override
   int get hashCode {
-    return id.hashCode ^ name.hashCode ^ keyFaceId.hashCode ^ isHidden.hashCode;
+    return id.hashCode ^
+        name.hashCode ^
+        keyFaceId.hashCode ^
+        isHidden.hashCode ^
+        faces.hashCode;
   }
 }
