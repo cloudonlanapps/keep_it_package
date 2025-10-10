@@ -272,30 +272,28 @@ class DetectedFace with CLLogger implements FaceStateManager {
           throw ArgumentError('Expected a JSON list');
         }
 
-        final map = {
-          for (final item in decoded)
-            if (item is Map &&
-                item.containsKey('id') &&
-                item.containsKey('confidence'))
-              item['id'].toString(): (item['confidence'] as num).toDouble(),
-        };
-        log('searchDB:RESPONSE RECEIVED. map: $map');
-
         final guesses = <GuessedPerson>[];
-        for (final id in map.keys) {
-          if (map[id]! > 0.5) {
-            final personReply = await server.get('/store/person/$id');
+        for (final item in decoded) {
+          if (item is Map &&
+              item.containsKey('id') &&
+              item.containsKey('confidence')) {
+            final personReply = await server.get('/store/person/${item['id']}');
             final person = await personReply.when(
               validResponse: (personJson) async {
                 return RegisteredPerson.fromJson(personJson as String);
               },
               errorResponse: (e, {st}) async {
-                log('person with $id not found');
+                log('person with ${item['id']} not found');
                 return null;
               },
             );
             if (person != null) {
-              guesses.add(GuessedPerson(person: person, confidence: map[id]!));
+              guesses.add(
+                GuessedPerson(
+                  person: person,
+                  confidence: (item['confidence'] as num).toDouble(),
+                ),
+              );
             }
           }
         }
