@@ -174,12 +174,13 @@ class DetectedFace with CLLogger implements FaceStateManager {
 
   String? get label => (switch (status) {
     FaceStatus.notChecked => 'Unchecked',
-    FaceStatus.found => guesses![0].person.name,
-    FaceStatus.foundConfirmed => person!.name,
+    FaceStatus.found =>
+      guesses![0].person.name ?? 'unknown ${guesses![0].person.id}',
+    FaceStatus.foundConfirmed => person!.name ?? 'unknown ${person!.id}',
     FaceStatus.notFound => 'New Face',
     FaceStatus.notFoundNotAFace => 'Not A Face',
     FaceStatus.notFoundUnknown => 'Unknown',
-  })?.capitalizeWords();
+  }).capitalizeWords();
 
   DetectedFace confirm(RegisteredPerson person) {
     if (status.canConfirm) {
