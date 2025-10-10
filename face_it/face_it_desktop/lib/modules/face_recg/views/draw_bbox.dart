@@ -19,7 +19,7 @@ class FaceBBox extends ConsumerWidget with CLLogger {
         .watch(detectedFaceProvider(faceId))
         .whenOrNull(data: (data) => data);
 
-    log('draw bbox for  $face');
+    log('draw bbox for  ${face?.descriptor.identity}');
     if (face == null) {
       return const SizedBox.shrink();
     }
@@ -37,7 +37,7 @@ class FaceBBox extends ConsumerWidget with CLLogger {
               ? null
               : FittedBox(
                   child: GradientBackgroundText(
-                    text: face.label,
+                    text: face.label ?? 'Unknown',
                     gradient: LinearGradient(
                       colors: [
                         color.withAlpha(0x80),

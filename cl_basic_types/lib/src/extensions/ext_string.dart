@@ -1,6 +1,8 @@
 import 'dart:developer' as dev;
 import 'dart:math' as math;
 
+import 'package:characters/characters.dart';
+
 //import '../../app_logger.dart';
 
 extension UtilExtensionOnString on String {
@@ -25,5 +27,32 @@ extension UtilExtensionOnString on String {
   String capitalizeFirstLetter() {
     if (isEmpty) return this; // Return the string as is if it's empty
     return '${this[0].toUpperCase()}${substring(1)}';
+  }
+
+  String capitalizeWords() {
+    return split(RegExp(r'\s+')) // split on spaces/tabs
+        .map((word) {
+          if (word.isEmpty) return word;
+          final first = word.characters.first.toUpperCase();
+          final rest = word.characters.skip(1).toString();
+          return '$first$rest';
+        })
+        .join(' ');
+  }
+}
+
+extension UtilExtensionOnStringNullable on String? {
+  String? capitalizeFirstLetter() {
+    if (this == null) {
+      return null;
+    }
+    return this!.capitalizeFirstLetter();
+  }
+
+  String? capitalizeWords(String name) {
+    if (this == null) {
+      return null;
+    }
+    return this!.capitalizeWords();
   }
 }

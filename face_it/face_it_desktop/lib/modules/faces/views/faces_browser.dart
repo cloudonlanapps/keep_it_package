@@ -26,7 +26,7 @@ class FacesBrowser extends ConsumerWidget {
         ),
       );
     }
-    persons.sort((a, b) => a.name.compareTo(b.name));
+    persons.sort((a, b) => a.compareTo(b));
     return ListView.builder(
       // The number of items to build in the list
       itemCount: persons.length + 1,
@@ -84,7 +84,7 @@ class PersonTile extends ConsumerWidget {
         .whenOrNull(data: (data) => data);
     final keyFace = person.keyFaceId ?? person.faces[0];
     final faceUri = server?.getEndpointURI('/store/face/$keyFace');
-    print(faceUri);
+
     return ListTile(
       contentPadding: const EdgeInsets.symmetric(vertical: 8),
       leading: faceUri == null
@@ -102,7 +102,7 @@ class PersonTile extends ConsumerWidget {
       subtitle: ,
       trailing: MediaPopoverMenu(file: file),
       onTap: onTap, */
-      title: Text(person.name.capitalizeFirstLetter()),
+      title: Text(person.name?.capitalizeFirstLetter() ?? 'Unknown'),
       onTap: () {
         ref.read(activeMainContentTypeProvider.notifier).state =
             MainContentType.person;

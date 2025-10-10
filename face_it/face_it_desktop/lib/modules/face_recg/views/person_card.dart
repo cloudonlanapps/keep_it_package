@@ -31,7 +31,7 @@ class PersonCard extends ConsumerWidget {
                   width: 80,
                   child: Center(
                     child: Text(
-                      face.label,
+                      face.label ?? 'Unknown',
                       style: ShadTheme.of(context).textTheme.muted,
                     ),
                   ),

@@ -1,11 +1,12 @@
 import 'dart:convert';
 
+import 'package:cl_basic_types/cl_basic_types.dart';
 import 'package:collection/collection.dart';
-import 'package:flutter/foundation.dart';
-import 'package:flutter/widgets.dart';
+
+import 'package:flutter/widgets.dart' hide ValueGetter;
 
 @immutable
-class RegisteredPerson {
+class RegisteredPerson with CLLogger implements Comparable<RegisteredPerson> {
   const RegisteredPerson({
     required this.id,
     required this.name,
@@ -18,13 +19,13 @@ class RegisteredPerson {
     try {
       return RegisteredPerson(
         id: map['id'] as int,
-        name: map['name'] as String,
+        name: map['name'] != null ? map['name'] as String : null,
         keyFaceId: map['keyFaceId'] != null ? map['keyFaceId'] as String : null,
         isHidden: (map['isHidden'] as int) != 0,
         faces: (map['faces'] as List<dynamic>).cast<String>(),
       );
     } catch (e) {
-      print('Here is the error!!');
+      print('Crashed here??');
       rethrow;
     }
   }
@@ -32,21 +33,24 @@ class RegisteredPerson {
   factory RegisteredPerson.fromJson(String source) =>
       RegisteredPerson.fromMap(json.decode(source) as Map<String, dynamic>);
   final int id;
-  final String name;
+  final String? name;
   final String? keyFaceId;
   final bool isHidden;
   final List<String> faces;
 
+  @override
+  String get logPrefix => 'RegisteredPerson';
+
   RegisteredPerson copyWith({
     int? id,
-    String? name,
+    ValueGetter<String?>? name,
     ValueGetter<String?>? keyFaceId,
     bool? isHidden,
     List<String>? faces,
   }) {
     return RegisteredPerson(
       id: id ?? this.id,
-      name: name ?? this.name,
+      name: name != null ? name.call() : this.name,
       keyFaceId: keyFaceId != null ? keyFaceId.call() : this.keyFaceId,
       isHidden: isHidden ?? this.isHidden,
       faces: faces ?? this.faces,
@@ -89,5 +93,13 @@ class RegisteredPerson {
         keyFaceId.hashCode ^
         isHidden.hashCode ^
         faces.hashCode;
+  }
+
+  @override
+  int compareTo(RegisteredPerson other) {
+    if (name != null && other.name != null) {
+      return name!.compareTo(other.name!);
+    }
+    return id.compareTo(other.id);
   }
 }

@@ -42,7 +42,9 @@ class PersonViewer extends ConsumerWidget {
         .map((e) => e.descriptor.imageCache);
 
     return ShadCard(
-      title: Center(child: Text(person.name.capitalizeFirstLetter())),
+      title: Center(
+        child: Text(person.name?.capitalizeFirstLetter() ?? 'Unknown'),
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         spacing: 8,

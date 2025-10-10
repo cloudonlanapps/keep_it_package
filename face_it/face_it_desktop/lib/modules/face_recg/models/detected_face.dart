@@ -1,8 +1,9 @@
 import 'dart:convert';
 
+import 'package:cl_basic_types/cl_basic_types.dart';
 import 'package:cl_servers/cl_servers.dart';
 import 'package:collection/collection.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart' hide ValueGetter;
 
 import '../../faces/models/registered_person.dart';
 import 'face_descriptor.dart';
@@ -62,7 +63,7 @@ enum FaceStatus {
 }
 
 @immutable
-class DetectedFace implements FaceStateManager {
+class DetectedFace with CLLogger implements FaceStateManager {
   const DetectedFace({
     required this.descriptor,
     required this.guesses,
@@ -130,6 +131,9 @@ class DetectedFace implements FaceStateManager {
   final RegisteredPerson? person;
   final List<GuessedPerson>? guesses;
 
+  @override
+  String get logPrefix => 'DetectedFace';
+
   DetectedFace copyWith({
     FaceDescriptor? descriptor,
     FaceStatus? status,
@@ -168,26 +172,14 @@ class DetectedFace implements FaceStateManager {
         guesses.hashCode;
   }
 
-  String formatName(String name) {
-    return name
-        .split(RegExp(r'\s+')) // split on spaces/tabs
-        .map((word) {
-          if (word.isEmpty) return word;
-          final first = word.characters.first.toUpperCase();
-          final rest = word.characters.skip(1).toString();
-          return '$first$rest';
-        })
-        .join(' ');
-  }
-
-  String get label => formatName(switch (status) {
+  String? get label => (switch (status) {
     FaceStatus.notChecked => 'Unchecked',
     FaceStatus.found => guesses![0].person.name,
     FaceStatus.foundConfirmed => person!.name,
     FaceStatus.notFound => 'New Face',
     FaceStatus.notFoundNotAFace => 'Not A Face',
     FaceStatus.notFoundUnknown => 'Unknown',
-  });
+  })?.capitalizeWords();
 
   DetectedFace confirm(RegisteredPerson person) {
     if (status.canConfirm) {
@@ -265,12 +257,15 @@ class DetectedFace implements FaceStateManager {
     final reply = await server.post(
       '/store/search',
       filesFields: {
+        'face': [descriptor.imageCache],
         'vector': [descriptor.vectorCache],
       },
     );
+
     return reply.when(
       validResponse: (result) async {
         final decoded = jsonDecode(result as String);
+        log('searchDB:RESPONSE RECEIVED. $decoded');
 
         if (decoded is! List) {
           throw ArgumentError('Expected a JSON list');
@@ -279,30 +274,31 @@ class DetectedFace implements FaceStateManager {
         final map = {
           for (final item in decoded)
             if (item is Map &&
-                item.containsKey('name') &&
+                item.containsKey('id') &&
                 item.containsKey('confidence'))
-              item['name'].toString(): (item['confidence'] as num).toDouble(),
+              item['id'].toString(): (item['confidence'] as num).toDouble(),
         };
+        log('searchDB:RESPONSE RECEIVED. map: $map');
 
         final guesses = <GuessedPerson>[];
-        for (final name in map.keys) {
-          if (map[name]! > 0.5) {
-            final personReply = await server.get('/store/person/$name');
+        for (final id in map.keys) {
+          if (map[id]! > 0.5) {
+            final personReply = await server.get('/store/person/$id');
             final person = await personReply.when(
               validResponse: (personJson) async {
                 return RegisteredPerson.fromJson(personJson as String);
               },
               errorResponse: (e, {st}) async {
+                log('person with $id not found');
                 return null;
               },
             );
             if (person != null) {
-              guesses.add(
-                GuessedPerson(person: person, confidence: map[name]!),
-              );
+              guesses.add(GuessedPerson(person: person, confidence: map[id]!));
             }
           }
         }
+        log('searchDB:RESPONSE RECEIVED. guesses: $guesses');
 
         if (guesses.isNotEmpty) {
           return DetectedFace.found(descriptor: descriptor, guesses: guesses);
@@ -311,6 +307,7 @@ class DetectedFace implements FaceStateManager {
         }
       },
       errorResponse: (e, {st}) async {
+        log('searchDB:ERROR RECEIVED. $e');
         return this;
       },
     );
