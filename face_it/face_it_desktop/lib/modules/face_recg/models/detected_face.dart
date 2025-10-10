@@ -4,10 +4,10 @@ import 'package:cl_servers/cl_servers.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 
+import '../../faces/models/registered_person.dart';
 import 'face_descriptor.dart';
 import 'face_state_manager.dart';
 import 'guessed_face.dart';
-import '../../faces/models/registered_person.dart';
 
 ///     Face Transition
 ///

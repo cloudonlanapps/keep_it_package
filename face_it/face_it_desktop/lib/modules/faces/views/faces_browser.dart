@@ -37,7 +37,7 @@ class FacesBrowser extends ConsumerWidget {
         if (index == persons.length) {
           return const Padding(
             padding: EdgeInsets.all(8),
-            child: ListTile(title: Text('Unknown Faces')),
+            child: UnknownPersonTile(),
           );
         }
         return Padding(
@@ -45,6 +45,29 @@ class FacesBrowser extends ConsumerWidget {
           child: PersonTile(person: persons[index]),
         );
       },
+    );
+  }
+}
+
+class UnknownPersonTile extends StatelessWidget {
+  const UnknownPersonTile({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const ListTile(
+      title: Text('Unknown Faces'),
+      contentPadding: EdgeInsets.symmetric(vertical: 8),
+      leading: SizedBox.square(
+        dimension: 64,
+        child: Padding(
+          padding: EdgeInsets.all(8),
+          child: FittedBox(
+            fit: BoxFit.cover,
+            child: Icon(LucideIcons.squareUser400),
+            //child: Icon(LucideIcons.shieldQuestionMark100),
+          ),
+        ),
+      ),
     );
   }
 }
