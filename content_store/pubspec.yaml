@@ -24,7 +24,7 @@ dependencies:
   exif: ^3.3.0
   flutter:
     sdk: flutter
-  flutter_riverpod: 2.5.1
+  flutter_riverpod: ^2.6.1
   flutter_speed_dial: ^7.0.0
   heif_converter: ^1.0.0
   http: ^1.2.2

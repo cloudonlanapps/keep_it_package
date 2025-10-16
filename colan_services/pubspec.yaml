@@ -33,7 +33,7 @@ dependencies:
 
   flutter:
     sdk: flutter
-  flutter_riverpod: 2.5.1
+  flutter_riverpod: ^2.6.1
   flutter_speed_dial: ^7.0.0
   form_factory:
     path: ../form_factory

@@ -20,7 +20,7 @@ dependencies:
     path: ../content_store
   flutter:
     sdk: flutter
-  flutter_riverpod: 2.5.1
+  flutter_riverpod: ^2.6.1
   form_factory:
     path: ../form_factory
   shadcn_ui: ^0.38.0
