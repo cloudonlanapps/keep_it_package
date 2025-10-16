@@ -10,9 +10,22 @@ final mediaListProvider =
 
 class MediaListNotifier extends StateNotifier<MediaListModel> {
   MediaListNotifier() : super(const MediaListModel([]));
+  final List<XFile> files = [];
   void setActiveFile(String file) => state = state.setActiveFile(file);
 
-  void append(List<XFile> files) => state = state.append(files);
+  void append(List<XFile> files) {
+    this.files.addAll(files);
+    addSlowly();
+  }
+
+  Future<void> addSlowly() async {
+    if (files.isEmpty) return;
+    while (files.isNotEmpty) {
+      final file = files.removeAt(0);
+      state = state.append([file]);
+      await Future<void>.delayed(const Duration(milliseconds: 100));
+    }
+  }
 
   void removeByPath(List<String> pathsToRemove) =>
       state = state.removeByPath(pathsToRemove);

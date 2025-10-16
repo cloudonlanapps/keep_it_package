@@ -48,7 +48,9 @@ class _CLBrowserPanelViewState extends ConsumerState<CLBrowserPanelView> {
                       .read(clBrowserPanalProvider.notifier)
                       .onTogglePanelByLabel(panels[index].label),
                   child: ListTile(
-                    title: Text(panels[index].label),
+                    title:
+                        panels[index].labelBuilder?.call(context) ??
+                        Text(panels[index].label),
                     trailing: Icon(
                       panels[index].isExpanded
                           ? LucideIcons.chevronDown200

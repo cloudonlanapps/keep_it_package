@@ -95,4 +95,6 @@ class MediaListModel {
       return itemByPath(activeMediaId!);
     }
   }
+
+  int get count => mediaList.length;
 }

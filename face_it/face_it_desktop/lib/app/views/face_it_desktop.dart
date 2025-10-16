@@ -7,6 +7,7 @@ import '../../modules/cl_browser_panel/models/cl_browser_panal.dart';
 import '../../modules/cl_browser_panel/providers/cl_browser_panal.dart';
 import '../../modules/cl_browser_panel/views/cl_browser_panel_view.dart';
 import '../../modules/face_recg/views/monitor_face_recg.dart';
+import '../../modules/media/providers/candidates.dart';
 import '../../modules/media/views/media_browser.dart';
 import '../../modules/server/views/server_manage_view.dart';
 import '../../modules/uploader/views/monitor_upload.dart';
@@ -39,6 +40,9 @@ class FaceItDesktopApp extends ConsumerWidget {
                     CLBrowserPanal(
                       label: 'Images',
                       panelBuilder: (context) => const MediaBrowser(),
+                      labelBuilder: (context) {
+                        return const MediaLabelBuilder();
+                      },
                     ),
                     CLBrowserPanal(
                       label: 'Faces',
@@ -115,5 +119,15 @@ class Monitors extends StatelessWidget {
         ),
       ],
     );
+  }
+}
+
+class MediaLabelBuilder extends ConsumerWidget {
+  const MediaLabelBuilder({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final count = ref.watch(mediaListProvider.select((e) => e.count));
+    return Text('Images ($count)');
   }
 }
