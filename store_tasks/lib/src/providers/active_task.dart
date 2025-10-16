@@ -8,36 +8,41 @@ import '../models/store_task.dart';
 
 @immutable
 class ActiveStoreTask {
-  const ActiveStoreTask(
-      {required this.task,
-      required this.selectedMedia,
-      required this.itemsConfirmed,
-      required this.targetConfirmed});
+  const ActiveStoreTask({
+    required this.task,
+    required this.selectedMedia,
+    required this.itemsConfirmed,
+    required this.targetConfirmed,
+  });
 
   final StoreTask task;
   final List<StoreEntity> selectedMedia;
   final bool? itemsConfirmed;
   final bool? targetConfirmed;
 
-  ActiveStoreTask copyWith(
-      {List<StoreEntity>? selectedMedia,
-      bool? Function()? itemsConfirmed,
-      bool? Function()? targetConfirmed,
-      StoreEntity? Function()? collection,
-      List<StoreEntity>? items,
-      ContentOrigin? contentOrigin}) {
+  ActiveStoreTask copyWith({
+    List<StoreEntity>? selectedMedia,
+    bool? Function()? itemsConfirmed,
+    bool? Function()? targetConfirmed,
+    StoreEntity? Function()? collection,
+    List<StoreEntity>? items,
+    ContentOrigin? contentOrigin,
+  }) {
     return ActiveStoreTask(
       task: (items != null) || (contentOrigin != null) || (collection != null)
           ? task.copyWith(
               items: items,
               contentOrigin: contentOrigin,
-              collection: collection)
+              collection: collection,
+            )
           : task,
       selectedMedia: selectedMedia ?? this.selectedMedia,
-      itemsConfirmed:
-          itemsConfirmed != null ? itemsConfirmed() : this.itemsConfirmed,
-      targetConfirmed:
-          targetConfirmed != null ? targetConfirmed() : this.targetConfirmed,
+      itemsConfirmed: itemsConfirmed != null
+          ? itemsConfirmed()
+          : this.itemsConfirmed,
+      targetConfirmed: targetConfirmed != null
+          ? targetConfirmed()
+          : this.targetConfirmed,
     );
   }
 
@@ -72,13 +77,13 @@ class ActiveStoreTask {
   bool get selectable => (itemsConfirmed == null) && items.length > 1;
 
   String keepActionLabel({required bool selectionMode}) => [
-        contentOrigin.keepActionLabel,
-        if (selectionMode) 'Selected' else items.length > 1 ? 'All' : '',
-      ].join(' ');
+    contentOrigin.keepActionLabel,
+    if (selectionMode) 'Selected' else items.length > 1 ? 'All' : '',
+  ].join(' ');
   String deleteActionLabel({required bool selectionMode}) => [
-        contentOrigin.deleteActionLabel,
-        if (selectionMode) 'Selected' else items.length > 1 ? 'All' : '',
-      ].join(' ');
+    contentOrigin.deleteActionLabel,
+    if (selectionMode) 'Selected' else items.length > 1 ? 'All' : '',
+  ].join(' ');
 
   List<StoreEntity> currEntities({required bool selectionMode}) =>
       (selectionMode ? selectedMedia : items);
@@ -100,8 +105,10 @@ class ActiveTaskNotifier extends StateNotifier<ActiveStoreTask> {
     return state;
   }
 
-  set target(StoreEntity? collection) => state =
-      state.copyWith(targetConfirmed: () => true, collection: () => collection);
+  set target(StoreEntity? collection) => state = state.copyWith(
+    targetConfirmed: () => true,
+    collection: () => collection,
+  );
   StoreEntity? get target => state.collection;
 
   set itemsConfirmed(bool? value) =>
@@ -115,5 +122,5 @@ class ActiveTaskNotifier extends StateNotifier<ActiveStoreTask> {
 
 final activeTaskProvider =
     StateNotifierProvider<ActiveTaskNotifier, ActiveStoreTask>((ref) {
-  throw Exception('Must override');
-});
+      throw Exception('Must override');
+    });

@@ -8,12 +8,13 @@ import '../../basic_page_service/basic_page_service.dart';
 import 'exist_in_different_collection.dart';
 
 class DuplicatePage extends StatefulWidget {
-  const DuplicatePage(
-      {required this.incomingMedia,
-      required this.onDone,
-      required this.onCancel,
-      required this.parentId,
-      super.key});
+  const DuplicatePage({
+    required this.incomingMedia,
+    required this.onDone,
+    required this.onCancel,
+    required this.parentId,
+    super.key,
+  });
   final ViewerEntities incomingMedia;
   final int? parentId;
 
@@ -42,7 +43,7 @@ class DuplicatePageState extends State<DuplicatePage> {
     }
     return GetEntity(
       id: widget.parentId,
-      errorBuilder: (_, __) {
+      errorBuilder: (_, _) {
         throw UnimplementedError('errorBuilder');
       },
       loadingBuilder: () => CLLoader.widget(
@@ -58,8 +59,10 @@ class DuplicatePageState extends State<DuplicatePage> {
             title: 'Already Imported',
             onCancel: widget.onCancel,
             wizard: WizardDialog(
-              content: Text('Do you want all the above media to be moved '
-                  'to $collectionLablel or skipped?'),
+              content: Text(
+                'Do you want all the above media to be moved '
+                'to $collectionLablel or skipped?',
+              ),
               option1: CLMenuItem(
                 icon: clIcons.placeHolder,
                 title: 'Move',
@@ -86,8 +89,9 @@ class DuplicatePageState extends State<DuplicatePage> {
               children: [
                 Flexible(
                   child: ExistInDifferentCollection(
-                    targetMismatch:
-                        currentMedia.targetMismatch(widget.parentId),
+                    targetMismatch: currentMedia.targetMismatch(
+                      widget.parentId,
+                    ),
                     onRemove: (m) {
                       final updated = currentMedia.remove(m);
                       if (updated?.targetMismatch(widget.parentId).isEmpty ??

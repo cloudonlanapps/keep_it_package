@@ -32,7 +32,7 @@ class MediaEditService extends ConsumerWidget {
           ? BasicPageService.message(message: 'No Media Provided')
           : GetEntity(
               id: mediaId,
-              errorBuilder: (_, __) {
+              errorBuilder: (_, _) {
                 throw UnimplementedError('errorBuilder');
               },
               loadingBuilder: () => CLLoader.widget(
@@ -44,7 +44,7 @@ class MediaEditService extends ConsumerWidget {
                 }
 
                 return GetActiveStore(
-                  errorBuilder: (_, __) {
+                  errorBuilder: (_, _) {
                     throw UnimplementedError('errorBuilder');
                   },
                   loadingBuilder: () => CLLoader.widget(
@@ -71,28 +71,35 @@ class MediaEditService extends ConsumerWidget {
                         var resultMedia = media;
 
                         if (overwrite && context.mounted) {
-                          final confirmed = await DialogService.replaceMedia(
+                          final confirmed =
+                              await DialogService.replaceMedia(
                                 context,
                                 serverId: serverId,
                                 media: media,
                               ) ??
                               false;
                           if (confirmed && context.mounted) {
-                            resultMedia = await media.updateWith(
-                                    mediaFile: mediaFile, autoSave: true) ??
+                            resultMedia =
+                                await media.updateWith(
+                                  mediaFile: mediaFile,
+                                  autoSave: true,
+                                ) ??
                                 media;
                           }
                         } else if (context.mounted) {
                           final confirmed =
                               await DialogService.cloneAndReplaceMedia(
-                                    context,
-                                    serverId: serverId,
-                                    media: media,
-                                  ) ??
-                                  false;
+                                context,
+                                serverId: serverId,
+                                media: media,
+                              ) ??
+                              false;
                           if (confirmed && context.mounted) {
-                            resultMedia = await media.cloneWith(
-                                    mediaFile: mediaFile, autoSave: true) ??
+                            resultMedia =
+                                await media.cloneWith(
+                                  mediaFile: mediaFile,
+                                  autoSave: true,
+                                ) ??
                                 media;
                           } else {
                             resultMedia = media;

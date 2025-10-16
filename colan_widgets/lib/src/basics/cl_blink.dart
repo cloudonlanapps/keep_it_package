@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 // To blink any widget with duration.
@@ -19,9 +21,11 @@ class _BlinkerState extends State<CLBlink> with SingleTickerProviderStateMixin {
   @override
   void initState() {
     if (widget.blinkDuration != Duration.zero) {
-      _animationController =
-          AnimationController(vsync: this, duration: widget.blinkDuration);
-      _animationController.repeat(reverse: true);
+      _animationController = AnimationController(
+        vsync: this,
+        duration: widget.blinkDuration,
+      );
+      unawaited(_animationController.repeat(reverse: true));
       Future.delayed(const Duration(seconds: 2), () {});
     }
 

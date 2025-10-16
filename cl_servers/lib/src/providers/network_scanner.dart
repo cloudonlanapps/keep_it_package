@@ -17,7 +17,7 @@ class NetworkScannerNotifier extends StateNotifier<NetworkScanner>
   NetworkScannerNotifier({required this.serviceName})
     : super(NetworkScanner.unknown()) {
     log('Instance created ');
-    _initialize();
+    unawaited(_initialize());
   }
   @override
   String get logPrefix => 'NetworkScannerNotifier';
@@ -45,7 +45,7 @@ class NetworkScannerNotifier extends StateNotifier<NetworkScanner>
 
         if (updatedLanStatus) {
           state = state.copyWith(lanStatus: updatedLanStatus);
-          searchForServers();
+          unawaited(searchForServers());
         } else {
           state = state.copyWith(lanStatus: updatedLanStatus, servers: {});
         }
@@ -71,18 +71,16 @@ class NetworkScannerNotifier extends StateNotifier<NetworkScanner>
   void dispose() {
     if (subscription != null) {
       log('Network Connectivity: unsubscribed');
-      subscription!.cancel();
-      subscription = null;
+      unawaited(subscription!.cancel().then((_) => subscription = null));
     }
     if (discovery != null) {
       discovery!.removeListener(listener);
       log('NSD: unsusbscribed');
-
-      discovery!.stop();
       log(
-        'NSD: Start searching for '
+        'NSD: Stop searching for '
         '"Cloud on LAN" services in the local area network',
       );
+      unawaited(discovery!.stop());
     }
     super.dispose();
   }

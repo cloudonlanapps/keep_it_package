@@ -24,27 +24,30 @@ import 'filters_valid_combinations.dart';
 typedef NumParser<T extends num> = T? Function(String source);
 
 extension Normalize on Map<String, dynamic> {
-  static dynamic normalizeValue<T extends num>(
-      dynamic val, NumParser<T> parser) {
+  static Object normalizeValue<T extends num>(
+    Object val,
+    NumParser<T> parser,
+  ) {
     return switch (val) {
       T() => val, // Already the target numeric type
       final bool valBool => valBool ? 1 : 0,
       final DateTime valDateTime => valDateTime.utcTimeStamp,
       final String valString =>
         parser(valString) ?? valString, // Try parsing, else keep as string
-      final List<dynamic> valList =>
+      final List<Object> valList =>
         valList.map((e) => normalizeValue<T>(e, parser)).toList(),
-      final Map<String, dynamic> valMap => valMap
-          .map((key, value) => MapEntry(key, normalizeValue<T>(value, parser))),
-      _ => val
+      final Map<String, Object> valMap => valMap.map(
+        (key, value) => MapEntry(key, normalizeValue<T>(value, parser)),
+      ),
+      _ => val,
     };
   }
 
   Map<String, dynamic> get normalized {
-    final result = <String, dynamic>{};
+    final result = <String, Object>{};
     for (final entry in entries) {
       final normalizedValue = switch (entry.key) {
-        (String _)
+        (final String key)
             when [
               'isCollection',
               'isDeleted',
@@ -57,23 +60,23 @@ extension Normalize on Map<String, dynamic> {
               'CreateDate_day',
               'CreateDate_month',
               'CreateDate_year',
-              'CreateDate'
-            ].contains(entry.key) =>
-          normalizeValue<int>(entry.value, int.tryParse),
+              'CreateDate',
+            ].contains(key) =>
+          normalizeValue<int>(entry.value as Object, int.tryParse),
         (String _)
             when [
               'Duration',
               'Duration_min',
               'Duration_max',
             ].contains(entry.key) =>
-          normalizeValue<double>(entry.value, double.tryParse),
+          normalizeValue<double>(entry.value as Object, double.tryParse),
         // We may consider adding a normalization for dates ?
-        _ => entry.value
+        _ => entry.value as Object?,
       };
 
       switch (normalizedValue) {
         case (final List<dynamic> val) when normalizedValue.length == 1:
-          result[entry.key] = val[0];
+          result[entry.key] = val[0] as Object;
         case null:
         case (final List<dynamic> _) when normalizedValue.isEmpty:
           break;
@@ -89,66 +92,94 @@ extension Normalize on Map<String, dynamic> {
 class TestFiltersLoopback {
   static Future<void> testLB1(TestContext testContext) async {
     for (final testCombination in filterValidTestCases) {
-      final queryString =
-          ServerCLEntityQuery().getQueryString(map: testCombination);
+      final queryString = ServerCLEntityQuery().getQueryString(
+        map: testCombination,
+      );
 
-      final reply = await (await testContext.server
-              .filterLoopBack(queryString: queryString))
-          .when(validResponse: (items) async {
-        // the where clause will be retured, currently we don't test it
-        // print(items['rawQuery']);
-        return items['loopback'] as Map<String, dynamic>;
-      }, errorResponse: (e, {st}) async {
-        fail('filterLoopBack Failed $e');
-      });
+      final reply =
+          await (await testContext.server.filterLoopBack(
+            queryString: queryString,
+          )).when(
+            validResponse: (items) async {
+              // the where clause will be retured, currently we don't test it
+              // print(items['rawQuery']);
+              return items['loopback'] as Map<String, dynamic>;
+            },
+            errorResponse: (e, {st}) async {
+              fail('filterLoopBack Failed $e');
+            },
+          );
 
       final mapEquals = const DeepCollectionEquality().equals;
-      expect(mapEquals(testCombination.normalized, reply), true,
-          reason: 'loopback must return same value\n'
-              'input:$testCombination '
-              '[normalized: ${testCombination.normalized}] \n'
-              'loopback:$reply [normalized: $reply] ');
+      expect(
+        mapEquals(testCombination.normalized, reply),
+        true,
+        reason:
+            'loopback must return same value\n'
+            'input:$testCombination '
+            '[normalized: ${testCombination.normalized}] \n'
+            'loopback:$reply [normalized: $reply] ',
+      );
     }
   }
 
   static Future<void> testLB2(TestContext testContext) async {
     for (final testCombination in filterInvalidTestCases) {
-      final queryString =
-          ServerCLEntityQuery().getQueryString(map: testCombination);
+      final queryString = ServerCLEntityQuery().getQueryString(
+        map: testCombination,
+      );
 
-      final errorReply = await (await testContext.server
-              .filterLoopBack(queryString: queryString))
-          .when(validResponse: (items) async {
-        fail(
-            'this test should have failed. $testCombination\n${items['loopback']}');
-      }, errorResponse: (e, {st}) async {
-        return e;
-      });
+      final errorReply =
+          await (await testContext.server.filterLoopBack(
+            queryString: queryString,
+          )).when(
+            validResponse: (items) async {
+              fail(
+                'this test should have failed. $testCombination\n${items['loopback']}',
+              );
+            },
+            errorResponse: (e, {st}) async {
+              return e;
+            },
+          );
       //print(errorReply);
-      expect(errorReply['type'], 'ValidationError',
-          reason: 'invalid cases should return ValidationError');
+      expect(
+        errorReply['type'],
+        'ValidationError',
+        reason: 'invalid cases should return ValidationError',
+      );
     }
   }
 
   static Future<void> testLBRandomMap(
-      TestContext testContext, Map<String, dynamic> map) async {
+    TestContext testContext,
+    Map<String, dynamic> map,
+  ) async {
     final queryString = ServerCLEntityQuery().getQueryString(map: map);
 
-    final reply = await (await testContext.server
-            .filterLoopBack(queryString: queryString))
-        .when(validResponse: (items) async {
-      // the where clause will be retured, currently we don't test it
-      print("rawQuery: ${items['rawQuery']}");
-      return items['loopback'] as Map<String, dynamic>;
-    }, errorResponse: (e, {st}) async {
-      fail('filterLoopBack Failed $e');
-    });
+    final reply =
+        await (await testContext.server.filterLoopBack(
+          queryString: queryString,
+        )).when(
+          validResponse: (items) async {
+            // the where clause will be retured, currently we don't test it
+            print("rawQuery: ${items['rawQuery']}");
+            return items['loopback'] as Map<String, dynamic>;
+          },
+          errorResponse: (e, {st}) async {
+            fail('filterLoopBack Failed $e');
+          },
+        );
 
     final mapEquals = const DeepCollectionEquality().equals;
-    expect(mapEquals(map.normalized, reply), true,
-        reason: 'loopback must return same value\n'
-            'input:$map '
-            '[normalized: ${map.normalized}] \n'
-            'loopback:$reply [normalized: $reply] ');
+    expect(
+      mapEquals(map.normalized, reply),
+      true,
+      reason:
+          'loopback must return same value\n'
+          'input:$map '
+          '[normalized: ${map.normalized}] \n'
+          'loopback:$reply [normalized: $reply] ',
+    );
   }
 }

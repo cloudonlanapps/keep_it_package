@@ -5,7 +5,7 @@ homepage: https://www.cloudonlanapps.com
 publish_to: none
 
 environment:
-  sdk: ">=3.0.0 <4.0.0"
+  sdk: ^3.9.2
 
 dependencies:
   cl_basic_types:
@@ -22,7 +22,7 @@ dependencies:
   intl: ^0.20.2
   path: ^1.9.0
   path_provider: ^2.1.5
-  shadcn_ui: ^0.27.0
+  shadcn_ui: ^0.38.0
   shimmer: ^3.0.0
   sqlite_async: ^0.11.1
   video_player: ^2.9.1

@@ -89,13 +89,18 @@ class CLCameraCoreState extends State<CLCameraCore>
       curve: Curves.easeInCubic,
     );
 
-    swapFrontBack();
+    unawaited(swapFrontBack());
   }
 
   @override
   void dispose() {
-    controller?.dispose();
-    controller = null;
+    if (controller != null) {
+      unawaited(
+        controller!.dispose().then((_) {
+          controller = null;
+        }),
+      );
+    }
     WidgetsBinding.instance.removeObserver(this);
     cameraSettingsController.dispose();
     timer?.cancel();
@@ -113,17 +118,17 @@ class CLCameraCoreState extends State<CLCameraCore>
         return;
       }
       controller = null;
-      cameraController.dispose();
+      unawaited(cameraController.dispose());
     } else if (state == AppLifecycleState.resumed) {
-      swapFrontBack(restore: true);
+      unawaited(swapFrontBack(restore: true));
     }
   }
 
   void animate(CameraSettings? value) {
     if (value == null) {
-      cameraSettingsController.reverse();
+      unawaited(cameraSettingsController.reverse());
     } else {
-      cameraSettingsController.forward();
+      unawaited(cameraSettingsController.forward());
     }
   }
 
@@ -217,8 +222,8 @@ class CLCameraCoreState extends State<CLCameraCore>
                   border: Border.all(
                     color:
                         controller != null && controller!.value.isRecordingVideo
-                            ? Colors.redAccent
-                            : Colors.grey,
+                        ? Colors.redAccent
+                        : Colors.grey,
                     width: 2,
                   ),
                 ),
@@ -315,7 +320,7 @@ class CLCameraCoreState extends State<CLCameraCore>
                                 icon: switch ((
                                   cameraMode.isVideo,
                                   controller!.value.isRecordingVideo,
-                                  controller!.value.isRecordingPaused
+                                  controller!.value.isRecordingPaused,
                                 )) {
                                   (false, _, _) => cameraThemeData.imageCapture,
                                   (true, false, _) =>
@@ -323,17 +328,17 @@ class CLCameraCoreState extends State<CLCameraCore>
                                   (true, true, false) =>
                                     cameraThemeData.videoRecordingPause,
                                   (true, true, true) =>
-                                    cameraThemeData.videoRecordingResume
+                                    cameraThemeData.videoRecordingResume,
                                 },
                                 onPressed: switch ((
                                   cameraMode.isVideo,
                                   controller!.value.isRecordingVideo,
-                                  controller!.value.isRecordingPaused
+                                  controller!.value.isRecordingPaused,
                                 )) {
                                   (false, _, _) => takePicture,
                                   (true, false, _) => startVideoRecording,
                                   (true, true, false) => pauseVideoRecording,
-                                  (true, true, true) => resumeVideoRecording
+                                  (true, true, true) => resumeVideoRecording,
                                 },
                               ),
                             ),
@@ -401,8 +406,10 @@ class CLCameraCoreState extends State<CLCameraCore>
       return;
     }
 
-    _currentScale = (_baseScale * details.scale)
-        .clamp(_minAvailableZoom, _maxAvailableZoom);
+    _currentScale = (_baseScale * details.scale).clamp(
+      _minAvailableZoom,
+      _maxAvailableZoom,
+    );
 
     await controller!.setZoomLevel(_currentScale);
   }
@@ -453,8 +460,9 @@ class CLCameraCoreState extends State<CLCameraCore>
       if (currDescription == null) {
         currDescription = backCamera;
       } else {
-        currDescription =
-            currDescription == backCamera ? frontCamera : backCamera;
+        currDescription = currDescription == backCamera
+            ? frontCamera
+            : backCamera;
       }
     }
 
@@ -468,20 +476,20 @@ class CLCameraCoreState extends State<CLCameraCore>
           ...!kIsWeb
               ? <Future<Object?>>[
                   cameraController.getMinExposureOffset().then(
-                        (double value) => minAvailableExposureOffset = value,
-                      ),
+                    (double value) => minAvailableExposureOffset = value,
+                  ),
                   cameraController.getMaxExposureOffset().then(
-                        (double value) => maxAvailableExposureOffset = value,
-                      ),
+                    (double value) => maxAvailableExposureOffset = value,
+                  ),
                 ]
               : <Future<Object?>>[],
           cameraController.getMaxZoomLevel().then((double value) {
             _maxAvailableZoom = value;
             return null;
           }),
-          cameraController
-              .getMinZoomLevel()
-              .then((double value) => _minAvailableZoom = value),
+          cameraController.getMinZoomLevel().then(
+            (double value) => _minAvailableZoom = value,
+          ),
         ]);
       } on CameraException catch (e) {
         switch (e.code) {
@@ -546,20 +554,20 @@ class CLCameraCoreState extends State<CLCameraCore>
         ...!kIsWeb
             ? <Future<Object?>>[
                 cameraController.getMinExposureOffset().then(
-                      (double value) => minAvailableExposureOffset = value,
-                    ),
+                  (double value) => minAvailableExposureOffset = value,
+                ),
                 cameraController.getMaxExposureOffset().then(
-                      (double value) => maxAvailableExposureOffset = value,
-                    ),
+                  (double value) => maxAvailableExposureOffset = value,
+                ),
               ]
             : <Future<Object?>>[],
         cameraController.getMaxZoomLevel().then((double value) {
           _maxAvailableZoom = value;
           return null;
         }),
-        cameraController
-            .getMinZoomLevel()
-            .then((double value) => _minAvailableZoom = value),
+        cameraController.getMinZoomLevel().then(
+          (double value) => _minAvailableZoom = value,
+        ),
       ]);
     } on CameraException catch (e) {
       switch (e.code) {
@@ -603,82 +611,90 @@ class CLCameraCoreState extends State<CLCameraCore>
     return controller.value.isRecordingVideo
         ? controller.value.recordingOrientation!
         : (controller.value.previewPauseOrientation ??
-            controller.value.lockedCaptureOrientation ??
-            controller.value.deviceOrientation);
+              controller.value.lockedCaptureOrientation ??
+              controller.value.deviceOrientation);
   }
 
   void startVideoRecording() {
-    controller!.onStartVideoRecording(
-      onError: widget.onError,
-      onSuccess: () {
-        if (mounted) {
-          setState(() {
-            isPaused = false;
-            _isRecordingInProgress = true;
-            recordingDuration = 0;
-          });
-          timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-            if (!isPaused) {
-              setState(() {
-                recordingDuration++;
-              });
-            }
-          });
-        }
-      },
+    unawaited(
+      controller!.onStartVideoRecording(
+        onError: widget.onError,
+        onSuccess: () {
+          if (mounted) {
+            setState(() {
+              isPaused = false;
+              _isRecordingInProgress = true;
+              recordingDuration = 0;
+            });
+            timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+              if (!isPaused) {
+                setState(() {
+                  recordingDuration++;
+                });
+              }
+            });
+          }
+        },
+      ),
     );
   }
 
   void stopVideoRecording() => controller!.onStopVideoRecording(
-        onError: widget.onError,
-        onSuccess: (videoFilePath) {
-          if (mounted) {
-            widget.onCapture(videoFilePath, isVideo: true);
-            timer?.cancel();
+    onError: widget.onError,
+    onSuccess: (videoFilePath) {
+      if (mounted) {
+        widget.onCapture(videoFilePath, isVideo: true);
+        timer?.cancel();
 
+        setState(() {
+          _isRecordingInProgress = false;
+          isPaused = false;
+          recordingDuration = 0;
+        });
+      }
+    },
+  );
+
+  void pauseVideoRecording() {
+    unawaited(
+      controller!.onPauseVideoRecording(
+        onError: widget.onError,
+        onSuccess: () {
+          if (mounted) {
             setState(() {
-              _isRecordingInProgress = false;
-              isPaused = false;
-              recordingDuration = 0;
+              isPaused = true;
             });
           }
         },
-      );
-
-  void pauseVideoRecording() {
-    controller!.onPauseVideoRecording(
-      onError: widget.onError,
-      onSuccess: () {
-        if (mounted) {
-          setState(() {
-            isPaused = true;
-          });
-        }
-      },
+      ),
     );
   }
 
   void resumeVideoRecording() {
-    controller!.onResumeVideoRecording(
-      onError: widget.onError,
-      onSuccess: () {
-        if (mounted) {
-          setState(() {
-            isPaused = false;
-          });
-        }
-      },
+    unawaited(
+      controller!.onResumeVideoRecording(
+        onError: widget.onError,
+        onSuccess: () {
+          if (mounted) {
+            setState(() {
+              isPaused = false;
+            });
+          }
+        },
+      ),
     );
   }
 
   void takePicture() {
-    controller!.onTakePicture(
-      onError: widget.onError,
-      onSuccess: (imageFilePath) {
-        if (mounted) {
-          widget.onCapture(imageFilePath, isVideo: false);
-        }
-      },
+    unawaited(
+      controller!.onTakePicture(
+        onError: widget.onError,
+        onSuccess: (imageFilePath) {
+          if (mounted) {
+            widget.onCapture(imageFilePath, isVideo: false);
+          }
+        },
+      ),
     );
   }
 
@@ -708,7 +724,7 @@ class CLCameraCoreState extends State<CLCameraCore>
               onLongPress: controller == null
                   ? null
                   : () {
-                      controller.setExposurePoint(null);
+                      unawaited(controller.setExposurePoint(null));
                       // showInSnackBar('Resetting exposure point');
                     },
               child: const Text('AUTO'),
@@ -722,7 +738,7 @@ class CLCameraCoreState extends State<CLCameraCore>
             TextButton(
               style: styleLocked,
               onPressed: () {
-                setExposureOffset(0);
+                unawaited(setExposureOffset(0));
               },
               child: const Text('RESET OFFSET'),
             ),
@@ -742,8 +758,8 @@ class CLCameraCoreState extends State<CLCameraCore>
               label: currentExposureOffset.toString(),
               onChanged:
                   minAvailableExposureOffset == maxAvailableExposureOffset
-                      ? null
-                      : setExposureOffset,
+                  ? null
+                  : setExposureOffset,
             ),
             Text(maxAvailableExposureOffset.toString()),
           ],
@@ -757,13 +773,15 @@ class CLCameraCoreState extends State<CLCameraCore>
   }
 
   void onSetExposureModeButtonPressed(ExposureMode mode) {
-    setExposureMode(mode).then((_) {
-      if (mounted) {
-        setState(() {});
-      }
-      // showInSnackBar(
-      // 'Exposure mode set to ${mode.toString().split('.').last}');
-    });
+    unawaited(
+      setExposureMode(mode).then((_) {
+        if (mounted) {
+          setState(() {});
+        }
+        // showInSnackBar(
+        // 'Exposure mode set to ${mode.toString().split('.').last}');
+      }),
+    );
   }
 
   Future<void> setExposureMode(ExposureMode mode) async {
@@ -820,7 +838,7 @@ class CLCameraCoreState extends State<CLCameraCore>
                   : null,
               onLongPress: () {
                 if (controller != null) {
-                  controller.setFocusPoint(null);
+                  unawaited(controller.setFocusPoint(null));
                 }
                 //showInSnackBar('Resetting focus point');
               },
@@ -844,12 +862,14 @@ class CLCameraCoreState extends State<CLCameraCore>
   }
 
   void onSetFocusModeButtonPressed(FocusMode mode) {
-    setFocusMode(mode).then((_) {
-      if (mounted) {
-        setState(() {});
-      }
-      //showInSnackBar('Focus mode set to ${mode.toString().split('.').last}');
-    });
+    unawaited(
+      setFocusMode(mode).then((_) {
+        if (mounted) {
+          setState(() {});
+        }
+        //showInSnackBar('Focus mode set to ${mode.toString().split('.').last}');
+      }),
+    );
   }
 
   Future<void> setFocusMode(FocusMode mode) async {
@@ -877,10 +897,9 @@ class CLCameraCoreState extends State<CLCameraCore>
                 padding: const EdgeInsets.all(8),
                 child: Text(
                   'Front Camera:',
-                  style: Theme.of(context)
-                      .textTheme
-                      .bodyLarge
-                      ?.copyWith(fontWeight: FontWeight.bold),
+                  style: Theme.of(
+                    context,
+                  ).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold),
                 ),
               ),
               ToggleButtons(
@@ -895,30 +914,34 @@ class CLCameraCoreState extends State<CLCameraCore>
                     )
                     .indexed
                     .map((e) {
-                  final (index, _) = e;
-                  return index == config.defaultFrontCameraIndex;
-                }).toList(),
-                children: List<int>.generate(
-                  widget.cameras
-                      .where(
-                        (e) => e.lensDirection == CameraLensDirection.front,
-                      )
-                      .length,
-                  (i) => i,
-                )
-                    .map(
-                      (e) => Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 8,
-                          vertical: 2,
-                        ),
-                        child: Text(
-                          'Camera $e',
-                          style: Theme.of(context).textTheme.bodyMedium,
-                        ),
-                      ),
-                    )
+                      final (index, _) = e;
+                      return index == config.defaultFrontCameraIndex;
+                    })
                     .toList(),
+                children:
+                    List<int>.generate(
+                          widget.cameras
+                              .where(
+                                (e) =>
+                                    e.lensDirection ==
+                                    CameraLensDirection.front,
+                              )
+                              .length,
+                          (i) => i,
+                        )
+                        .map(
+                          (e) => Padding(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 2,
+                            ),
+                            child: Text(
+                              'Camera $e',
+                              style: Theme.of(context).textTheme.bodyMedium,
+                            ),
+                          ),
+                        )
+                        .toList(),
                 onPressed: (index) async {
                   if (index != config.defaultFrontCameraIndex) {
                     config = config.copyWith(defaultFrontCameraIndex: index);
@@ -938,10 +961,9 @@ class CLCameraCoreState extends State<CLCameraCore>
                 padding: const EdgeInsets.all(8),
                 child: Text(
                   'Back Camera:',
-                  style: Theme.of(context)
-                      .textTheme
-                      .bodyLarge
-                      ?.copyWith(fontWeight: FontWeight.bold),
+                  style: Theme.of(
+                    context,
+                  ).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold),
                 ),
               ),
               ToggleButtons(
@@ -956,30 +978,33 @@ class CLCameraCoreState extends State<CLCameraCore>
                     )
                     .indexed
                     .map((e) {
-                  final (index, _) = e;
-                  return index == config.defaultBackCameraIndex;
-                }).toList(),
-                children: List<int>.generate(
-                  widget.cameras
-                      .where(
-                        (e) => e.lensDirection == CameraLensDirection.back,
-                      )
-                      .length,
-                  (i) => i,
-                )
-                    .map(
-                      (e) => Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 8,
-                          vertical: 2,
-                        ),
-                        child: Text(
-                          'Camera $e',
-                          style: Theme.of(context).textTheme.bodyMedium,
-                        ),
-                      ),
-                    )
+                      final (index, _) = e;
+                      return index == config.defaultBackCameraIndex;
+                    })
                     .toList(),
+                children:
+                    List<int>.generate(
+                          widget.cameras
+                              .where(
+                                (e) =>
+                                    e.lensDirection == CameraLensDirection.back,
+                              )
+                              .length,
+                          (i) => i,
+                        )
+                        .map(
+                          (e) => Padding(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 2,
+                            ),
+                            child: Text(
+                              'Camera $e',
+                              style: Theme.of(context).textTheme.bodyMedium,
+                            ),
+                          ),
+                        )
+                        .toList(),
                 onPressed: (index) async {
                   if (index != config.defaultBackCameraIndex) {
                     config = config.copyWith(defaultBackCameraIndex: index);
@@ -996,10 +1021,9 @@ class CLCameraCoreState extends State<CLCameraCore>
               padding: const EdgeInsets.all(8),
               child: Text(
                 'Image Resolution:',
-                style: Theme.of(context)
-                    .textTheme
-                    .bodyLarge
-                    ?.copyWith(fontWeight: FontWeight.bold),
+                style: Theme.of(
+                  context,
+                ).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold),
               ),
             ),
           ),
@@ -1050,10 +1074,9 @@ class CLCameraCoreState extends State<CLCameraCore>
                 padding: const EdgeInsets.all(8),
                 child: Text(
                   'Audio',
-                  style: Theme.of(context)
-                      .textTheme
-                      .bodyLarge
-                      ?.copyWith(fontWeight: FontWeight.bold),
+                  style: Theme.of(
+                    context,
+                  ).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold),
                 ),
               ),
               IconButton(

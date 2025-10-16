@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 
@@ -8,11 +10,11 @@ enum EditorFinalActions {
   discard;
 
   String get label => switch (this) {
-        save => 'Save',
-        saveAsNew => 'Save Copy',
-        revertToOriginal => 'Reset to Original',
-        discard => 'Discard',
-      };
+    save => 'Save',
+    saveAsNew => 'Save Copy',
+    revertToOriginal => 'Reset to Original',
+    discard => 'Discard',
+  };
 }
 
 class EditorFinalizer extends StatelessWidget {
@@ -34,9 +36,10 @@ class EditorFinalizer extends StatelessWidget {
     if (!hasEditAction) {
       return GestureDetector(
         onTap: () {
-          onDiscard(done: true);
+          unawaited(onDiscard(done: true));
         },
-        child: child ??
+        child:
+            child ??
             CLIcon.small(
               clIcons.closeFullscreen,
               color: CLTheme.of(context).colors.iconColor,
@@ -44,7 +47,8 @@ class EditorFinalizer extends StatelessWidget {
       );
     }
     return PopupMenuButton<EditorFinalActions>(
-      child: child ??
+      child:
+          child ??
           CLIcon.small(
             clIcons.doneEditMedia,
             color: Colors.red, //CLTheme.of(context).colors.iconColor,

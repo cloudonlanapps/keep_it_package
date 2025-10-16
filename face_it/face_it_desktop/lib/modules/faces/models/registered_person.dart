@@ -25,7 +25,7 @@ class RegisteredPerson with CLLogger implements Comparable<RegisteredPerson> {
         faces: (map['faces'] as List<dynamic>).cast<String>(),
       );
     } catch (e) {
-      print('Crashed here??');
+      /* print('Crashed here??'); */
       rethrow;
     }
   }
@@ -102,4 +102,6 @@ class RegisteredPerson with CLLogger implements Comparable<RegisteredPerson> {
     }
     return id.compareTo(other.id);
   }
+
+  bool get isNamed => name != null;
 }

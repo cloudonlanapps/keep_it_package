@@ -23,8 +23,9 @@ class MediaViewerCore extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final currentItem = ref
-        .watch(mediaViewerUIStateProvider.select((state) => state.currentItem));
+    final currentItem = ref.watch(
+      mediaViewerUIStateProvider.select((state) => state.currentItem),
+    );
     final length = ref.watch(
       mediaViewerUIStateProvider.select((state) => state.length),
     );
@@ -34,13 +35,11 @@ class MediaViewerCore extends ConsumerWidget {
         return switch (length) {
           0 => Container(),
           1 => ViewMedia(
-              currentItem: currentItem,
-              autoStart: true,
-              playerControls: controls,
-            ),
-          _ => MediaViewerPageView(
-              playerControls: controls,
-            )
+            currentItem: currentItem,
+            autoStart: true,
+            playerControls: controls,
+          ),
+          _ => MediaViewerPageView(playerControls: controls),
         };
       },
     );
@@ -63,7 +62,8 @@ class ViewMedia extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final stateManager = ref.watch(mediaViewerUIStateProvider);
     final uri = currentItem.mediaUri!;
-    final isPlayable = autoStart &&
+    final isPlayable =
+        autoStart &&
         /* widget.playerControls.uri != widget.currentItem.mediaUri && */
         currentItem.mediaType == CLMediaType.video &&
         currentItem.mediaUri != null;
@@ -85,7 +85,7 @@ class ViewMedia extends ConsumerWidget {
       isLocked: false,
       autoStart: autoStart,
       autoPlay: true, // Fixme
-      errorBuilder: (_, __) => const BrokenImage(),
+      errorBuilder: (_, _) => const BrokenImage(),
       loadingBuilder: () => const GreyShimmer(),
       keepAspectRatio: stateManager.showMenu || isPlayable,
       hasGesture: !stateManager.showMenu,
@@ -96,18 +96,20 @@ class ViewMedia extends ConsumerWidget {
         // To get the gesture for the entire region, we need
         // this dummy container
         child: Container(
-            decoration: BoxDecoration(), child: Center(child: mediaViewer)),
+          decoration: BoxDecoration(),
+          child: Center(child: mediaViewer),
+        ),
       );
     }
 
     final player = ShadTheme(
       data: ShadTheme.of(context).copyWith(
         textTheme: ShadTheme.of(context).textTheme.copyWith(
-              small: ShadTheme.of(context).textTheme.small.copyWith(
-                    color: playerUIPreferences.foregroundColor,
-                    fontSize: 10,
-                  ),
-            ),
+          small: ShadTheme.of(context).textTheme.small.copyWith(
+            color: playerUIPreferences.foregroundColor,
+            fontSize: 10,
+          ),
+        ),
         ghostButtonTheme: ShadButtonTheme(
           backgroundColor: Colors.black.withValues(alpha: 0.5),
           foregroundColor: Colors.white,
@@ -140,8 +142,9 @@ class ViewMedia extends ConsumerWidget {
             top: 0,
             right: 0,
             child: ShadButton.ghost(
-              onPressed:
-                  ref.read(mediaViewerUIStateProvider.notifier).toggleMenu,
+              onPressed: ref
+                  .read(mediaViewerUIStateProvider.notifier)
+                  .toggleMenu,
               child: SvgIcon(
                 stateManager.showMenu
                     ? SvgIcons.fullScreen
@@ -157,9 +160,7 @@ class ViewMedia extends ConsumerWidget {
               bottom: 0,
               left: 0,
               right: 0,
-              child: OnTogglePlay(
-                uri: currentItem.mediaUri!,
-              ),
+              child: OnTogglePlay(uri: currentItem.mediaUri!),
             ),
             Positioned(
               top: 0,
@@ -177,9 +178,7 @@ class ViewMedia extends ConsumerWidget {
       ),
     );
     if (stateManager.showMenu) {
-      return Center(
-        child: player,
-      );
+      return Center(child: player);
     } else {
       return player;
     }

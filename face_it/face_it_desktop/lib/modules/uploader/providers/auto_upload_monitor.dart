@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cl_basic_types/cl_basic_types.dart';
 import 'package:cl_servers/cl_servers.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -30,9 +32,11 @@ class AutoUploadMonitor with CLLogger {
 
           if (filesNotYetUploaded.isNotEmpty) {
             log('adding ${filesNotYetUploaded.length} into uploader');
-            ref
-                .read(uploaderProvider.notifier)
-                .uploadMultiple(filesNotYetUploaded.map((e) => e.path));
+            unawaited(
+              ref
+                  .read(uploaderProvider.notifier)
+                  .uploadMultiple(filesNotYetUploaded.map((e) => e.path)),
+            );
           }
         }
       })
@@ -61,7 +65,9 @@ class AutoUploadMonitor with CLLogger {
 
           if (filesToUpload.isNotEmpty) {
             log('Adding ${filesToUpload.length} files for upload.');
-            ref.read(uploaderProvider.notifier).uploadMultiple(filesToUpload);
+            unawaited(
+              ref.read(uploaderProvider.notifier).uploadMultiple(filesToUpload),
+            );
           }
         }
       });

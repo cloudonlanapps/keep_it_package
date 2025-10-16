@@ -6,16 +6,13 @@ import '../models/video_player_controls.dart';
 import '../providers/video_player_state.dart';
 
 class GetUriPlayStatus extends ConsumerWidget {
-  const GetUriPlayStatus({
-    required this.uri,
-    required this.builder,
-    super.key,
-  });
+  const GetUriPlayStatus({required this.uri, required this.builder, super.key});
   final Uri uri;
   final Widget Function([
     VideoPlayerControls? playerControls,
     VideoPlayerValue? playStatus,
-  ]) builder;
+  ])
+  builder;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -33,7 +30,7 @@ class GetUriPlayStatus extends ConsumerWidget {
           },
         );
       },
-      error: (_, __) => builder(),
+      error: (_, _) => builder(),
       loading: builder,
     );
   }

@@ -1,4 +1,4 @@
-import 'dart:async' show Completer;
+import 'dart:async' show Completer, unawaited;
 import 'package:cl_basic_types/cl_basic_types.dart';
 import 'package:cl_servers/cl_servers.dart';
 import 'package:face_it_desktop/modules/face_recg/models/ai_task.dart';
@@ -19,7 +19,7 @@ class SchedulerNotifier extends StateNotifier<List<AITask>> with CLLogger {
     log('${task.identifier}: added into the queue');
     final updated = [...state, task]..sort((a, b) => a.compareTo(b));
     state = updated;
-    _processNext();
+    unawaited(_processNext());
     return task.result;
   }
 

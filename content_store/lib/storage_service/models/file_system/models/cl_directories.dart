@@ -62,7 +62,7 @@ class CLDirectories {
       persistent.hashCode ^ temporary.hashCode ^ systemTemp.hashCode;
 
   Map<String, CLDirectory> get directories => <String, CLDirectory>{
-        /* 'media': CLDirectory(
+    /* 'media': CLDirectory(
           baseDir: persistent,
           label: 'Media Directory',
           name: 'keep_it/store/media',
@@ -86,25 +86,25 @@ class CLDirectories {
           name: 'keep_it/backup',
           isStore: true,
         ), */
-        'stores': CLDirectory(
-          baseDir: persistent,
-          label: 'Backup Directory',
-          name: 'keep_it/stores',
-          isStore: true,
-        ),
-        'temp': CLDirectory(
-          baseDir: temporary,
-          label: 'Temporary Directory',
-          name: 'keep_it/temp',
-          isStore: false,
-        ),
-        /* 'download': CLDirectory(
+    'stores': CLDirectory(
+      baseDir: persistent,
+      label: 'Backup Directory',
+      name: 'keep_it/stores',
+      isStore: true,
+    ),
+    'temp': CLDirectory(
+      baseDir: temporary,
+      label: 'Temporary Directory',
+      name: 'keep_it/temp',
+      isStore: false,
+    ),
+    /* 'download': CLDirectory(
           baseDir: temporary,
           label: 'Download Directory',
           name: 'keep_it/download',
           isStore: false,
         ), */
-      };
+  };
 
   CLDirectory _directory(String id) {
     final d = directories[id]!;
@@ -123,9 +123,9 @@ class CLDirectories {
   /*  CLDirectory get download => _directory('download'); */
 
   List<CLDirectory> get persistentDirs =>
-      directories.values.where((e) => e.isStore == true).toList();
+      directories.values.where((e) => e.isStore).toList();
   List<CLDirectory> get cacheDirs =>
-      directories.values.where((e) => e.isStore == false).toList();
+      directories.values.where((e) => !e.isStore).toList();
 }
 
 /**

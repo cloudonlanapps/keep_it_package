@@ -39,9 +39,9 @@ class FaceLayer extends ConsumerWidget {
               FaceStatus.notFound,
             ].contains(e.status),
           );
-    print(
+    /* print(
       'faceIds: ${faceIds.length} faces: ${faces.length} visibleFaces: ${visibleFaces.length}',
-    );
+    ); */
 
     return Stack(
       children: [

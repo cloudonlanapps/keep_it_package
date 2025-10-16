@@ -20,34 +20,32 @@ class ServerBar extends ConsumerWidget {
     });
 
     return GetActiveStore(
-        errorBuilder: (_, __) => const SizedBox.shrink(),
-        loadingBuilder: SizedBox.shrink,
-        builder: (activeServer) {
-          return ShadBadge(
-            padding:
-                const EdgeInsets.only(left: 2, right: 2, top: 2, bottom: 2),
-            onPressed: () =>
-                ref.read(serverBarStatusProvider.notifier).toggle(),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              spacing: 8,
-              children: [
-                ShadAvatar(
-                  (activeServer.store.isLocal)
-                      ? 'assets/icon/not_on_server.png'
-                      : 'assets/icon/cloud_on_lan_128px_color.png',
-                  size:
-                      const Size.fromRadius((kMinInteractiveDimension / 2) - 6),
+      errorBuilder: (_, _) => const SizedBox.shrink(),
+      loadingBuilder: SizedBox.shrink,
+      builder: (activeServer) {
+        return ShadBadge(
+          padding: const EdgeInsets.only(left: 2, right: 2, top: 2, bottom: 2),
+          onPressed: () => ref.read(serverBarStatusProvider.notifier).toggle(),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            spacing: 8,
+            children: [
+              ShadAvatar(
+                (activeServer.store.isLocal)
+                    ? 'assets/icon/not_on_server.png'
+                    : 'assets/icon/cloud_on_lan_128px_color.png',
+                size: const Size.fromRadius((kMinInteractiveDimension / 2) - 6),
+              ),
+              if (showText)
+                Padding(
+                  padding: const EdgeInsets.only(right: 8),
+                  child: Text(activeServer.label),
                 ),
-                if (showText)
-                  Padding(
-                    padding: const EdgeInsets.only(right: 8),
-                    child: Text(activeServer.label),
-                  )
-              ],
-            ),
-          );
-        });
+            ],
+          ),
+        );
+      },
+    );
   }
 }
 
@@ -89,5 +87,5 @@ class ServerBarStatusNotifier extends StateNotifier<bool> {
 
 final serverBarStatusProvider =
     StateNotifierProvider<ServerBarStatusNotifier, bool>((ref) {
-  return ServerBarStatusNotifier();
-});
+      return ServerBarStatusNotifier();
+    });

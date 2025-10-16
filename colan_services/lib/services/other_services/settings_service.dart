@@ -25,43 +25,47 @@ class SettingsService extends ConsumerWidget {
       bottomMenu: null,
       banners: const [],
       body: GetStoreTaskManager(
-          contentOrigin: ContentOrigin.deleted,
-          builder: (deletedTaskManager) {
-            return GetEntities(
-              isDeleted: true,
-              isHidden: null,
-              parentId: 0,
-              errorBuilder: (_, __) {
-                throw UnimplementedError('errorBuilder');
-              },
-              loadingBuilder: () => CLLoader.widget(
-                debugMessage: 'GetDeletedMedia',
-              ),
-              builder: (deletedMedia) {
-                return ListView(
-                  children: [
-                    if (deletedMedia.isNotEmpty)
-                      ListTile(
-                        leading: clIcons.recycleBin.iconFormatted(),
-                        trailing: IconButton(
-                          icon: clIcons.gotoPage.iconFormatted(),
-                          onPressed: () async {
-                            deletedTaskManager.add(StoreTask(
+        contentOrigin: ContentOrigin.deleted,
+        builder: (deletedTaskManager) {
+          return GetEntities(
+            isDeleted: true,
+            isHidden: null,
+            parentId: 0,
+            errorBuilder: (_, _) {
+              throw UnimplementedError('errorBuilder');
+            },
+            loadingBuilder: () => CLLoader.widget(
+              debugMessage: 'GetDeletedMedia',
+            ),
+            builder: (deletedMedia) {
+              return ListView(
+                children: [
+                  if (deletedMedia.isNotEmpty)
+                    ListTile(
+                      leading: clIcons.recycleBin.iconFormatted(),
+                      trailing: IconButton(
+                        icon: clIcons.gotoPage.iconFormatted(),
+                        onPressed: () async {
+                          deletedTaskManager.add(
+                            StoreTask(
                               items: deletedMedia.entities.cast<StoreEntity>(),
                               contentOrigin: ContentOrigin.stale,
-                            ));
-                            await PageManager.of(context)
-                                .openWizard(ContentOrigin.deleted);
-                          },
-                        ),
-                        title: Text('Deleted Items (${deletedMedia.length})'),
+                            ),
+                          );
+                          await PageManager.of(
+                            context,
+                          ).openWizard(ContentOrigin.deleted);
+                        },
                       ),
-                    const StorageMonitor(),
-                  ],
-                );
-              },
-            );
-          }),
+                      title: Text('Deleted Items (${deletedMedia.length})'),
+                    ),
+                  const StorageMonitor(),
+                ],
+              );
+            },
+          );
+        },
+      ),
     );
   }
 }

@@ -22,7 +22,8 @@ abstract class CLBanner extends ConsumerWidget {
       onTap: onTap,
       child: Center(
         child: Container(
-          color: backgroundColor ??
+          color:
+              backgroundColor ??
               ShadTheme.of(context).colorScheme.mutedForeground,
           padding: const EdgeInsets.only(
             top: 8,
@@ -35,9 +36,9 @@ abstract class CLBanner extends ConsumerWidget {
             child: Text(
               msg,
               style: ShadTheme.of(context).textTheme.small.copyWith(
-                    color: foregroundColor ??
-                        ShadTheme.of(context).colorScheme.muted,
-                  ),
+                color:
+                    foregroundColor ?? ShadTheme.of(context).colorScheme.muted,
+              ),
             ),
           ),
         ),
@@ -45,7 +46,7 @@ abstract class CLBanner extends ConsumerWidget {
     );
   }
 
-  Widget errorBuilder(Object _, StackTrace __) => const SizedBox.shrink();
+  Widget errorBuilder(Object _, StackTrace _) => const SizedBox.shrink();
   Widget loadingBuilder() => CLLoader.widget(debugMessage: widgetLabel);
 
   String get widgetLabel;

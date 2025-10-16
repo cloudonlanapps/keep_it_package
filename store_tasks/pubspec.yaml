@@ -4,7 +4,7 @@ version: 0.0.1
 
 publish_to: none
 environment:
-  sdk: ">=3.0.0 <4.0.0"
+  sdk: ^3.9.2
 
 dependencies:
   cl_basic_types:
@@ -23,7 +23,7 @@ dependencies:
   flutter_riverpod: 2.5.1
   form_factory:
     path: ../form_factory
-  shadcn_ui: ^0.27.0
+  shadcn_ui: ^0.38.0
   shimmer: ^3.0.0
   store:
     path: ../store
@@ -31,7 +31,7 @@ dependencies:
 dev_dependencies:
   lints: ^3.0.0
   test: ^1.24.0
-  very_good_analysis: ^8.0.0
+  very_good_analysis: ^10.0.0
 
 flutter:
   uses-material-design: true

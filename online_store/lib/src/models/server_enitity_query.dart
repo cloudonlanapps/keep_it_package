@@ -10,17 +10,17 @@ class ServerCLEntityQuery extends ServerQuery {
       final key = query.key;
       final value = query.value;
 
-      switch (value) {
+      switch (value as Object?) {
         case (final bool flag):
           queryList.add('$key=${flag ? 1 : 0}');
         case (final DateTime dateTime):
           queryList.add('$key=${dateTime.utcTimeStamp}');
         case null:
         case []:
-        case (final List<dynamic> _) when value.isEmpty:
+        case (final List<dynamic> e) when e.isEmpty:
           break;
-        case (final List<dynamic> _) when value.isNotEmpty:
-          queryList.add(value.map((e) => '$key=$e').join('&'));
+        case (final List<dynamic> e) when e.isNotEmpty:
+          queryList.add(e.map((e) => '$key=$e').join('&'));
 
         default:
           queryList.add('$key=$value');
@@ -63,6 +63,6 @@ class ServerCLEntityQuery extends ServerQuery {
     'Duration_max',
     'CreateDate_day',
     'CreateDate_month',
-    'CreateDate_year'
+    'CreateDate_year',
   };
 }

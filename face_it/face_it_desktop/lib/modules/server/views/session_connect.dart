@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cl_servers/cl_servers.dart'
     show GetServerSession, serverPreferenceProvider;
 
@@ -48,10 +50,12 @@ class SessionConnect extends ConsumerWidget {
               value: session.socket.connected,
               onChanged: (v) {
                 if (session.socket.connected) {
-                  ref
-                      .read(uploaderProvider.notifier)
-                      .cancelAllTasks()
-                      .then((_) => session.socket.disconnect());
+                  unawaited(
+                    ref
+                        .read(uploaderProvider.notifier)
+                        .cancelAllTasks()
+                        .then((_) => session.socket.disconnect()),
+                  );
                 } else {
                   session.socket.connect();
                 }

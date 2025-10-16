@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cl_servers/cl_servers.dart'
     show CLServer, serverPreferenceProvider;
 import 'package:face_it_desktop/modules/uploader/providers/uploader.dart';
@@ -72,7 +74,7 @@ class _ConnectedServerState extends ConsumerState<ConnectedServer> {
                 ),
               ),
               onPressed: () {
-                ref.read(uploaderProvider.notifier).cancelAllTasks();
+                unawaited(ref.read(uploaderProvider.notifier).cancelAllTasks());
                 ref.read(serverPreferenceProvider.notifier).updateServer(null);
               },
             ),

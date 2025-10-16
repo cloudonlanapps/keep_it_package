@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cl_basic_types/cl_basic_types.dart';
 import 'package:cl_entity_viewers/cl_entity_viewers.dart' show MediaThumbnail;
 import 'package:flutter/material.dart';
@@ -23,7 +25,7 @@ class PreviewCapturedMedia extends ConsumerWidget {
             onTap: () {
               final capturedMediaCopy = [...capturedMedia.entities];
               ref.read(capturedMediaProvider.notifier).clear();
-              sendMedia(ViewerEntities(capturedMediaCopy));
+              unawaited(sendMedia(ViewerEntities(capturedMediaCopy)));
             },
             child: CapturedMediaDecorator(
               child: Stack(

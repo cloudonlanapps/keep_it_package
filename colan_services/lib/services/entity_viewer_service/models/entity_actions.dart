@@ -15,18 +15,19 @@ import '../../basic_page_service/widgets/page_manager.dart';
 
 @immutable
 class EntityActions extends CLContextMenu {
-  const EntityActions(
-      {required this.serverId,
-      required this.name,
-      required this.logoImageAsset,
-      required this.onCrop,
-      required this.onEdit,
-      required this.onMove,
-      required this.onShare,
-      required this.onPin,
-      required this.onDelete,
-      required this.infoMap,
-      required this.moveTaskManager});
+  const EntityActions({
+    required this.serverId,
+    required this.name,
+    required this.logoImageAsset,
+    required this.onCrop,
+    required this.onEdit,
+    required this.onMove,
+    required this.onShare,
+    required this.onPin,
+    required this.onDelete,
+    required this.infoMap,
+    required this.moveTaskManager,
+  });
 
   factory EntityActions.entities(
     BuildContext context,
@@ -37,7 +38,7 @@ class EntityActions extends CLContextMenu {
     return switch (entities) {
       final ViewerEntities e
           when e.entities.every(
-            (e) => e is StoreEntity && e.isCollection == false,
+            (e) => e is StoreEntity && !e.isCollection,
           ) =>
         () {
           return EntityActions.ofMultipleMedia(
@@ -50,14 +51,14 @@ class EntityActions extends CLContextMenu {
         }(),
       final ViewerEntities e
           when e.entities.every(
-            (e) => e is StoreEntity && e.isCollection == true,
+            (e) => e is StoreEntity && e.isCollection,
           ) =>
         () {
           return EntityActions.empty(serverId: serverId);
         }(),
       _ => () {
-          return EntityActions.empty(serverId: serverId);
-        }()
+        return EntityActions.empty(serverId: serverId);
+      }(),
     };
   }
   factory EntityActions.ofEntity(
@@ -70,11 +71,14 @@ class EntityActions extends CLContextMenu {
     Future<bool> onEdit() async {
       if (context.mounted) {
         final updated = await (entity.isCollection
-            ? CollectionMetadataEditor.openSheet(context, ref,
+            ? CollectionMetadataEditor.openSheet(
+                context,
+                ref,
                 collection: entity,
                 store: entity.store,
                 suggestedLabel: null,
-                description: null)
+                description: null,
+              )
             : MediaMetadataEditor.openSheet(
                 context,
                 ref,
@@ -106,16 +110,19 @@ class EntityActions extends CLContextMenu {
     }
 
     Future<bool?> onMove({required String serverId}) async {
-      moveTaskManager.add(StoreTask(
-        items: [entity],
-        contentOrigin: ContentOrigin.move,
-      ));
+      moveTaskManager.add(
+        StoreTask(
+          items: [entity],
+          contentOrigin: ContentOrigin.move,
+        ),
+      );
       await PageManager.of(context).openWizard(ContentOrigin.move);
       return true;
     }
 
     Future<bool> onDelete() async {
-      final confirmed = await DialogService.deleteEntity(
+      final confirmed =
+          await DialogService.deleteEntity(
             context,
             serverId: serverId,
             entity: entity,
@@ -182,43 +189,44 @@ class EntityActions extends CLContextMenu {
     Future<bool?> Function()? onDelete,
   }) {
     return EntityActions(
-        serverId: serverId,
-        name: name,
-        logoImageAsset: logoImageAsset,
-        onCrop: CLMenuItem(
-          title: 'Edit',
-          icon: clIcons.imageCrop,
-          onTap: onCrop,
-        ),
-        onEdit: CLMenuItem(
-          title: 'Info',
-          icon: clIcons.imageEdit,
-          onTap: onEdit,
-        ),
-        onMove: CLMenuItem(
-          title: 'Move',
-          icon: clIcons.imageMove,
-          onTap: onMove,
-        ),
-        onShare: CLMenuItem(
-          title: 'Share',
-          icon: clIcons.imageShare,
-          onTap: onShare,
-        ),
-        onPin: CLMenuItem(
-          title: isPinned ? 'Remove Pin' : 'Pin',
-          icon: isPinned ? clIcons.pin : clIcons.unPin,
-          onTap: onPin,
-        ),
-        onDelete: CLMenuItem(
-          title: 'Remove',
-          icon: clIcons.imageDelete,
-          onTap: onDelete,
-          isDestructive: true,
-          tooltip: 'Moves to Recycle bin. Can recover as per Recycle Policy',
-        ),
-        infoMap: infoMap,
-        moveTaskManager: moveTaskManager);
+      serverId: serverId,
+      name: name,
+      logoImageAsset: logoImageAsset,
+      onCrop: CLMenuItem(
+        title: 'Edit',
+        icon: clIcons.imageCrop,
+        onTap: onCrop,
+      ),
+      onEdit: CLMenuItem(
+        title: 'Info',
+        icon: clIcons.imageEdit,
+        onTap: onEdit,
+      ),
+      onMove: CLMenuItem(
+        title: 'Move',
+        icon: clIcons.imageMove,
+        onTap: onMove,
+      ),
+      onShare: CLMenuItem(
+        title: 'Share',
+        icon: clIcons.imageShare,
+        onTap: onShare,
+      ),
+      onPin: CLMenuItem(
+        title: isPinned ? 'Remove Pin' : 'Pin',
+        icon: isPinned ? clIcons.pin : clIcons.unPin,
+        onTap: onPin,
+      ),
+      onDelete: CLMenuItem(
+        title: 'Remove',
+        icon: clIcons.imageDelete,
+        onTap: onDelete,
+        isDestructive: true,
+        tooltip: 'Moves to Recycle bin. Can recover as per Recycle Policy',
+      ),
+      infoMap: infoMap,
+      moveTaskManager: moveTaskManager,
+    );
   }
 
   factory EntityActions.ofMultipleMedia(
@@ -238,10 +246,12 @@ class EntityActions extends CLContextMenu {
     final onEdit0 = onCrop?.call();
     final onEditInfo0 = onEdit?.call();
     Future<bool?> onMove0() async {
-      moveTaskManager.add(StoreTask(
-        items: items.entities.cast<StoreEntity>(),
-        contentOrigin: ContentOrigin.move,
-      ));
+      moveTaskManager.add(
+        StoreTask(
+          items: items.entities.cast<StoreEntity>(),
+          contentOrigin: ContentOrigin.move,
+        ),
+      );
       await PageManager.of(context).openWizard(ContentOrigin.move);
       return true;
     }
@@ -255,7 +265,8 @@ class EntityActions extends CLContextMenu {
     }
 
     Future<bool> onDelete0() async {
-      final confirmed = await DialogService.deleteMultipleEntities(
+      final confirmed =
+          await DialogService.deleteMultipleEntities(
             context,
             serverId: serverId,
             media: items,
@@ -283,8 +294,9 @@ class EntityActions extends CLContextMenu {
       onPin: onPin != null ? onPin() : onPin0,
       onDelete: onDelete != null ? onDelete() : onDelete0,
       infoMap: const {},
-      isPinned:
-          items.entities.cast<StoreEntity>().any((media) => media.pin != null),
+      isPinned: items.entities.cast<StoreEntity>().any(
+        (media) => media.pin != null,
+      ),
     );
   }
   final String serverId;
@@ -302,25 +314,25 @@ class EntityActions extends CLContextMenu {
 
   @override
   List<CLMenuItem> get actions => [
-        onCrop,
-        onEdit,
-        onMove,
-        onShare,
-        onPin,
-        onDelete,
-      ].where((e) => e.onTap != null).toList();
+    onCrop,
+    onEdit,
+    onMove,
+    onShare,
+    onPin,
+    onDelete,
+  ].where((e) => e.onTap != null).toList();
 
   List<CLMenuItem> get basicActions => [
-        onCrop,
-        onEdit,
-        onMove,
-        onShare,
-        onPin,
-      ];
+    onCrop,
+    onEdit,
+    onMove,
+    onShare,
+    onPin,
+  ];
 
   List<CLMenuItem> get destructiveActions => [
-        onDelete,
-      ];
+    onDelete,
+  ];
 
   static Future<bool?> share(
     BuildContext context,
@@ -340,7 +352,8 @@ class EntityActions extends CLContextMenu {
   }
 }
 
-typedef DraggableMenuBuilderType = Widget Function(
-  BuildContext, {
-  required GlobalKey<State<StatefulWidget>> parentKey,
-});
+typedef DraggableMenuBuilderType =
+    Widget Function(
+      BuildContext, {
+      required GlobalKey<State<StatefulWidget>> parentKey,
+    });

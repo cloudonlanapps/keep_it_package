@@ -22,12 +22,13 @@ class DBQuery<T> {
         final key = query.key;
         final value = query.value;
         if (validColumns.contains(key)) {
-          switch (value) {
+          switch (value as Object?) {
             case null:
               whereParts.add('$key IS NULL');
-            case (final List<dynamic> e) when value.isNotEmpty:
-              whereParts
-                  .add('$key IN (${List.filled(e.length, '?').join(', ')})');
+            case (final List<dynamic> e) when e.isNotEmpty:
+              whereParts.add(
+                '$key IN (${List.filled(e.length, '?').join(', ')})',
+              );
               params.addAll(e);
             case (final NotNullValue _):
               whereParts.add('$key IS NOT NULL');
@@ -39,8 +40,9 @@ class DBQuery<T> {
       }
     }
 
-    final whereClause =
-        whereParts.isNotEmpty ? 'WHERE ${whereParts.join(' AND ')}' : '';
+    final whereClause = whereParts.isNotEmpty
+        ? 'WHERE ${whereParts.join(' AND ')}'
+        : '';
     final sql = 'SELECT * FROM $table $whereClause';
 
     return DBQuery<T>(

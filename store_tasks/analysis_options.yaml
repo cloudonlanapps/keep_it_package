@@ -1,3 +1,6 @@
+analyzer:
+  errors:
+    matching_super_parameters: ignore
 include: package:very_good_analysis/analysis_options.yaml
 
 linter:

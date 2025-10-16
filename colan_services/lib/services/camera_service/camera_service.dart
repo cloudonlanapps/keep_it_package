@@ -35,7 +35,7 @@ class CameraService extends ConsumerWidget {
     return FullscreenLayout(
       useSafeArea: false,
       child: GetDefaultStore(
-        errorBuilder: (_, __) {
+        errorBuilder: (_, _) {
           throw UnimplementedError('errorBuilder');
         },
         loadingBuilder: () => CLLoader.widget(
@@ -43,49 +43,53 @@ class CameraService extends ConsumerWidget {
         ),
         builder: (theStore) {
           return GetStoreTaskManager(
-              contentOrigin: ContentOrigin.camera,
-              builder: (cameraTaskManager) {
-                return GetEntity(
-                  id: parentId,
-                  errorBuilder: (_, __) {
-                    throw UnimplementedError('errorBuilder');
-                  },
-                  loadingBuilder: () => CLLoader.widget(
-                    debugMessage: 'GetCollection',
-                  ),
-                  builder: (collection) {
-                    return CLCameraService0(
-                      onCancel: () => PageManager.of(context).pop(),
-                      onNewMedia: (path, {required isVideo}) async {
-                        final mediaFile = await CLMediaFileUtils.fromPath(path);
+            contentOrigin: ContentOrigin.camera,
+            builder: (cameraTaskManager) {
+              return GetEntity(
+                id: parentId,
+                errorBuilder: (_, _) {
+                  throw UnimplementedError('errorBuilder');
+                },
+                loadingBuilder: () => CLLoader.widget(
+                  debugMessage: 'GetCollection',
+                ),
+                builder: (collection) {
+                  return CLCameraService0(
+                    onCancel: () => PageManager.of(context).pop(),
+                    onNewMedia: (path, {required isVideo}) async {
+                      final mediaFile = await CLMediaFileUtils.fromPath(path);
 
-                        if (mediaFile != null) {
-                          return (await theStore.createMedia(
-                            mediaFile: mediaFile,
-                            label: () =>
-                                p.basenameWithoutExtension(mediaFile.path),
-                            description: () => 'captured with Camera',
-                          ))
-                              ?.dbSave(mediaFile.path);
-                        }
-                        return null;
-                      },
-                      onDone: (mediaList) async {
-                        cameraTaskManager.add(StoreTask(
-                            items: mediaList.entities.cast<StoreEntity>(),
-                            contentOrigin: ContentOrigin.camera,
-                            collection: collection));
-                        await PageManager.of(context)
-                            .openWizard(ContentOrigin.camera);
+                      if (mediaFile != null) {
+                        return (await theStore.createMedia(
+                          mediaFile: mediaFile,
+                          label: () =>
+                              p.basenameWithoutExtension(mediaFile.path),
+                          description: () => 'captured with Camera',
+                        ))?.dbSave(mediaFile.path);
+                      }
+                      return null;
+                    },
+                    onDone: (mediaList) async {
+                      cameraTaskManager.add(
+                        StoreTask(
+                          items: mediaList.entities.cast<StoreEntity>(),
+                          contentOrigin: ContentOrigin.camera,
+                          collection: collection,
+                        ),
+                      );
+                      await PageManager.of(
+                        context,
+                      ).openWizard(ContentOrigin.camera);
 
-                        if (context.mounted) {
-                          PageManager.of(context).pop();
-                        }
-                      },
-                    );
-                  },
-                );
-              });
+                      if (context.mounted) {
+                        PageManager.of(context).pop();
+                      }
+                    },
+                  );
+                },
+              );
+            },
+          );
         },
       ),
     );
@@ -104,19 +108,18 @@ class CLCameraService0 extends ConsumerWidget {
   final VoidCallback? onCancel;
   final Future<void> Function(ViewerEntities mediaList) onDone;
   final Future<StoreEntity?> Function(String, {required bool isVideo})
-      onNewMedia;
+  onNewMedia;
 
   final void Function(String message, {required dynamic error})? onError;
   static Future<bool> invokeWithSufficientPermission(
     BuildContext context,
     Future<void> Function() callback, {
     required CLCameraThemeData themeData,
-  }) async =>
-      CLCamera.invokeWithSufficientPermission(
-        context,
-        callback,
-        themeData: themeData,
-      );
+  }) async => CLCamera.invokeWithSufficientPermission(
+    context,
+    callback,
+    themeData: themeData,
+  );
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -142,8 +145,10 @@ class CLCameraService0 extends ConsumerWidget {
                 File(file).deleteSync();
               }
             }
-            final media =
-                await onNewMedia(updatedFile ?? file, isVideo: isVideo);
+            final media = await onNewMedia(
+              updatedFile ?? file,
+              isVideo: isVideo,
+            );
             // Validate if the media has id, has required files here.
             if (media != null) {
               ref.read(capturedMediaProvider.notifier).add(media);

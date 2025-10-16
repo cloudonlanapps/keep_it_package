@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -15,7 +17,7 @@ class MediaListNotifier extends StateNotifier<MediaListModel> {
 
   void append(List<XFile> files) {
     this.files.addAll(files);
-    addSlowly();
+    unawaited(addSlowly());
   }
 
   Future<void> addSlowly() async {

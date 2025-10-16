@@ -12,10 +12,8 @@ import '../models/cl_media_candidate.dart';
 import '../models/platform_support.dart';
 
 class IncomingMediaNotifier extends StateNotifier<List<CLMediaFileGroup>> {
-  IncomingMediaNotifier()
-      : intentDataStreamSubscription = null,
-        super([]) {
-    load();
+  IncomingMediaNotifier() : intentDataStreamSubscription = null, super([]) {
+    unawaited(load());
   }
 
   StreamSubscription<SharedMedia>? intentDataStreamSubscription;
@@ -33,7 +31,9 @@ class IncomingMediaNotifier extends StateNotifier<List<CLMediaFileGroup>> {
 
   @override
   void dispose() {
-    intentDataStreamSubscription?.cancel();
+    if (intentDataStreamSubscription != null) {
+      unawaited(intentDataStreamSubscription!.cancel());
+    }
     super.dispose();
   }
 
@@ -95,10 +95,10 @@ class IncomingMediaNotifier extends StateNotifier<List<CLMediaFileGroup>> {
 
 final incomingMediaStreamProvider =
     StateNotifierProvider<IncomingMediaNotifier, List<CLMediaFileGroup>>((ref) {
-  final notifier = IncomingMediaNotifier();
-  ref.onDispose(notifier.dispose);
-  return notifier;
-});
+      final notifier = IncomingMediaNotifier();
+      ref.onDispose(notifier.dispose);
+      return notifier;
+    });
 
 /* bool _disableInfoLogger = true;
 // ignore: unused_element

@@ -2,7 +2,7 @@ import 'package:face_it_desktop/modules/cl_browser_panel/models/cl_browser_panal
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class CLBrowserPanalNotifier extends StateNotifier<CLBrowserPanals> {
-  CLBrowserPanalNotifier(super.panels);
+  CLBrowserPanalNotifier(super._state);
 
   void addPanels(List<CLBrowserPanal> panels) => state = state.copyWith(
     availablePanels: [...state.availablePanels, ...panels],

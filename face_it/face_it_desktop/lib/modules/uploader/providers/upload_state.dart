@@ -24,7 +24,7 @@ final uploadStateProvider =
     });
 
 class UploadStateNotifier extends StateNotifier<UploadState?> with CLLogger {
-  UploadStateNotifier(this.ref, super.state, {required this.downloadPath});
+  UploadStateNotifier(this.ref, super._state, {required this.downloadPath});
   final String? downloadPath;
   final Ref ref;
 

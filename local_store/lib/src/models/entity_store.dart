@@ -15,17 +15,23 @@ import 'db_query.dart';
 @immutable
 class LocalSQLiteEntityStore extends EntityStore
     with SQLiteDBTableMixin<CLEntity> {
-  LocalSQLiteEntityStore(this.agent,
-      {required super.identity,
-      required super.storeURL,
-      required this.mediaPath,
-      required this.previewPath,
-      required this.generatePreview});
+  LocalSQLiteEntityStore(
+    this.agent, {
+    required super.identity,
+    required super.storeURL,
+    required this.mediaPath,
+    required this.previewPath,
+    required this.generatePreview,
+  });
   final SQLiteTableAgent<CLEntity> agent;
   final String mediaPath;
   final String previewPath;
-  final Future<String> Function(String mediaPath,
-      {required String previewPath, required int dimension}) generatePreview;
+  final Future<String> Function(
+    String mediaPath, {
+    required String previewPath,
+    required int dimension,
+  })
+  generatePreview;
 
   @override
   bool get isAlive => true;
@@ -48,9 +54,9 @@ class LocalSQLiteEntityStore extends EntityStore
   Future<CLEntity?> get({int? id, String? md5, String? label}) async {
     Future<CLEntity?> cb(SqliteWriteContext tx) async {
       final query = StoreQuery<CLEntity>({
-        if (id != null) 'id': id,
-        if (md5 != null) 'md5': md5,
-        if (label != null) ...{'label': label, 'isCollection': 1}
+        'id': ?id,
+        'md5': ?md5,
+        if (label != null) ...{'label': label, 'isCollection': 1},
       });
       return dbGet(tx, agent, query);
     }
@@ -92,10 +98,16 @@ class LocalSQLiteEntityStore extends EntityStore
     return Uri.file(filePath);
   }
 
-  Future<bool> createMediaFiles(CLEntity media, String path,
-      {required Future<String> Function(String mediaPath,
-              {required String previewPath, required int dimension})
-          generatePreview}) async {
+  Future<bool> createMediaFiles(
+    CLEntity media,
+    String path, {
+    required Future<String> Function(
+      String mediaPath, {
+      required String previewPath,
+      required int dimension,
+    })
+    generatePreview,
+  }) async {
     final mediaPath = absoluteMediaPath(media);
     final previewPath = absolutePreviewPath(media);
     if (previewPath != null) {
@@ -183,7 +195,10 @@ class LocalSQLiteEntityStore extends EntityStore
 
     Future<CLEntity?> cb(SqliteWriteContext tx) async {
       final parent = await dbGet(
-          tx, agent, StoreQuery<CLEntity>({'id': updated.parentId}));
+        tx,
+        agent,
+        StoreQuery<CLEntity>({'id': updated.parentId}),
+      );
 
       final entityFromDB = await dbUpsert(
         tx,
@@ -227,9 +242,12 @@ class LocalSQLiteEntityStore extends EntityStore
     required CLUrl storeURL,
     required String mediaPath,
     required String previewPath,
-    required Future<String> Function(String mediaPath,
-            {required String previewPath, required int dimension})
-        generatePreview,
+    required Future<String> Function(
+      String mediaPath, {
+      required String previewPath,
+      required int dimension,
+    })
+    generatePreview,
   }) async {
     const tableName = 'entity';
     final sqliteDB = db as SQLiteDB;
@@ -252,21 +270,26 @@ class LocalSQLiteEntityStore extends EntityStore
       validColumns: validColumns,
     );
 
-    return LocalSQLiteEntityStore(agent,
-        identity: identity,
-        storeURL: storeURL,
-        mediaPath: mediaPath,
-        previewPath: previewPath,
-        generatePreview: generatePreview);
+    return LocalSQLiteEntityStore(
+      agent,
+      identity: identity,
+      storeURL: storeURL,
+      mediaPath: mediaPath,
+      previewPath: previewPath,
+      generatePreview: generatePreview,
+    );
   }
 }
 
 Future<EntityStore> createEntityStore(
   CLUrl url, {
   required String storePath,
-  required Future<String> Function(String mediaPath,
-          {required String previewPath, required int dimension})
-      generatePreview,
+  required Future<String> Function(
+    String mediaPath, {
+    required String previewPath,
+    required int dimension,
+  })
+  generatePreview,
 }) async {
   final dbPath = p.join(storePath, 'db');
   final mediaPath = p.join(storePath, 'media');
@@ -280,12 +303,14 @@ Future<EntityStore> createEntityStore(
   final db = await createSQLiteDBInstance(fullPath);
 
   return switch (db) {
-    (final SQLiteDB db) => LocalSQLiteEntityStore.createStore(db,
-        identity: url.uri.host,
-        storeURL: url,
-        mediaPath: mediaPath,
-        previewPath: previewPath,
-        generatePreview: generatePreview),
-    _ => throw Exception('Unsupported DB')
+    (final SQLiteDB db) => LocalSQLiteEntityStore.createStore(
+      db,
+      identity: url.uri.host,
+      storeURL: url,
+      mediaPath: mediaPath,
+      previewPath: previewPath,
+      generatePreview: generatePreview,
+    ),
+    _ => throw Exception('Unsupported DB'),
   };
 }

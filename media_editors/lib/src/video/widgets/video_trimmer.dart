@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:colan_widgets/colan_widgets.dart';
@@ -49,7 +50,7 @@ class _VideoTrimmerViewState extends State<VideoTrimmerView> {
   }
 
   void _loadVideo() {
-    _trimmer.loadVideo(videoFile: widget.file);
+    unawaited(_trimmer.loadVideo(videoFile: widget.file));
   }
 
   bool get trimmerUpdated => _startValue != null && _endValue != null;
@@ -131,13 +132,19 @@ class _VideoTrimmerViewState extends State<VideoTrimmerView> {
                 onChangeStart: (value) {
                   _startValue = value;
                   _endValue ??= _trimmer
-                      .videoPlayerController?.value.duration.inMilliseconds
+                      .videoPlayerController
+                      ?.value
+                      .duration
+                      .inMilliseconds
                       .toDouble();
                   setState(() {});
                 },
                 onChangeEnd: (value) {
                   if (value !=
-                      _trimmer.videoPlayerController?.value.duration
+                      _trimmer
+                          .videoPlayerController
+                          ?.value
+                          .duration
                           .inMilliseconds) {
                     _endValue = value;
                     _startValue ??= 0;

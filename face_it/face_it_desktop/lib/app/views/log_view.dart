@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/gestures.dart';
@@ -154,10 +155,12 @@ class _MessageBoxState extends ConsumerState<MessageBox> {
                             HardwareKeyboard.instance.physicalKeysPressed
                                 .contains(PhysicalKeyboardKey.shiftRight)) {
                           // Apply the horizontal scroll offset
-                          horizontalScroller.animateTo(
-                            horizontalScroller.offset + event.scrollDelta.dy,
-                            duration: const Duration(milliseconds: 200),
-                            curve: Curves.easeOut,
+                          unawaited(
+                            horizontalScroller.animateTo(
+                              horizontalScroller.offset + event.scrollDelta.dy,
+                              duration: const Duration(milliseconds: 200),
+                              curve: Curves.easeOut,
+                            ),
                           );
                         }
                       }

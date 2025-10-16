@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cl_basic_types/cl_basic_types.dart';
 import 'package:face_it_desktop/modules/server/providers/upload_url_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -9,9 +11,9 @@ class AutoRetryUpload with CLLogger {
   void watch(WidgetRef ref) {
     ref.listen(uploadURLProvider, (prev, curr) {
       if (prev == null && curr != null) {
-        ref.read(uploaderProvider.notifier).retryNew();
+        unawaited(ref.read(uploaderProvider.notifier).retryNew());
       } else if (prev != null && curr == null) {
-        ref.read(uploaderProvider.notifier).resetNew();
+        unawaited(ref.read(uploaderProvider.notifier).resetNew());
       }
     });
   }

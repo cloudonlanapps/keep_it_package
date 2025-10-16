@@ -10,31 +10,53 @@ import '../../../app/models/main_content_type.dart';
 import '../../../app/providers/main_content_type.dart';
 import '../providers/registered_persons.dart';
 
+final knownRegisteredPersonsProvider = StateProvider<List<RegisteredPerson>>((
+  ref,
+) {
+  final personsAsync = ref.watch(registeredPersonsProvider);
+  return personsAsync.whenOrNull(
+        data: (data) =>
+            data.persons.where((e) => e.isNamed).toList()
+              ..sort((a, b) => a.compareTo(b)),
+      ) ??
+      [];
+});
+final unknownRegisteredPersonsProvider = StateProvider<List<RegisteredPerson>>((
+  ref,
+) {
+  final personsAsync = ref.watch(registeredPersonsProvider);
+  return personsAsync.whenOrNull(
+        data: (data) =>
+            data.persons.where((e) => !e.isNamed).toList()
+              ..sort((a, b) => a.compareTo(b)),
+      ) ??
+      [];
+});
+
 class FacesBrowser extends ConsumerWidget {
   const FacesBrowser({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final personsAsync = ref.watch(registeredPersonsProvider);
-    final persons = personsAsync.whenOrNull(data: (data) => data.persons) ?? [];
+    final knownPersons = ref.watch(knownRegisteredPersonsProvider);
 
-    if (persons.isEmpty) {
+    /* if (knownPersons.isEmpty) {
       return Center(
         child: Text(
           'Nothing to show',
           style: ShadTheme.of(context).textTheme.muted,
         ),
       );
-    }
-    persons.sort((a, b) => a.compareTo(b));
+    } */
+
     return ListView.builder(
       // The number of items to build in the list
-      itemCount: persons.length + 1,
+      itemCount: knownPersons.length + 1,
       shrinkWrap: true,
       // physics: const NeverScrollableScrollPhysics(),
       // The builder function that creates each item
       itemBuilder: (BuildContext context, int index) {
-        if (index == persons.length) {
+        if (index == knownPersons.length) {
           return const Padding(
             padding: EdgeInsets.all(8),
             child: UnknownPersonTile(),
@@ -42,7 +64,7 @@ class FacesBrowser extends ConsumerWidget {
         }
         return Padding(
           padding: const EdgeInsets.all(8),
-          child: PersonTile(person: persons[index]),
+          child: PersonTile(person: knownPersons[index]),
         );
       },
     );

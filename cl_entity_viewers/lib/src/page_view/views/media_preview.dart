@@ -13,10 +13,7 @@ import 'media_viewer.dart';
 import 'media_viewer_overlays.dart';
 
 class MediaPreviewWithOverlays extends StatelessWidget {
-  const MediaPreviewWithOverlays({
-    required this.media,
-    super.key,
-  });
+  const MediaPreviewWithOverlays({required this.media, super.key});
 
   final ViewerEntity media;
 
@@ -33,18 +30,17 @@ class MediaPreviewWithOverlays extends StatelessWidget {
           child: Container(
             alignment: Alignment.center,
             margin: const EdgeInsets.symmetric(horizontal: 4),
-            color: ShadTheme.of(context)
-                .colorScheme
-                .foreground
-                .withValues(alpha: 0.5),
+            color: ShadTheme.of(
+              context,
+            ).colorScheme.foreground.withValues(alpha: 0.5),
             child: Text(
               media.label ?? 'Unnamed',
               textAlign: TextAlign.center,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: ShadTheme.of(context).textTheme.small.copyWith(
-                    color: ShadTheme.of(context).colorScheme.background,
-                  ),
+                color: ShadTheme.of(context).colorScheme.background,
+              ),
             ),
           ),
         ),
@@ -74,8 +70,8 @@ class MediaPreviewWithOverlays extends StatelessWidget {
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 color: Theme.of(context).colorScheme.onSurface.withAlpha(
-                      192,
-                    ), // Color for the circular container
+                  192,
+                ), // Color for the circular container
               ),
               child: CLIcon.veryLarge(
                 clIcons.playerPlay,
@@ -89,11 +85,7 @@ class MediaPreviewWithOverlays extends StatelessWidget {
 }
 
 class MediaThumbnail extends StatelessWidget {
-  const MediaThumbnail({
-    required this.media,
-    this.overlays,
-    super.key,
-  });
+  const MediaThumbnail({required this.media, this.overlays, super.key});
 
   final ViewerEntity media;
   final List<OverlayWidgets>? overlays;
@@ -117,7 +109,7 @@ class MediaThumbnail extends StatelessWidget {
           heroTag: '/item/${media.id}',
           uri: media.previewUri!,
           mime: 'image/jpeg',
-          errorBuilder: (_, __) => const BrokenImage(),
+          errorBuilder: (_, _) => const BrokenImage(),
           loadingBuilder: () => const GreyShimmer(),
           fit: BoxFit.cover,
           keepAspectRatio: false,

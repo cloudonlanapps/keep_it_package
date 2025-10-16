@@ -4,8 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:store/store.dart';
 
 class SuggestedCollection extends StatelessWidget {
-  const SuggestedCollection(
-      {required this.item, required this.onSelect, super.key});
+  const SuggestedCollection({
+    required this.item,
+    required this.onSelect,
+    super.key,
+  });
 
   final StoreEntity item;
   final void Function(StoreEntity) onSelect;
@@ -17,17 +20,18 @@ class SuggestedCollection extends StatelessWidget {
       child: GestureDetector(
         onTap: () => onSelect(item),
         child: GetEntities(
-            store: targetStore,
-            parentId: item.id,
-            errorBuilder: (_, __) => CLEntityView(
-                  entity: item,
-                ),
-            loadingBuilder: () => CLEntityView(
-                  entity: item,
-                ),
-            builder: (children) {
-              return CLEntityView(entity: item, children: children);
-            }),
+          store: targetStore,
+          parentId: item.id,
+          errorBuilder: (_, _) => CLEntityView(
+            entity: item,
+          ),
+          loadingBuilder: () => CLEntityView(
+            entity: item,
+          ),
+          builder: (children) {
+            return CLEntityView(entity: item, children: children);
+          },
+        ),
       ),
     );
   }

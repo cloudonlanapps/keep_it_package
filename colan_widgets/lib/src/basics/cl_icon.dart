@@ -13,7 +13,7 @@ class _CLIcon extends StatelessWidget {
     super.key,
     this.color,
   });
-  final dynamic iconData;
+  final Object? iconData;
   final String? text;
   final CLScaleType scaleType;
   final Color? color;
@@ -22,57 +22,57 @@ class _CLIcon extends StatelessWidget {
   Widget build(BuildContext context) {
     if (text == null) {
       return switch (iconData) {
-        final IconData iconData => Icon(
-            iconData,
-            color: color,
-            size: scaleType.iconSize,
-          ),
-        final SvgIcons svgIcons => SvgIcon(
-            svgIcons,
-            color: color,
-            size: scaleType.iconSize,
-          ),
+        (final IconData iconData) => Icon(
+          iconData,
+          color: color,
+          size: scaleType.iconSize,
+        ),
+        (final SvgIcons svgIcons) => SvgIcon(
+          svgIcons,
+          color: color,
+          size: scaleType.iconSize,
+        ),
         _ => throw Exception('Only IconData or compatible types are supported'),
       };
     }
     return switch (iconData) {
       (final IconData iconData) => Column(
-          mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            iconData.iconFormatted(
-              color: color ?? Theme.of(context).textTheme.bodyLarge?.color,
-              size: scaleType.iconSize,
-            ),
-            switch (scaleType) {
-              CLScaleType.veryLarge => CLText.veryLarge,
-              CLScaleType.large => CLText.large,
-              CLScaleType.standard => CLText.standard,
-              CLScaleType.small => CLText.small,
-              CLScaleType.verySmall => CLText.verySmall,
-              CLScaleType.tiny => CLText.tiny,
-            }(text!, color: color),
-          ],
-        ),
-      _ => throw Exception('only IonData or SVGIconSupported')
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          iconData.iconFormatted(
+            color: color ?? Theme.of(context).textTheme.bodyLarge?.color,
+            size: scaleType.iconSize,
+          ),
+          switch (scaleType) {
+            CLScaleType.veryLarge => CLText.veryLarge,
+            CLScaleType.large => CLText.large,
+            CLScaleType.standard => CLText.standard,
+            CLScaleType.small => CLText.small,
+            CLScaleType.verySmall => CLText.verySmall,
+            CLScaleType.tiny => CLText.tiny,
+          }(text!, color: color),
+        ],
+      ),
+      _ => throw Exception('only IonData or SVGIconSupported'),
     };
   }
 }
 
 class CLIcon extends _CLIcon {
   const CLIcon.veryLarge(super.iconData, {super.key, super.color})
-      : super(text: null, scaleType: CLScaleType.veryLarge);
+    : super(text: null, scaleType: CLScaleType.veryLarge);
   const CLIcon.large(super.iconData, {super.key, super.color})
-      : super(text: null, scaleType: CLScaleType.large);
+    : super(text: null, scaleType: CLScaleType.large);
 
   const CLIcon.standard(super.iconData, {super.key, super.color})
-      : super(text: null, scaleType: CLScaleType.standard);
+    : super(text: null, scaleType: CLScaleType.standard);
   const CLIcon.small(super.iconData, {super.key, super.color})
-      : super(text: null, scaleType: CLScaleType.small);
+    : super(text: null, scaleType: CLScaleType.small);
   const CLIcon.verySmall(super.iconData, {super.key, super.color})
-      : super(text: null, scaleType: CLScaleType.verySmall);
+    : super(text: null, scaleType: CLScaleType.verySmall);
   const CLIcon.tiny(super.iconData, {super.key, super.color})
-      : super(text: null, scaleType: CLScaleType.tiny);
+    : super(text: null, scaleType: CLScaleType.tiny);
 }
 
 class CLIconLabelled extends _CLIcon {

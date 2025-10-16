@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cl_basic_types/cl_basic_types.dart';
 import 'package:cl_servers/cl_servers.dart';
 import 'package:content_store/storage_service/providers/directories.dart';
@@ -93,42 +95,44 @@ class FaceRecgNotifier extends StateNotifier<ImageFaceMapperList>
       return;
     }
     state = state.setIsPushed(mapper.image);
-    ref
-        .read(schedulerNotifierProvider.notifier)
-        .pushTask(
-          FaceRecTask(
-            identifier: mapper.sessionIdentity!,
-            priority: priority,
-            pre: (identifier) async {
-              final mapper = state.getMapper(image);
-              if (mapper == null) {
-                log('pre failed as mapper not found');
-                return false;
-              }
-              if (mapper.status != ActivityStatus.pending) {
-                log(
-                  'pre failed as mapper is not in pending state. current status: ${mapper.status}',
-                );
-                return false;
-              }
+    unawaited(
+      ref
+          .read(schedulerNotifierProvider.notifier)
+          .pushTask(
+            FaceRecTask(
+              identifier: mapper.sessionIdentity!,
+              priority: priority,
+              pre: (identifier) async {
+                final mapper = state.getMapper(image);
+                if (mapper == null) {
+                  log('pre failed as mapper not found');
+                  return false;
+                }
+                if (mapper.status != ActivityStatus.pending) {
+                  log(
+                    'pre failed as mapper is not in pending state. current status: ${mapper.status}',
+                  );
+                  return false;
+                }
 
-              state = state.setIsProcessing(image);
-              return true;
-            },
-            post: (identifier, resultMap) async {
-              if (resultMap.keys.contains('faces')) {
-                log(
-                  '$image found ${(resultMap['faces'] as List<dynamic>).length} faces',
-                );
-                await getFaces(image, resultMap['faces'] as List<dynamic>);
-              }
-              if (resultMap.keys.contains('error')) {
-                state = state.setError(image, resultMap['error'].toString());
-              } else {}
-              return false;
-            },
+                state = state.setIsProcessing(image);
+                return true;
+              },
+              post: (identifier, resultMap) async {
+                if (resultMap.keys.contains('faces')) {
+                  log(
+                    '$image found ${(resultMap['faces'] as List<dynamic>).length} faces',
+                  );
+                  await getFaces(image, resultMap['faces'] as List<dynamic>);
+                }
+                if (resultMap.keys.contains('error')) {
+                  state = state.setError(image, resultMap['error'].toString());
+                } else {}
+                return false;
+              },
+            ),
           ),
-        );
+    );
   }
 
   Future<void> getFaces(String image, List<dynamic> facesList) async {

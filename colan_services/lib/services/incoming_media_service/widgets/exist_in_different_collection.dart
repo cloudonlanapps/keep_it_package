@@ -6,8 +6,11 @@ import 'package:flutter/material.dart';
 import 'package:store/store.dart';
 
 class ExistInDifferentCollection extends StatelessWidget {
-  const ExistInDifferentCollection(
-      {required this.onRemove, required this.targetMismatch, super.key});
+  const ExistInDifferentCollection({
+    required this.onRemove,
+    required this.targetMismatch,
+    super.key,
+  });
 
   final ViewerEntities targetMismatch;
 
@@ -45,7 +48,7 @@ class ExistInDifferentCollection extends StatelessWidget {
 
                 return GetEntity(
                   id: m.parentId,
-                  errorBuilder: (_, __) {
+                  errorBuilder: (_, _) {
                     throw UnimplementedError('errorBuilder');
                   },
                   loadingBuilder: () => CLLoader.widget(
@@ -91,8 +94,9 @@ class ExistInDifferentCollection extends StatelessWidget {
                             ),
                             Expanded(
                               child: Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 8),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 8,
+                                ),
                                 child: Align(
                                   alignment: Alignment.centerLeft,
                                   child: CLText.standard(

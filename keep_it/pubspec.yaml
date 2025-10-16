@@ -6,7 +6,7 @@ homepage: htts://www.cloudonlanapps.com
 version: 0.1.0+1
 
 environment:
-  sdk: ">=3.0.0 <4.0.0"
+  sdk: ^3.9.2
 
 dependencies:
   colan_services:
@@ -22,7 +22,7 @@ dependencies:
 dev_dependencies:
   flutter_launcher_icons: ^0.14.3
   flutter_lints: ^6.0.0
-  very_good_analysis: ^8.0.0
+  very_good_analysis: ^10.0.0
 
 flutter_icons:
   android: "launcher_icon"

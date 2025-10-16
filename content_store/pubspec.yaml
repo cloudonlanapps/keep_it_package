@@ -5,7 +5,7 @@ version: 0.0.1
 publish_to: none
 
 environment:
-  sdk: ">=3.0.0 <4.0.0"
+  sdk: ^3.9.2
 
 dependencies:
   #background_downloader: ^8.9.4
@@ -43,7 +43,7 @@ dependencies:
   path_provider: ^2.1.4
   photo_manager: ^3.5.0
   pie_chart: ^5.4.0
-  shadcn_ui: ^0.27.0
+  shadcn_ui: ^0.38.0
   share_plus: ^11.0.0
   shared_preferences: ^2.3.2
   shimmer: ^3.0.0
@@ -58,4 +58,4 @@ dev_dependencies:
   flutter_lints: ^6.0.0
   flutter_test:
     sdk: flutter
-  very_good_analysis: ^8.0.0
+  very_good_analysis: ^10.0.0

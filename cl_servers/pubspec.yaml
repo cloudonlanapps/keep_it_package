@@ -4,8 +4,7 @@ version: 0.0.1
 homepage: https://www.cloudonlanapps.com
 publish_to: none
 environment:
-  sdk: ^3.8.1
-  flutter: ">=1.17.0"
+  sdk: ^3.9.2
 
 dependencies:
   cl_basic_types:
@@ -20,11 +19,11 @@ dependencies:
   http: ^1.5.0
   nsd: ^4.0.3
   path: ^1.9.1
-  shadcn_ui: ^0.27.4
+  shadcn_ui: ^0.38.0
   socket_io_client: ^3.1.2
 
 dev_dependencies:
   lints: ^3.0.0
   test: ^1.24.0
-  very_good_analysis: ^8.0.0
+  very_good_analysis: ^10.0.0
 

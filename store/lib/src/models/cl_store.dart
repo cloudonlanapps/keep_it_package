@@ -91,13 +91,15 @@ class CLStore with CLLogger {
   Future<ViewerEntities> getAll([StoreQuery<CLEntity>? query]) async {
     try {
       final entititesFromDB = await store.getAll(query);
-      return ViewerEntities(entititesFromDB
-          .cast<CLEntity>()
-          .map(
-            (entityFromDB) =>
-                StoreEntity(clEntity: entityFromDB, clStore: this),
-          )
-          .toList());
+      return ViewerEntities(
+        entititesFromDB
+            .cast<CLEntity>()
+            .map(
+              (entityFromDB) =>
+                  StoreEntity(clEntity: entityFromDB, clStore: this),
+            )
+            .toList(),
+      );
     } catch (e, st) {
       log('$e $st');
       rethrow;
@@ -144,8 +146,9 @@ class CLStore with CLLogger {
     final CLEntity? item;
     final temp = await createCollection(label: tempCollectionName);
 
-    item = (await (await temp?.updateWith(isHidden: () => true))?.dbSave())
-        ?.clEntity;
+    item = (await (await temp?.updateWith(
+      isHidden: () => true,
+    ))?.dbSave())?.clEntity;
     if (item == null) {
       throw Exception(
         'missing parent; failed to create a default collection',
@@ -158,34 +161,36 @@ class CLStore with CLLogger {
   }
 
   Future<StoreEntity> move(
-      StoreEntity entity, StoreEntity targetCollection) async {
+    StoreEntity entity,
+    StoreEntity targetCollection,
+  ) async {
     final StoreEntity? updated;
     if (targetCollection.store == entity.store) {
       updated = await (await entity.updateWith(
         parentId: () => targetCollection.id!,
         isHidden: () => false,
-      ))
-          ?.dbSave();
+      ))?.dbSave();
     } else {
       final targetStore = targetCollection.store;
 
       updated = await (await targetStore.createMedia(
-              label: () => entity.label,
-              description: () => entity.description,
-              parentCollection: targetCollection.clEntity,
-              mediaFile: CLMediaFile(
-                  path: entity.mediaUri!.toFilePath(),
-                  md5: entity.md5!,
-                  fileSize: entity.fileSize!,
-                  mimeType: entity.mimeType!,
-                  type: CLMediaType.fromMIMEType(entity.type!),
-                  fileSuffix: entity.extension!,
-                  createDate: entity.createDate,
-                  height: entity.height,
-                  width: entity.width,
-                  duration: entity.duration),
-              strategy: UpdateStrategy.mergeAppend))
-          ?.dbSave(entity.mediaUri!.toFilePath());
+        label: () => entity.label,
+        description: () => entity.description,
+        parentCollection: targetCollection.clEntity,
+        mediaFile: CLMediaFile(
+          path: entity.mediaUri!.toFilePath(),
+          md5: entity.md5!,
+          fileSize: entity.fileSize!,
+          mimeType: entity.mimeType!,
+          type: CLMediaType.fromMIMEType(entity.type!),
+          fileSuffix: entity.extension!,
+          createDate: entity.createDate,
+          height: entity.height,
+          width: entity.width,
+          duration: entity.duration,
+        ),
+        strategy: UpdateStrategy.mergeAppend,
+      ))?.dbSave(entity.mediaUri!.toFilePath());
       if (updated != null) {
         final filePath = entity.mediaUri!.toFilePath();
 
@@ -200,12 +205,13 @@ class CLStore with CLLogger {
     return updated;
   }
 
-  Future<StoreEntity?> createMedia(
-      {required CLMediaFile mediaFile,
-      ValueGetter<String?>? label,
-      ValueGetter<String?>? description,
-      UpdateStrategy strategy = UpdateStrategy.skip,
-      CLEntity? parentCollection}) async {
+  Future<StoreEntity?> createMedia({
+    required CLMediaFile mediaFile,
+    ValueGetter<String?>? label,
+    ValueGetter<String?>? description,
+    UpdateStrategy strategy = UpdateStrategy.skip,
+    CLEntity? parentCollection,
+  }) async {
     /* if (!store.isLocal) {
       throw Exception("Can't directly push media files into non-local servers");
     } */
@@ -316,12 +322,13 @@ class CLStore with CLLogger {
         label: label,
         description: description != null
             ? () => switch (strategy) {
-                  UpdateStrategy.mergeAppend =>
-                    '${entity.descriptionText}\n${description()}'.trim(),
-                  UpdateStrategy.overwrite => description.call(),
-                  UpdateStrategy.skip =>
-                    throw Exception('UpdateStrategy.skip is not allowed'),
-                }
+                UpdateStrategy.mergeAppend =>
+                  '${entity.descriptionText}\n${description()}'.trim(),
+                UpdateStrategy.overwrite => description.call(),
+                UpdateStrategy.skip => throw Exception(
+                  'UpdateStrategy.skip is not allowed',
+                ),
+              }
             : null,
         parentId: parentId,
         isDeleted: isDeleted?.call(),
@@ -389,12 +396,13 @@ class CLStore with CLLogger {
         label: label,
         description: description != null
             ? () => switch (strategy) {
-                  UpdateStrategy.mergeAppend =>
-                    '${entity.descriptionText}\n${description()}'.trim(),
-                  UpdateStrategy.overwrite => description.call(),
-                  UpdateStrategy.skip =>
-                    throw Exception('UpdateStrategy.skip is not allowed'),
-                }
+                UpdateStrategy.mergeAppend =>
+                  '${entity.descriptionText}\n${description()}'.trim(),
+                UpdateStrategy.overwrite => description.call(),
+                UpdateStrategy.skip => throw Exception(
+                  'UpdateStrategy.skip is not allowed',
+                ),
+              }
             : null,
         parentId: parentId,
         isDeleted: isDeleted?.call(),
@@ -415,16 +423,20 @@ class CLStore with CLLogger {
     );
   }
 
-  Stream<Progress> getValidMediaFiles(
-      {required List<CLMediaContent> contentList,
-      required Future<CLMediaFile?> Function(CLMediaContent mediaContent,
-              {required Directory downloadDirectory})
-          getValidMediaFile,
-      void Function({
-        required ViewerEntities existingEntities,
-        required ViewerEntities newEntities,
-        required List<CLMediaContent> invalidContent,
-      })? onDone}) async* {
+  Stream<Progress> getValidMediaFiles({
+    required List<CLMediaContent> contentList,
+    required Future<CLMediaFile?> Function(
+      CLMediaContent mediaContent, {
+      required Directory downloadDirectory,
+    })
+    getValidMediaFile,
+    void Function({
+      required ViewerEntities existingEntities,
+      required ViewerEntities newEntities,
+      required List<CLMediaContent> invalidContent,
+    })?
+    onDone,
+  }) async* {
     /// Valid Media can only be pushed into a local store
     /// Rationale:
     ///   handling the id for server and managing the network situation when
@@ -445,8 +457,10 @@ class CLStore with CLLogger {
           fractCompleted: (i + 1) / contentList.length,
         );
 
-        final item = await getValidMediaFile(mediaFile,
-            downloadDirectory: Directory(tempFilePath)); // May be wrong?
+        final item = await getValidMediaFile(
+          mediaFile,
+          downloadDirectory: Directory(tempFilePath),
+        ); // May be wrong?
 
         if (item != null) {
           Future<bool> processSupportedMediaContent() async {
@@ -471,7 +485,7 @@ class CLStore with CLLogger {
             return false;
           }
 
-          if (await processSupportedMediaContent() == false) {
+          if (!(await processSupportedMediaContent())) {
             invalidContent.add(mediaFile);
           }
         } else {

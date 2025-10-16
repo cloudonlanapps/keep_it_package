@@ -1,5 +1,4 @@
 import 'package:colan_widgets/src/basics/cl_icon.dart';
-import 'package:colan_widgets/src/basics/cl_text.dart';
 import 'package:flutter/material.dart';
 
 import '../models/cl_scale_type.dart';
@@ -15,7 +14,7 @@ class _CLButton extends StatelessWidget {
     this.onTap,
     this.boxDecoration,
   }) : disabledColor = disabledColor ?? color;
-  final dynamic iconData;
+  final Object? iconData;
   final String? label;
   final Color? color;
   final Color? disabledColor;
@@ -30,33 +29,23 @@ class _CLButton extends StatelessWidget {
       onTap: onTap,
       child: ButtonBackground(
         boxDecoration: boxDecoration,
-        child: switch (iconData) {
+        child: switch (label) {
           null => switch (scaleType) {
-              CLScaleType.veryLarge => CLLabel.veryLarge,
-              CLScaleType.large => CLLabel.large,
-              CLScaleType.standard => CLLabel.standard,
-              CLScaleType.small => CLLabel.small,
-              CLScaleType.verySmall => CLLabel.verySmall,
-              CLScaleType.tiny => CLLabel.tiny,
-            }(label!, color: color_),
-          _ => switch (label) {
-              null => switch (scaleType) {
-                  CLScaleType.veryLarge => CLIcon.veryLarge,
-                  CLScaleType.large => CLIcon.large,
-                  CLScaleType.standard => CLIcon.standard,
-                  CLScaleType.small => CLIcon.small,
-                  CLScaleType.verySmall => CLIcon.verySmall,
-                  CLScaleType.tiny => CLIcon.tiny,
-                }(iconData, color: color_),
-              _ => switch (scaleType) {
-                  CLScaleType.veryLarge => CLIconLabelled.veryLarge,
-                  CLScaleType.large => CLIconLabelled.large,
-                  CLScaleType.standard => CLIconLabelled.standard,
-                  CLScaleType.small => CLIconLabelled.small,
-                  CLScaleType.verySmall => CLIconLabelled.verySmall,
-                  CLScaleType.tiny => CLIconLabelled.tiny,
-                }(iconData, label!, color: color_)
-            },
+            CLScaleType.veryLarge => CLIcon.veryLarge,
+            CLScaleType.large => CLIcon.large,
+            CLScaleType.standard => CLIcon.standard,
+            CLScaleType.small => CLIcon.small,
+            CLScaleType.verySmall => CLIcon.verySmall,
+            CLScaleType.tiny => CLIcon.tiny,
+          }(iconData, color: color_),
+          _ => switch (scaleType) {
+            CLScaleType.veryLarge => CLIconLabelled.veryLarge,
+            CLScaleType.large => CLIconLabelled.large,
+            CLScaleType.standard => CLIconLabelled.standard,
+            CLScaleType.small => CLIconLabelled.small,
+            CLScaleType.verySmall => CLIconLabelled.verySmall,
+            CLScaleType.tiny => CLIconLabelled.tiny,
+          }(iconData, label!, color: color_),
         },
       ),
     );
@@ -188,10 +177,10 @@ class CLButtonIconLabelled extends _CLButton {
     super.disabledColor,
     super.onTap,
   }) : super(
-          label: label,
-          iconData: iconData,
-          scaleType: CLScaleType.veryLarge,
-        );
+         label: label,
+         iconData: iconData,
+         scaleType: CLScaleType.veryLarge,
+       );
   const CLButtonIconLabelled.large(
     dynamic iconData,
     String label, {
@@ -224,10 +213,10 @@ class CLButtonIconLabelled extends _CLButton {
     super.disabledColor,
     super.onTap,
   }) : super(
-          label: label,
-          iconData: iconData,
-          scaleType: CLScaleType.verySmall,
-        );
+         label: label,
+         iconData: iconData,
+         scaleType: CLScaleType.verySmall,
+       );
   const CLButtonIconLabelled.tiny(
     dynamic iconData,
     String label, {
@@ -247,11 +236,11 @@ class CLButtonElevatedText extends _CLButton {
     super.disabledColor,
     super.onTap,
   }) : super(
-          label: label,
-          iconData: null,
-          scaleType: CLScaleType.veryLarge,
-          boxDecoration: boxDecoration,
-        );
+         label: label,
+         iconData: null,
+         scaleType: CLScaleType.veryLarge,
+         boxDecoration: boxDecoration,
+       );
   const CLButtonElevatedText.large(
     String label, {
     required BoxDecoration boxDecoration,
@@ -260,11 +249,11 @@ class CLButtonElevatedText extends _CLButton {
     super.disabledColor,
     super.onTap,
   }) : super(
-          label: label,
-          iconData: null,
-          scaleType: CLScaleType.large,
-          boxDecoration: boxDecoration,
-        );
+         label: label,
+         iconData: null,
+         scaleType: CLScaleType.large,
+         boxDecoration: boxDecoration,
+       );
   const CLButtonElevatedText.standard(
     String label, {
     required BoxDecoration boxDecoration,
@@ -273,11 +262,11 @@ class CLButtonElevatedText extends _CLButton {
     super.disabledColor,
     super.onTap,
   }) : super(
-          label: label,
-          iconData: null,
-          scaleType: CLScaleType.standard,
-          boxDecoration: boxDecoration,
-        );
+         label: label,
+         iconData: null,
+         scaleType: CLScaleType.standard,
+         boxDecoration: boxDecoration,
+       );
   const CLButtonElevatedText.small(
     String label, {
     required BoxDecoration boxDecoration,
@@ -286,11 +275,11 @@ class CLButtonElevatedText extends _CLButton {
     super.disabledColor,
     super.onTap,
   }) : super(
-          label: label,
-          iconData: null,
-          scaleType: CLScaleType.small,
-          boxDecoration: boxDecoration,
-        );
+         label: label,
+         iconData: null,
+         scaleType: CLScaleType.small,
+         boxDecoration: boxDecoration,
+       );
   const CLButtonElevatedText.verySmall(
     String label, {
     required BoxDecoration boxDecoration,
@@ -299,11 +288,11 @@ class CLButtonElevatedText extends _CLButton {
     super.disabledColor,
     super.onTap,
   }) : super(
-          label: label,
-          iconData: null,
-          scaleType: CLScaleType.verySmall,
-          boxDecoration: boxDecoration,
-        );
+         label: label,
+         iconData: null,
+         scaleType: CLScaleType.verySmall,
+         boxDecoration: boxDecoration,
+       );
   const CLButtonElevatedText.tiny(
     String label, {
     required BoxDecoration boxDecoration,
@@ -312,11 +301,11 @@ class CLButtonElevatedText extends _CLButton {
     super.disabledColor,
     super.onTap,
   }) : super(
-          label: label,
-          iconData: null,
-          scaleType: CLScaleType.tiny,
-          boxDecoration: boxDecoration,
-        );
+         label: label,
+         iconData: null,
+         scaleType: CLScaleType.tiny,
+         boxDecoration: boxDecoration,
+       );
 }
 
 class _CLButtonSquereElevated extends StatelessWidget {

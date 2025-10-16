@@ -107,7 +107,7 @@ class _CLCameraState extends State<CLCamera> {
   void initState() {
     super.initState();
 
-    _requestCameraPermission();
+    unawaited(_requestCameraPermission());
   }
 
   Future<void> _requestCameraPermission() async {
@@ -122,38 +122,38 @@ class _CLCameraState extends State<CLCamera> {
       themeData: widget.themeData,
       child: switch (hasPermission) {
         null => CameraPermissionWait(
-            message: 'Waiting for Camera Permission',
-            onDone: widget.onCancel,
-          ),
+          message: 'Waiting for Camera Permission',
+          onDone: widget.onCancel,
+        ),
         false => CameraPermissionDenied(
-            statuses: statuses,
-            onDone: widget.onCancel,
-            onOpenSettings: openAppSettings,
-          ),
+          statuses: statuses,
+          onDone: widget.onCancel,
+          onOpenSettings: openAppSettings,
+        ),
         true => CameraTheme(
-            themeData: widget.themeData,
-            child: FutureBuilder(
-              future: CameraConfig.loadConfig(),
-              builder: (context, snapShot) {
-                if (snapShot.connectionState == ConnectionState.waiting ||
-                    (!snapShot.hasData)) {
-                  return CameraPermissionWait(
-                    message: 'Loading Config',
-                    onDone: widget.onCancel,
-                  );
-                }
-                return CLCameraCore(
-                  config: snapShot.data!,
-                  cameras: widget.cameras,
-                  previewWidget: widget.previewWidget,
-                  onCapture: widget.onCapture,
-                  onCancel: widget.onCancel,
-                  onError: widget.onError,
-                  cameraMode: widget.cameraMode,
+          themeData: widget.themeData,
+          child: FutureBuilder(
+            future: CameraConfig.loadConfig(),
+            builder: (context, snapShot) {
+              if (snapShot.connectionState == ConnectionState.waiting ||
+                  (!snapShot.hasData)) {
+                return CameraPermissionWait(
+                  message: 'Loading Config',
+                  onDone: widget.onCancel,
                 );
-              },
-            ),
-          )
+              }
+              return CLCameraCore(
+                config: snapShot.data!,
+                cameras: widget.cameras,
+                previewWidget: widget.previewWidget,
+                onCapture: widget.onCapture,
+                onCancel: widget.onCancel,
+                onError: widget.onError,
+                cameraMode: widget.cameraMode,
+              );
+            },
+          ),
+        ),
       },
     );
   }

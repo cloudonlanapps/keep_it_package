@@ -23,35 +23,37 @@ class CollectionPreview extends ConsumerWidget {
       builder: (filters) {
         return GetEntities(
           parentId: collection.id,
-          errorBuilder: (_, __) => const BrokenImage(),
+          errorBuilder: (_, _) => const BrokenImage(),
           loadingBuilder: () => const GreyShimmer(),
           builder: (children) {
             return GetFilterred(
-                candidates: children,
-                builder: (filterredChildren) {
-                  return CLEntityView(
-                      entity: collection,
-                      counter: (filters.isActive || filters.isTextFilterActive)
-                          ? Container(
-                              margin: const EdgeInsets.all(4),
-                              alignment: Alignment.bottomCenter,
-                              child: FittedBox(
-                                child: ShadBadge(
-                                  backgroundColor: ShadTheme.of(context)
-                                      .colorScheme
-                                      .mutedForeground,
-                                  child: Text(
-                                    '${filterredChildren.entities.where((e) => !e.isCollection).length}/${children.length} matches',
-                                  ),
-                                ),
+              candidates: children,
+              builder: (filterredChildren) {
+                return CLEntityView(
+                  entity: collection,
+                  counter: (filters.isActive || filters.isTextFilterActive)
+                      ? Container(
+                          margin: const EdgeInsets.all(4),
+                          alignment: Alignment.bottomCenter,
+                          child: FittedBox(
+                            child: ShadBadge(
+                              backgroundColor: ShadTheme.of(
+                                context,
+                              ).colorScheme.mutedForeground,
+                              child: Text(
+                                '${filterredChildren.entities.where((e) => !e.isCollection).length}/${children.length} matches',
                               ),
-                            )
-                          : null,
-                      children: children,
-                      isFilterredOut: (entity) => !filterredChildren.entities
-                          .map((e) => e.id)
-                          .contains(entity.id));
-                });
+                            ),
+                          ),
+                        )
+                      : null,
+                  children: children,
+                  isFilterredOut: (entity) => !filterredChildren.entities
+                      .map((e) => e.id)
+                      .contains(entity.id),
+                );
+              },
+            );
           },
         );
       },

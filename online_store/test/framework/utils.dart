@@ -1,5 +1,3 @@
-// ignore_for_file: avoid_print, print required for testing
-
 import 'dart:io';
 import 'dart:math';
 
@@ -137,7 +135,7 @@ String generateLoremIpsum({
     'anim',
     'id',
     'est',
-    'laborum'
+    'laborum',
   ];
 
   final random = Random();
@@ -149,13 +147,15 @@ String generateLoremIpsum({
   }
 
   for (var p = 0; p < paragraphs; p++) {
-    final numSentences = random
-            .nextInt(maxSentencesPerParagraph - minSentencesPerParagraph + 1) +
+    final numSentences =
+        random.nextInt(
+          maxSentencesPerParagraph - minSentencesPerParagraph + 1,
+        ) +
         minSentencesPerParagraph;
     for (var s = 0; s < numSentences; s++) {
       final numWords =
           random.nextInt(maxWordsPerSentence - minWordsPerSentence + 1) +
-              minWordsPerSentence;
+          minWordsPerSentence;
       for (var w = 0; w < numWords; w++) {
         final word = words[random.nextInt(words.length)];
         if (w == 0) {
@@ -194,8 +194,11 @@ String generateLoremIpsum({
 ///          width up to 1024 pixels will be generated.
 /// [height]: (Optional) The desired height of the image. If not provided, a random
 ///           height up to 1024 pixels will be generated.
-void generateRandomPatternImage(String outputFileName,
-    {int? width, int? height}) {
+void generateRandomPatternImage(
+  String outputFileName, {
+  int? width,
+  int? height,
+}) {
   final random = Random();
   const minDimension = 16;
   const maxDimension = 1024;
@@ -204,16 +207,20 @@ void generateRandomPatternImage(String outputFileName,
   // Determine image dimensions
   // Ensure random dimensions are at least minDimension
   final imgWidth = width != null
-      ? max(width,
-          minDimension) // If width is provided, use it, but ensure it's at least minDimension
+      ? max(
+          width,
+          minDimension,
+        ) // If width is provided, use it, but ensure it's at least minDimension
       : random.nextInt(maxDimension - minDimension + 1) +
-          minDimension; // Random between minDimension and maxDimension
+            minDimension; // Random between minDimension and maxDimension
 
   final imgHeight = height != null
-      ? max(height,
-          minDimension) // If height is provided, use it, but ensure it's at least minDimension
+      ? max(
+          height,
+          minDimension,
+        ) // If height is provided, use it, but ensure it's at least minDimension
       : random.nextInt(maxDimension - minDimension + 1) +
-          minDimension; // Random between minDimension and maxDimension
+            minDimension; // Random between minDimension and maxDimension
 
   // print('Generating an image of size: ${imgWidth}x$imgHeight');
 
@@ -235,7 +242,10 @@ void generateRandomPatternImage(String outputFileName,
 
   // Fill with a random background color
   final backgroundColor = img.ColorRgb8(
-      random.nextInt(256), random.nextInt(256), random.nextInt(256));
+    random.nextInt(256),
+    random.nextInt(256),
+    random.nextInt(256),
+  );
   for (var y = 0; y < imgHeight; y++) {
     for (var x = 0; x < imgWidth; x++) {
       image.setPixel(x, y, backgroundColor);
@@ -250,9 +260,18 @@ void generateRandomPatternImage(String outputFileName,
     final rectWidth = random.nextInt(imgWidth - x1) + 1;
     final rectHeight = random.nextInt(imgHeight - y1) + 1;
     final color = img.ColorRgb8(
-        random.nextInt(256), random.nextInt(256), random.nextInt(256));
-    img.drawRect(image,
-        x1: x1, y1: y1, x2: x1 + rectWidth, y2: y1 + rectHeight, color: color);
+      random.nextInt(256),
+      random.nextInt(256),
+      random.nextInt(256),
+    );
+    img.drawRect(
+      image,
+      x1: x1,
+      y1: y1,
+      x2: x1 + rectWidth,
+      y2: y1 + rectHeight,
+      color: color,
+    );
   }
 
   // Draw random circles
@@ -262,7 +281,10 @@ void generateRandomPatternImage(String outputFileName,
     final centerY = random.nextInt(imgHeight);
     final radius = random.nextInt(min(imgWidth, imgHeight) ~/ 4) + 10;
     final color = img.ColorRgb8(
-        random.nextInt(256), random.nextInt(256), random.nextInt(256));
+      random.nextInt(256),
+      random.nextInt(256),
+      random.nextInt(256),
+    );
     img.drawCircle(image, x: centerX, y: centerY, radius: radius, color: color);
   }
 
@@ -274,7 +296,10 @@ void generateRandomPatternImage(String outputFileName,
     final x2 = random.nextInt(imgWidth);
     final y2 = random.nextInt(imgHeight);
     final color = img.ColorRgb8(
-        random.nextInt(256), random.nextInt(256), random.nextInt(256));
+      random.nextInt(256),
+      random.nextInt(256),
+      random.nextInt(256),
+    );
     img.drawLine(image, x1: x1, y1: y1, x2: x2, y2: y2, color: color);
   }
 
@@ -284,7 +309,10 @@ void generateRandomPatternImage(String outputFileName,
     final x = random.nextInt(imgWidth);
     final y = random.nextInt(imgHeight);
     final color = img.ColorRgb8(
-        random.nextInt(256), random.nextInt(256), random.nextInt(256));
+      random.nextInt(256),
+      random.nextInt(256),
+      random.nextInt(256),
+    );
     image.setPixel(x, y, color);
   }
 
