@@ -29,7 +29,7 @@ dependencies:
     path: ../store
 
 dev_dependencies:
-  lints: ^3.0.0
+  lints: ^6.0.0
   test: ^1.24.0
   very_good_analysis: ^10.0.0
 
