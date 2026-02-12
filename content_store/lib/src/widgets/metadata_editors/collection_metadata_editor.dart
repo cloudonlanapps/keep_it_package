@@ -85,7 +85,7 @@ class CollectionMetadataEditor extends ConsumerStatefulWidget {
     // Store from collection is used instead
     return showShadSheet<StoreEntity>(
       context: context,
-      builder: (BuildContext context) => CollectionMetadataEditor.dialog(
+      builder: (context) => CollectionMetadataEditor.dialog(
         id: collection?.id,
         onSubmit: (collection) {
           Navigator.of(context).pop(collection);

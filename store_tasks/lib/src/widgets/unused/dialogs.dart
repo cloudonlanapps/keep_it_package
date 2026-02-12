@@ -12,7 +12,7 @@ class DialogService {
   }) async =>
       showDialog<bool?>(
         context: context,
-        builder: (BuildContext context) => AlertDialog(
+        builder: (context) => AlertDialog(
           alignment: Alignment.center,
           title: Text(title),
           content: Column(

@@ -71,7 +71,7 @@ class CLCamera extends StatefulWidget {
     if (context.mounted) {
       await showDialog<void>(
         context: context,
-        builder: (BuildContext context) {
+        builder: (context) {
           return AlertDialog(
             alignment: Alignment.center,
             insetPadding: const EdgeInsets.all(10),

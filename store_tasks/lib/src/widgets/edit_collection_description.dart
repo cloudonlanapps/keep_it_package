@@ -30,7 +30,7 @@ class EditCollectionDescription extends StatelessWidget {
         onValidate: (val) => null,
         maxLines: 4,
       ),
-      onSubmit: (CLFormFieldResult result) async {
+      onSubmit: (result) async {
         final description = (result as CLFormTextFieldResult).value;
 
         final updated =

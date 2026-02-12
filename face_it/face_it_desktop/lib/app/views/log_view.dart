@@ -145,7 +145,7 @@ class _MessageBoxState extends ConsumerState<MessageBox> {
               return Stack(
                 children: [
                   Listener(
-                    onPointerSignal: (PointerSignalEvent event) {
+                    onPointerSignal: (event) {
                       // Check if the event is a PointerScrollEvent
                       if (event is PointerScrollEvent) {
                         // Check if the shift key is pressed. The `event.synthesized` property

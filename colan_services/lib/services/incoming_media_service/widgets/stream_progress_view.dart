@@ -28,8 +28,8 @@ class StreamProgressView extends StatelessWidget {
                 child: StreamBuilder<Progress>(
                   stream: stream(),
                   builder: (
-                    BuildContext context,
-                    AsyncSnapshot<Progress> snapshot,
+                    context,
+                    snapshot,
                   ) {
                     if (snapshot.hasData) {
                       final double percent =

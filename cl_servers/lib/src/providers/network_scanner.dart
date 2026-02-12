@@ -31,7 +31,7 @@ class NetworkScannerNotifier extends StateNotifier<NetworkScanner>
 
   Future<void> _initialize() async {
     subscription = Connectivity().onConnectivityChanged.listen((
-      List<ConnectivityResult> result,
+      result,
     ) {
       final updatedLanStatus =
           result.contains(ConnectivityResult.wifi) ||

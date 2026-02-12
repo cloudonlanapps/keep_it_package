@@ -1,4 +1,3 @@
-import 'dart:io';
 
 import 'package:cl_basic_types/cl_basic_types.dart';
 import 'package:cl_media_tools/cl_media_tools.dart';
@@ -37,7 +36,7 @@ class AnalysePage extends StatelessWidget {
           contentList: incomingMedia.entries,
           onDone: onDone,
           getValidMediaFile: (mediaContent,
-              {required Directory downloadDirectory}) async {
+              {required downloadDirectory}) async {
             return switch (mediaContent) {
               (final CLMediaFile e) => e,
               (final CLMediaURI e) => await CLMediaFileUtils.uriToMediaFile(e,

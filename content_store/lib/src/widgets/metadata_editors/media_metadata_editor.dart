@@ -63,7 +63,7 @@ class MediaMetadataEditor extends StatelessWidget {
   }) async {
     return showShadSheet<StoreEntity>(
       context: context,
-      builder: (BuildContext context) => MediaMetadataEditor.dialog(
+      builder: (context) => MediaMetadataEditor.dialog(
         mediaId: media.id!,
         onSubmit: (media) {
           Navigator.of(context).pop(media);

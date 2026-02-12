@@ -381,12 +381,12 @@ class CLCameraCoreState extends State<CLCameraCore>
         child: CameraPreview(
           controller!,
           child: LayoutBuilder(
-            builder: (BuildContext context, BoxConstraints constraints) {
+            builder: (context, constraints) {
               return GestureDetector(
                 behavior: HitTestBehavior.opaque,
                 onScaleStart: _handleScaleStart,
                 onScaleUpdate: _handleScaleUpdate,
-                onTapDown: (TapDownDetails details) =>
+                onTapDown: (details) =>
                     onViewFinderTap(details, constraints),
               );
             },
@@ -476,19 +476,19 @@ class CLCameraCoreState extends State<CLCameraCore>
           ...!kIsWeb
               ? <Future<Object?>>[
                   cameraController.getMinExposureOffset().then(
-                    (double value) => minAvailableExposureOffset = value,
+                    (value) => minAvailableExposureOffset = value,
                   ),
                   cameraController.getMaxExposureOffset().then(
-                    (double value) => maxAvailableExposureOffset = value,
+                    (value) => maxAvailableExposureOffset = value,
                   ),
                 ]
               : <Future<Object?>>[],
-          cameraController.getMaxZoomLevel().then((double value) {
+          cameraController.getMaxZoomLevel().then((value) {
             _maxAvailableZoom = value;
             return null;
           }),
           cameraController.getMinZoomLevel().then(
-            (double value) => _minAvailableZoom = value,
+            (value) => _minAvailableZoom = value,
           ),
         ]);
       } on CameraException catch (e) {
@@ -554,19 +554,19 @@ class CLCameraCoreState extends State<CLCameraCore>
         ...!kIsWeb
             ? <Future<Object?>>[
                 cameraController.getMinExposureOffset().then(
-                  (double value) => minAvailableExposureOffset = value,
+                  (value) => minAvailableExposureOffset = value,
                 ),
                 cameraController.getMaxExposureOffset().then(
-                  (double value) => maxAvailableExposureOffset = value,
+                  (value) => maxAvailableExposureOffset = value,
                 ),
               ]
             : <Future<Object?>>[],
-        cameraController.getMaxZoomLevel().then((double value) {
+        cameraController.getMaxZoomLevel().then((value) {
           _maxAvailableZoom = value;
           return null;
         }),
         cameraController.getMinZoomLevel().then(
-          (double value) => _minAvailableZoom = value,
+          (value) => _minAvailableZoom = value,
         ),
       ]);
     } on CameraException catch (e) {

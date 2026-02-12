@@ -94,7 +94,7 @@ class IncomingMediaHandlerState extends ConsumerState<IncomingMediaHandler> {
                     : DuplicatePage(
                         incomingMedia: duplicateCandidates!,
                         parentId: widget.incomingMedia.collection?.id,
-                        onDone: ({required ViewerEntities? mg}) {
+                        onDone: ({required mg}) {
                           unawaited(
                             onSave(
                               storeTaskManager: taskManager,

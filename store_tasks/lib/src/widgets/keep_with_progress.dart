@@ -21,7 +21,7 @@ class KeepWithProgress extends StatelessWidget implements PreferredSizeWidget {
         items: media2Move,
         newParent: newParent,
         onDone: ({
-          required ViewerEntities mediaMultiple,
+          required mediaMultiple,
         }) async =>
             onDone(),
       ),

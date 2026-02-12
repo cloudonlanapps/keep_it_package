@@ -44,7 +44,7 @@ class CLGrid extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        if (header != null) header!,
+        ?header,
         GridView.builder(
           padding: const EdgeInsets.only(top: 2),
           shrinkWrap: true,
@@ -69,7 +69,7 @@ class CLGrid extends StatelessWidget {
             mainAxisSpacing: mainAxisSpacing,
           ),
         ),
-        if (footer != null) footer!,
+        ?footer,
       ],
     );
   }

@@ -134,7 +134,7 @@ class CropperControls extends StatelessWidget {
             width: 4,
             child: DecoratedBox(decoration: BoxDecoration(color: Colors.white)),
           ),
-          if (saveWidget != null) saveWidget!,
+          ?saveWidget,
         ],
       ),
     );

@@ -34,7 +34,7 @@ class CLKeyListenerState extends State<CLKeyListener> {
   Widget build(BuildContext context) {
     return KeyboardListener(
       focusNode: _focusNode,
-      onKeyEvent: (KeyEvent event) {
+      onKeyEvent: (event) {
         if (event is KeyDownEvent) {
           if (widget.keyHandler.keys.contains(event.logicalKey)) {
             widget.keyHandler[event.logicalKey]!();

@@ -57,7 +57,7 @@ class CLPopScreen extends StatelessWidget {
             ? () => PageManager.of(context).pop
             : null,
         onHorizontalDragEnd: popGesture == CLScreenPopGesture.swipeLeft
-            ? (DragEndDetails details) {
+            ? (details) {
                 if (details.primaryVelocity == null) return;
                 // pop on Swipe
                 if (details.primaryVelocity! > 0) {

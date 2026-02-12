@@ -43,7 +43,7 @@ class ExistInDifferentCollection extends StatelessWidget {
             padding: const EdgeInsets.only(bottom: 16),
             child: ListView.builder(
               itemCount: duplicates.length,
-              itemBuilder: (BuildContext ctx, index) {
+              itemBuilder: (ctx, index) {
                 final m = duplicates.entities[index] as StoreEntity;
 
                 return GetEntity(

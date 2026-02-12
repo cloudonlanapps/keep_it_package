@@ -99,7 +99,7 @@ class SelectMenuItem extends ConsumerWidget {
     return GetSelectionMode(
       builder: ({
         required void Function({required bool enable}) onUpdateSelectionmode,
-        required bool selectionMode,
+        required selectionMode,
       }) {
         return ShadContextMenuItem(
           leading: SizedBox.square(

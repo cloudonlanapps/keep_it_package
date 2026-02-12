@@ -258,13 +258,13 @@ class LocalSQLiteEntityStore extends EntityStore
       db: sqliteDB.db,
       table: 'Entity',
       fromMap: CLEntity.fromMap,
-      toMap: (CLEntity obj) => obj.toMap(),
-      dbQueryForItem: (CLEntity obj) async => DBQuery.fromStoreQuery(
+      toMap: (obj) => obj.toMap(),
+      dbQueryForItem: (obj) async => DBQuery.fromStoreQuery(
         tableName,
         validColumns,
         Shortcuts.mediaQuery('ignore', obj), // We use this inside the server.
       ),
-      getUniqueColumns: (CLEntity obj) {
+      getUniqueColumns: (obj) {
         return ['id', if (obj.isCollection) 'label' else 'md5'];
       },
       validColumns: validColumns,

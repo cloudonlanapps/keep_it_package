@@ -17,7 +17,7 @@ class MediaWizardService extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return StoreTaskWizard(
       type: type,
-      onDone: ({required bool isCompleted}) {
+      onDone: ({required isCompleted}) {
         ref.read(reloadProvider.notifier).reload();
         PageManager.of(context).pop(isCompleted);
       },

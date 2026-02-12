@@ -60,7 +60,7 @@ class IncomingMediaMonitor extends ConsumerWidget {
     }
     return IncomingMediaHandler(
       incomingMedia: incomingMedia[0],
-      onDiscard: ({required bool result}) {
+      onDiscard: ({required result}) {
         ref.read(incomingMediaStreamProvider.notifier).pop();
       },
     );

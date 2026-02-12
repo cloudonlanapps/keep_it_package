@@ -87,7 +87,7 @@ class _PickCollectionState extends State<PickCollection> {
         constraints: const BoxConstraints(),
         useSafeArea: true,
         isDismissible: false,
-        builder: (BuildContext context) {
+        builder: (context) {
           return CollectionSearchView(
             collection: collection,
           );

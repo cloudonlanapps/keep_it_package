@@ -37,7 +37,7 @@ class MediaBrowser extends ConsumerWidget {
               shrinkWrap: true,
               // physics: const NeverScrollableScrollPhysics(),
               // The builder function that creates each item
-              itemBuilder: (BuildContext context, int index) {
+              itemBuilder: (context, index) {
                 return Padding(
                   padding: const EdgeInsets.all(8),
                   child: MediaTile(

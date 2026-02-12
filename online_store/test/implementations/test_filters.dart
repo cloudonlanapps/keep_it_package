@@ -507,7 +507,7 @@ class TestFilters {
     final testCases =
         <String, Future<void> Function(TestContext testContext)>{};
     for (final entry in dateTestCases.entries) {
-      testCases[entry.key] = (TestContext testContext) => dateTestCaseTemplate(
+      testCases[entry.key] = (testContext) => dateTestCaseTemplate(
           testContext,
           iters: entry.value.iters,
           iterMap: entry.value.iterMap,
@@ -521,7 +521,7 @@ class TestFilters {
             iters: createDates.shuffled().take(8).toList(),
             iterMap: (dynamic date) =>
                 {'CreateDate': (date as DateTime).utcTimeStamp},
-            filter: (CLEntity e, dynamic currIter) =>
+            filter: (e, dynamic currIter) =>
                 e.createDate == currIter as DateTime),
         'CreateDateYY': DateTestCase(
           iters: createDates.map((e) => e.year).toSet().toList(),
@@ -661,7 +661,7 @@ class TestFilters {
             iters: addedDates.shuffled().take(8).toList(),
             iterMap: (dynamic date) =>
                 {'addedDate': (date as DateTime).utcTimeStamp},
-            filter: (CLEntity e, dynamic currIter) =>
+            filter: (e, dynamic currIter) =>
                 e.addedDate == currIter as DateTime),
         'addedDateYY': DateTestCase(
           iters: addedDates.map((e) => e.year).toSet().toList(),
@@ -789,7 +789,7 @@ class TestFilters {
             iters: updatedDates.shuffled().take(10).toList(),
             iterMap: (dynamic date) =>
                 {'updatedDate': (date as DateTime).utcTimeStamp},
-            filter: (CLEntity e, dynamic currIter) =>
+            filter: (e, dynamic currIter) =>
                 e.updatedDate == currIter as DateTime),
         'updatedDateYY': DateTestCase(
           iters: updatedDates.map((e) => e.year).toSet().toList(),

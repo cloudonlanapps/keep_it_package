@@ -55,7 +55,7 @@ class FacesBrowser extends ConsumerWidget {
       shrinkWrap: true,
       // physics: const NeverScrollableScrollPhysics(),
       // The builder function that creates each item
-      itemBuilder: (BuildContext context, int index) {
+      itemBuilder: (context, index) {
         if (index == knownPersons.length) {
           return const Padding(
             padding: EdgeInsets.all(8),

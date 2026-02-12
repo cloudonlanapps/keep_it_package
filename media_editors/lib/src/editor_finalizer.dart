@@ -53,7 +53,7 @@ class EditorFinalizer extends StatelessWidget {
             clIcons.doneEditMedia,
             color: Colors.red, //CLTheme.of(context).colors.iconColor,
           ),
-      onSelected: (EditorFinalActions value) async {
+      onSelected: (value) async {
         switch (value) {
           case EditorFinalActions.save:
             await onSave(overwrite: true);
@@ -65,7 +65,7 @@ class EditorFinalizer extends StatelessWidget {
             await onDiscard(done: true);
         }
       },
-      itemBuilder: (BuildContext context) {
+      itemBuilder: (context) {
         final values = <EditorFinalActions>[
           EditorFinalActions.save,
           if (canDuplicateMedia) EditorFinalActions.saveAsNew,

@@ -24,7 +24,7 @@ class KeepItErrorView extends ConsumerWidget {
         child: GetStoreStatus(
           builder: (
               {required activeURL,
-              required bool isConnected,
+              required isConnected,
               required storeAsync}) {
             return activeURL.when(
                 data: (activeURLValue) {

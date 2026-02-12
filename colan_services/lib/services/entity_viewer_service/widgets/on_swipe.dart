@@ -10,7 +10,7 @@ class OnSwipe extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return GestureDetector(
-      onHorizontalDragEnd: (DragEndDetails details) {
+      onHorizontalDragEnd: (details) {
         if (details.primaryVelocity == null) return;
         // pop on Swipe
         if (details.primaryVelocity! > 0) {

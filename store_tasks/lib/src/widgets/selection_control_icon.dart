@@ -11,7 +11,7 @@ class SelectionControlIcon extends ConsumerWidget {
     return GetSelectionMode(
       builder: ({
         required void Function({required bool enable}) onUpdateSelectionmode,
-        required bool selectionMode,
+        required selectionMode,
       }) {
         return ShadButton.ghost(
           padding: const EdgeInsets.only(right: 8),

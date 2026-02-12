@@ -47,7 +47,7 @@ class StorageStatistics {
     if (dir.existsSync()) {
       dir
           .listSync(recursive: true, followLinks: false)
-          .forEach((FileSystemEntity entity) {
+          .forEach((entity) {
         if (entity is File) {
           fileCount++;
           totalSize += entity.lengthSync();
