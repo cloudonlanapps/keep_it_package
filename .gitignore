@@ -16,3 +16,5 @@ colan_services/devtools_options.yaml
 
 keep_it/ios/build/**
 **/.obsidian/**
+**/ephemeral/.plugin_symlinks/**
+**/generated_plugin*
