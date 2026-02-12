@@ -123,6 +123,12 @@ class KeepItApp implements AppDescriptor {
             return MediaWizardService(type: type);
           },
         ),
+        CLRouteDescriptor(
+          name: 'auth',
+          builder: (context, parameters) {
+            return const AuthService();
+          },
+        ),
       ];
 
   @override

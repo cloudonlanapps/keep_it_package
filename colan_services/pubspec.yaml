@@ -20,6 +20,8 @@ dependencies:
     path: ../cl_entity_viewers
   cl_media_tools:
     path: ../cl_media_tools
+  cl_server_dart_client:
+    path: ../../../sdks/dartsdk
   colan_widgets:
     path: ../colan_widgets
   collection: ^1.19.0
@@ -85,6 +87,8 @@ dependencies:
 
 dev_dependencies:
   flutter_lints: ^6.0.0
+  flutter_test:
+    sdk: flutter
 
   path_provider_platform_interface: ^2.1.2
   plugin_platform_interface: ^2.1.8

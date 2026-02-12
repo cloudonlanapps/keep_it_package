@@ -3,6 +3,7 @@ export '../models/app_descriptor.dart'
 export '../models/cl_route_descriptor.dart' show CLRouteDescriptor;
 export 'services/app_start_service/views/app_start_service.dart'
     show AppStartService;
+export 'services/auth_service/auth_service.dart' show AuthService;
 export 'services/camera_service/camera_service.dart' show CameraService;
 export 'services/entity_viewer_service/entity_viewer_service.dart'
     show EntityViewerService;
