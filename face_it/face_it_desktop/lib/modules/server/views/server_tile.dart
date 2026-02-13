@@ -11,7 +11,7 @@ class ServerTile extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final storeURL = server.storeURL;
+    final locationConfig = server.locationConfig;
     final IconData icon;
     final Color? color;
 
@@ -27,7 +27,7 @@ class ServerTile extends ConsumerWidget {
       leading: Icon(icon, color: color),
       enabled: server.connected,
       title: Text(
-        storeURL.label ?? storeURL.name,
+        locationConfig.label ?? locationConfig.displayName,
         style: ShadTheme.of(context).textTheme.small,
       ),
       onTap: onPressed,

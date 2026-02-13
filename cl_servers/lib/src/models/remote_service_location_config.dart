@@ -14,6 +14,33 @@ class RemoteServiceLocationConfig extends ServiceLocationConfig {
     super.label,
   });
 
+  /// Create from ServerConfig
+  factory RemoteServiceLocationConfig.fromServerConfig(
+    ServerConfig config, {
+    String? identity,
+    String? label,
+  }) {
+    return RemoteServiceLocationConfig(
+      serverConfig: config,
+      identity: identity,
+      label: label,
+    );
+  }
+
+  /// Create from map (deserialization)
+  factory RemoteServiceLocationConfig.fromMap(Map<String, dynamic> map) {
+    return RemoteServiceLocationConfig(
+      serverConfig: ServerConfig(
+        authUrl: map['authUrl'] as String,
+        storeUrl: map['storeUrl'] as String,
+        computeUrl: map['computeUrl'] as String,
+        mqttUrl: map['mqttUrl'] as String,
+      ),
+      identity: map['identity'] as String?,
+      label: map['label'] as String?,
+    );
+  }
+
   /// Server configuration containing all service URLs
   /// (authUrl, storeUrl, computeUrl, mqttUrl)
   final ServerConfig serverConfig;
@@ -32,33 +59,6 @@ class RemoteServiceLocationConfig extends ServiceLocationConfig {
   String get storeUrl => serverConfig.storeUrl;
   String get computeUrl => serverConfig.computeUrl;
   String get mqttUrl => serverConfig.mqttUrl;
-
-  /// Create from map (deserialization)
-  factory RemoteServiceLocationConfig.fromMap(Map<String, dynamic> map) {
-    return RemoteServiceLocationConfig(
-      serverConfig: ServerConfig(
-        authUrl: map['authUrl'] as String,
-        storeUrl: map['storeUrl'] as String,
-        computeUrl: map['computeUrl'] as String,
-        mqttUrl: map['mqttUrl'] as String,
-      ),
-      identity: map['identity'] as String?,
-      label: map['label'] as String?,
-    );
-  }
-
-  /// Create from ServerConfig
-  factory RemoteServiceLocationConfig.fromServerConfig(
-    ServerConfig config, {
-    String? identity,
-    String? label,
-  }) {
-    return RemoteServiceLocationConfig(
-      serverConfig: config,
-      identity: identity,
-      label: label,
-    );
-  }
 
   @override
   Map<String, dynamic> toMap() {

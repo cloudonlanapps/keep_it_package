@@ -28,4 +28,3 @@ abstract class EntityStore {
   Uri? mediaUri(CLEntity media);
   Uri? previewUri(CLEntity media);
 }
-

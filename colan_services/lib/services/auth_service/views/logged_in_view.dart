@@ -129,7 +129,7 @@ class LoggedInView extends ConsumerWidget {
               ],
             ),
           ),
-          if (action != null) action,
+          ?action,
         ],
       ),
     );

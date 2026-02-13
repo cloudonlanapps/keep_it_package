@@ -1,4 +1,3 @@
-import 'package:cl_basic_types/cl_basic_types.dart';
 import 'package:content_store/src/stores/providers/registerred_urls.dart';
 import 'package:content_store/src/stores/providers/store_provider.dart';
 import 'package:flutter/material.dart';
@@ -19,14 +18,15 @@ class GetAvailableStores extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final registeredLocationsAsync =
-        ref.watch(registeredServiceLocationsProvider);
+    final registeredLocationsAsync = ref.watch(
+      registeredServiceLocationsProvider,
+    );
 
     return registeredLocationsAsync.when(
       data: (locations) {
         try {
           final stores = locations.availableConfigs
-              .map((ServiceLocationConfig config) {
+              .map((config) {
                 final store = ref.watch(storeProvider(config));
                 return store.whenOrNull(data: (data) => data);
               })

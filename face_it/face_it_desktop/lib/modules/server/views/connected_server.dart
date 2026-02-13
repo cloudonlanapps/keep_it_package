@@ -89,7 +89,7 @@ class _ConnectedServerState extends ConsumerState<ConnectedServer> {
           child: Padding(
             padding: const EdgeInsets.symmetric(vertical: 8),
             child: Text(
-              widget.server.storeURL.uri.toString(),
+              widget.server.locationConfig.uri.toString(),
               style: ShadTheme.of(context).textTheme.small,
             ),
           ),

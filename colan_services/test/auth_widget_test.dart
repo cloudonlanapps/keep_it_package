@@ -11,7 +11,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-// ignore: subtype_of_sealed_class
 class FakeSessionManager extends Fake implements SessionManager {
   @override
   bool get isAuthenticated => true;
@@ -29,7 +28,7 @@ class FakeAuthNotifier extends AuthNotifier {
         currentUser: UserResponse(
           id: 1,
           username: 'testuser',
-          isAdmin: false,
+
           createdAt: DateTime.now(),
         ),
         loginTimestamp: DateTime.now(),
@@ -40,7 +39,7 @@ class FakeAuthNotifier extends AuthNotifier {
 }
 
 void main() {
-  final testConfig = RemoteServiceLocationConfig(
+  const testConfig = RemoteServiceLocationConfig(
     serverConfig: ServerConfig(
       authUrl: 'http://auth.example.com',
       computeUrl: 'http://compute.example.com',
@@ -59,7 +58,7 @@ void main() {
   group('LoggedOutView Widget Tests', () {
     testWidgets('displays login form with all elements', (tester) async {
       await tester.pumpWidget(
-        ProviderScope(
+        const ProviderScope(
           child: MaterialApp(
             home: Scaffold(
               body: LoggedOutView(config: testConfig),
@@ -88,7 +87,7 @@ void main() {
 
     testWidgets('displays server URL', (tester) async {
       await tester.pumpWidget(
-        ProviderScope(
+        const ProviderScope(
           child: MaterialApp(
             home: Scaffold(
               body: LoggedOutView(config: testConfig),
@@ -105,7 +104,7 @@ void main() {
 
     testWidgets('validates empty username', (tester) async {
       await tester.pumpWidget(
-        ProviderScope(
+        const ProviderScope(
           child: MaterialApp(
             home: Scaffold(
               body: LoggedOutView(config: testConfig),
@@ -126,7 +125,7 @@ void main() {
 
     testWidgets('validates empty password', (tester) async {
       await tester.pumpWidget(
-        ProviderScope(
+        const ProviderScope(
           child: MaterialApp(
             home: Scaffold(
               body: LoggedOutView(config: testConfig),
@@ -152,7 +151,7 @@ void main() {
 
     testWidgets('remember me checkbox can be toggled', (tester) async {
       await tester.pumpWidget(
-        ProviderScope(
+        const ProviderScope(
           child: MaterialApp(
             home: Scaffold(
               body: LoggedOutView(config: testConfig),
@@ -176,7 +175,7 @@ void main() {
 
     testWidgets('displays error message when provided', (tester) async {
       await tester.pumpWidget(
-        ProviderScope(
+        const ProviderScope(
           child: MaterialApp(
             home: Scaffold(
               body: LoggedOutView(
@@ -234,7 +233,7 @@ void main() {
               () => FakeAuthNotifier(isAuthenticated: true),
             ),
           ],
-          child: MaterialApp(
+          child: const MaterialApp(
             home: Scaffold(
               body: LoggedInView(config: testConfig),
             ),
@@ -265,7 +264,7 @@ void main() {
               () => FakeAuthNotifier(isAuthenticated: true),
             ),
           ],
-          child: MaterialApp(
+          child: const MaterialApp(
             home: Scaffold(
               body: LoggedInView(config: testConfig),
             ),

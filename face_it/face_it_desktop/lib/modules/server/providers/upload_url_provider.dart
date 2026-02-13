@@ -11,7 +11,7 @@ final uploadURLProvider = StateProvider<String?>((ref) {
       .watch(activeAIServerProvider)
       .whenOrNull(data: (data) => (data?.connected ?? false) ? data : null);
   if (server != null && session != null && session.socket.connected) {
-    return '${server.storeURL.uri}/sessions/${session.socket.id}/upload';
+    return '${server.locationConfig.uri}/sessions/${session.socket.id}/upload';
   }
   return null;
 });

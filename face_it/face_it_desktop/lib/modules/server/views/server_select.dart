@@ -43,7 +43,7 @@ class ServerSelectorIconState extends ConsumerState<ServerSelect> {
                   onPressed: () async {
                     ref
                         .read(serverPreferenceProvider.notifier)
-                        .updateServer(e.storeURL.uri);
+                        .updateServer(e.locationConfig.uri);
 
                     popoverController.toggle();
                   },

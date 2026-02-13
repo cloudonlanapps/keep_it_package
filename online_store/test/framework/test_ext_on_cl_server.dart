@@ -15,23 +15,19 @@ extension TestExtOnCLServer on CLServer {
     const serverAddr = 'http://127.0.0.1:5001'; //Mac
     try {
       // Create server config from the base URL
-      final serverConfig = ServerConfig(
+      const serverConfig = ServerConfig(
         authUrl: '$serverAddr/auth',
         storeUrl: '$serverAddr/store',
         computeUrl: '$serverAddr/compute',
         mqttUrl: 'mqtt://127.0.0.1:1883',
       );
 
-      final config = RemoteServiceLocationConfig(
+      const config = RemoteServiceLocationConfig(
         serverConfig: serverConfig,
-        identity: null,
-        label: null,
       );
 
       // Create health status
       final healthStatus = ServerHealthStatus(
-        broadcastStatus: null,
-        broadcastErrors: null,
         lastChecked: DateTime.now(),
         ourHealthCheckPassed: true,
       );

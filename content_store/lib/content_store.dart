@@ -3,7 +3,6 @@ library;
 
 export 'src/share_files.dart' show ShareManager;
 export 'src/stores/builders/get_active_store.dart';
-
 export 'src/stores/builders/get_available_stores.dart' show GetAvailableStores;
 export 'src/stores/builders/get_content.dart' show GetContent;
 export 'src/stores/builders/get_default_store.dart' show GetDefaultStore;
@@ -14,11 +13,11 @@ export 'src/stores/builders/get_store.dart' show GetStore;
 export 'src/stores/builders/get_store_status.dart' show GetStoreStatus;
 export 'src/stores/models/registered_service_locations.dart'
     show RegisteredServiceLocations;
-
+export 'src/stores/providers/active_store_provider.dart'
+    show activeStoreProvider;
 export 'src/stores/providers/refresh_cache.dart' show reloadProvider;
 export 'src/stores/providers/registerred_urls.dart'
     show registeredServiceLocationsProvider;
-
 export 'src/widgets/broken_image.dart';
 export 'src/widgets/content_store_selector_icon.dart'
     show ContentSourceSelectorIcon;

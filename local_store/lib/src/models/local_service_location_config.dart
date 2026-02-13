@@ -12,6 +12,15 @@ class LocalServiceLocationConfig extends ServiceLocationConfig {
     super.label,
   });
 
+  /// Create from map (deserialization)
+  factory LocalServiceLocationConfig.fromMap(Map<String, dynamic> map) {
+    return LocalServiceLocationConfig(
+      storePath: map['storePath'] as String,
+      identity: map['identity'] as String?,
+      label: map['label'] as String?,
+    );
+  }
+
   /// Path identifier for the local store (e.g., "default", "QuotesCollection")
   final String storePath;
 
@@ -23,15 +32,6 @@ class LocalServiceLocationConfig extends ServiceLocationConfig {
 
   /// URI representation using local:// scheme
   Uri get uri => Uri(scheme: 'local', host: storePath);
-
-  /// Create from map (deserialization)
-  factory LocalServiceLocationConfig.fromMap(Map<String, dynamic> map) {
-    return LocalServiceLocationConfig(
-      storePath: map['storePath'] as String,
-      identity: map['identity'] as String?,
-      label: map['label'] as String?,
-    );
-  }
 
   @override
   Map<String, dynamic> toMap() {
