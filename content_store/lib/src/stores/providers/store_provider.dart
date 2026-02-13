@@ -11,35 +11,41 @@ import 'package:store/store.dart';
 
 import '../../../storage_service/providers/directories.dart';
 
-class StoreNotifier extends FamilyAsyncNotifier<CLStore, CLUrl> with CLLogger {
+class StoreNotifier extends FamilyAsyncNotifier<CLStore, ServiceLocationConfig>
+    with CLLogger {
   @override
   String get logPrefix => 'StoreNotifier';
+
   @override
-  FutureOr<CLStore> build(CLUrl arg) async {
+  FutureOr<CLStore> build(ServiceLocationConfig arg) async {
     try {
-      final storeURL = arg;
+      final config = arg;
       final directories = await ref.watch(deviceDirectoriesProvider.future);
-      final scheme = storeURL.scheme; // local or https
-      final storePath = p.join(directories.stores.pathString, storeURL.name);
-      final store = switch (scheme) {
-        'local' => await createEntityStore(
-            storeURL,
-            storePath: storePath,
-            generatePreview: FfmpegUtils.generatePreview,
-          ),
-        'http' => await createOnlineEntityStore(
-            storeURL: storeURL,
-            server: await ref.watch(serverProvider(storeURL).future),
-            storePath: storePath,
-          ),
-        'https' => await createOnlineEntityStore(
-            storeURL: storeURL,
-            server: await ref.watch(serverProvider(storeURL).future),
-            storePath: storePath,
-          ),
-        _ => throw Exception('Unexpected')
-      };
-      return CLStore(store: store, tempFilePath: directories.temp.pathString);
+      final storePath =
+          p.join(directories.stores.pathString, config.displayName);
+
+      final EntityStore entityStore;
+
+      if (config is LocalServiceLocationConfig) {
+        entityStore = await createEntityStore(
+          config,
+          storePath: storePath,
+          generatePreview: FfmpegUtils.generatePreview,
+        );
+      } else if (config is RemoteServiceLocationConfig) {
+        entityStore = await createOnlineEntityStore(
+          config: config,
+          server: await ref.watch(serverProvider(config).future),
+          storePath: storePath,
+        );
+      } else {
+        throw Exception('Unknown service location config type');
+      }
+
+      return CLStore(
+        entityStore: entityStore,
+        tempFilePath: directories.temp.pathString,
+      );
     } catch (e) {
       log(e.toString());
       rethrow;
@@ -48,5 +54,6 @@ class StoreNotifier extends FamilyAsyncNotifier<CLStore, CLUrl> with CLLogger {
 }
 
 final storeProvider =
-    AsyncNotifierProviderFamily<StoreNotifier, CLStore, CLUrl>(
-        StoreNotifier.new);
+    AsyncNotifierProviderFamily<StoreNotifier, CLStore, ServiceLocationConfig>(
+  StoreNotifier.new,
+);

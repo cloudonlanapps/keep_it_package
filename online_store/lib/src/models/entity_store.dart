@@ -8,8 +8,11 @@ import 'server_enitity_query.dart';
 
 @immutable
 class OnlineEntityStore extends EntityStore {
-  const OnlineEntityStore(
-      {required super.identity, required super.storeURL, required this.server});
+  const OnlineEntityStore({
+    required super.identity,
+    required RemoteServiceLocationConfig super.locationConfig,
+    required this.server,
+  });
 
   final CLServer server;
 
@@ -107,17 +110,25 @@ class OnlineEntityStore extends EntityStore {
         errorResponse: (e, {st}) => throw Exception(e));
   }
 
-  static Future<EntityStore> createStore(
-      {required CLUrl storeURL, required CLServer server}) async {
+  static Future<EntityStore> createStore({
+    required RemoteServiceLocationConfig locationConfig,
+    required CLServer server,
+  }) async {
     return OnlineEntityStore(
-        identity: server.baseURL, storeURL: storeURL, server: server);
+      identity: server.baseURL,
+      locationConfig: locationConfig,
+      server: server,
+    );
   }
 }
 
 Future<EntityStore> createOnlineEntityStore({
-  required CLUrl storeURL,
+  required RemoteServiceLocationConfig config,
   required CLServer server,
   required String storePath,
 }) async {
-  return OnlineEntityStore.createStore(server: server, storeURL: storeURL);
+  return OnlineEntityStore.createStore(
+    server: server,
+    locationConfig: config,
+  );
 }

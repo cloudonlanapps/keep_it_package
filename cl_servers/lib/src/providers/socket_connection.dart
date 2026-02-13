@@ -42,7 +42,7 @@ class SocketConnectionNotifier extends AsyncNotifier<CLSocket> with CLLogger {
     log('Create a socket');
     try {
       socket = io.io(
-        '${server.storeURL.uri}',
+        server.baseURL,
         io.OptionBuilder()
             .setTransports(['websocket'])
             .disableAutoConnect() // connect manually

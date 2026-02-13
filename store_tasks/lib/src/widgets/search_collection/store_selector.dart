@@ -52,10 +52,10 @@ class StoreSelector extends ConsumerWidget {
                   initialValue: targetStore,
                   options: [
                     ...stores.map((e) =>
-                        ShadOption(value: e, child: Text(e.store.identity))),
+                        ShadOption(value: e, child: Text(e.entityStore.identity))),
                   ],
                   selectedOptionBuilder: (context, value) {
-                    return Text(value.store.identity);
+                    return Text(value.entityStore.identity);
                   },
                   onChanged: (store) {
                     if (store != null) {

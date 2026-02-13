@@ -2,53 +2,68 @@ import 'dart:async';
 
 import 'package:cl_basic_types/cl_basic_types.dart';
 import 'package:cl_servers/cl_servers.dart';
-
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../models/registerred_urls.dart';
-import '../providers/store_provider.dart';
+import 'package:local_store/local_store.dart';
 
-class RegisteredURLsNotifier extends AsyncNotifier<RegisteredURLs>
+import '../models/registered_service_locations.dart';
+import 'store_provider.dart';
+
+class RegisteredServiceLocationsNotifier
+    extends AsyncNotifier<RegisteredServiceLocations>
     with CLLogger {
   @override
-  String get logPrefix => 'RegisteredURLsNotifier';
-  final defaultStore = CLUrl.fromString('local://default',
-      identity: null, label: 'Primary Collection');
+  String get logPrefix => 'RegisteredServiceLocationsNotifier';
+
+  final defaultStore = const LocalServiceLocationConfig(
+    storePath: 'default',
+    label: 'Primary Collection',
+  );
+
   @override
-  FutureOr<RegisteredURLs> build() {
+  FutureOr<RegisteredServiceLocations> build() {
     try {
       final scanner = ref.watch(networkScannerProvider);
-      final servers = [
+      final configs = <ServiceLocationConfig>[
         defaultStore,
-        CLUrl.fromString('local://QuotesCollection',
-            identity: 'Quote Collection', label: 'Quote Collection'),
-        // StoreURL.fromString('http://192.168.0.220:5001')
+        const LocalServiceLocationConfig(
+          storePath: 'QuotesCollection',
+          identity: 'Quote Collection',
+          label: 'Quote Collection',
+        ),
 
-        if (scanner.lanStatus) ...scanner.servers.where((e) => e.isRepoServer)
+        // Add remote servers from network scanner
+        if (scanner.lanStatus)
+          ...scanner.remoteConfigs.where((e) => e.isRepoServer),
       ];
 
-      final registeredURLs =
-          RegisteredURLs(availableStores: servers, activeStoreIndex: 0);
-      ref.listen(storeProvider(registeredURLs.activeStoreURL), (prev, next) {
+      final registered = RegisteredServiceLocations(
+        availableConfigs: configs,
+        activeIndex: 0,
+      );
+
+      ref.listen(storeProvider(registered.activeConfig), (prev, next) {
         next.whenData((store) {
-          if (!store.store.isAlive) {
+          if (!store.entityStore.isAlive) {
             // assuming 0 is always available
-            activeStore = registeredURLs.availableStores[0];
+            activeConfig = registered.availableConfigs[0];
           }
         });
       });
 
-      return registeredURLs;
+      return registered;
     } catch (e) {
       log(e.toString());
       rethrow;
     }
   }
 
-  CLUrl get activeStore => state.value!.activeStoreURL;
-  set activeStore(CLUrl storeURL) =>
-      state = AsyncValue.data(state.value!.setActiveStore(storeURL));
+  ServiceLocationConfig get activeConfig => state.value!.activeConfig;
+  set activeConfig(ServiceLocationConfig config) =>
+      state = AsyncValue.data(state.value!.setActiveConfig(config));
 }
 
-final registeredURLsProvider =
-    AsyncNotifierProvider<RegisteredURLsNotifier, RegisteredURLs>(
-        RegisteredURLsNotifier.new);
+final registeredServiceLocationsProvider =
+    AsyncNotifierProvider<
+      RegisteredServiceLocationsNotifier,
+      RegisteredServiceLocations
+    >(RegisteredServiceLocationsNotifier.new);

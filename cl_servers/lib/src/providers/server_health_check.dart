@@ -4,14 +4,16 @@ import 'package:cl_basic_types/cl_basic_types.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 
-// Provider definition
-final AsyncNotifierProviderFamily<ServerHealthCheckNotifier, bool, CLUrl>
-    serverHealthCheckProvider = AsyncNotifierProvider.family<
-        ServerHealthCheckNotifier,
-        bool,
-        CLUrl>(ServerHealthCheckNotifier.new);
+import '../models/remote_service_location_config.dart';
 
-class ServerHealthCheckNotifier extends FamilyAsyncNotifier<bool, CLUrl>
+// Provider definition
+final AsyncNotifierProviderFamily<ServerHealthCheckNotifier, bool,
+        RemoteServiceLocationConfig> serverHealthCheckProvider =
+    AsyncNotifierProvider.family<ServerHealthCheckNotifier, bool,
+        RemoteServiceLocationConfig>(ServerHealthCheckNotifier.new);
+
+class ServerHealthCheckNotifier
+    extends FamilyAsyncNotifier<bool, RemoteServiceLocationConfig>
     with CLLogger {
   @override
   String get logPrefix => 'ServerHealthCheck';
@@ -19,23 +21,23 @@ class ServerHealthCheckNotifier extends FamilyAsyncNotifier<bool, CLUrl>
   static const Duration healthCheckTimeout = Duration(seconds: 5);
 
   @override
-  FutureOr<bool> build(CLUrl arg) async {
+  FutureOr<bool> build(RemoteServiceLocationConfig arg) async {
     // Perform health check on build
     return await checkAllServices(arg);
   }
 
-  Future<bool> checkAllServices(CLUrl server) async {
+  Future<bool> checkAllServices(RemoteServiceLocationConfig config) async {
     try {
       final results = await Future.wait([
-        isServiceHealthy(server.authUrl),
-        isServiceHealthy(server.storeUrl),
-        isServiceHealthy(server.computeUrl),
+        isServiceHealthy(config.authUrl),
+        isServiceHealthy(config.storeUrl),
+        isServiceHealthy(config.computeUrl),
       ]);
 
       final allHealthy = results.every((healthy) => healthy);
 
       if (!allHealthy) {
-        log('Health check failed for ${server.label} - '
+        log('Health check failed for ${config.label} - '
             'Auth: ${results[0]}, Store: ${results[1]}, Compute: ${results[2]}');
       }
 

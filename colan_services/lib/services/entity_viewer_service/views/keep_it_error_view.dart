@@ -23,17 +23,17 @@ class KeepItErrorView extends ConsumerWidget {
       body: Center(
         child: GetStoreStatus(
           builder: (
-              {required activeURL,
+              {required activeConfig,
               required isConnected,
               required storeAsync}) {
-            return activeURL.when(
-                data: (activeURLValue) {
+            return activeConfig.when(
+                data: (activeConfigValue) {
                   final storeError = storeAsync.when(
                       data: (store) {
-                        if (!store.store.isAlive) {
+                        if (!store.entityStore.isAlive) {
                           return CLErrorView(
                             errorMessage:
-                                '${activeURLValue.name} is not accesseble',
+                                '${activeConfigValue.displayName} is not accesseble',
                           );
                         } else {
                           return CLErrorView(
@@ -47,25 +47,22 @@ class KeepItErrorView extends ConsumerWidget {
                         );
                       },
                       loading: () => CLLoader.widget(debugMessage: null));
-                  return switch (activeURLValue.scheme) {
-                    'local' => CLErrorView(
+                  return switch (activeConfigValue.isLocal) {
+                    true => CLErrorView(
                         errorMessage: e.toString(),
                       ),
-                    (final String scheme)
-                        when ['http', 'https'].contains(scheme) =>
+                    false =>
                       isConnected
                           ? storeError
                           : const CLErrorView(
                               errorMessage:
                                   'Connection lost. Connect to your homenetwork to access this server',
                             ),
-                    _ =>
-                      throw Exception('Unsupported URL') // should never occur
                   };
                 },
-                error: (activeURLErr, activeURLST) {
+                error: (activeConfigErr, activeConfigST) {
                   return CLErrorView(
-                    errorMessage: activeURLErr.toString(),
+                    errorMessage: activeConfigErr.toString(),
                   );
                 },
                 loading: () => CLLoader.widget(debugMessage: null));

@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:cl_basic_types/cl_basic_types.dart';
 import 'package:cl_server_dart_client/cl_server_dart_client.dart';
+import 'package:cl_servers/cl_servers.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -54,18 +54,19 @@ class _CredentialStorage {
 }
 
 /// Authentication notifier managing login, logout, and token refresh.
-class AuthNotifier extends FamilyAsyncNotifier<AuthState, CLUrl> {
+class AuthNotifier
+    extends FamilyAsyncNotifier<AuthState, RemoteServiceLocationConfig> {
   Timer? _tokenRefreshTimer;
 
   String get _keySuffix => arg.identity ?? arg.authUrl.hashCode.toString();
 
   @override
-  Future<AuthState> build(CLUrl arg) async {
+  Future<AuthState> build(RemoteServiceLocationConfig arg) async {
     // Try auto-login from saved credentials
     final credentials = await _CredentialStorage.load(keySuffix: _keySuffix);
     if (credentials != null) {
       try {
-        final sessionManager = SessionManager(serverConfig: arg.config);
+        final sessionManager = SessionManager(serverConfig: arg.serverConfig);
         await sessionManager.login(credentials.$1, credentials.$2);
         final user = await sessionManager.getCurrentUser();
 
@@ -95,7 +96,7 @@ class AuthNotifier extends FamilyAsyncNotifier<AuthState, CLUrl> {
     state = const AsyncValue.loading();
 
     state = await AsyncValue.guard(() async {
-      final sessionManager = SessionManager(serverConfig: arg.config);
+      final sessionManager = SessionManager(serverConfig: arg.serverConfig);
       await sessionManager.login(username, password);
       final user = await sessionManager.getCurrentUser();
 

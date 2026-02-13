@@ -19,12 +19,12 @@ class GetDefaultStore extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return GetRegisterredURLs(
+    return GetRegisteredServiceLocations(
         errorBuilder: errorBuilder,
         loadingBuilder: loadingBuilder,
-        builder: (registerredURLs) {
+        builder: (registeredLocations) {
           return GetStore(
-            storeURL: registerredURLs.defaultStoreURL,
+            storeURL: registeredLocations.defaultConfig,
             builder: builder,
             errorBuilder: errorBuilder,
             loadingBuilder: loadingBuilder,

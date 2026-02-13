@@ -14,25 +14,25 @@ class ClStoreInterface {}
 @immutable
 class CLStore with CLLogger {
   const CLStore({
-    required this.store,
+    required this.entityStore,
     required this.tempFilePath,
     this.tempCollectionName = '*** Recently Captured',
   });
-  final EntityStore store;
+  final EntityStore entityStore;
   final String tempCollectionName;
   final String tempFilePath;
 
   @override
   String get logPrefix => 'CLStore';
-  String get label => store.storeURL.label ?? store.storeURL.name;
+  String get label => entityStore.locationConfig.label ?? entityStore.locationConfig.displayName;
 
   CLStore copyWith({
-    EntityStore? store,
+    EntityStore? entityStore,
     String? tempCollectionName,
     String? tempFilePath,
   }) {
     return CLStore(
-      store: store ?? this.store,
+      entityStore: entityStore ?? this.entityStore,
       tempCollectionName: tempCollectionName ?? this.tempCollectionName,
       tempFilePath: tempFilePath ?? this.tempFilePath,
     );
@@ -40,26 +40,26 @@ class CLStore with CLLogger {
 
   @override
   String toString() =>
-      'CLStore(store: $store, tempCollectionName: $tempCollectionName, tempFilePath: $tempFilePath)';
+      'CLStore(entityStore: $entityStore, tempCollectionName: $tempCollectionName, tempFilePath: $tempFilePath)';
 
   @override
   bool operator ==(covariant CLStore other) {
     if (identical(this, other)) return true;
 
-    return other.store == store &&
+    return other.entityStore == entityStore &&
         other.tempCollectionName == tempCollectionName &&
         other.tempFilePath == tempFilePath;
   }
 
   @override
   int get hashCode =>
-      store.hashCode ^ tempCollectionName.hashCode ^ tempFilePath.hashCode;
+      entityStore.hashCode ^ tempCollectionName.hashCode ^ tempFilePath.hashCode;
 
   Future<StoreEntity?> dbSave(
     StoreEntity entity, {
     String? path,
   }) async {
-    final saved = await store.upsert(entity.clEntity, path: path);
+    final saved = await entityStore.upsert(entity.clEntity, path: path);
     if (saved == null) {
       return null;
     }
@@ -67,18 +67,18 @@ class CLStore with CLLogger {
   }
 
   Future<bool> delete(int id) async {
-    final entity = await store.getByID(id);
+    final entity = await entityStore.getByID(id);
 
     if (entity == null) {
       return false;
     }
-    return store.delete(entity);
+    return entityStore.delete(entity);
   }
 
   // This function should not be exposed, and its only to detect
   // if we have duplicate.
   Future<StoreEntity?> get({String? md5, String? label}) async {
-    final entityFromDB = await store.get(md5: md5, label: label);
+    final entityFromDB = await entityStore.get(md5: md5, label: label);
     if (entityFromDB == null) {
       return null;
     }
@@ -90,7 +90,7 @@ class CLStore with CLLogger {
 
   Future<ViewerEntities> getAll([StoreQuery<CLEntity>? query]) async {
     try {
-      final entititesFromDB = await store.getAll(query);
+      final entititesFromDB = await entityStore.getAll(query);
       return ViewerEntities(
         entititesFromDB
             .cast<CLEntity>()
@@ -112,7 +112,7 @@ class CLStore with CLLogger {
     ValueGetter<int?>? parentId,
     UpdateStrategy strategy = UpdateStrategy.skip,
   }) async {
-    final collectionInDB = await store.get(label: label);
+    final collectionInDB = await entityStore.get(label: label);
 
     if (collectionInDB != null && collectionInDB.id != null) {
       if (!collectionInDB.isCollection) {
@@ -165,7 +165,7 @@ class CLStore with CLLogger {
     StoreEntity targetCollection,
   ) async {
     final StoreEntity? updated;
-    if (targetCollection.store == entity.store) {
+    if (targetCollection.store.entityStore == entity.store.entityStore) {
       updated = await (await entity.updateWith(
         parentId: () => targetCollection.id!,
         isHidden: () => false,
@@ -212,7 +212,7 @@ class CLStore with CLLogger {
     UpdateStrategy strategy = UpdateStrategy.skip,
     CLEntity? parentCollection,
   }) async {
-    /* if (!store.isLocal) {
+    /* if (!entityStore.isLocal) {
       throw Exception("Can't directly push media files into non-local servers");
     } */
     if (parentCollection != null) {
@@ -220,10 +220,10 @@ class CLStore with CLLogger {
         throw Exception('Parent entity must be a collection.');
       }
       if (parentCollection.id == null) {
-        throw Exception("media can't be stored without valid parentId");
+        throw Exception("media can't be entityStored without valid parentId");
       }
     }
-    final mediaInDB = await store.get(md5: mediaFile.md5);
+    final mediaInDB = await entityStore.get(md5: mediaFile.md5);
 
     final CLEntity parent;
 
@@ -284,7 +284,7 @@ class CLStore with CLLogger {
     }
 
     if (entity.id != null) {
-      final entityInDB = await store.getByID(entity.id!);
+      final entityInDB = await entityStore.getByID(entity.id!);
       if (entityInDB == null) {
         throw Exception('entity with id ${entity.id} not found');
       }
@@ -307,7 +307,7 @@ class CLStore with CLLogger {
         );
       }
       if (parentIdValue != null) {
-        final parent = await store.getByID(parentIdValue);
+        final parent = await entityStore.getByID(parentIdValue);
         if (parent == null) {
           throw Exception('Parent entity does not exist.');
         }
@@ -356,7 +356,7 @@ class CLStore with CLLogger {
     }
 
     if (entity.id != null) {
-      final entityInDB = await store.getByID(entity.id!);
+      final entityInDB = await entityStore.getByID(entity.id!);
       if (entityInDB == null) {
         throw Exception('entity with id ${entity.id} not found');
       }
@@ -381,7 +381,7 @@ class CLStore with CLLogger {
         );
       }
       if (parentIdValue != null) {
-        final parent = await store.getByID(parentIdValue);
+        final parent = await entityStore.getByID(parentIdValue);
         if (parent == null) {
           throw Exception('Parent entity does not exist.');
         }
@@ -437,13 +437,13 @@ class CLStore with CLLogger {
     })?
     onDone,
   }) async* {
-    /// Valid Media can only be pushed into a local store
+    /// Valid Media can only be pushed into a local entityStore
     /// Rationale:
     ///   handling the id for server and managing the network situation when
     ///   processing the media files is complicated.
     ///   We always receive the content into a local server and then push to
     ///   the appropriate server.
-    if (store.storeURL.scheme != 'local') {
+    if (!entityStore.isLocal) {
       throw Exception("Can't directly push media files into non-local servers");
     }
     final existingEntities = <StoreEntity>[];

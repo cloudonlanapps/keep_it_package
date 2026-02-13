@@ -5,9 +5,13 @@ import 'store_query.dart';
 
 @immutable
 abstract class EntityStore {
-  const EntityStore({required this.identity, required this.storeURL});
+  const EntityStore({
+    required this.identity,
+    required this.locationConfig,
+  });
+
   final String identity;
-  final CLUrl storeURL;
+  final ServiceLocationConfig locationConfig;
 
   bool get isAlive;
   Future<CLEntity?> get({String? md5, String? label});
@@ -17,10 +21,11 @@ abstract class EntityStore {
     CLEntity curr, {
     String? path,
   });
-  bool get isLocal => storeURL.scheme == 'local';
+  bool get isLocal => locationConfig.isLocal;
 
   Future<bool> delete(CLEntity item);
 
   Uri? mediaUri(CLEntity media);
   Uri? previewUri(CLEntity media);
 }
+

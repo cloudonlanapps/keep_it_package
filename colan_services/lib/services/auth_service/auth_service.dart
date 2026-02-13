@@ -1,4 +1,4 @@
-import 'package:cl_basic_types/cl_basic_types.dart';
+import 'package:cl_servers/cl_servers.dart';
 import 'package:content_store/src/stores/providers/active_store_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -35,13 +35,31 @@ class AuthService extends ConsumerWidget {
         error: (error, stack) => LoggedOutView(
           errorMessage: 'Failed to connect to store: $error',
           // If we fail to get active store, we can't really do much login-wise
-          // unless we have a fallback or empty CLUrl which might not make sense.
+          // unless we have a fallback or empty config which might not make sense.
           // For now, we show error but user can't login without a valid server target.
-          clUrl: null,
+          config: null,
         ),
         data: (activeStore) {
-          final clUrl = activeStore.store.storeURL;
-          final authAsync = ref.watch(authStateProvider(clUrl));
+          final locationConfig = activeStore.entityStore.locationConfig;
+
+          // Only show auth UI for remote stores
+          if (locationConfig is! RemoteServiceLocationConfig) {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(Icons.info_outline, size: 64),
+                  const SizedBox(height: 16),
+                  Text(
+                    'No authentication required for local store',
+                    style: Theme.of(context).textTheme.headlineSmall,
+                  ),
+                ],
+              ),
+            );
+          }
+
+          final authAsync = ref.watch(authStateProvider(locationConfig));
 
           return authAsync.when(
             loading: () => const Center(
@@ -56,13 +74,13 @@ class AuthService extends ConsumerWidget {
             ),
             error: (error, stack) => LoggedOutView(
               errorMessage: error.toString(),
-              clUrl: clUrl,
+              config: locationConfig,
             ),
             data: (authState) {
               if (authState.isAuthenticated) {
-                return LoggedInView(clUrl: clUrl);
+                return LoggedInView(config: locationConfig);
               } else {
-                return LoggedOutView(clUrl: clUrl);
+                return LoggedOutView(config: locationConfig);
               }
             },
           );

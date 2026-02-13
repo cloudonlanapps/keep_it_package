@@ -4,9 +4,13 @@ import 'package:cl_basic_types/cl_basic_types.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../models/cl_server.dart';
+import '../models/remote_service_location_config.dart';
+import '../models/server_health_status.dart';
+import 'network_scanner.dart';
 import 'server_health_check.dart';
 
-class ServerNotifier extends FamilyAsyncNotifier<CLServer, CLUrl>
+class ServerNotifier
+    extends FamilyAsyncNotifier<CLServer, RemoteServiceLocationConfig>
     with CLLogger {
   @override
   String get logPrefix => 'ServerNotifier';
@@ -14,34 +18,42 @@ class ServerNotifier extends FamilyAsyncNotifier<CLServer, CLUrl>
   Timer? timer;
 
   @override
-  FutureOr<CLServer> build(CLUrl arg) async {
+  FutureOr<CLServer> build(RemoteServiceLocationConfig arg) async {
     try {
-      // Check if server reports itself as unhealthy via broadcast
-      final hasBroadcastIssues = arg.hasBroadcastIssues;
+      final config = arg;
+
+      // Get broadcast health from network scanner
+      final scanner = ref.watch(networkScannerProvider);
+      final broadcastHealth = scanner.getBroadcastHealth(config);
 
       // Perform our own health check
       final ourHealthCheckPassed =
-          await ref.watch(serverHealthCheckProvider(arg).future);
+          await ref.watch(serverHealthCheckProvider(config).future);
 
-      // Server is connected ONLY if:
-      // 1. Broadcast doesn't report unhealthy status
-      // 2. Our health check passes
-      final isConnected = !hasBroadcastIssues && ourHealthCheckPassed;
+      // Create health status combining broadcast and our check
+      final healthStatus = ServerHealthStatus(
+        broadcastStatus: broadcastHealth?.status,
+        broadcastErrors: broadcastHealth?.errors,
+        lastChecked: DateTime.now(),
+        ourHealthCheckPassed: ourHealthCheckPassed,
+      );
 
-      if (!isConnected) {
-        if (hasBroadcastIssues) {
-          log('Server ${arg.label} reports unhealthy status: '
-              'status=${arg.broadcastStatus}, errors=${arg.broadcastErrors}');
+      // Log if server is unhealthy
+      if (!healthStatus.isHealthy) {
+        if (healthStatus.hasBroadcastIssues) {
+          log('Server ${config.label} reports unhealthy status: '
+              'status=${healthStatus.broadcastStatus}, '
+              'errors=${healthStatus.broadcastErrors}');
         }
         if (!ourHealthCheckPassed) {
-          log('Server ${arg.label} failed our health check');
+          log('Server ${config.label} failed our health check');
         }
       }
 
-      // Create CLServer with combined health status
+      // Create CLServer with health status
       final clServer = CLServer(
-        storeURL: arg,
-        connected: isConnected,
+        locationConfig: config,
+        healthStatus: healthStatus,
         client: CLServer.defaultHttpClient,
       );
 
@@ -79,7 +91,7 @@ class ServerNotifier extends FamilyAsyncNotifier<CLServer, CLUrl>
   } */
 }
 
-final serverProvider =
-    AsyncNotifierProviderFamily<ServerNotifier, CLServer, CLUrl>(
-      ServerNotifier.new,
-    );
+final serverProvider = AsyncNotifierProviderFamily<ServerNotifier, CLServer,
+    RemoteServiceLocationConfig>(
+  ServerNotifier.new,
+);

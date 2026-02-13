@@ -1,6 +1,7 @@
 // ignore_for_file: avoid_print, print required for testing
 
 import 'package:cl_basic_types/cl_basic_types.dart';
+import 'package:cl_server_dart_client/cl_server_dart_client.dart';
 import 'package:cl_servers/cl_servers.dart';
 import 'package:online_store/src/models/entity_endpoint.dart';
 import 'package:online_store/src/models/entity_server.dart';
@@ -13,9 +14,32 @@ extension TestExtOnCLServer on CLServer {
     // const serverAddr = 'http://192.168.0.225:5000'; RaspPi
     const serverAddr = 'http://127.0.0.1:5001'; //Mac
     try {
-      final url = CLUrl.fromString(serverAddr, identity: null, label: null);
+      // Create server config from the base URL
+      final serverConfig = ServerConfig(
+        authUrl: '$serverAddr/auth',
+        storeUrl: '$serverAddr/store',
+        computeUrl: '$serverAddr/compute',
+        mqttUrl: 'mqtt://127.0.0.1:1883',
+      );
 
-      final server = CLServer(storeURL: url, connected: true);
+      final config = RemoteServiceLocationConfig(
+        serverConfig: serverConfig,
+        identity: null,
+        label: null,
+      );
+
+      // Create health status
+      final healthStatus = ServerHealthStatus(
+        broadcastStatus: null,
+        broadcastErrors: null,
+        lastChecked: DateTime.now(),
+        ourHealthCheckPassed: true,
+      );
+
+      final server = CLServer(
+        locationConfig: config,
+        healthStatus: healthStatus,
+      );
       if (!server.connected) {
         fail('Connection Failed, could not get the server Id');
       }

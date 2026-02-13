@@ -11,6 +11,7 @@ import '../implementations/sqlite_db/db_store.dart';
 import '../implementations/sqlite_db/db_table_mixin.dart';
 import '../implementations/sqlite_db/table_agent.dart';
 import 'db_query.dart';
+import 'local_service_location_config.dart';
 
 @immutable
 class LocalSQLiteEntityStore extends EntityStore
@@ -18,7 +19,7 @@ class LocalSQLiteEntityStore extends EntityStore
   LocalSQLiteEntityStore(
     this.agent, {
     required super.identity,
-    required super.storeURL,
+    required LocalServiceLocationConfig super.locationConfig,
     required this.mediaPath,
     required this.previewPath,
     required this.generatePreview,
@@ -239,7 +240,7 @@ class LocalSQLiteEntityStore extends EntityStore
   static Future<EntityStore> createStore(
     DBModel db, {
     required String identity,
-    required CLUrl storeURL,
+    required LocalServiceLocationConfig locationConfig,
     required String mediaPath,
     required String previewPath,
     required Future<String> Function(
@@ -273,7 +274,7 @@ class LocalSQLiteEntityStore extends EntityStore
     return LocalSQLiteEntityStore(
       agent,
       identity: identity,
-      storeURL: storeURL,
+      locationConfig: locationConfig,
       mediaPath: mediaPath,
       previewPath: previewPath,
       generatePreview: generatePreview,
@@ -282,7 +283,7 @@ class LocalSQLiteEntityStore extends EntityStore
 }
 
 Future<EntityStore> createEntityStore(
-  CLUrl url, {
+  LocalServiceLocationConfig config, {
   required String storePath,
   required Future<String> Function(
     String mediaPath, {
@@ -299,14 +300,14 @@ Future<EntityStore> createEntityStore(
     Directory(path).createSync(recursive: true);
   }
 
-  final fullPath = p.join(dbPath, '${url.uri.host}.db');
+  final fullPath = p.join(dbPath, '${config.storePath}.db');
   final db = await createSQLiteDBInstance(fullPath);
 
   return switch (db) {
     (final SQLiteDB db) => LocalSQLiteEntityStore.createStore(
       db,
-      identity: url.uri.host,
-      storeURL: url,
+      identity: config.storePath,
+      locationConfig: config,
       mediaPath: mediaPath,
       previewPath: previewPath,
       generatePreview: generatePreview,

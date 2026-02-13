@@ -22,13 +22,13 @@ class EntityViewerService extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     KeepItLoadView loadBuilder() => const KeepItLoadView();
 
-    return GetRegisterredURLs(
+    return GetRegisteredServiceLocations(
         loadingBuilder: loadBuilder,
         errorBuilder: (e, st) => KeepItErrorView(e: e, st: st),
         builder: (registeredURLs) {
           if (id != null) {
             try {
-              if (registeredURLs.activeStoreURL.name != serverId) {
+              if (registeredURLs.activeConfig.displayName != serverId) {
                 WidgetsBinding.instance.addPostFrameCallback((_) {
                   PageManager.of(context).home();
                 });
@@ -46,13 +46,13 @@ class EntityViewerService extends ConsumerWidget {
             builder: (entity, children, siblings) {
               if (entity?.isCollection ?? true) {
                 return KeepItGridView(
-                  serverId: registeredURLs.activeStoreURL.name,
+                  serverId: registeredURLs.activeConfig.displayName,
                   parent: entity,
                   children: children,
                 );
               } else {
                 return KeepItPageView(
-                  serverId: registeredURLs.activeStoreURL.name,
+                  serverId: registeredURLs.activeConfig.displayName,
                   entity: entity!,
                   siblings: siblings,
                 );

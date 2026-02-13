@@ -18,7 +18,7 @@ class ActiveAIServerNotifier extends AsyncNotifier<CLServer?> {
     if (uri == null) return null;
     final servers = await ref.watch(availableServersProvider('ai.').future);
     final server = servers
-        .where((server) => server.storeURL.uri == uri)
+        .where((server) => server.locationConfig.uri == uri)
         .firstOrNull;
 
     return server;

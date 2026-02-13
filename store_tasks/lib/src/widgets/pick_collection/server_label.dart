@@ -11,14 +11,14 @@ class ServerLabel extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final Color color;
 
-    switch (store.store.storeURL.scheme) {
-      case 'http':
-      case 'https':
-        color =
-            Colors.green; // FIXME: [LATER] When offline support, change to red
-      default:
-        color = Colors.grey.shade400;
+    // Use isLocal to determine color instead of scheme
+    if (store.entityStore.isLocal) {
+      color = Colors.grey.shade400;
+    } else {
+      // Remote server
+      color = Colors.green; // FIXME: [LATER] When offline support, change to red
     }
+
     return Text(
       store.label,
       style: ShadTheme.of(context).textTheme.muted.copyWith(color: color),

@@ -143,9 +143,9 @@ class StoreEntity implements ViewerEntity {
   int? get parentId => clEntity.parentId;
 
   @override
-  Uri? get mediaUri => store.store.mediaUri(clEntity);
+  Uri? get mediaUri => store.entityStore.mediaUri(clEntity);
   @override
-  Uri? get previewUri => store.store.previewUri(clEntity);
+  Uri? get previewUri => store.entityStore.previewUri(clEntity);
 
   @override
   String toString() => 'StoreEntity(entity: $clEntity, store: $store';

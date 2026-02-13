@@ -8,6 +8,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nsd/nsd.dart';
 
 import '../models/network_scanner.dart';
+import '../models/remote_service_location_config.dart';
 
 extension ServiceExtDiscovery on Discovery {
   Future<void> stop() async => stopDiscovery(this);
@@ -87,33 +88,47 @@ class NetworkScannerNotifier extends StateNotifier<NetworkScanner>
   }
 
   Future<void> listener() async {
-    final servers = <CLUrl>{};
+    final servers = <RemoteServiceLocationConfig>{};
+    final broadcastHealthMap = <RemoteServiceLocationConfig, BroadcastHealth>{};
 
     // Parse all discovered services (no health checks here)
     for (final service in discovery?.services ?? <Service>[]) {
-      final server = _parseService(service);
-      if (server != null) {
-        servers.add(server);
+      final result = _parseService(service);
+      if (result != null) {
+        servers.add(result.$1);
+        if (result.$2 != null) {
+          broadcastHealthMap[result.$1] = result.$2!;
+        }
       }
     }
 
-    // Update state with all discovered servers (healthy or not)
+    // Update state with all discovered servers and their broadcast health
     if (servers.isNotEmpty) {
       if (state.servers.isDifferent(servers)) {
         log('NSD: Found ${servers.length} server(s) in the network.');
-        state = state.copyWith(servers: servers);
+        state = state.copyWith(
+          servers: servers,
+          broadcastHealthMap: broadcastHealthMap,
+        );
       }
     } else {
       log('NSD: No servers in the network.');
-      state = state.copyWith(servers: {});
+      state = state.copyWith(servers: {}, broadcastHealthMap: {});
     }
   }
 
   // Exposed for testing
   @visibleForTesting
-  CLUrl? parseServiceForTest(Service service) => _parseService(service);
+  (RemoteServiceLocationConfig, BroadcastHealth?)? parseServiceForTest(
+    Service service,
+  ) =>
+      _parseService(service);
 
-  CLUrl? _parseService(Service service) {
+  /// Parse a discovered service into RemoteServiceLocationConfig and BroadcastHealth
+  /// Returns a tuple of (config, broadcastHealth) or null if parsing fails
+  (RemoteServiceLocationConfig, BroadcastHealth?)? _parseService(
+    Service service,
+  ) {
     try {
       // Extract fields - Service URLs (required)
       // Note: keys in TXT record are case insensitive in some implementations,
@@ -174,21 +189,29 @@ class NetworkScannerNotifier extends StateNotifier<NetworkScanner>
       }
 
       // Create ServerConfig
-      final config = ServerConfig(
+      final serverConfig = ServerConfig(
         authUrl: authUrl,
         storeUrl: storeUrl,
         computeUrl: computeUrl,
         mqttUrl: mqttUrl,
       );
 
-      // Create CLUrl with ServerConfig and broadcast health status
-      return CLUrl(
-        config,
+      // Create RemoteServiceLocationConfig
+      final config = RemoteServiceLocationConfig(
+        serverConfig: serverConfig,
         identity: identity,
         label: service.name,
-        broadcastStatus: broadcastStatus,
-        broadcastErrors: broadcastErrors,
       );
+
+      // Create BroadcastHealth if health info is present
+      final broadcastHealth = (broadcastStatus != null || broadcastErrors != null)
+          ? BroadcastHealth(
+              status: broadcastStatus,
+              errors: broadcastErrors,
+            )
+          : null;
+
+      return (config, broadcastHealth);
     } catch (e, stackTrace) {
       log(
         'Error parsing service ${service.name}: $e',

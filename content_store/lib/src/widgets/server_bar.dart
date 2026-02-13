@@ -31,7 +31,7 @@ class ServerBar extends ConsumerWidget {
             spacing: 8,
             children: [
               ShadAvatar(
-                (activeServer.store.isLocal)
+                (activeServer.entityStore.isLocal)
                     ? 'assets/icon/not_on_server.png'
                     : 'assets/icon/cloud_on_lan_128px_color.png',
                 size: const Size.fromRadius((kMinInteractiveDimension / 2) - 6),

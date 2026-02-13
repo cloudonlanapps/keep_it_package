@@ -37,4 +37,4 @@ export 'src/store_reply.dart' show StoreReply, StoreError, StoreResult;
 export 'src/cl_logger.dart' show CLLogger;
 
 //export 'src/server_model/rest_api.dart';
-export 'src/cl_url.dart' show CLUrl;
+export 'src/service_location_config.dart' show ServiceLocationConfig;

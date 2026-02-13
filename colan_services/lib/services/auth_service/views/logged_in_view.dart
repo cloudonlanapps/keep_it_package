@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:cl_basic_types/cl_basic_types.dart';
+import 'package:cl_servers/cl_servers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -10,15 +10,15 @@ import '../../basic_page_service/widgets/page_manager.dart';
 /// View displayed when user is logged in.
 class LoggedInView extends ConsumerWidget {
   const LoggedInView({
-    required this.clUrl,
+    required this.config,
     super.key,
   });
 
-  final CLUrl clUrl;
+  final RemoteServiceLocationConfig config;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final authState = ref.watch(authStateProvider(clUrl)).value;
+    final authState = ref.watch(authStateProvider(config)).value;
 
     if (authState == null || !authState.isAuthenticated) {
       return const Center(child: CircularProgressIndicator());
@@ -67,7 +67,7 @@ class LoggedInView extends ConsumerWidget {
                 context,
                 icon: Icons.dns,
                 label: 'Auth Server',
-                value: clUrl.authUrl,
+                value: config.authUrl,
               ),
               const SizedBox(height: 32),
               ElevatedButton.icon(
@@ -149,7 +149,7 @@ class LoggedInView extends ConsumerWidget {
           ElevatedButton(
             onPressed: () {
               Navigator.of(context).pop();
-              unawaited(ref.read(authStateProvider(clUrl).notifier).logout());
+              unawaited(ref.read(authStateProvider(config).notifier).logout());
             },
             child: const Text('Logout'),
           ),

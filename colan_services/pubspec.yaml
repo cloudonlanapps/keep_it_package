@@ -20,6 +20,8 @@ dependencies:
     path: ../cl_entity_viewers
   cl_media_tools:
     path: ../cl_media_tools
+  cl_servers:
+    path: ../cl_servers
   cl_server_dart_client:
     path: ../../../sdks/dartsdk
   colan_widgets:

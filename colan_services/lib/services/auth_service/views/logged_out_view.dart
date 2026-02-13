@@ -1,4 +1,4 @@
-import 'package:cl_basic_types/cl_basic_types.dart';
+import 'package:cl_servers/cl_servers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -7,13 +7,13 @@ import '../../../providers/auth_provider.dart';
 /// View displayed when user is not logged in.
 class LoggedOutView extends ConsumerStatefulWidget {
   const LoggedOutView({
-    required this.clUrl,
+    required this.config,
     this.errorMessage,
     super.key,
   });
 
   final String? errorMessage;
-  final CLUrl? clUrl;
+  final RemoteServiceLocationConfig? config;
 
   @override
   ConsumerState<LoggedOutView> createState() => _LoggedOutViewState();
@@ -41,7 +41,7 @@ class _LoggedOutViewState extends ConsumerState<LoggedOutView> {
   }
 
   Future<void> _handleLogin() async {
-    if (widget.clUrl == null) {
+    if (widget.config == null) {
       setState(() {
         _errorMessage = 'No active server selected.';
       });
@@ -57,7 +57,7 @@ class _LoggedOutViewState extends ConsumerState<LoggedOutView> {
 
     try {
       await ref
-          .read(authStateProvider(widget.clUrl!).notifier)
+          .read(authStateProvider(widget.config!).notifier)
           .login(
             _usernameController.text.trim(),
             _passwordController.text,
@@ -75,7 +75,7 @@ class _LoggedOutViewState extends ConsumerState<LoggedOutView> {
 
   @override
   Widget build(BuildContext context) {
-    if (widget.clUrl == null) {
+    if (widget.config == null) {
       return Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -122,7 +122,7 @@ class _LoggedOutViewState extends ConsumerState<LoggedOutView> {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'Server: ${widget.clUrl!.authUrl}',
+                  'Server: ${widget.config!.authUrl}',
                   style: Theme.of(context).textTheme.bodySmall,
                   textAlign: TextAlign.center,
                 ),

@@ -1,9 +1,10 @@
 import 'package:cl_basic_types/cl_basic_types.dart';
+import 'package:cl_servers/cl_servers.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:content_store/content_store.dart';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:local_store/local_store.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:store/store.dart';
@@ -49,7 +50,7 @@ class ShowAvailableServers extends ConsumerWidget {
     const errorWidget = Center(
       child: Icon(LucideIcons.triangleAlert),
     );
-    return GetRegisterredURLs(
+    return GetRegisteredServiceLocations(
         loadingBuilder: () => loadingWidget,
         errorBuilder: (p0, p1) => errorWidget,
         builder: (availableStores) {
@@ -67,39 +68,45 @@ class KnownServersList extends ConsumerWidget {
     required this.supportedSchema,
     super.key,
   });
-  final RegisteredURLs servers;
+  final RegisteredServiceLocations servers;
   final List<String> supportedSchema;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final List<CLUrl> stores;
+    final List<ServiceLocationConfig> configs;
     if (supportedSchema.isNotEmpty) {
-      stores = servers.availableStores
-          .where((e) => supportedSchema.contains(e.scheme))
-          .toList();
+      // Filter by scheme - local configs have 'local' scheme, remote have http/https
+      configs = servers.availableConfigs.where((config) {
+        if (config is LocalServiceLocationConfig) {
+          return supportedSchema.contains('local');
+        } else if (config is RemoteServiceLocationConfig) {
+          return supportedSchema.contains(config.scheme);
+        }
+        return false;
+      }).toList();
     } else {
-      stores = servers.availableStores;
+      configs = servers.availableConfigs;
     }
     return ListView(
       shrinkWrap: true,
-      children: stores
-          .map((storeURL) => GetStore(
-              storeURL: storeURL,
+      children: configs
+          .map((config) => GetStore(
+              storeURL: config,
               errorBuilder: (p0, p1) => ServerTile(
-                    storeURL: storeURL,
+                    config: config,
                     isLoading: false,
-                    isActive: servers.isActiveStore(storeURL),
+                    isActive: servers.isActiveConfig(config),
                   ),
               loadingBuilder: () => ServerTile(
-                    storeURL: storeURL,
+                    config: config,
                     isLoading: true,
-                    isActive: servers.isActiveStore(storeURL),
+                    isActive: servers.isActiveConfig(config),
                   ),
               builder: (store) => ServerTile(
-                    storeURL: storeURL,
+                    config: config,
                     store: store,
                     isLoading: false,
-                    isActive: servers.isActiveStore(storeURL),
+                    isActive: servers.isActiveConfig(config),
                   )))
           .toList(),
     );
@@ -107,13 +114,15 @@ class KnownServersList extends ConsumerWidget {
 }
 
 class ServerTile extends ConsumerWidget {
-  const ServerTile(
-      {required this.storeURL,
-      required this.isLoading,
-      required this.isActive,
-      super.key,
-      this.store});
-  final CLUrl storeURL;
+  const ServerTile({
+    required this.config,
+    required this.isLoading,
+    required this.isActive,
+    super.key,
+    this.store,
+  });
+
+  final ServiceLocationConfig config;
   final CLStore? store;
   final bool isLoading;
   final bool isActive;
@@ -125,7 +134,7 @@ class ServerTile extends ConsumerWidget {
     if (isLoading) {
       icon = LucideIcons.circle;
       color = null;
-    } else if (isLoading || (store?.store.isAlive ?? false)) {
+    } else if (isLoading || (store?.entityStore.isAlive ?? false)) {
       icon = (isActive ? LucideIcons.circleCheck : LucideIcons.circle);
       color = null;
     } else {
@@ -134,25 +143,27 @@ class ServerTile extends ConsumerWidget {
     }
 
     final child = ListTile(
-        leading: Icon(
-          icon,
-          color: color,
-        ),
-        enabled: store?.store.isAlive ?? false,
-        title: Text(
-          storeURL.label ?? storeURL.name,
-          style: ShadTheme.of(context).textTheme.small,
-        ),
-        onTap: (!isLoading && store != null)
-            ? () =>
-                ref.read(registeredURLsProvider.notifier).activeStore = storeURL
-            : null);
+      leading: Icon(
+        icon,
+        color: color,
+      ),
+      enabled: store?.entityStore.isAlive ?? false,
+      title: Text(
+        config.label ?? config.displayName,
+        style: ShadTheme.of(context).textTheme.small,
+      ),
+      onTap: (!isLoading && store != null)
+          ? () => ref.read(registeredServiceLocationsProvider.notifier).activeConfig =
+              config
+          : null,
+    );
 
     if (isLoading) {
       return Shimmer.fromColors(
-          baseColor: Colors.grey[500]!,
-          highlightColor: Colors.grey[800]!,
-          child: child);
+        baseColor: Colors.grey[500]!,
+        highlightColor: Colors.grey[800]!,
+        child: child,
+      );
     }
     return child;
   }

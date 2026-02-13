@@ -22,8 +22,8 @@ class AvailableServersNotifier
     final detectedServers = scanner.servers
         .where((e) => e.isType(arg))
         .map(
-          (url) => ref
-              .watch(serverProvider(url))
+          (config) => ref
+              .watch(serverProvider(config))
               .whenOrNull(data: (clServer) => clServer),
         )
         .where((e) => e != null)
@@ -31,7 +31,7 @@ class AvailableServersNotifier
         .toList();
     final servers = detectedServers
         .map((detectedServer) {
-          final server = ref.watch(serverProvider(detectedServer.storeURL));
+          final server = ref.watch(serverProvider(detectedServer.locationConfig));
 
           return server.whenOrNull(data: (data) => data);
         })

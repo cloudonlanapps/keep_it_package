@@ -2,8 +2,8 @@ import 'dart:convert';
 import 'dart:developer' as dev;
 import 'dart:io';
 
-import 'package:cl_basic_types/cl_basic_types.dart';
 import 'package:cl_server_dart_client/cl_server_dart_client.dart';
+import 'package:cl_servers/cl_servers.dart';
 import 'package:colan_services/providers/auth_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -62,14 +62,14 @@ String _loadTestUsername() {
 
 void main() {
   late ServerConfig testServerConfig;
-  late CLUrl testClUrl;
+  late RemoteServiceLocationConfig testConfig;
   late String testUsername;
   const testPassword = 'admin';
 
   setUpAll(() {
     testServerConfig = _loadServerConfig();
-    testClUrl = CLUrl(
-      testServerConfig,
+    testConfig = RemoteServiceLocationConfig(
+      serverConfig: testServerConfig,
       identity: 'test-server',
       label: 'Test Server',
     );
@@ -91,7 +91,7 @@ void main() {
       addTearDown(container.dispose);
 
       final authState = await container.read(
-        authStateProvider(testClUrl).future,
+        authStateProvider(testConfig).future,
       );
 
       expect(authState.isAuthenticated, isFalse);
@@ -105,11 +105,11 @@ void main() {
 
       // Perform login
       await container
-          .read(authStateProvider(testClUrl).notifier)
+          .read(authStateProvider(testConfig).notifier)
           .login(testUsername, testPassword, rememberMe: false);
 
       final authState = await container.read(
-        authStateProvider(testClUrl).future,
+        authStateProvider(testConfig).future,
       );
 
       expect(authState.isAuthenticated, isTrue);
@@ -119,7 +119,7 @@ void main() {
       expect(authState.loginTimestamp, isNotNull);
 
       // Cleanup
-      await container.read(authStateProvider(testClUrl).notifier).logout();
+      await container.read(authStateProvider(testConfig).notifier).logout();
     });
 
     test('login with invalid credentials fails', () async {
@@ -128,10 +128,10 @@ void main() {
 
       // Perform login with invalid credentials
       await container
-          .read(authStateProvider(testClUrl).notifier)
+          .read(authStateProvider(testConfig).notifier)
           .login('invalid', 'invalid', rememberMe: false);
 
-      final authState = container.read(authStateProvider(testClUrl));
+      final authState = container.read(authStateProvider(testConfig));
 
       // Should be in error state
       expect(authState.hasError, isTrue);
@@ -144,16 +144,16 @@ void main() {
 
       // Login first
       await container
-          .read(authStateProvider(testClUrl).notifier)
+          .read(authStateProvider(testConfig).notifier)
           .login(testUsername, testPassword, rememberMe: false);
 
-      var authState = await container.read(authStateProvider(testClUrl).future);
+      var authState = await container.read(authStateProvider(testConfig).future);
       expect(authState.isAuthenticated, isTrue);
 
       // Logout
-      await container.read(authStateProvider(testClUrl).notifier).logout();
+      await container.read(authStateProvider(testConfig).notifier).logout();
 
-      authState = await container.read(authStateProvider(testClUrl).future);
+      authState = await container.read(authStateProvider(testConfig).future);
       expect(authState.isAuthenticated, isFalse);
       expect(authState.sessionManager, isNull);
       expect(authState.currentUser, isNull);
@@ -165,19 +165,19 @@ void main() {
 
       // Login with remember me
       await container
-          .read(authStateProvider(testClUrl).notifier)
+          .read(authStateProvider(testConfig).notifier)
           .login(testUsername, testPassword, rememberMe: true);
 
       // Check credentials are saved with keySuffix
       final keySuffix =
-          testClUrl.identity ?? testClUrl.authUrl.hashCode.toString();
+          testConfig.identity ?? testConfig.authUrl.hashCode.toString();
       final prefs = await SharedPreferences.getInstance();
       expect(prefs.getString('auth_username:$keySuffix'), equals(testUsername));
       expect(prefs.getString('auth_password_encoded:$keySuffix'), isNotNull);
       expect(prefs.getBool('auth_remember_me:$keySuffix'), isTrue);
 
       // Cleanup
-      await container.read(authStateProvider(testClUrl).notifier).logout();
+      await container.read(authStateProvider(testConfig).notifier).logout();
     });
 
     test('logout with clearCredentials removes saved credentials', () async {
@@ -186,16 +186,16 @@ void main() {
 
       // Login with remember me
       await container
-          .read(authStateProvider(testClUrl).notifier)
+          .read(authStateProvider(testConfig).notifier)
           .login(testUsername, testPassword, rememberMe: true);
 
       final keySuffix =
-          testClUrl.identity ?? testClUrl.authUrl.hashCode.toString();
+          testConfig.identity ?? testConfig.authUrl.hashCode.toString();
       var prefs = await SharedPreferences.getInstance();
       expect(prefs.getBool('auth_remember_me:$keySuffix'), isTrue);
 
       // Logout and clear credentials
-      await container.read(authStateProvider(testClUrl).notifier).logout();
+      await container.read(authStateProvider(testConfig).notifier).logout();
 
       prefs = await SharedPreferences.getInstance();
       expect(prefs.getString('auth_username:$keySuffix'), isNull);

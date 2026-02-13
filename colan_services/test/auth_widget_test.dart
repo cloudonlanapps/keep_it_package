@@ -1,5 +1,5 @@
-import 'package:cl_basic_types/cl_basic_types.dart';
 import 'package:cl_server_dart_client/cl_server_dart_client.dart';
+import 'package:cl_servers/cl_servers.dart';
 import 'package:colan_services/providers/auth_provider.dart';
 import 'package:colan_services/services/auth_service/auth_service.dart';
 import 'package:colan_services/services/auth_service/models/auth_state.dart';
@@ -22,7 +22,7 @@ class FakeAuthNotifier extends AuthNotifier {
   final bool isAuthenticated;
 
   @override
-  Future<AuthState> build(CLUrl arg) async {
+  Future<AuthState> build(RemoteServiceLocationConfig arg) async {
     if (isAuthenticated) {
       return AuthState(
         sessionManager: FakeSessionManager(),
@@ -40,8 +40,8 @@ class FakeAuthNotifier extends AuthNotifier {
 }
 
 void main() {
-  final testClUrl = CLUrl(
-    ServerConfig(
+  final testConfig = RemoteServiceLocationConfig(
+    serverConfig: ServerConfig(
       authUrl: 'http://auth.example.com',
       computeUrl: 'http://compute.example.com',
       storeUrl: 'http://store.example.com',
@@ -62,7 +62,7 @@ void main() {
         ProviderScope(
           child: MaterialApp(
             home: Scaffold(
-              body: LoggedOutView(clUrl: testClUrl),
+              body: LoggedOutView(config: testConfig),
             ),
           ),
         ),
@@ -91,7 +91,7 @@ void main() {
         ProviderScope(
           child: MaterialApp(
             home: Scaffold(
-              body: LoggedOutView(clUrl: testClUrl),
+              body: LoggedOutView(config: testConfig),
             ),
           ),
         ),
@@ -108,7 +108,7 @@ void main() {
         ProviderScope(
           child: MaterialApp(
             home: Scaffold(
-              body: LoggedOutView(clUrl: testClUrl),
+              body: LoggedOutView(config: testConfig),
             ),
           ),
         ),
@@ -129,7 +129,7 @@ void main() {
         ProviderScope(
           child: MaterialApp(
             home: Scaffold(
-              body: LoggedOutView(clUrl: testClUrl),
+              body: LoggedOutView(config: testConfig),
             ),
           ),
         ),
@@ -155,7 +155,7 @@ void main() {
         ProviderScope(
           child: MaterialApp(
             home: Scaffold(
-              body: LoggedOutView(clUrl: testClUrl),
+              body: LoggedOutView(config: testConfig),
             ),
           ),
         ),
@@ -180,7 +180,7 @@ void main() {
           child: MaterialApp(
             home: Scaffold(
               body: LoggedOutView(
-                clUrl: testClUrl,
+                config: testConfig,
                 errorMessage: 'Login failed: Invalid credentials',
               ),
             ),
@@ -194,14 +194,14 @@ void main() {
       expect(find.byIcon(Icons.error), findsOneWidget);
     });
 
-    testWidgets('displays no server selected when clUrl is null', (
+    testWidgets('displays no server selected when config is null', (
       tester,
     ) async {
       await tester.pumpWidget(
         const ProviderScope(
           child: MaterialApp(
             home: Scaffold(
-              body: LoggedOutView(clUrl: null),
+              body: LoggedOutView(config: null),
             ),
           ),
         ),
@@ -213,36 +213,16 @@ void main() {
       expect(find.byIcon(Icons.error_outline), findsOneWidget);
     });
 
-    testWidgets('displays local store message', (tester) async {
-      final localClUrl = CLUrl(
-        ServerConfig(
-          authUrl: 'local://auth',
-          computeUrl: 'local://compute',
-          storeUrl: 'local://store',
-          mqttUrl: 'mqtt://localhost:1883',
-        ),
-        identity: 'local-server',
-        label: 'Local Server',
-      );
-
-      await tester.pumpWidget(
-        ProviderScope(
-          child: MaterialApp(
-            home: Scaffold(
-              body: LoggedOutView(clUrl: localClUrl),
-            ),
-          ),
-        ),
-      );
-
-      await tester.pumpAndSettle();
-
-      expect(
-        find.text('No authentication required for local store'),
-        findsOneWidget,
-      );
-      expect(find.text('Sign In'), findsNothing);
-    });
+    // Skip: Local stores do not use RemoteServiceLocationConfig - this test is no longer applicable
+    testWidgets(
+      'displays local store message',
+      skip: true,
+      (tester) async {
+        // This test is skipped because in the new architecture, LoggedOutView
+        // only accepts RemoteServiceLocationConfig, which is only for remote servers.
+        // Local stores don't require authentication and are handled separately.
+      },
+    );
   });
 
   group('LoggedInView Widget Tests', () {
@@ -256,7 +236,7 @@ void main() {
           ],
           child: MaterialApp(
             home: Scaffold(
-              body: LoggedInView(clUrl: testClUrl),
+              body: LoggedInView(config: testConfig),
             ),
           ),
         ),
@@ -287,7 +267,7 @@ void main() {
           ],
           child: MaterialApp(
             home: Scaffold(
-              body: LoggedInView(clUrl: testClUrl),
+              body: LoggedInView(config: testConfig),
             ),
           ),
         ),
