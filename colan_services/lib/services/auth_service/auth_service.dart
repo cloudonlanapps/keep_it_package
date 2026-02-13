@@ -18,7 +18,6 @@ class AuthService extends ConsumerWidget {
     final authAsync = ref.watch(authStateProvider);
 
     return FullscreenLayout(
-      useSafeArea: true,
       child: authAsync.when(
         loading: () => const Center(
           child: Column(

@@ -154,4 +154,7 @@ class PageManager {
   Future<void> openSettings() async {
     await navigator.pushNamed(context, '/settings');
   }
+  Future<void> openAuthenticator() async {
+    await navigator.pushNamed(context, '/auth');
+  }
 }

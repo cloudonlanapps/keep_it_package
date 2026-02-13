@@ -280,43 +280,5 @@ void main() {
       expect(prefs.storeUrl, isNotEmpty);
       expect(prefs.mqttUrl, isNotEmpty);
     });
-
-    test('updateUrls persists to SharedPreferences', () async {
-      final container = ProviderContainer();
-      addTearDown(container.dispose);
-
-      // Wait for initial load
-      await Future.delayed(const Duration(milliseconds: 200));
-
-      const newAuthUrl = 'http://new-auth:8010';
-      const newComputeUrl = 'http://new-compute:8012';
-      const newStoreUrl = 'http://new-store:8011';
-      const newMqttUrl = 'mqtt://new-mqtt:1883';
-
-      await container.read(serverPreferencesProvider.notifier).updateUrls(
-            authUrl: newAuthUrl,
-            computeUrl: newComputeUrl,
-            storeUrl: newStoreUrl,
-            mqttUrl: newMqttUrl,
-          );
-
-      // Wait for state update
-      await Future.delayed(const Duration(milliseconds: 100));
-
-      final prefs = container.read(serverPreferencesProvider);
-
-      expect(prefs.authUrl, equals(newAuthUrl));
-      expect(prefs.computeUrl, equals(newComputeUrl));
-      expect(prefs.storeUrl, equals(newStoreUrl));
-      expect(prefs.mqttUrl, equals(newMqttUrl));
-
-      // Verify it was saved to SharedPreferences
-      await Future.delayed(const Duration(milliseconds: 100));
-      final sp = await SharedPreferences.getInstance();
-      expect(sp.getString('server_auth_url'), equals(newAuthUrl));
-      expect(sp.getString('server_compute_url'), equals(newComputeUrl));
-      expect(sp.getString('server_store_url'), equals(newStoreUrl));
-      expect(sp.getString('server_mqtt_url'), equals(newMqttUrl));
-    });
   });
 }

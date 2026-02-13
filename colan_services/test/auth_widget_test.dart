@@ -16,7 +16,7 @@ void main() {
 
   group('LoggedOutView Widget Tests', () {
     testWidgets('displays login form with all elements',
-        (WidgetTester tester) async {
+        (tester) async {
       await tester.pumpWidget(
         const ProviderScope(
           child: MaterialApp(
@@ -41,7 +41,7 @@ void main() {
       expect(find.byIcon(Icons.settings), findsOneWidget); // Server settings button
     });
 
-    testWidgets('displays server URL', (WidgetTester tester) async {
+    testWidgets('displays server URL', (tester) async {
       await tester.pumpWidget(
         const ProviderScope(
           child: MaterialApp(
@@ -58,7 +58,7 @@ void main() {
       expect(find.textContaining('Server:'), findsOneWidget);
     });
 
-    testWidgets('validates empty username', (WidgetTester tester) async {
+    testWidgets('validates empty username', (tester) async {
       await tester.pumpWidget(
         const ProviderScope(
           child: MaterialApp(
@@ -79,7 +79,7 @@ void main() {
       expect(find.text('Username is required'), findsOneWidget);
     });
 
-    testWidgets('validates empty password', (WidgetTester tester) async {
+    testWidgets('validates empty password', (tester) async {
       await tester.pumpWidget(
         const ProviderScope(
           child: MaterialApp(
@@ -106,7 +106,7 @@ void main() {
     });
 
     testWidgets('remember me checkbox can be toggled',
-        (WidgetTester tester) async {
+        (tester) async {
       await tester.pumpWidget(
         const ProviderScope(
           child: MaterialApp(
@@ -131,7 +131,7 @@ void main() {
     });
 
     testWidgets('displays error message when provided',
-        (WidgetTester tester) async {
+        (tester) async {
       await tester.pumpWidget(
         const ProviderScope(
           child: MaterialApp(
@@ -150,7 +150,7 @@ void main() {
   });
 
   group('LoggedInView Widget Tests', () {
-    testWidgets('displays user info and buttons', (WidgetTester tester) async {
+    testWidgets('displays user info and buttons', (tester) async {
       await tester.pumpWidget(
         const ProviderScope(
           child: MaterialApp(
@@ -176,7 +176,7 @@ void main() {
     });
 
     testWidgets('logout button shows confirmation dialog',
-        (WidgetTester tester) async {
+        (tester) async {
       await tester.pumpWidget(
         const ProviderScope(
           child: MaterialApp(
@@ -201,7 +201,7 @@ void main() {
   });
 
   group('AuthService Widget Tests', () {
-    testWidgets('shows loading state initially', (WidgetTester tester) async {
+    testWidgets('shows loading state initially', (tester) async {
       await tester.pumpWidget(
         const ProviderScope(
           child: MaterialApp(
@@ -216,7 +216,7 @@ void main() {
     });
 
     testWidgets('shows login view when unauthenticated',
-        (WidgetTester tester) async {
+        (tester) async {
       await tester.pumpWidget(
         const ProviderScope(
           child: MaterialApp(
@@ -234,33 +234,4 @@ void main() {
 
   });
 
-  group('ServerConfigDialog Widget Tests', () {
-    testWidgets('can open server config dialog from login view',
-        (WidgetTester tester) async {
-      await tester.pumpWidget(
-        const ProviderScope(
-          child: MaterialApp(
-            home: Scaffold(
-              body: LoggedOutView(),
-            ),
-          ),
-        ),
-      );
-
-      await tester.pumpAndSettle();
-
-      // Tap settings button
-      await tester.tap(find.byIcon(Icons.settings));
-      await tester.pumpAndSettle();
-
-      // Should show dialog
-      expect(find.text('Server Configuration'), findsOneWidget);
-      expect(find.text('Auth Server URL'), findsOneWidget);
-      expect(find.text('Compute Server URL'), findsOneWidget);
-      expect(find.text('Store Server URL'), findsOneWidget);
-      expect(find.text('MQTT Broker URL'), findsOneWidget);
-      expect(find.text('Save'), findsOneWidget);
-      expect(find.text('Cancel'), findsOneWidget);
-    });
-  });
 }

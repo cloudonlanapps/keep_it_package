@@ -19,7 +19,7 @@ class LoggedInView extends ConsumerWidget {
     }
 
     final loginTimeStr = authState.loginTimestamp != null
-        ? '${authState.loginTimestamp!.toString().substring(0, 19)}'
+        ? authState.loginTimestamp!.toString().substring(0, 19)
         : 'Unknown';
 
     return Center(
@@ -128,21 +128,21 @@ class LoggedInView extends ConsumerWidget {
               ],
             ),
           ),
-          if (action != null) action,
+          ?action,
         ],
       ),
     );
   }
 
-  void _showServerConfigDialog(BuildContext context) {
-    showDialog<void>(
+  Future<void> _showServerConfigDialog(BuildContext context) async {
+    await showDialog<void>(
       context: context,
       builder: (context) => const ServerConfigDialog(),
     );
   }
 
-  void _handleLogout(BuildContext context, WidgetRef ref) {
-    showDialog<void>(
+  Future<void> _handleLogout(BuildContext context, WidgetRef ref) async {
+    await showDialog<void>(
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Logout'),

@@ -42,6 +42,10 @@ class TopBar extends ConsumerWidget implements PreferredSizeWidget {
               onPressed: () => PageManager.of(context).openSettings(),
               child: const Icon(LucideIcons.settings, size: 25),
             ),
+            ShadButton.ghost(
+              onPressed: () => PageManager.of(context).openAuthenticator(),
+              child: const Icon(LucideIcons.user, size: 25),
+            ),
           ],
         ),
         if (entityAsync.hasValue && (children?.entities.isNotEmpty ?? false))
