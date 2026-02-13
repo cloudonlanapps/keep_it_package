@@ -1,17 +1,36 @@
 import 'dart:convert';
 
 import 'package:cl_basic_types/cl_basic_types.dart';
+import 'package:cl_server_dart_client/cl_server_dart_client.dart';
+import 'package:collection/collection.dart';
 import 'package:meta/meta.dart';
 
 @immutable
 class CLUrl implements Comparable<CLUrl> {
-  const CLUrl(this.uri, {required this.identity, required this.label});
+  const CLUrl(
+    this.config, {
+    required this.identity,
+    required this.label,
+    this.broadcastStatus,
+    this.broadcastErrors,
+  });
 
   factory CLUrl.fromMap(Map<String, dynamic> map) {
     return CLUrl(
-      Uri.parse(map['uri'] as String),
+      ServerConfig(
+        authUrl: map['authUrl'] as String,
+        storeUrl: map['storeUrl'] as String,
+        computeUrl: map['computeUrl'] as String,
+        mqttUrl: map['mqttUrl'] as String,
+      ),
       identity: map['identity'] != null ? map['identity'] as String : null,
       label: map['label'] != null ? map['label'] as String : null,
+      broadcastStatus: map['broadcastStatus'] != null
+          ? map['broadcastStatus'] as String
+          : null,
+      broadcastErrors: map['broadcastErrors'] != null
+          ? List<String>.from(map['broadcastErrors'] as List)
+          : null,
     );
   }
 
@@ -23,12 +42,40 @@ class CLUrl implements Comparable<CLUrl> {
     required String? identity,
     required String? label,
   }) {
-    return CLUrl(Uri.parse(url), identity: identity, label: label);
+    // For backward compatibility - create ServerConfig with same URL for all services
+    return CLUrl(
+      ServerConfig(
+        authUrl: url,
+        storeUrl: url,
+        computeUrl: url,
+        mqttUrl: 'mqtt://localhost:1883', // Default MQTT URL
+      ),
+      identity: identity,
+      label: label,
+    );
   }
-  final Uri uri;
+
+  final ServerConfig config;
   final String? identity;
   final String? label;
-  String get scheme => uri.scheme;
+  final String? broadcastStatus;
+  final List<String>? broadcastErrors;
+
+  // Computed property: server reports itself as unhealthy
+  bool get hasBroadcastIssues =>
+      broadcastStatus == 'unhealthy' ||
+      (broadcastErrors != null && broadcastErrors!.isNotEmpty);
+
+  // Convenience getters for service URLs
+  String get authUrl => config.authUrl;
+  String get storeUrl => config.storeUrl;
+  String get computeUrl => config.computeUrl;
+  String get mqttUrl => config.mqttUrl;
+
+  // Backward compatibility - return store URL as Uri
+  Uri get uri => Uri.parse(config.storeUrl);
+  String get scheme => Uri.parse(config.storeUrl).scheme;
+
   String get name =>
       identity?.capitalizeFirstLetter() ??
       (uri.host.isNotEmpty ? uri.host : uri.path);
@@ -36,34 +83,57 @@ class CLUrl implements Comparable<CLUrl> {
   @override
   bool operator ==(covariant CLUrl other) {
     if (identical(this, other)) return true;
+    final listEquals = const DeepCollectionEquality().equals;
 
-    return other.uri == uri && other.identity == identity;
+    return other.config == config &&
+        other.identity == identity &&
+        other.broadcastStatus == broadcastStatus &&
+        listEquals(other.broadcastErrors, broadcastErrors);
   }
 
   @override
-  int get hashCode => uri.hashCode ^ identity.hashCode;
+  int get hashCode {
+    return config.hashCode ^
+        identity.hashCode ^
+        broadcastStatus.hashCode ^
+        broadcastErrors.hashCode;
+  }
 
   @override
   String toString() =>
-      'StoreURL(uri: $uri, identity: $identity, label: $label)';
+      'CLUrl(config: $config, identity: $identity, label: $label, '
+      'broadcastStatus: $broadcastStatus, broadcastErrors: $broadcastErrors)';
 
   CLUrl copyWith({
-    Uri? uri,
+    ServerConfig? config,
     ValueGetter<String?>? identity,
     ValueGetter<String?>? label,
+    ValueGetter<String?>? broadcastStatus,
+    ValueGetter<List<String>?>? broadcastErrors,
   }) {
     return CLUrl(
-      uri ?? this.uri,
+      config ?? this.config,
       identity: identity != null ? identity.call() : this.identity,
       label: label != null ? label.call() : this.label,
+      broadcastStatus: broadcastStatus != null
+          ? broadcastStatus.call()
+          : this.broadcastStatus,
+      broadcastErrors: broadcastErrors != null
+          ? broadcastErrors.call()
+          : this.broadcastErrors,
     );
   }
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
-      'uri': '$uri',
+      'authUrl': config.authUrl,
+      'storeUrl': config.storeUrl,
+      'computeUrl': config.computeUrl,
+      'mqttUrl': config.mqttUrl,
       'identity': identity,
       'label': label,
+      'broadcastStatus': broadcastStatus,
+      'broadcastErrors': broadcastErrors,
     };
   }
 
@@ -90,5 +160,4 @@ class CLUrl implements Comparable<CLUrl> {
   bool isType(String type) => identity != null && identity!.startsWith(type);
 
   bool get isRepoServer => isType('repo.');
-  bool get isAIServer => isType('ai.');
 }

@@ -10,6 +10,16 @@ class CLServer with CLLogger {
   final bool connected;
   final http.Client? client;
 
+  // Convenience getters for service URLs
+  String get authUrl => storeURL.authUrl;
+  String get computeUrl => storeURL.computeUrl;
+  String get mqttUrl => storeURL.mqttUrl;
+
+  // Expose broadcast health status
+  String? get broadcastStatus => storeURL.broadcastStatus;
+  List<String>? get broadcastErrors => storeURL.broadcastErrors;
+  bool get hasBroadcastIssues => storeURL.hasBroadcastIssues;
+
   CLServer copyWith({
     CLUrl? storeURL,
     bool? connected,

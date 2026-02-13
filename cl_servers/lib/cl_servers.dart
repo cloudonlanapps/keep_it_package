@@ -10,6 +10,7 @@ export 'src/models/server_preferences.dart' show ServerPreferences;
 export 'src/providers/active_ai_server.dart' show activeAIServerProvider;
 export 'src/providers/available_servers.dart' show availableServersProvider;
 export 'src/providers/network_scanner.dart' show networkScannerProvider;
+export 'src/providers/server_health_check.dart' show serverHealthCheckProvider;
 export 'src/providers/server_preference.dart' show serverPreferenceProvider;
 export 'src/providers/server_provider.dart' show serverProvider;
 export 'src/providers/socket_connection.dart'

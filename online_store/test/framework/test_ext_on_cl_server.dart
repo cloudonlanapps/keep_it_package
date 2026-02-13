@@ -13,7 +13,7 @@ extension TestExtOnCLServer on CLServer {
     // const serverAddr = 'http://192.168.0.225:5000'; RaspPi
     const serverAddr = 'http://127.0.0.1:5001'; //Mac
     try {
-      final url = CLUrl(Uri.parse(serverAddr), identity: null, label: null);
+      final url = CLUrl.fromString(serverAddr, identity: null, label: null);
 
       final server = CLServer(storeURL: url, connected: true);
       if (!server.connected) {
@@ -35,12 +35,13 @@ extension TestExtOnCLServer on CLServer {
     int? Function()? parentId,
   }) async {
     final reply = await upsert(
-        id: id,
-        fileName: fileName,
-        isCollection: isCollection,
-        label: label,
-        description: description,
-        parentId: parentId);
+      id: id,
+      fileName: fileName,
+      isCollection: isCollection,
+      label: label,
+      description: description,
+      parentId: parentId,
+    );
     final reference = await reply.when(
       validResponse: (result) async {
         if (result.id != null) {
@@ -65,12 +66,13 @@ extension TestExtOnCLServer on CLServer {
     int? Function()? parentId,
   }) async {
     final reply = await upsert(
-        id: id,
-        fileName: fileName,
-        isCollection: isCollection,
-        label: label,
-        description: description,
-        parentId: parentId);
+      id: id,
+      fileName: fileName,
+      isCollection: isCollection,
+      label: label,
+      description: description,
+      parentId: parentId,
+    );
     final reference = await reply.when<Map<String, dynamic>>(
       validResponse: (result) async {
         if (result.id != null) {
@@ -100,8 +102,10 @@ extension TestExtOnCLServer on CLServer {
       final prefix = 'id: $id, ';
       await (await toBin(id)).when(
         validResponse: (success) async {
-          warnIfFailed('$prefix toBin is not returning True',
-              condition: success);
+          warnIfFailed(
+            '$prefix toBin is not returning True',
+            condition: success,
+          );
         },
         errorResponse: (error, {st}) async {
           warn('$prefix toBin failed $error');
@@ -109,8 +113,10 @@ extension TestExtOnCLServer on CLServer {
       );
       await (await deletePermanent(id)).when(
         validResponse: (success) async {
-          warnIfFailed('$prefix deletePermanent is not returning True',
-              condition: success);
+          warnIfFailed(
+            '$prefix deletePermanent is not returning True',
+            condition: success,
+          );
         },
         errorResponse: (error, {st}) async {
           print('$prefix deletePermanent failed $error');
@@ -120,14 +126,17 @@ extension TestExtOnCLServer on CLServer {
     // Confirm if they are really deleted
     for (final id in ids) {
       final prefix = 'id: $id, ';
-      final item = await (await getById(id)).when(validResponse: (data) async {
-        return data;
-      }, errorResponse: (e, {st}) async {
-        warnIfFailed(
-          'must get MissingMediaError error',
-          condition: e['type'] == 'MissingMediaError',
-        );
-      });
+      final item = await (await getById(id)).when(
+        validResponse: (data) async {
+          return data;
+        },
+        errorResponse: (e, {st}) async {
+          warnIfFailed(
+            'must get MissingMediaError error',
+            condition: e['type'] == 'MissingMediaError',
+          );
+        },
+      );
       warnIfFailed('$prefix not deleted properly', condition: item == null);
       //print('$prefix test artifacts cleaned');
     }

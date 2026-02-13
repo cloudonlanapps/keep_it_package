@@ -1,8 +1,9 @@
 import 'dart:async';
-import 'dart:typed_data';
 
 import 'package:cl_basic_types/cl_basic_types.dart';
+import 'package:cl_server_dart_client/cl_server_dart_client.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nsd/nsd.dart';
 
@@ -87,30 +88,114 @@ class NetworkScannerNotifier extends StateNotifier<NetworkScanner>
 
   Future<void> listener() async {
     final servers = <CLUrl>{};
-    for (final e in discovery?.services ?? <Service>[]) {
-      final identity = String.fromCharCodes(
-        Uint8List.fromList(e.txt?['identifier'] ?? []),
-      );
 
-      if (identity.endsWith('cloudonlanapps')) {
-        servers.add(
-          CLUrl(
-            Uri.parse('http://${e.host}:${e.port}'),
-            identity: identity,
-            label: e.name,
-          ),
-        );
+    // Parse all discovered services (no health checks here)
+    for (final service in discovery?.services ?? <Service>[]) {
+      final server = _parseService(service);
+      if (server != null) {
+        servers.add(server);
       }
     }
 
+    // Update state with all discovered servers (healthy or not)
     if (servers.isNotEmpty) {
       if (state.servers.isDifferent(servers)) {
-        log('NSD: Found ${servers.length} server(s) in the network. ');
+        log('NSD: Found ${servers.length} server(s) in the network.');
         state = state.copyWith(servers: servers);
       }
     } else {
-      log('NSD: No server in the network. ');
+      log('NSD: No servers in the network.');
       state = state.copyWith(servers: {});
+    }
+  }
+
+  // Exposed for testing
+  @visibleForTesting
+  CLUrl? parseServiceForTest(Service service) => _parseService(service);
+
+  CLUrl? _parseService(Service service) {
+    try {
+      // Extract fields - Service URLs (required)
+      // Note: keys in TXT record are case insensitive in some implementations,
+      // but we expect lowercase here as per our server implementation
+      final authUrlBytes = service.txt?['auth_url'];
+      final storeUrlBytes = service.txt?['store_url'];
+      final computeUrlBytes = service.txt?['compute_url'];
+      final mqttUrlBytes = service.txt?['mqtt_url'];
+
+      // Validate all required fields exist
+      if (authUrlBytes == null ||
+          storeUrlBytes == null ||
+          computeUrlBytes == null ||
+          mqttUrlBytes == null) {
+        log('Service ${service.name} missing required URL fields');
+        return null;
+      }
+
+      // Convert bytes to strings
+      final authUrl = String.fromCharCodes(Uint8List.fromList(authUrlBytes));
+      final storeUrl = String.fromCharCodes(Uint8List.fromList(storeUrlBytes));
+      final computeUrl = String.fromCharCodes(
+        Uint8List.fromList(computeUrlBytes),
+      );
+      final mqttUrl = String.fromCharCodes(Uint8List.fromList(mqttUrlBytes));
+
+      // Extract health status fields (optional)
+      final statusBytes = service.txt?['status'];
+      final broadcastStatus = statusBytes != null
+          ? String.fromCharCodes(Uint8List.fromList(statusBytes))
+          : null;
+
+      final errorBytes = service.txt?['error'];
+      final broadcastErrors = errorBytes != null
+          ? String.fromCharCodes(Uint8List.fromList(errorBytes)).split(',')
+          : null;
+
+      // Extract identity if present (optional)
+      final identityBytes = service.txt?['identifier'];
+      final identity = identityBytes != null
+          ? String.fromCharCodes(Uint8List.fromList(identityBytes))
+          : (service.name ?? '');
+
+      // Validate identity if present
+      // Note: checking 'repo.' prefix is done by the consumer (isRepoServer),
+      // here we just ensure it's a valid Cloud on LAN service
+      if (!identity.endsWith('cloudonlanapps')) {
+        log('Service ${service.name} has invalid identity: $identity');
+        return null;
+      }
+
+      // Log broadcast health status if present
+      if (broadcastStatus != null || broadcastErrors != null) {
+        log(
+          'Service ${service.name} broadcast health - '
+          'status: $broadcastStatus, errors: $broadcastErrors',
+        );
+      }
+
+      // Create ServerConfig
+      final config = ServerConfig(
+        authUrl: authUrl,
+        storeUrl: storeUrl,
+        computeUrl: computeUrl,
+        mqttUrl: mqttUrl,
+      );
+
+      // Create CLUrl with ServerConfig and broadcast health status
+      return CLUrl(
+        config,
+        identity: identity,
+        label: service.name,
+        broadcastStatus: broadcastStatus,
+        broadcastErrors: broadcastErrors,
+      );
+    } catch (e, stackTrace) {
+      log(
+        'Error parsing service ${service.name}: $e',
+        error: e,
+        stackTrace: stackTrace,
+      );
+      return null;
     }
   }
 
@@ -136,7 +221,7 @@ class NetworkScannerNotifier extends StateNotifier<NetworkScanner>
 
 final networkScannerProvider =
     StateNotifierProvider<NetworkScannerNotifier, NetworkScanner>((ref) {
-      final notifier = NetworkScannerNotifier(serviceName: '_colan._tcp');
+      final notifier = NetworkScannerNotifier(serviceName: '_http._tcp');
       ref.onDispose(notifier.dispose);
 
       return notifier;
