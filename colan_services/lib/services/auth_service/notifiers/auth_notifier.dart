@@ -1,13 +1,14 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:cl_basic_types/cl_basic_types.dart';
 import 'package:cl_server_dart_client/cl_server_dart_client.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../../../providers/auth_provider.dart';
 import '../models/auth_state.dart';
 
+/// Storage helper for persisting user credentials.
 /// Storage helper for persisting user credentials.
 class _CredentialStorage {
   static const _keyUsername = 'auth_username';
@@ -15,24 +16,28 @@ class _CredentialStorage {
   static const _keyRemember = 'auth_remember_me';
 
   /// Save credentials to SharedPreferences with basic encoding.
-  static Future<void> save(String username, String password) async {
+  static Future<void> save(
+    String username,
+    String password, {
+    required String keySuffix,
+  }) async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(_keyUsername, username);
+    await prefs.setString('$_keyUsername:$keySuffix', username);
     await prefs.setString(
-      _keyPassword,
+      '$_keyPassword:$keySuffix',
       base64Encode(utf8.encode(password)),
     );
-    await prefs.setBool(_keyRemember, true);
+    await prefs.setBool('$_keyRemember:$keySuffix', true);
   }
 
   /// Load saved credentials from SharedPreferences.
   /// Returns null if no credentials or user didn't opt for remember me.
-  static Future<(String, String)?> load() async {
+  static Future<(String, String)?> load({required String keySuffix}) async {
     final prefs = await SharedPreferences.getInstance();
-    if (prefs.getBool(_keyRemember) != true) return null;
+    if (prefs.getBool('$_keyRemember:$keySuffix') != true) return null;
 
-    final username = prefs.getString(_keyUsername);
-    final passwordEncoded = prefs.getString(_keyPassword);
+    final username = prefs.getString('$_keyUsername:$keySuffix');
+    final passwordEncoded = prefs.getString('$_keyPassword:$keySuffix');
     if (username == null || passwordEncoded == null) return null;
 
     final password = utf8.decode(base64Decode(passwordEncoded));
@@ -40,28 +45,27 @@ class _CredentialStorage {
   }
 
   /// Clear saved credentials from SharedPreferences.
-  static Future<void> clear() async {
+  static Future<void> clear({required String keySuffix}) async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.remove(_keyUsername);
-    await prefs.remove(_keyPassword);
-    await prefs.remove(_keyRemember);
+    await prefs.remove('$_keyUsername:$keySuffix');
+    await prefs.remove('$_keyPassword:$keySuffix');
+    await prefs.remove('$_keyRemember:$keySuffix');
   }
 }
 
 /// Authentication notifier managing login, logout, and token refresh.
-class AuthNotifier extends AsyncNotifier<AuthState> {
+class AuthNotifier extends FamilyAsyncNotifier<AuthState, CLUrl> {
   Timer? _tokenRefreshTimer;
 
+  String get _keySuffix => arg.identity ?? arg.authUrl.hashCode.toString();
+
   @override
-  Future<AuthState> build() async {
+  Future<AuthState> build(CLUrl arg) async {
     // Try auto-login from saved credentials
-    final credentials = await _CredentialStorage.load();
+    final credentials = await _CredentialStorage.load(keySuffix: _keySuffix);
     if (credentials != null) {
       try {
-        final serverPrefs = ref.read(serverPreferencesProvider);
-        final serverConfig = serverPrefs.toServerConfig();
-
-        final sessionManager = SessionManager(serverConfig: serverConfig);
+        final sessionManager = SessionManager(serverConfig: arg.config);
         await sessionManager.login(credentials.$1, credentials.$2);
         final user = await sessionManager.getCurrentUser();
 
@@ -75,7 +79,7 @@ class AuthNotifier extends AsyncNotifier<AuthState> {
         );
       } catch (e) {
         // Auto-login failed, clear credentials and show login screen
-        await _CredentialStorage.clear();
+        await _CredentialStorage.clear(keySuffix: _keySuffix);
       }
     }
 
@@ -91,16 +95,16 @@ class AuthNotifier extends AsyncNotifier<AuthState> {
     state = const AsyncValue.loading();
 
     state = await AsyncValue.guard(() async {
-      // Get server config from provider
-      final serverPrefs = ref.read(serverPreferencesProvider);
-      final serverConfig = serverPrefs.toServerConfig();
-
-      final sessionManager = SessionManager(serverConfig: serverConfig);
+      final sessionManager = SessionManager(serverConfig: arg.config);
       await sessionManager.login(username, password);
       final user = await sessionManager.getCurrentUser();
 
       if (rememberMe) {
-        await _CredentialStorage.save(username, password);
+        await _CredentialStorage.save(
+          username,
+          password,
+          keySuffix: _keySuffix,
+        );
       }
 
       // Start token refresh timer
@@ -124,7 +128,7 @@ class AuthNotifier extends AsyncNotifier<AuthState> {
     state = await AsyncValue.guard(() async {
       await state.value?.sessionManager?.logout();
       if (clearCredentials) {
-        await _CredentialStorage.clear();
+        await _CredentialStorage.clear(keySuffix: _keySuffix);
       }
       return AuthState.initial();
     });

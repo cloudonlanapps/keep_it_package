@@ -1,11 +1,10 @@
-import 'dart:async';
 import 'dart:convert';
 import 'dart:developer' as dev;
 import 'dart:io';
 
+import 'package:cl_basic_types/cl_basic_types.dart';
 import 'package:cl_server_dart_client/cl_server_dart_client.dart';
 import 'package:colan_services/providers/auth_provider.dart';
-import 'package:colan_services/services/auth_service/notifiers/server_preferences_notifier.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:path/path.dart' as p;
@@ -63,15 +62,21 @@ String _loadTestUsername() {
 
 void main() {
   late ServerConfig testServerConfig;
+  late CLUrl testClUrl;
   late String testUsername;
   const testPassword = 'admin';
 
   setUpAll(() {
     testServerConfig = _loadServerConfig();
+    testClUrl = CLUrl(
+      testServerConfig,
+      identity: 'test-server',
+      label: 'Test Server',
+    );
     testUsername = _loadTestUsername();
-    
+
     dev.log('Using server config: ${testServerConfig.authUrl}');
-    
+
     dev.log('Using username: $testUsername');
   });
 
@@ -82,27 +87,12 @@ void main() {
 
   group('AuthNotifier', () {
     test('initial state is unauthenticated', () async {
-      final container = ProviderContainer(
-        overrides: [
-          serverPreferencesProvider.overrideWith(
-            (ref) {
-              final notifier = ServerPreferencesNotifier();
-              unawaited(
-                notifier.updateUrls(
-                  authUrl: testServerConfig.authUrl,
-                  computeUrl: testServerConfig.computeUrl,
-                  storeUrl: testServerConfig.storeUrl,
-                  mqttUrl: testServerConfig.mqttUrl,
-                ),
-              );
-              return notifier;
-            },
-          ),
-        ],
-      );
+      final container = ProviderContainer();
       addTearDown(container.dispose);
 
-      final authState = await container.read(authStateProvider.future);
+      final authState = await container.read(
+        authStateProvider(testClUrl).future,
+      );
 
       expect(authState.isAuthenticated, isFalse);
       expect(authState.sessionManager, isNull);
@@ -110,32 +100,17 @@ void main() {
     });
 
     test('login with valid credentials succeeds', () async {
-      final container = ProviderContainer(
-        overrides: [
-          serverPreferencesProvider.overrideWith(
-            (ref) {
-              final notifier = ServerPreferencesNotifier();
-              unawaited(
-                notifier.updateUrls(
-                  authUrl: testServerConfig.authUrl,
-                  computeUrl: testServerConfig.computeUrl,
-                  storeUrl: testServerConfig.storeUrl,
-                  mqttUrl: testServerConfig.mqttUrl,
-                ),
-              );
-              return notifier;
-            },
-          ),
-        ],
-      );
+      final container = ProviderContainer();
       addTearDown(container.dispose);
 
       // Perform login
       await container
-          .read(authStateProvider.notifier)
+          .read(authStateProvider(testClUrl).notifier)
           .login(testUsername, testPassword, rememberMe: false);
 
-      final authState = await container.read(authStateProvider.future);
+      final authState = await container.read(
+        authStateProvider(testClUrl).future,
+      );
 
       expect(authState.isAuthenticated, isTrue);
       expect(authState.sessionManager, isNotNull);
@@ -144,36 +119,19 @@ void main() {
       expect(authState.loginTimestamp, isNotNull);
 
       // Cleanup
-      await container.read(authStateProvider.notifier).logout();
+      await container.read(authStateProvider(testClUrl).notifier).logout();
     });
 
     test('login with invalid credentials fails', () async {
-      final container = ProviderContainer(
-        overrides: [
-          serverPreferencesProvider.overrideWith(
-            (ref) {
-              final notifier = ServerPreferencesNotifier();
-              unawaited(
-                notifier.updateUrls(
-                  authUrl: testServerConfig.authUrl,
-                  computeUrl: testServerConfig.computeUrl,
-                  storeUrl: testServerConfig.storeUrl,
-                  mqttUrl: testServerConfig.mqttUrl,
-                ),
-              );
-              return notifier;
-            },
-          ),
-        ],
-      );
+      final container = ProviderContainer();
       addTearDown(container.dispose);
 
       // Perform login with invalid credentials
       await container
-          .read(authStateProvider.notifier)
+          .read(authStateProvider(testClUrl).notifier)
           .login('invalid', 'invalid', rememberMe: false);
 
-      final authState = container.read(authStateProvider);
+      final authState = container.read(authStateProvider(testClUrl));
 
       // Should be in error state
       expect(authState.hasError, isTrue);
@@ -181,136 +139,68 @@ void main() {
     });
 
     test('logout clears authentication state', () async {
-      final container = ProviderContainer(
-        overrides: [
-          serverPreferencesProvider.overrideWith(
-            (ref) {
-              final notifier = ServerPreferencesNotifier();
-              unawaited(
-                notifier.updateUrls(
-                  authUrl: testServerConfig.authUrl,
-                  computeUrl: testServerConfig.computeUrl,
-                  storeUrl: testServerConfig.storeUrl,
-                  mqttUrl: testServerConfig.mqttUrl,
-                ),
-              );
-              return notifier;
-            },
-          ),
-        ],
-      );
+      final container = ProviderContainer();
       addTearDown(container.dispose);
 
       // Login first
       await container
-          .read(authStateProvider.notifier)
+          .read(authStateProvider(testClUrl).notifier)
           .login(testUsername, testPassword, rememberMe: false);
 
-      var authState = await container.read(authStateProvider.future);
+      var authState = await container.read(authStateProvider(testClUrl).future);
       expect(authState.isAuthenticated, isTrue);
 
       // Logout
-      await container.read(authStateProvider.notifier).logout();
+      await container.read(authStateProvider(testClUrl).notifier).logout();
 
-      authState = await container.read(authStateProvider.future);
+      authState = await container.read(authStateProvider(testClUrl).future);
       expect(authState.isAuthenticated, isFalse);
       expect(authState.sessionManager, isNull);
       expect(authState.currentUser, isNull);
     });
 
     test('remember me saves credentials', () async {
-      final container = ProviderContainer(
-        overrides: [
-          serverPreferencesProvider.overrideWith(
-            (ref) {
-              final notifier = ServerPreferencesNotifier();
-              unawaited(
-                notifier.updateUrls(
-                  authUrl: testServerConfig.authUrl,
-                  computeUrl: testServerConfig.computeUrl,
-                  storeUrl: testServerConfig.storeUrl,
-                  mqttUrl: testServerConfig.mqttUrl,
-                ),
-              );
-              return notifier;
-            },
-          ),
-        ],
-      );
-      addTearDown(container.dispose);
-
-      // Login with remember me
-      await container
-          .read(authStateProvider.notifier)
-          .login(testUsername, testPassword, rememberMe: true);
-
-      // Check credentials are saved
-      final prefs = await SharedPreferences.getInstance();
-      expect(prefs.getString('auth_username'), equals(testUsername));
-      expect(prefs.getString('auth_password_encoded'), isNotNull);
-      expect(prefs.getBool('auth_remember_me'), isTrue);
-
-      // Cleanup
-      await container
-          .read(authStateProvider.notifier)
-          .logout();
-    });
-
-    test('logout with clearCredentials removes saved credentials', () async {
-      final container = ProviderContainer(
-        overrides: [
-          serverPreferencesProvider.overrideWith(
-            (ref) {
-              final notifier = ServerPreferencesNotifier();
-              unawaited(
-                notifier.updateUrls(
-                  authUrl: testServerConfig.authUrl,
-                  computeUrl: testServerConfig.computeUrl,
-                  storeUrl: testServerConfig.storeUrl,
-                  mqttUrl: testServerConfig.mqttUrl,
-                ),
-              );
-              return notifier;
-            },
-          ),
-        ],
-      );
-      addTearDown(container.dispose);
-
-      // Login with remember me
-      await container
-          .read(authStateProvider.notifier)
-          .login(testUsername, testPassword, rememberMe: true);
-
-      var prefs = await SharedPreferences.getInstance();
-      expect(prefs.getBool('auth_remember_me'), isTrue);
-
-      // Logout and clear credentials
-      await container
-          .read(authStateProvider.notifier)
-          .logout();
-
-      prefs = await SharedPreferences.getInstance();
-      expect(prefs.getString('auth_username'), isNull);
-      expect(prefs.getString('auth_password_encoded'), isNull);
-      expect(prefs.getBool('auth_remember_me'), isNull);
-    });
-  });
-
-  group('ServerPreferencesNotifier', () {
-    test('initial state loads from config file', () async {
       final container = ProviderContainer();
       addTearDown(container.dispose);
 
-      await Future<void>.delayed(const Duration(milliseconds: 100));
+      // Login with remember me
+      await container
+          .read(authStateProvider(testClUrl).notifier)
+          .login(testUsername, testPassword, rememberMe: true);
 
-      final prefs = container.read(serverPreferencesProvider);
+      // Check credentials are saved with keySuffix
+      final keySuffix =
+          testClUrl.identity ?? testClUrl.authUrl.hashCode.toString();
+      final prefs = await SharedPreferences.getInstance();
+      expect(prefs.getString('auth_username:$keySuffix'), equals(testUsername));
+      expect(prefs.getString('auth_password_encoded:$keySuffix'), isNotNull);
+      expect(prefs.getBool('auth_remember_me:$keySuffix'), isTrue);
 
-      // Should have loaded from ~/.cl_client_config.json
-      expect(prefs.authUrl, isNotEmpty);
-      expect(prefs.computeUrl, isNotEmpty);
-      expect(prefs.storeUrl, isNotEmpty);
-      expect(prefs.mqttUrl, isNotEmpty);
+      // Cleanup
+      await container.read(authStateProvider(testClUrl).notifier).logout();
+    });
+
+    test('logout with clearCredentials removes saved credentials', () async {
+      final container = ProviderContainer();
+      addTearDown(container.dispose);
+
+      // Login with remember me
+      await container
+          .read(authStateProvider(testClUrl).notifier)
+          .login(testUsername, testPassword, rememberMe: true);
+
+      final keySuffix =
+          testClUrl.identity ?? testClUrl.authUrl.hashCode.toString();
+      var prefs = await SharedPreferences.getInstance();
+      expect(prefs.getBool('auth_remember_me:$keySuffix'), isTrue);
+
+      // Logout and clear credentials
+      await container.read(authStateProvider(testClUrl).notifier).logout();
+
+      prefs = await SharedPreferences.getInstance();
+      expect(prefs.getString('auth_username:$keySuffix'), isNull);
+      expect(prefs.getString('auth_password_encoded:$keySuffix'), isNull);
+      expect(prefs.getBool('auth_remember_me:$keySuffix'), isNull);
     });
   });
 }

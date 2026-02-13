@@ -1,20 +1,24 @@
 import 'dart:async';
 
+import 'package:cl_basic_types/cl_basic_types.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../providers/auth_provider.dart';
 import '../../basic_page_service/widgets/page_manager.dart';
-import 'server_config_dialog.dart';
 
 /// View displayed when user is logged in.
 class LoggedInView extends ConsumerWidget {
-  const LoggedInView({super.key});
+  const LoggedInView({
+    required this.clUrl,
+    super.key,
+  });
+
+  final CLUrl clUrl;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final authState = ref.watch(authStateProvider).value;
-    final serverPrefs = ref.watch(serverPreferencesProvider);
+    final authState = ref.watch(authStateProvider(clUrl)).value;
 
     if (authState == null || !authState.isAuthenticated) {
       return const Center(child: CircularProgressIndicator());
@@ -63,12 +67,7 @@ class LoggedInView extends ConsumerWidget {
                 context,
                 icon: Icons.dns,
                 label: 'Auth Server',
-                value: serverPrefs.authUrl,
-                action: IconButton(
-                  icon: const Icon(Icons.settings, size: 18),
-                  onPressed: () => _showServerConfigDialog(context),
-                  tooltip: 'Edit Server URLs',
-                ),
+                value: clUrl.authUrl,
               ),
               const SizedBox(height: 32),
               ElevatedButton.icon(
@@ -130,16 +129,9 @@ class LoggedInView extends ConsumerWidget {
               ],
             ),
           ),
-          ?action,
+          if (action != null) action,
         ],
       ),
-    );
-  }
-
-  Future<void> _showServerConfigDialog(BuildContext context) async {
-    await showDialog<void>(
-      context: context,
-      builder: (context) => const ServerConfigDialog(),
     );
   }
 
@@ -157,7 +149,7 @@ class LoggedInView extends ConsumerWidget {
           ElevatedButton(
             onPressed: () {
               Navigator.of(context).pop();
-              unawaited(ref.read(authStateProvider.notifier).logout());
+              unawaited(ref.read(authStateProvider(clUrl).notifier).logout());
             },
             child: const Text('Logout'),
           ),
