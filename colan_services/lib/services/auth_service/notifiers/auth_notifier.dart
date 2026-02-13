@@ -85,9 +85,9 @@ class AuthNotifier extends AsyncNotifier<AuthState> {
   /// Login with username and password.
   Future<void> login(
     String username,
-    String password,
-    bool rememberMe,
-  ) async {
+    String password, {
+    required bool rememberMe,
+  }) async {
     state = const AsyncValue.loading();
 
     state = await AsyncValue.guard(() async {

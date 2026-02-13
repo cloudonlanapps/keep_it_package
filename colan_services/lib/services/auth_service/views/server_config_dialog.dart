@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -39,12 +41,14 @@ class _ServerConfigDialogState extends ConsumerState<ServerConfigDialog> {
   }
 
   void _save() {
-    ref.read(serverPreferencesProvider.notifier).updateUrls(
-          authUrl: _authUrlController.text.trim(),
-          computeUrl: _computeUrlController.text.trim(),
-          storeUrl: _storeUrlController.text.trim(),
-          mqttUrl: _mqttUrlController.text.trim(),
-        );
+    unawaited(
+      ref.read(serverPreferencesProvider.notifier).updateUrls(
+            authUrl: _authUrlController.text.trim(),
+            computeUrl: _computeUrlController.text.trim(),
+            storeUrl: _storeUrlController.text.trim(),
+            mqttUrl: _mqttUrlController.text.trim(),
+          ),
+    );
 
     Navigator.of(context).pop();
   }

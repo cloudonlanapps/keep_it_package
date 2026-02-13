@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer' as dev;
 import 'dart:io';
 
 import 'package:cl_server_dart_client/cl_server_dart_client.dart';
@@ -63,8 +64,10 @@ void main() {
   setUpAll(() {
     testServerConfig = _loadServerConfig();
     testUsername = _loadTestUsername();
-    print('Using server config: ${testServerConfig.authUrl}');
-    print('Using username: $testUsername');
+    
+    dev.log('Using server config: ${testServerConfig.authUrl}');
+   
+    dev.log('Using username: $testUsername');
   });
 
   group('SessionManager Integration', () {

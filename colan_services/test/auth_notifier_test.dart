@@ -1,10 +1,10 @@
+import 'dart:async';
 import 'dart:convert';
+import 'dart:developer' as dev;
 import 'dart:io';
 
 import 'package:cl_server_dart_client/cl_server_dart_client.dart';
 import 'package:colan_services/providers/auth_provider.dart';
-import 'package:colan_services/services/auth_service/models/auth_state.dart';
-import 'package:colan_services/services/auth_service/models/server_preferences.dart';
 import 'package:colan_services/services/auth_service/notifiers/server_preferences_notifier.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -69,8 +69,10 @@ void main() {
   setUpAll(() {
     testServerConfig = _loadServerConfig();
     testUsername = _loadTestUsername();
-    print('Using server config: ${testServerConfig.authUrl}');
-    print('Using username: $testUsername');
+    
+    dev.log('Using server config: ${testServerConfig.authUrl}');
+    
+    dev.log('Using username: $testUsername');
   });
 
   setUp(() async {
@@ -83,13 +85,18 @@ void main() {
       final container = ProviderContainer(
         overrides: [
           serverPreferencesProvider.overrideWith(
-            (ref) => ServerPreferencesNotifier()
-              ..updateUrls(
-                authUrl: testServerConfig.authUrl,
-                computeUrl: testServerConfig.computeUrl,
-                storeUrl: testServerConfig.storeUrl,
-                mqttUrl: testServerConfig.mqttUrl,
-              ),
+            (ref) {
+              final notifier = ServerPreferencesNotifier();
+              unawaited(
+                notifier.updateUrls(
+                  authUrl: testServerConfig.authUrl,
+                  computeUrl: testServerConfig.computeUrl,
+                  storeUrl: testServerConfig.storeUrl,
+                  mqttUrl: testServerConfig.mqttUrl,
+                ),
+              );
+              return notifier;
+            },
           ),
         ],
       );
@@ -106,13 +113,18 @@ void main() {
       final container = ProviderContainer(
         overrides: [
           serverPreferencesProvider.overrideWith(
-            (ref) => ServerPreferencesNotifier()
-              ..updateUrls(
-                authUrl: testServerConfig.authUrl,
-                computeUrl: testServerConfig.computeUrl,
-                storeUrl: testServerConfig.storeUrl,
-                mqttUrl: testServerConfig.mqttUrl,
-              ),
+            (ref) {
+              final notifier = ServerPreferencesNotifier();
+              unawaited(
+                notifier.updateUrls(
+                  authUrl: testServerConfig.authUrl,
+                  computeUrl: testServerConfig.computeUrl,
+                  storeUrl: testServerConfig.storeUrl,
+                  mqttUrl: testServerConfig.mqttUrl,
+                ),
+              );
+              return notifier;
+            },
           ),
         ],
       );
@@ -121,7 +133,7 @@ void main() {
       // Perform login
       await container
           .read(authStateProvider.notifier)
-          .login(testUsername, testPassword, false);
+          .login(testUsername, testPassword, rememberMe: false);
 
       final authState = await container.read(authStateProvider.future);
 
@@ -139,13 +151,18 @@ void main() {
       final container = ProviderContainer(
         overrides: [
           serverPreferencesProvider.overrideWith(
-            (ref) => ServerPreferencesNotifier()
-              ..updateUrls(
-                authUrl: testServerConfig.authUrl,
-                computeUrl: testServerConfig.computeUrl,
-                storeUrl: testServerConfig.storeUrl,
-                mqttUrl: testServerConfig.mqttUrl,
-              ),
+            (ref) {
+              final notifier = ServerPreferencesNotifier();
+              unawaited(
+                notifier.updateUrls(
+                  authUrl: testServerConfig.authUrl,
+                  computeUrl: testServerConfig.computeUrl,
+                  storeUrl: testServerConfig.storeUrl,
+                  mqttUrl: testServerConfig.mqttUrl,
+                ),
+              );
+              return notifier;
+            },
           ),
         ],
       );
@@ -154,7 +171,7 @@ void main() {
       // Perform login with invalid credentials
       await container
           .read(authStateProvider.notifier)
-          .login('invalid', 'invalid', false);
+          .login('invalid', 'invalid', rememberMe: false);
 
       final authState = container.read(authStateProvider);
 
@@ -167,13 +184,18 @@ void main() {
       final container = ProviderContainer(
         overrides: [
           serverPreferencesProvider.overrideWith(
-            (ref) => ServerPreferencesNotifier()
-              ..updateUrls(
-                authUrl: testServerConfig.authUrl,
-                computeUrl: testServerConfig.computeUrl,
-                storeUrl: testServerConfig.storeUrl,
-                mqttUrl: testServerConfig.mqttUrl,
-              ),
+            (ref) {
+              final notifier = ServerPreferencesNotifier();
+              unawaited(
+                notifier.updateUrls(
+                  authUrl: testServerConfig.authUrl,
+                  computeUrl: testServerConfig.computeUrl,
+                  storeUrl: testServerConfig.storeUrl,
+                  mqttUrl: testServerConfig.mqttUrl,
+                ),
+              );
+              return notifier;
+            },
           ),
         ],
       );
@@ -182,7 +204,7 @@ void main() {
       // Login first
       await container
           .read(authStateProvider.notifier)
-          .login(testUsername, testPassword, false);
+          .login(testUsername, testPassword, rememberMe: false);
 
       var authState = await container.read(authStateProvider.future);
       expect(authState.isAuthenticated, isTrue);
@@ -200,13 +222,18 @@ void main() {
       final container = ProviderContainer(
         overrides: [
           serverPreferencesProvider.overrideWith(
-            (ref) => ServerPreferencesNotifier()
-              ..updateUrls(
-                authUrl: testServerConfig.authUrl,
-                computeUrl: testServerConfig.computeUrl,
-                storeUrl: testServerConfig.storeUrl,
-                mqttUrl: testServerConfig.mqttUrl,
-              ),
+            (ref) {
+              final notifier = ServerPreferencesNotifier();
+              unawaited(
+                notifier.updateUrls(
+                  authUrl: testServerConfig.authUrl,
+                  computeUrl: testServerConfig.computeUrl,
+                  storeUrl: testServerConfig.storeUrl,
+                  mqttUrl: testServerConfig.mqttUrl,
+                ),
+              );
+              return notifier;
+            },
           ),
         ],
       );
@@ -215,7 +242,7 @@ void main() {
       // Login with remember me
       await container
           .read(authStateProvider.notifier)
-          .login(testUsername, testPassword, true);
+          .login(testUsername, testPassword, rememberMe: true);
 
       // Check credentials are saved
       final prefs = await SharedPreferences.getInstance();
@@ -226,20 +253,25 @@ void main() {
       // Cleanup
       await container
           .read(authStateProvider.notifier)
-          .logout(clearCredentials: true);
+          .logout();
     });
 
     test('logout with clearCredentials removes saved credentials', () async {
       final container = ProviderContainer(
         overrides: [
           serverPreferencesProvider.overrideWith(
-            (ref) => ServerPreferencesNotifier()
-              ..updateUrls(
-                authUrl: testServerConfig.authUrl,
-                computeUrl: testServerConfig.computeUrl,
-                storeUrl: testServerConfig.storeUrl,
-                mqttUrl: testServerConfig.mqttUrl,
-              ),
+            (ref) {
+              final notifier = ServerPreferencesNotifier();
+              unawaited(
+                notifier.updateUrls(
+                  authUrl: testServerConfig.authUrl,
+                  computeUrl: testServerConfig.computeUrl,
+                  storeUrl: testServerConfig.storeUrl,
+                  mqttUrl: testServerConfig.mqttUrl,
+                ),
+              );
+              return notifier;
+            },
           ),
         ],
       );
@@ -248,7 +280,7 @@ void main() {
       // Login with remember me
       await container
           .read(authStateProvider.notifier)
-          .login(testUsername, testPassword, true);
+          .login(testUsername, testPassword, rememberMe: true);
 
       var prefs = await SharedPreferences.getInstance();
       expect(prefs.getBool('auth_remember_me'), isTrue);
@@ -256,7 +288,7 @@ void main() {
       // Logout and clear credentials
       await container
           .read(authStateProvider.notifier)
-          .logout(clearCredentials: true);
+          .logout();
 
       prefs = await SharedPreferences.getInstance();
       expect(prefs.getString('auth_username'), isNull);
@@ -270,7 +302,7 @@ void main() {
       final container = ProviderContainer();
       addTearDown(container.dispose);
 
-      await Future.delayed(const Duration(milliseconds: 100));
+      await Future<void>.delayed(const Duration(milliseconds: 100));
 
       final prefs = container.read(serverPreferencesProvider);
 

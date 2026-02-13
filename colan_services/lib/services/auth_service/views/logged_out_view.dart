@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -47,20 +49,22 @@ class _LoggedOutViewState extends ConsumerState<LoggedOutView> {
       await ref.read(authStateProvider.notifier).login(
             _usernameController.text.trim(),
             _passwordController.text,
-            _rememberMe,
+            rememberMe: _rememberMe,
           );
     } catch (e) {
       setState(() {
-        _errorMessage = 'Login failed: ${e.toString()}';
+        _errorMessage = 'Login failed: $e';
         _isLoading = false;
       });
     }
   }
 
   void _showServerConfigDialog() {
-    showDialog<void>(
-      context: context,
-      builder: (context) => const ServerConfigDialog(),
+    unawaited(
+      showDialog<void>(
+        context: context,
+        builder: (context) => const ServerConfigDialog(),
+      ),
     );
   }
 
@@ -163,7 +167,7 @@ class _LoggedOutViewState extends ConsumerState<LoggedOutView> {
                   Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: Colors.red.withOpacity(0.1),
+                      color: Colors.red.withValues(alpha: 0.1),
                       border: Border.all(color: Colors.red),
                       borderRadius: BorderRadius.circular(4),
                     ),

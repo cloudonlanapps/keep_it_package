@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -155,7 +157,7 @@ class LoggedInView extends ConsumerWidget {
           ElevatedButton(
             onPressed: () {
               Navigator.of(context).pop();
-              ref.read(authStateProvider.notifier).logout();
+              unawaited(ref.read(authStateProvider.notifier).logout());
             },
             child: const Text('Logout'),
           ),

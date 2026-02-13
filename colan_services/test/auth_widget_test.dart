@@ -1,6 +1,4 @@
-import 'package:colan_services/providers/auth_provider.dart';
 import 'package:colan_services/services/auth_service/auth_service.dart';
-import 'package:colan_services/services/auth_service/models/auth_state.dart';
 import 'package:colan_services/services/auth_service/views/logged_in_view.dart';
 import 'package:colan_services/services/auth_service/views/logged_out_view.dart';
 import 'package:flutter/material.dart';

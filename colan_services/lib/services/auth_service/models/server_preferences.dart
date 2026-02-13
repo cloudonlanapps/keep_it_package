@@ -22,14 +22,14 @@ class ServerPreferences {
       final homeDir = Platform.environment['HOME'] ??
                       Platform.environment['USERPROFILE'];
       if (homeDir == null) {
-        return _localhostDefaults();
+        return ServerPreferences._localhostDefaults();
       }
 
       final configPath = p.join(homeDir, '.cl_client_config.json');
       final configFile = File(configPath);
 
       if (!configFile.existsSync()) {
-        return _localhostDefaults();
+        return ServerPreferences._localhostDefaults();
       }
 
       final configJson = jsonDecode(configFile.readAsStringSync())
@@ -44,12 +44,12 @@ class ServerPreferences {
       );
     } catch (e) {
       // If loading fails, use localhost defaults
-      return _localhostDefaults();
+      return ServerPreferences._localhostDefaults();
     }
   }
 
   /// Localhost defaults when config file is not available.
-  static ServerPreferences _localhostDefaults() {
+  factory ServerPreferences._localhostDefaults() {
     return const ServerPreferences(
       authUrl: 'http://localhost:8010',
       computeUrl: 'http://localhost:8012',

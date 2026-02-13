@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -37,7 +39,7 @@ class _ServerConfigStorage {
 /// State notifier for managing server configuration preferences.
 class ServerPreferencesNotifier extends StateNotifier<ServerPreferences> {
   ServerPreferencesNotifier() : super(ServerPreferences.defaults()) {
-    _loadFromStorage();
+    unawaited(_loadFromStorage());
   }
 
   /// Load preferences from storage on initialization.
