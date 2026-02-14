@@ -7,17 +7,18 @@ import 'package:meta/meta.dart';
 /// Represents services running on a remote server with multiple service endpoints
 /// (auth, store, compute, mqtt).
 @immutable
+@immutable
 class RemoteServiceLocationConfig extends ServiceLocationConfig {
   const RemoteServiceLocationConfig({
     required this.serverConfig,
-    super.identity,
+    required super.identity,
     super.label,
   });
 
   /// Create from ServerConfig
   factory RemoteServiceLocationConfig.fromServerConfig(
     ServerConfig config, {
-    String? identity,
+    required String identity,
     String? label,
   }) {
     return RemoteServiceLocationConfig(
@@ -36,7 +37,7 @@ class RemoteServiceLocationConfig extends ServiceLocationConfig {
         computeUrl: map['computeUrl'] as String,
         mqttUrl: map['mqttUrl'] as String,
       ),
-      identity: map['identity'] as String?,
+      identity: map['identity'] as String,
       label: map['label'] as String?,
     );
   }
@@ -89,7 +90,7 @@ class RemoteServiceLocationConfig extends ServiceLocationConfig {
       'RemoteServiceLocationConfig(serverConfig: $serverConfig, identity: $identity, label: $label)';
 
   /// Check if this service location matches a specific type by identity prefix
-  bool isType(String type) => identity != null && identity!.startsWith(type);
+  bool isType(String type) => identity.startsWith(type);
 
   /// Check if this is a repository server
   bool get isRepoServer => isType('repo.');

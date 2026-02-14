@@ -5,10 +5,11 @@ import 'package:meta/meta.dart';
 ///
 /// Represents services running on the local filesystem (not a remote server).
 @immutable
+@immutable
 class LocalServiceLocationConfig extends ServiceLocationConfig {
   const LocalServiceLocationConfig({
     required this.storePath,
-    super.identity,
+    required super.identity,
     super.label,
   });
 
@@ -16,7 +17,7 @@ class LocalServiceLocationConfig extends ServiceLocationConfig {
   factory LocalServiceLocationConfig.fromMap(Map<String, dynamic> map) {
     return LocalServiceLocationConfig(
       storePath: map['storePath'] as String,
-      identity: map['identity'] as String?,
+      identity: map['identity'] as String,
       label: map['label'] as String?,
     );
   }

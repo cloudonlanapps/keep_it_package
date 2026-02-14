@@ -6,14 +6,13 @@ import 'package:meta/meta.dart';
 /// A service location represents WHERE services are available (local or remote).
 /// This is separate from the actual store implementation (WHAT stores data).
 @immutable
-abstract class ServiceLocationConfig {
-  const ServiceLocationConfig({
-    this.identity,
-    this.label,
-  });
+@immutable
+abstract class ServiceLocationConfig
+    implements Comparable<ServiceLocationConfig> {
+  const ServiceLocationConfig({required this.identity, this.label});
 
-  /// Optional identity for the service location (e.g., 'repo.identifier.cloudonlanapps')
-  final String? identity;
+  /// Identity for the service location (e.g., 'repo.identifier.cloudonlanapps')
+  final String identity;
 
   /// Optional user-friendly label for the service location
   final String? label;
@@ -22,9 +21,13 @@ abstract class ServiceLocationConfig {
   bool get isLocal;
 
   /// Display name computed from identity or label
-  String get displayName =>
-      identity?.capitalizeFirstLetter() ?? label ?? 'Unknown';
+  String get displayName => label ?? identity.capitalizeFirstLetter();
 
   /// Serialize to map for storage/transmission
   Map<String, dynamic> toMap();
+
+  @override
+  int compareTo(ServiceLocationConfig other) {
+    return identity.compareTo(other.identity);
+  }
 }

@@ -10,12 +10,10 @@ environment:
 dependencies:
   cl_basic_types:
     path: ../cl_basic_types
-  cl_servers:
-    path: ../cl_servers
   cl_server_dart_client:
     path: ../../../sdks/dartsdk
-  
-  meta: ^1.16.0
+  cl_servers:
+    path: ../cl_servers
   collection: ^1.19.0
   http: ^1.2.2
   image: ^4.5.4

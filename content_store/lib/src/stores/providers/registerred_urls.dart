@@ -16,6 +16,7 @@ class RegisteredServiceLocationsNotifier
 
   final defaultStore = const LocalServiceLocationConfig(
     storePath: 'default',
+    identity: 'default',
     label: 'Primary Collection',
   );
 

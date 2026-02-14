@@ -58,7 +58,7 @@ class AuthNotifier
     extends FamilyAsyncNotifier<AuthState, RemoteServiceLocationConfig> {
   Timer? _tokenRefreshTimer;
 
-  String get _keySuffix => arg.identity ?? arg.authUrl.hashCode.toString();
+  String get _keySuffix => arg.identity;
 
   @override
   Future<AuthState> build(RemoteServiceLocationConfig arg) async {

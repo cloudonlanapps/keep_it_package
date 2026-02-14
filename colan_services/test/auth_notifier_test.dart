@@ -147,7 +147,9 @@ void main() {
           .read(authStateProvider(testConfig).notifier)
           .login(testUsername, testPassword, rememberMe: false);
 
-      var authState = await container.read(authStateProvider(testConfig).future);
+      var authState = await container.read(
+        authStateProvider(testConfig).future,
+      );
       expect(authState.isAuthenticated, isTrue);
 
       // Logout
@@ -169,8 +171,7 @@ void main() {
           .login(testUsername, testPassword, rememberMe: true);
 
       // Check credentials are saved with keySuffix
-      final keySuffix =
-          testConfig.identity ?? testConfig.authUrl.hashCode.toString();
+      final keySuffix = testConfig.identity;
       final prefs = await SharedPreferences.getInstance();
       expect(prefs.getString('auth_username:$keySuffix'), equals(testUsername));
       expect(prefs.getString('auth_password_encoded:$keySuffix'), isNotNull);
@@ -189,8 +190,7 @@ void main() {
           .read(authStateProvider(testConfig).notifier)
           .login(testUsername, testPassword, rememberMe: true);
 
-      final keySuffix =
-          testConfig.identity ?? testConfig.authUrl.hashCode.toString();
+      final keySuffix = testConfig.identity;
       var prefs = await SharedPreferences.getInstance();
       expect(prefs.getBool('auth_remember_me:$keySuffix'), isTrue);
 

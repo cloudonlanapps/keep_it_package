@@ -24,6 +24,7 @@ extension TestExtOnCLServer on CLServer {
 
       const config = RemoteServiceLocationConfig(
         serverConfig: serverConfig,
+        identity: 'test_server',
       );
 
       // Create health status
