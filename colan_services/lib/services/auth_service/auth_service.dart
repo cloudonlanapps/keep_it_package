@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../internal/fullscreen_layout.dart';
-import '../../providers/auth_provider.dart';
 import 'views/logged_in_view.dart';
 import 'views/logged_out_view.dart';
 
@@ -59,9 +58,10 @@ class AuthService extends ConsumerWidget {
             );
           }
 
-          final authAsync = ref.watch(authStateProvider(locationConfig));
+          // Use serverProvider with .select() to only watch authentication status
+          final serverAsync = ref.watch(serverProvider(locationConfig));
 
-          return authAsync.when(
+          return serverAsync.when(
             loading: () => const Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -76,8 +76,8 @@ class AuthService extends ConsumerWidget {
               errorMessage: error.toString(),
               config: locationConfig,
             ),
-            data: (authState) {
-              if (authState.isAuthenticated) {
+            data: (server) {
+              if (server.isAuthenticated) {
                 return LoggedInView(config: locationConfig);
               } else {
                 return LoggedOutView(config: locationConfig);

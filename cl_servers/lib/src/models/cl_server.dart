@@ -1,4 +1,5 @@
 import 'package:cl_basic_types/cl_basic_types.dart';
+import 'package:cl_server_dart_client/cl_server_dart_client.dart' as sdk;
 import 'package:flutter/foundation.dart' hide ValueGetter;
 import 'package:http/http.dart' as http;
 
@@ -11,13 +12,26 @@ class CLServer with CLLogger {
     required this.locationConfig,
     required this.healthStatus,
     this.client,
+    this.sessionManager,
+    this.currentUser,
+    this.loginTimestamp,
+    this.storeManager,
   });
 
   final RemoteServiceLocationConfig locationConfig;
   final ServerHealthStatus healthStatus;
   final http.Client? client;
 
+  // Auth state (merged from AuthState)
+  final sdk.SessionManager? sessionManager;
+  final sdk.UserResponse? currentUser;
+  final DateTime? loginTimestamp;
+
+  // Store operations (automatically created when logged in)
+  final sdk.StoreManager? storeManager;
+
   bool get connected => healthStatus.isHealthy;
+  bool get isAuthenticated => sessionManager?.isAuthenticated ?? false;
 
   // Convenience getters for service URLs
   String get authUrl => locationConfig.authUrl;
@@ -34,17 +48,25 @@ class CLServer with CLLogger {
     RemoteServiceLocationConfig? locationConfig,
     ServerHealthStatus? healthStatus,
     ValueGetter<http.Client?>? client,
+    ValueGetter<sdk.SessionManager?>? sessionManager,
+    ValueGetter<sdk.UserResponse?>? currentUser,
+    ValueGetter<DateTime?>? loginTimestamp,
+    ValueGetter<sdk.StoreManager?>? storeManager,
   }) {
     return CLServer(
       locationConfig: locationConfig ?? this.locationConfig,
       healthStatus: healthStatus ?? this.healthStatus,
       client: client != null ? client.call() : this.client,
+      sessionManager: sessionManager != null ? sessionManager.call() : this.sessionManager,
+      currentUser: currentUser != null ? currentUser.call() : this.currentUser,
+      loginTimestamp: loginTimestamp != null ? loginTimestamp.call() : this.loginTimestamp,
+      storeManager: storeManager != null ? storeManager.call() : this.storeManager,
     );
   }
 
   @override
   String toString() {
-    return 'CLServer(locationConfig: $locationConfig, healthStatus: $healthStatus, client: $client)';
+    return 'CLServer(locationConfig: $locationConfig, healthStatus: $healthStatus, client: $client, isAuthenticated: $isAuthenticated, currentUser: $currentUser)';
   }
 
   @override
@@ -53,12 +75,22 @@ class CLServer with CLLogger {
 
     return other.locationConfig == locationConfig &&
         other.healthStatus == healthStatus &&
-        other.client == client;
+        other.client == client &&
+        other.sessionManager == sessionManager &&
+        other.currentUser == currentUser &&
+        other.loginTimestamp == loginTimestamp &&
+        other.storeManager == storeManager;
   }
 
   @override
   int get hashCode {
-    return locationConfig.hashCode ^ healthStatus.hashCode ^ client.hashCode;
+    return locationConfig.hashCode ^
+        healthStatus.hashCode ^
+        client.hashCode ^
+        sessionManager.hashCode ^
+        currentUser.hashCode ^
+        loginTimestamp.hashCode ^
+        storeManager.hashCode;
   }
 
   Uri getEndpointURI(String endPoint) {

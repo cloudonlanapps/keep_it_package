@@ -4,7 +4,6 @@ import 'package:cl_servers/cl_servers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../providers/auth_provider.dart';
 import '../../basic_page_service/widgets/page_manager.dart';
 
 /// View displayed when user is logged in.
@@ -18,14 +17,25 @@ class LoggedInView extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final authState = ref.watch(authStateProvider(config)).value;
+    // Use serverProvider with .select() to only watch auth fields
+    final authInfo = ref.watch(
+      serverProvider(config).select((server) => server.when(
+            data: (s) => (
+              isAuthenticated: s.isAuthenticated,
+              username: s.currentUser?.username,
+              loginTime: s.loginTimestamp,
+            ),
+            loading: () => null,
+            error: (_, __) => null,
+          )),
+    );
 
-    if (authState == null || !authState.isAuthenticated) {
+    if (authInfo == null || !authInfo.isAuthenticated) {
       return const Center(child: CircularProgressIndicator());
     }
 
-    final loginTimeStr = authState.loginTimestamp != null
-        ? authState.loginTimestamp!.toString().substring(0, 19)
+    final loginTimeStr = authInfo.loginTime != null
+        ? authInfo.loginTime!.toString().substring(0, 19)
         : 'Unknown';
 
     return Center(
@@ -53,7 +63,7 @@ class LoggedInView extends ConsumerWidget {
                 context,
                 icon: Icons.person,
                 label: 'Username',
-                value: authState.currentUser?.username ?? 'Unknown',
+                value: authInfo.username ?? 'Unknown',
               ),
               const SizedBox(height: 16),
               _buildInfoCard(
@@ -149,7 +159,7 @@ class LoggedInView extends ConsumerWidget {
           ElevatedButton(
             onPressed: () {
               Navigator.of(context).pop();
-              unawaited(ref.read(authStateProvider(config).notifier).logout());
+              unawaited(ref.read(serverProvider(config).notifier).logout());
             },
             child: const Text('Logout'),
           ),

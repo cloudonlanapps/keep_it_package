@@ -2,8 +2,6 @@ import 'package:cl_servers/cl_servers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../providers/auth_provider.dart';
-
 /// View displayed when user is not logged in.
 class LoggedOutView extends ConsumerStatefulWidget {
   const LoggedOutView({
@@ -57,7 +55,7 @@ class _LoggedOutViewState extends ConsumerState<LoggedOutView> {
 
     try {
       await ref
-          .read(authStateProvider(widget.config!).notifier)
+          .read(serverProvider(widget.config!).notifier)
           .login(
             _usernameController.text.trim(),
             _passwordController.text,

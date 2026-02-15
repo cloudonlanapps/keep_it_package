@@ -23,6 +23,7 @@ dependencies:
   nsd: ^4.0.3
   path: ^1.9.1
   shadcn_ui: ^0.38.0
+  shared_preferences: ^2.3.5
   socket_io_client: ^3.1.2
 
 dev_dependencies:
