@@ -1,9 +1,10 @@
 import 'dart:io';
 
-import '../utils/icons.dart';
-
 import 'package:flutter/material.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
 
+import '../utils/ffmpeg.dart';
+import '../utils/icons.dart';
 import 'widgets/video_trimmer.dart';
 
 class VideoEditor extends StatefulWidget {
@@ -84,7 +85,7 @@ class _AudioMuterState extends State<AudioMuter> {
   @override
   Widget build(BuildContext context) {
     if (isMuting) {}
-    return TextButton(
+    return ShadButton.ghost(
       onPressed: isMuting
           ? null
           : () async {
@@ -97,27 +98,44 @@ class _AudioMuterState extends State<AudioMuter> {
                 });
 
                 if (outFile == null) {
-                  throw UnimplementedError('ffmpeg removed from project');
-                  /* final videoWithoutAudio = await widget.onCreateNewFile();
-                  await File(videoWithoutAudio).deleteIfExists();
-                  final session = await FFmpegKit.execute(
-                    '-i ${widget.inFile} '
-                    '-vcodec copy -an '
-                    '-f mp4 $videoWithoutAudio',
+                  if (!Platform.isMacOS) {
+                    if (mounted) {
+                      ShadToaster.of(context).show(
+                        const ShadToast(
+                          description: Text(
+                            'Muting is currently only supported on macOS.',
+                          ),
+                        ),
+                      );
+                    }
+                    setState(() {
+                      isMuting = false;
+                    });
+                    return;
+                  }
+
+                  final newFile = await widget.onCreateNewFile();
+                  final success = await NativeFFmpeg.muteVideo(
+                    inputPath: widget.inFile,
+                    outputPath: newFile,
                   );
-                  final returnCode = await session.getReturnCode();
-                  if (ReturnCode.isSuccess(returnCode)) {
-                    widget.onDone(videoWithoutAudio);
-                  } */
-                  /* {
-                        final output = await session.getOutput();
-                        print(output);
-                        final logs = await session.getLogs();
-                        for (final log in logs) {
-                          print(log.getMessage());
-                        }
-        
-                      } */
+
+                  if (success) {
+                    outFile = newFile;
+                    widget.onDone(newFile);
+                  } else {
+                    if (context.mounted) {
+                      ShadToaster.of(context).show(
+                        const ShadToast(
+                          description: Text(
+                            'Failed to mute video. Ensure FFmpeg is installed.',
+                          ),
+                        ),
+                      );
+                    }
+                  }
+                } else {
+                  widget.onDone(outFile);
                 }
 
                 if (mounted) {
@@ -128,37 +146,18 @@ class _AudioMuterState extends State<AudioMuter> {
               }
             },
       child: isMuting
-          ? const CircularProgressIndicator()
-          : widget.isMuted
-          ? const Icon(
-              EditorIcons.audioMuted,
-              size: 60,
-              color: Colors.white,
+          ? const SizedBox(
+              width: 24,
+              height: 24,
+              child: CircularProgressIndicator(strokeWidth: 2),
             )
-          : const Icon(
-              EditorIcons.audioUnmuted,
-              size: 60,
+          : Icon(
+              widget.isMuted
+                  ? EditorIcons.audioMuted
+                  : EditorIcons.audioUnmuted,
+              size: 24,
               color: Colors.white,
             ),
     );
   }
 }
-
-/*
-() async {
-        if (useVideoWithoutAudio) {
-          if (audioRemovedFile == null) {
-            final videoWithoutAudio = await TheStore.of(context)
-                .createTempFile(ext: extension(widget.file.path));
-            final session = await FFmpegKit.execute(
-              '-i ${widget.file.path} -vcodec copy -an $videoWithoutAudio',
-            );
-            final returnCode = await session.getReturnCode();
-            if (ReturnCode.isSuccess(returnCode)) {
-              useVideoWithoutAudio = true;
-            }
-          }
-        } else {
-          useVideoWithoutAudio = false;
-        }
-      }*/

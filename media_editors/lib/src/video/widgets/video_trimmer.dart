@@ -2,10 +2,12 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:media_editors/src/editor_finalizer.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:video_trimmer/video_trimmer.dart';
 
+import '../../editor_finalizer.dart';
 import '../../utils/icons.dart';
+import '../../widgets/media_editor_action_bar.dart';
 
 class VideoTrimmerView extends StatefulWidget {
   const VideoTrimmerView(
@@ -158,55 +160,36 @@ class _VideoTrimmerViewState extends State<VideoTrimmerView> {
               ),
             ),
           ),
-          Row(
-            children: [
-              Expanded(
-                child: TextButton(
-                  child: _isPlaying
-                      ? const Icon(
-                          EditorIcons.playerPause,
-                          size: 80,
-                          color: Colors.white,
-                        )
-                      : const Icon(
-                          EditorIcons.playerPlay,
-                          size: 80,
-                          color: Colors.white,
-                        ),
-                  onPressed: () async {
-                    final playbackState = await _trimmer.videoPlaybackControl(
-                      startValue: _startValue ?? 0,
-                      endValue: _endValue ?? 0,
-                    );
-                    setState(() => _isPlaying = playbackState);
-                  },
-                ),
-              ),
-              Container(
-                child: _isPlaying ? null : widget.audioMuter,
-              ),
-              Expanded(
-                child: EditorFinalizer(
-                  canDuplicateMedia: widget.canDuplicateMedia,
-                  hasEditAction: hasEditAction,
-                  onSave: _saveVideo,
-                  onDiscard: ({required done}) async {
-                    if (done) {
-                      await widget.onCancel();
-                    } else {
-                      widget.onReset();
-                    }
-                  },
-                  child: Icon(
-                    hasEditAction
-                        ? EditorIcons.doneEditMedia
-                        : EditorIcons.closeFullscreen,
-                    size: 60,
-                    color: hasEditAction ? Colors.red : Colors.white,
-                  ),
-                ),
-              ),
+          MediaEditorActionBar(
+            secondaryActions: [
+              if (!_isPlaying) widget.audioMuter,
             ],
+            primaryAction: ShadButton.ghost(
+              size: ShadButtonSize.lg,
+              onPressed: () async {
+                final playbackState = await _trimmer.videoPlaybackControl(
+                  startValue: _startValue ?? 0,
+                  endValue: _endValue ?? 0,
+                );
+                setState(() => _isPlaying = playbackState);
+              },
+              child: Icon(
+                _isPlaying ? EditorIcons.playerPause : EditorIcons.playerPlay,
+                size: 32,
+              ),
+            ),
+            finalizer: EditorFinalizer(
+              canDuplicateMedia: widget.canDuplicateMedia,
+              hasEditAction: hasEditAction,
+              onSave: _saveVideo,
+              onDiscard: ({required done}) async {
+                if (done) {
+                  await widget.onCancel();
+                } else {
+                  widget.onReset();
+                }
+              },
+            ),
           ),
         ],
       ),

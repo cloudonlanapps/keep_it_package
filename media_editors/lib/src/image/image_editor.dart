@@ -7,6 +7,7 @@ import 'package:shadcn_ui/shadcn_ui.dart';
 
 import '../editor_finalizer.dart';
 import '../utils/icons.dart';
+import '../widgets/media_editor_action_bar.dart';
 import 'models/aspect_ratio.dart' as aratio;
 import 'models/image_processing.dart';
 import 'views/crop_control.dart';
@@ -56,74 +57,22 @@ class _ImageEditorState extends State<ImageEditor> {
       child: Column(
         children: [
           Expanded(
-            child: Stack(
-              children: [
-                Positioned.fill(
-                  child: EditableImageView(
-                    key: ValueKey(aspectRatio),
-                    File(widget.uri.toFilePath()),
-                    controller: controller,
-                    rotateAngle: rotateAngle,
-                    aspectRatio: aspectRatio?.aspectRatio,
-                    editActionDetailsIsChanged: (actions) {
-                      setState(() {
-                        rotateAngle = actions.rotateDegrees;
-                        editActionDetailsIsChanged = true;
-                      });
-
-                      /* 
-                      if (actions.hasEditAction) {
-                        if (actions.hasRotateAngle) {
-                          setState(() {
-                            rotationAngle = actions.rotateAngle;
-                          });
-                        }
-                        if (actions.needCrop) {}
-                      } else {
-                        setState(() {
-                          rotationAngle = 0;
-                        });
-                      } */
-                    },
-                  ),
-                ),
-                Align(
-                  alignment: Alignment.bottomCenter,
-                  child: Padding(
-                    padding: const EdgeInsets.only(bottom: 8),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        ShadButton.ghost(
-                          size: ShadButtonSize.sm,
-                          child: const Icon(EditorIcons.imageEditRotateRight),
-                          onPressed: () {
-                            controller.currentState?.rotate();
-                          },
-                        ),
-                        ShadButton.ghost(
-                          size: ShadButtonSize.sm,
-                          child: const Icon(
-                            EditorIcons.imageEditFlipHirizontal,
-                          ),
-                          onPressed: () {
-                            controller.currentState?.flip();
-                          },
-                        ),
-                        ShadButton.ghost(
-                          size: ShadButtonSize.sm,
-                          child: const Icon(EditorIcons.imageEditRotateLeft),
-                          onPressed: () {
-                            controller.currentState?.rotate(degree: -90);
-                          },
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
+            child: EditableImageView(
+              key: ValueKey('view_$aspectRatio'),
+              File(widget.uri.toFilePath()),
+              controller: controller,
+              rotateAngle: rotateAngle,
+              aspectRatio: aspectRatio?.aspectRatio,
+              editActionDetailsIsChanged: (actions) {
+                setState(() {
+                  rotateAngle = actions.rotateDegrees;
+                  editActionDetailsIsChanged = true;
+                });
+              },
             ),
           ),
+
+          // Secondary Control: Aspect Ratio Picker
           CropperControls(
             aspectRatio: aspectRatio,
             rotateAngle: rotateAngle,
@@ -132,19 +81,38 @@ class _ImageEditorState extends State<ImageEditor> {
                 this.aspectRatio = aspectRatio;
               });
             },
-            saveWidget: EditorFinalizer(
+          ),
+
+          // Primary Action Bar
+          MediaEditorActionBar(
+            primaryAction: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                ShadButton.ghost(
+                  size: ShadButtonSize.sm,
+                  child: const Icon(EditorIcons.imageEditRotateLeft),
+                  onPressed: () => controller.currentState?.rotate(degree: -90),
+                ),
+                ShadButton.ghost(
+                  size: ShadButtonSize.sm,
+                  child: const Icon(EditorIcons.imageEditFlipHirizontal),
+                  onPressed: () => controller.currentState?.flip(),
+                ),
+                ShadButton.ghost(
+                  size: ShadButtonSize.sm,
+                  child: const Icon(EditorIcons.imageEditRotateRight),
+                  onPressed: () => controller.currentState?.rotate(),
+                ),
+              ],
+            ),
+            finalizer: EditorFinalizer(
               canDuplicateMedia: widget.canDuplicateMedia,
               hasEditAction: hasEditAction,
               onSave: ({required overwrite}) async {
-                if (controller.currentState == null) {
-                  return;
-                }
+                if (controller.currentState == null) return;
                 final state = controller.currentState!;
                 final editActionDetails = state.editAction;
-
-                if (editActionDetails == null) {
-                  return;
-                }
+                if (editActionDetails == null) return;
 
                 await editAndSave(
                   state.rawImageData,
@@ -161,9 +129,7 @@ class _ImageEditorState extends State<ImageEditor> {
               },
               onDiscard: ({required done}) async {
                 reset();
-                if (done) {
-                  await widget.onCancel();
-                }
+                if (done) await widget.onCancel();
               },
             ),
           ),
@@ -215,10 +181,17 @@ class EditableImageView extends StatefulWidget {
 
 class _EditableImageViewState extends State<EditableImageView> {
   void restoreState() {
-    if (widget.controller.currentState?.editAction?.rotateDegrees !=
-        widget.rotateAngle) {
-      for (var i = 0; i < (widget.rotateAngle / 90); i++) {
-        widget.controller.currentState?.rotate();
+    final state = widget.controller.currentState;
+    if (state == null) return;
+
+    final currentRotation = state.editAction?.rotateDegrees ?? 0;
+    if (currentRotation != widget.rotateAngle) {
+      final delta = (widget.rotateAngle - currentRotation) % 360;
+      if (delta != 0) {
+        final steps = (delta / 90).round();
+        for (var i = 0; i < steps.abs(); i++) {
+          state.rotate(degree: steps > 0 ? 90 : -90);
+        }
       }
     }
   }

@@ -36,26 +36,29 @@ class EditorFinalizer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (!hasEditAction) {
-      return GestureDetector(
-        onTap: () {
-          unawaited(onDiscard(done: true));
-        },
+      return ShadButton.ghost(
+        onPressed: () => unawaited(onDiscard(done: true)),
+        size: ShadButtonSize.sm,
+        padding: EdgeInsets.zero,
         child:
             child ??
             Icon(
               EditorIcons.closeFullscreen,
               color: ShadTheme.of(context).colorScheme.foreground,
-              size: 20,
+              size: 24,
             ),
       );
     }
     return PopupMenuButton<EditorFinalActions>(
       child:
           child ??
-          Icon(
-            EditorIcons.doneEditMedia,
-            color: Colors.red,
-            size: 20,
+          const Padding(
+            padding: EdgeInsets.all(8),
+            child: Icon(
+              EditorIcons.doneEditMedia,
+              color: Colors.red,
+              size: 24,
+            ),
           ),
       onSelected: (value) async {
         switch (value) {

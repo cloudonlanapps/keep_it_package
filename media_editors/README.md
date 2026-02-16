@@ -85,6 +85,7 @@ VideoTrimmerView(
 
 ## Documentation
 
+- **[Example Application](./example)** - A reference implementation showing the "Safe Save" flow (auto-reloading on save, sharing on copy).
 - **[INTERNALS.md](./INTERNALS.md)** - Developer documentation, architecture, and recommendations.
 - **[colan_widgets](../colan_widgets/README.md)** - Design system and shared widget documentation.
 
