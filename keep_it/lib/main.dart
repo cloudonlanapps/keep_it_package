@@ -126,7 +126,7 @@ class KeepItApp implements AppDescriptor {
         CLRouteDescriptor(
           name: 'auth',
           builder: (context, parameters) {
-            return const AuthService();
+            return const AuthView();
           },
         ),
       ];

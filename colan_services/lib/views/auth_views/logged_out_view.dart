@@ -1,24 +1,32 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../server_service/server_service.dart';
+import '../../server_service/server_service.dart';
 
 /// View displayed when user is not logged in.
-class LoggedOutView extends ConsumerStatefulWidget {
+///
+/// This view is decoupled from Riverpod - it receives the login function
+/// as a parameter, making it a pure UI widget with local form state.
+class LoggedOutView extends StatefulWidget {
   const LoggedOutView({
     required this.config,
+    required this.onLogin,
     this.errorMessage,
     super.key,
   });
 
   final String? errorMessage;
   final RemoteServiceLocationConfig? config;
+  final Future<void> Function(
+    String username,
+    String password, {
+    required bool rememberMe,
+  }) onLogin;
 
   @override
-  ConsumerState<LoggedOutView> createState() => _LoggedOutViewState();
+  State<LoggedOutView> createState() => _LoggedOutViewState();
 }
 
-class _LoggedOutViewState extends ConsumerState<LoggedOutView> {
+class _LoggedOutViewState extends State<LoggedOutView> {
   final _formKey = GlobalKey<FormState>();
   final _usernameController = TextEditingController();
   final _passwordController = TextEditingController();
@@ -55,13 +63,11 @@ class _LoggedOutViewState extends ConsumerState<LoggedOutView> {
     });
 
     try {
-      await ref
-          .read(serverProvider(widget.config!).notifier)
-          .login(
-            _usernameController.text.trim(),
-            _passwordController.text,
-            rememberMe: _rememberMe,
-          );
+      await widget.onLogin(
+        _usernameController.text.trim(),
+        _passwordController.text,
+        rememberMe: _rememberMe,
+      );
     } catch (e) {
       if (mounted) {
         setState(() {

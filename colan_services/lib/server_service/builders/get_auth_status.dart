@@ -25,9 +25,15 @@ class AuthStatusData {
 class AuthActions {
   const AuthActions({
     required this.logout,
+    required this.login,
   });
 
   final Future<void> Function() logout;
+  final Future<void> Function(
+    String username,
+    String password, {
+    required bool rememberMe,
+  }) login;
 }
 
 /// Builder widget that watches serverProvider and exposes authentication status.
@@ -66,10 +72,18 @@ class GetAuthStatus extends ConsumerWidget {
   final RemoteServiceLocationConfig config;
   final Widget Function(AuthStatusData, AuthActions) builder;
   final Widget Function() loadingBuilder;
-  final Widget Function(Object, StackTrace) errorBuilder;
+  final Widget Function(Object, StackTrace, AuthActions) errorBuilder;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    // Create actions that work regardless of server state
+    final actions = AuthActions(
+      logout: () => ref.read(serverProvider(config).notifier).logout(),
+      login: (username, password, {required rememberMe}) => ref
+          .read(serverProvider(config).notifier)
+          .login(username, password, rememberMe: rememberMe),
+    );
+
     final serverAsync = ref.watch(serverProvider(config));
     return serverAsync.when(
       data: (server) {
@@ -79,13 +93,10 @@ class GetAuthStatus extends ConsumerWidget {
           loginTime: server.loginTimestamp,
           authUrl: config.authUrl,
         );
-        final actions = AuthActions(
-          logout: () => ref.read(serverProvider(config).notifier).logout(),
-        );
         return builder(data, actions);
       },
       loading: loadingBuilder,
-      error: errorBuilder,
+      error: (error, stack) => errorBuilder(error, stack, actions),
     );
   }
 }
