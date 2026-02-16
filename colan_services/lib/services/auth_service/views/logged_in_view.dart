@@ -1,9 +1,9 @@
 import 'dart:async';
 
-import 'package:cl_server_services/cl_server_services.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../server_service/server_service.dart';
 import '../../basic_page_service/widgets/page_manager.dart';
 
 /// View displayed when user is logged in.

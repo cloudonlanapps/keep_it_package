@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:cl_basic_types/cl_basic_types.dart';
-import 'package:cl_server_services/cl_server_services.dart';
+import 'package:colan_services/server_service/server_service.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart' hide ValueGetter;
 

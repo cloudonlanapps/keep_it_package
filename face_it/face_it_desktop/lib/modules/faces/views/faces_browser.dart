@@ -1,5 +1,5 @@
 import 'package:cl_basic_types/cl_basic_types.dart';
-import 'package:cl_server_services/cl_server_services.dart';
+import 'package:colan_services/server_service/server_service.dart';
 import 'package:face_it_desktop/modules/faces/models/registered_person.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

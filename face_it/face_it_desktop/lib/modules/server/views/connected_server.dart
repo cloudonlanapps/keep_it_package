@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:cl_server_services/cl_server_services.dart'
+import 'package:colan_services/server_service/server_service.dart'
     show CLServer, serverPreferenceProvider;
 import 'package:face_it_desktop/modules/uploader/providers/uploader.dart';
 import 'package:flutter/material.dart';

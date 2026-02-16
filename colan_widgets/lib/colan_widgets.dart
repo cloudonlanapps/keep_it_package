@@ -5,12 +5,12 @@ export 'src/basics/cl_banner.dart' show CLBanner;
 export 'src/basics/cl_blink.dart' show CLBlink;
 export 'src/basics/cl_circled_icon.dart' show CircledIcon, CircledSvgIcon;
 export 'src/basics/cl_custom_chip.dart' show CLCustomChip;
-export 'src/basics/folder_clip.dart'
-    show FolderClipper, FolderPainter, FolderWidget;
 export 'src/basics/cl_decorate_square.dart' show CLAspectRationDecorated;
 export 'src/basics/cl_matrix.dart' show Matrix2D;
 export 'src/basics/cl_media_collage.dart' show CLDimension, CLMediaCollage;
 export 'src/basics/cl_refresh.dart' show CLRefreshButton, CLRefreshWrapper;
+export 'src/basics/folder_clip.dart'
+    show FolderClipper, FolderPainter, FolderWidget;
 export 'src/basics/on_swipe.dart' show OnSwipe;
 export 'src/basics/progress_bar.dart' show ProgressBar;
 export 'src/basics/svg_icon.dart' show SvgIcon, SvgIcons;

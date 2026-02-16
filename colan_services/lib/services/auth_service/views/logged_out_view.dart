@@ -1,6 +1,7 @@
-import 'package:cl_server_services/cl_server_services.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import '../../../server_service/server_service.dart';
 
 /// View displayed when user is not logged in.
 class LoggedOutView extends ConsumerStatefulWidget {

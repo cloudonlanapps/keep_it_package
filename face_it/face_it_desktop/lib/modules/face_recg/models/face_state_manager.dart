@@ -1,4 +1,4 @@
-import 'package:cl_server_services/cl_server_services.dart';
+import 'package:colan_services/server_service/server_service.dart';
 
 import '../../faces/models/registered_person.dart';
 import 'detected_face.dart';

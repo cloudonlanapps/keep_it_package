@@ -1,8 +1,8 @@
-import 'package:cl_server_services/cl_server_services.dart';
 import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../server_service/server_service.dart';
 import '../basic_page_service/widgets/fullscreen_layout.dart';
 import 'views/logged_in_view.dart';
 import 'views/logged_out_view.dart';

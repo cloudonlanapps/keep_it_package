@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:cl_basic_types/cl_basic_types.dart';
-import 'package:cl_server_services/cl_server_services.dart';
+import 'package:colan_services/server_service/server_service.dart';
 import 'package:content_store/storage_service/providers/directories.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path/path.dart' as p;

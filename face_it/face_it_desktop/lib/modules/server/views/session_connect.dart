@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:cl_server_services/cl_server_services.dart'
+import 'package:colan_services/server_service/server_service.dart'
     show GetServerSession, serverPreferenceProvider;
 
 import 'package:flutter/material.dart';

@@ -1,0 +1,91 @@
+import 'package:cl_server_dart_client/cl_server_dart_client.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import '../providers/server_provider.dart';
+
+/// Immutable data class containing authentication status information.
+@immutable
+class AuthStatusData {
+  const AuthStatusData({
+    required this.isAuthenticated,
+    required this.username,
+    required this.loginTime,
+    required this.authUrl,
+  });
+
+  final bool isAuthenticated;
+  final String? username;
+  final DateTime? loginTime;
+  final String authUrl;
+}
+
+/// Immutable class encapsulating authentication actions.
+@immutable
+class AuthActions {
+  const AuthActions({
+    required this.logout,
+  });
+
+  final Future<void> Function() logout;
+}
+
+/// Builder widget that watches serverProvider and exposes authentication status.
+///
+/// This builder decouples views from direct provider access by providing
+/// authentication data and actions through callback parameters.
+///
+/// Example usage:
+/// ```dart
+/// GetAuthStatus(
+///   config: config,
+///   builder: (authStatus, actions) {
+///     return Column(
+///       children: [
+///         Text(authStatus.username ?? 'Not logged in'),
+///         ElevatedButton(
+///           onPressed: actions.logout,
+///           child: Text('Logout'),
+///         ),
+///       ],
+///     );
+///   },
+///   loadingBuilder: () => CircularProgressIndicator(),
+///   errorBuilder: (e, st) => ErrorView(error: e),
+/// )
+/// ```
+class GetAuthStatus extends ConsumerWidget {
+  const GetAuthStatus({
+    required this.config,
+    required this.builder,
+    required this.loadingBuilder,
+    required this.errorBuilder,
+    super.key,
+  });
+
+  final RemoteServiceLocationConfig config;
+  final Widget Function(AuthStatusData, AuthActions) builder;
+  final Widget Function() loadingBuilder;
+  final Widget Function(Object, StackTrace) errorBuilder;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final serverAsync = ref.watch(serverProvider(config));
+    return serverAsync.when(
+      data: (server) {
+        final data = AuthStatusData(
+          isAuthenticated: server.isAuthenticated,
+          username: server.currentUser?.username,
+          loginTime: server.loginTimestamp,
+          authUrl: config.authUrl,
+        );
+        final actions = AuthActions(
+          logout: () => ref.read(serverProvider(config).notifier).logout(),
+        );
+        return builder(data, actions);
+      },
+      loading: loadingBuilder,
+      error: errorBuilder,
+    );
+  }
+}

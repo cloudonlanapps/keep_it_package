@@ -3,7 +3,7 @@ import 'dart:developer' as dev;
 import 'dart:io';
 
 import 'package:cl_server_dart_client/cl_server_dart_client.dart';
-import 'package:cl_server_services/cl_server_services.dart';
+import 'package:colan_services/server_service/server_service.dart';
 import 'package:colan_services/providers/auth_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';

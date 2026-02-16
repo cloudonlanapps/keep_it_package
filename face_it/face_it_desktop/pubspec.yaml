@@ -10,8 +10,8 @@ dependencies:
   background_downloader: ^9.2.5
   cl_basic_types:
     path: ../../cl_basic_types
-  cl_server_services:
-    path: ../../cl_server_services
+  colan_services:
+    path: ../../colan_services
   colan_widgets:
     path: ../../colan_widgets
   collection: ^1.19.1

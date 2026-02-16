@@ -17,8 +17,8 @@ dependencies:
     path: ../cl_media_tools
   cl_server_dart_client:
     path: ../../../sdks/dartsdk
-  cl_server_services:
-    path: ../cl_server_services
+  colan_services:
+    path: ../colan_services
   colan_widgets:
     path: ../colan_widgets
   collection: ^1.19.0
