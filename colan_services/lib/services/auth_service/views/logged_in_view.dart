@@ -19,15 +19,17 @@ class LoggedInView extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     // Use serverProvider with .select() to only watch auth fields
     final authInfo = ref.watch(
-      serverProvider(config).select((server) => server.when(
-            data: (s) => (
-              isAuthenticated: s.isAuthenticated,
-              username: s.currentUser?.username,
-              loginTime: s.loginTimestamp,
-            ),
-            loading: () => null,
-            error: (_, __) => null,
-          )),
+      serverProvider(config).select(
+        (server) => server.when(
+          data: (s) => (
+            isAuthenticated: s.isAuthenticated,
+            username: s.currentUser?.username,
+            loginTime: s.loginTimestamp,
+          ),
+          loading: () => null,
+          error: (_, _) => null,
+        ),
+      ),
     );
 
     if (authInfo == null || !authInfo.isAuthenticated) {

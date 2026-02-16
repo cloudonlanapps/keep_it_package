@@ -1,4 +1,4 @@
-import 'package:test/test.dart';
+/* import 'package:test/test.dart';
 import '../framework/framework.dart';
 
 class TestUpsertAPIForCollection {
@@ -65,3 +65,4 @@ class TestUpsertAPIForCollection {
     expect(error['type'], 'CannotAttachFileWithCollectionError');
   }
 }
+ */

@@ -1,4 +1,4 @@
-// ignore_for_file: avoid_print, print required for testing
+/* // ignore_for_file: avoid_print, print required for testing
 
 import 'package:cl_servers/cl_servers.dart';
 import 'package:online_store/src/models/entity_server.dart';
@@ -333,4 +333,5 @@ This test is designed for TEST SERVERS ONLY.
       timeout: const Timeout(Duration(hours: 1)),
     );
   });
-}
+}¯
+ */

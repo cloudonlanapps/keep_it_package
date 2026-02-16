@@ -77,8 +77,9 @@ class ServerNotifier
       final broadcastHealth = scanner.getBroadcastHealth(config);
 
       // Perform our own health check
-      final ourHealthCheckPassed =
-          await ref.watch(serverHealthCheckProvider(config).future);
+      final ourHealthCheckPassed = await ref.watch(
+        serverHealthCheckProvider(config).future,
+      );
 
       // Create health status combining broadcast and our check
       final healthStatus = ServerHealthStatus(
@@ -91,9 +92,11 @@ class ServerNotifier
       // Log if server is unhealthy
       if (!healthStatus.isHealthy) {
         if (healthStatus.hasBroadcastIssues) {
-          log('Server ${config.label} reports unhealthy status: '
-              'status=${healthStatus.broadcastStatus}, '
-              'errors=${healthStatus.broadcastErrors}');
+          log(
+            'Server ${config.label} reports unhealthy status: '
+            'status=${healthStatus.broadcastStatus}, '
+            'errors=${healthStatus.broadcastErrors}',
+          );
         }
         if (!ourHealthCheckPassed) {
           log('Server ${config.label} failed our health check');
@@ -108,11 +111,14 @@ class ServerNotifier
 
       if (healthStatus.isHealthy) {
         // Try auto-login from saved credentials
-        final credentials =
-            await _CredentialStorage.load(keySuffix: _keySuffix);
+        final credentials = await _CredentialStorage.load(
+          keySuffix: _keySuffix,
+        );
         if (credentials != null) {
           try {
-            sessionManager = sdk.SessionManager(serverConfig: config.serverConfig);
+            sessionManager = sdk.SessionManager(
+              serverConfig: config.serverConfig,
+            );
             await sessionManager.login(credentials.$1, credentials.$2);
             currentUser = await sessionManager.getCurrentUser();
             loginTimestamp = DateTime.now();
@@ -144,10 +150,10 @@ class ServerNotifier
         storeManager: storeManager,
       );
 
-      ref.onDispose(() {
+      ref.onDispose(() async {
         _healthCheckTimer?.cancel();
         _tokenRefreshTimer?.cancel();
-        storeManager?.close(); // Cleanup StoreManager
+        await storeManager?.close(); // Cleanup StoreManager
       });
 
       return clServer;
@@ -200,7 +206,7 @@ class ServerNotifier
       return currentServer.copyWith(
         sessionManager: () => sessionManager,
         currentUser: () => user,
-        loginTimestamp: () => DateTime.now(),
+        loginTimestamp: DateTime.now,
         storeManager: () => storeManager,
       );
     });
@@ -275,7 +281,11 @@ class ServerNotifier
   } */
 }
 
-final serverProvider = AsyncNotifierProviderFamily<ServerNotifier, CLServer,
-    RemoteServiceLocationConfig>(
-  ServerNotifier.new,
-);
+final serverProvider =
+    AsyncNotifierProviderFamily<
+      ServerNotifier,
+      CLServer,
+      RemoteServiceLocationConfig
+    >(
+      ServerNotifier.new,
+    );
