@@ -13,9 +13,8 @@ import 'package:path/path.dart' as p;
 import 'package:store/store.dart';
 import 'package:store_tasks/store_tasks.dart';
 
-import '../../internal/fullscreen_layout.dart';
-
 import '../../providers/captured_media.dart';
+import '../basic_page_service/widgets/fullscreen_layout.dart';
 import '../basic_page_service/widgets/page_manager.dart';
 import 'models/default_theme.dart';
 import 'widgets/get_cameras.dart';

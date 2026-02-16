@@ -1,20 +1,23 @@
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
-abstract class CLBanner extends ConsumerWidget {
-  const CLBanner({super.key});
+class CLBanner extends StatelessWidget {
+  const CLBanner({
+    super.key,
+    this.backgroundColor,
+    this.foregroundColor,
+    this.msg = '',
+    this.onTap,
+  });
+
+  final Color? backgroundColor;
+  final Color? foregroundColor;
+  final String msg;
+  final void Function()? onTap;
 
   @override
-  Widget build(
-    BuildContext context,
-    WidgetRef ref, {
-    Color? backgroundColor,
-    Color? foregroundColor,
-    String msg = '',
-    void Function()? onTap,
-  }) {
+  Widget build(BuildContext context) {
     if (msg.isEmpty) {
       return const SizedBox.shrink();
     }
@@ -46,8 +49,6 @@ abstract class CLBanner extends ConsumerWidget {
     );
   }
 
-  Widget errorBuilder(Object _, StackTrace _) => const SizedBox.shrink();
-  Widget loadingBuilder() => CLLoader.widget(debugMessage: widgetLabel);
-
-  String get widgetLabel;
+  static Widget loading(String message) =>
+      CLLoader.widget(debugMessage: message);
 }

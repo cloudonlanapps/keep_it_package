@@ -7,10 +7,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:media_editors/media_editors.dart';
 
-import '../../internal/fullscreen_layout.dart';
 import '../../models/platform_support.dart';
 import '../basic_page_service/basic_page_service.dart';
 import '../basic_page_service/widgets/dialogs.dart';
+import '../basic_page_service/widgets/fullscreen_layout.dart';
 import '../basic_page_service/widgets/page_manager.dart';
 
 class MediaEditService extends ConsumerWidget {

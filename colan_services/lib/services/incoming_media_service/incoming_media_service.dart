@@ -9,9 +9,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 import 'package:store_tasks/store_tasks.dart';
 
-import '../../internal/fullscreen_layout.dart';
 import '../../models/cl_media_candidate.dart';
 import '../basic_page_service/widgets/cl_error_view.dart';
+import '../basic_page_service/widgets/fullscreen_layout.dart';
 import '../basic_page_service/widgets/page_manager.dart';
 
 import 'widgets/step1_analyse.dart';

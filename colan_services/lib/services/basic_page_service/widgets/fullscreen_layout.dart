@@ -1,7 +1,7 @@
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 
-import '../services/basic_page_service/widgets/cl_pop_screen.dart';
+import 'cl_pop_screen.dart';
 import 'validate_layout.dart';
 
 class FullscreenLayout extends StatelessWidget {

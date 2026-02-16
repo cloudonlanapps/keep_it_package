@@ -49,7 +49,6 @@ class FolderPainter extends CustomPainter {
       ..strokeWidth = strokeWidth;
 
     final path = Path()
-
       // Same path as clipper
       ..moveTo(0, size.height * 0.2)
       ..lineTo(0, size.height * 0.1)
