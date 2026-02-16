@@ -22,7 +22,6 @@ graph TD
     services["colan_services"]
 
     %% Apps
-    face_it["face_it_desktop"]
     keep_it["keep_it"]
 
     %% Dependencies
@@ -85,11 +84,6 @@ graph TD
     services --> media_editors
     services --> store_base
     services --> store_tasks
-
-    face_it --> basic_types
-    face_it --> cl_server_services
-    face_it --> widgets
-    face_it --> store_base
 
     keep_it --> services
     keep_it --> widgets
