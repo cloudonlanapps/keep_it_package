@@ -1,5 +1,7 @@
 import 'package:cl_basic_types/cl_basic_types.dart';
+
 import 'package:cl_entity_viewers/cl_entity_viewers.dart';
+import 'package:colan_widgets/colan_widgets.dart';
 
 import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
@@ -11,7 +13,7 @@ import '../../../models/platform_support.dart';
 import '../../app_start_service/views/on_dark_mode.dart';
 import '../../basic_page_service/widgets/page_manager.dart';
 import '../widgets/media_title.dart';
-import '../widgets/refresh_button.dart';
+
 import 'popover_menu.dart';
 
 class TopBar extends ConsumerWidget implements PreferredSizeWidget {
@@ -36,7 +38,11 @@ class TopBar extends ConsumerWidget implements PreferredSizeWidget {
             if (!entityAsync.hasValue || entityAsync.value == null)
               const ContentSourceSelectorIcon(),
             if (entityAsync.hasValue && entityAsync.value == null)
-              if (!ColanPlatformSupport.isMobilePlatform) const RefreshButton(),
+              if (!ColanPlatformSupport.isMobilePlatform)
+                CLRefreshButton(
+                  onRefresh: () async =>
+                      ref.read(reloadProvider.notifier).reload(),
+                ),
             const OnDarkMode(),
             ShadButton.ghost(
               onPressed: () => PageManager.of(context).openSettings(),
@@ -51,7 +57,10 @@ class TopBar extends ConsumerWidget implements PreferredSizeWidget {
         if (entityAsync.hasValue && (children?.entities.isNotEmpty ?? false))
           const Row(
             spacing: 8,
-            children: [Flexible(child: TextFilterBox()), FilterPopOverMenu()],
+            children: [
+              Flexible(child: TextFilterBox()),
+              FilterPopOverMenu(),
+            ],
           ),
       ],
     );

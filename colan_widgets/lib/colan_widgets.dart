@@ -10,7 +10,9 @@ export 'src/basics/cl_decorate_square.dart' show CLAspectRationDecorated;
 export 'src/basics/cl_icon.dart' show CLIcon, CLIconLabelled;
 export 'src/basics/cl_matrix.dart' show Matrix2D;
 export 'src/basics/cl_media_collage.dart' show CLDimension, CLMediaCollage;
+export 'src/basics/cl_refresh.dart' show CLRefreshButton, CLRefreshWrapper;
 export 'src/basics/cl_text.dart' show CLLabel, CLText;
+export 'src/basics/on_swipe.dart' show OnSwipe;
 export 'src/basics/overlay_icon.dart' show OverlayIcon;
 export 'src/basics/overlay_widget.dart' show OverlayWidgets;
 export 'src/basics/progress_bar.dart' show ProgressBar;
@@ -30,5 +32,7 @@ export 'src/views/appearance/cl_fullscreen_box.dart'
 export 'src/views/appearance/cl_scaffold.dart' show CLScaffold;
 export 'src/views/cl_loading_view.dart' show CLLoader;
 export 'src/views/stale_media_indicator_view.dart' show BannerView;
+export 'src/views/progress_view/stream_progress_view.dart'
+    show StreamProgressView;
 export 'src/views/wizards/wizard_dialog.dart' show WizardDialog;
 export 'src/views/wizards/wizard_layout.dart' show WizardLayout, WizardLayout2;

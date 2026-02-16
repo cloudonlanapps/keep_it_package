@@ -1,4 +1,3 @@
-
 import 'package:cl_basic_types/cl_basic_types.dart';
 import 'package:cl_media_tools/cl_media_tools.dart';
 import 'package:colan_widgets/colan_widgets.dart';
@@ -7,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:store/store.dart';
 
 import '../../../models/cl_media_candidate.dart';
-import 'stream_progress_view.dart';
 
 class AnalysePage extends StatelessWidget {
   const AnalysePage({
@@ -22,7 +20,8 @@ class AnalysePage extends StatelessWidget {
     required ViewerEntities existingEntities,
     required ViewerEntities newEntities,
     required List<CLMediaContent> invalidContent,
-  })? onDone;
+  })?
+  onDone;
   final void Function() onCancel;
   final CLStore store;
 
@@ -35,18 +34,23 @@ class AnalysePage extends StatelessWidget {
         stream: () => store.getValidMediaFiles(
           contentList: incomingMedia.entries,
           onDone: onDone,
-          getValidMediaFile: (mediaContent,
-              {required downloadDirectory}) async {
-            return switch (mediaContent) {
-              (final CLMediaFile e) => e,
-              (final CLMediaURI e) => await CLMediaFileUtils.uriToMediaFile(e,
-                  downloadDirectory: downloadDirectory),
-              (final CLMediaUnknown e) =>
-                await CLMediaFileUtils.fromPath(e.path),
-              _ => null
-            };
-          },
+          getValidMediaFile:
+              (mediaContent, {required downloadDirectory}) async {
+                return switch (mediaContent) {
+                  (final CLMediaFile e) => e,
+                  (final CLMediaURI e) => await CLMediaFileUtils.uriToMediaFile(
+                    e,
+                    downloadDirectory: downloadDirectory,
+                  ),
+                  (final CLMediaUnknown e) => await CLMediaFileUtils.fromPath(
+                    e.path,
+                  ),
+                  _ => null,
+                };
+              },
         ),
+        progressExtractor: (Progress p) => p.fractCompleted,
+        labelExtractor: (Progress p) => p.currentItem,
         onCancel: onCancel,
       ),
     );
