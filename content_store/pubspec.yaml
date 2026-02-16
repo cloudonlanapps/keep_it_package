@@ -15,6 +15,8 @@ dependencies:
     path: ../cl_entity_viewers
   cl_media_tools:
     path: ../cl_media_tools
+  cl_server_dart_client:
+    path: ../../../sdks/dartsdk
   cl_servers:
     path: ../cl_servers
   colan_widgets:
@@ -37,8 +39,6 @@ dependencies:
   meta: ^1.12.0
   mime: ^2.0.0
   nsd: ^4.0.3
-  online_store:
-    path: ../online_store
   path: ^1.9.0
   path_provider: ^2.1.4
   photo_manager: ^3.5.0

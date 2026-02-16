@@ -2,10 +2,10 @@ import 'dart:async';
 
 import 'package:cl_basic_types/cl_basic_types.dart';
 import 'package:cl_media_tools/cl_media_tools.dart';
+import 'package:cl_server_dart_client/cl_server_dart_client.dart';
 import 'package:cl_servers/cl_servers.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:local_store/local_store.dart';
-import 'package:online_store/online_store.dart';
 import 'package:path/path.dart' as p;
 import 'package:store/store.dart';
 
@@ -21,8 +21,10 @@ class StoreNotifier extends FamilyAsyncNotifier<CLStore, ServiceLocationConfig>
     try {
       final config = arg;
       final directories = await ref.watch(deviceDirectoriesProvider.future);
-      final storePath =
-          p.join(directories.stores.pathString, config.displayName);
+      final storePath = p.join(
+        directories.stores.pathString,
+        config.displayName,
+      );
 
       final EntityStore entityStore;
 
@@ -55,5 +57,5 @@ class StoreNotifier extends FamilyAsyncNotifier<CLStore, ServiceLocationConfig>
 
 final storeProvider =
     AsyncNotifierProviderFamily<StoreNotifier, CLStore, ServiceLocationConfig>(
-  StoreNotifier.new,
-);
+      StoreNotifier.new,
+    );
