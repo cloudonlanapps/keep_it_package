@@ -1,4 +1,4 @@
-import 'package:cl_servers/cl_servers.dart';
+import 'package:cl_server_services/cl_server_services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final uploadURLProvider = StateProvider<String?>((ref) {

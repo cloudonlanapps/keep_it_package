@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:cl_basic_types/cl_basic_types.dart';
 import 'package:cl_media_tools/cl_media_tools.dart';
 import 'package:cl_server_dart_client/cl_server_dart_client.dart';
-import 'package:cl_servers/cl_servers.dart';
+import 'package:cl_server_services/cl_server_services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:local_store/local_store.dart';
 import 'package:path/path.dart' as p;

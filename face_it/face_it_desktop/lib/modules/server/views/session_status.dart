@@ -1,4 +1,4 @@
-import 'package:cl_servers/cl_servers.dart' show GetServerSession;
+import 'package:cl_server_services/cl_server_services.dart' show GetServerSession;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';

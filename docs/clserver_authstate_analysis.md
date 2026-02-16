@@ -7,9 +7,9 @@
 
 ## Current Architecture
 
-### CLServer (`cl_servers` package)
+### CLServer (`cl_server_services` package)
 
-**Location**: `cl_servers/lib/src/models/cl_server.dart`
+**Location**: `cl_server_services/lib/src/models/cl_server.dart`
 
 **Purpose**: Represents a remote server with health monitoring capabilities
 

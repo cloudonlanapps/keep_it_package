@@ -133,10 +133,10 @@ packages:
       relative: true
     source: path
     version: "0.1.0"
-  cl_servers:
+  cl_server_services:
     dependency: "direct main"
     description:
-      path: "../../cl_servers"
+      path: "../../cl_server_services"
       relative: true
     source: path
     version: "0.0.1"
@@ -768,13 +768,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.0.1"
-  online_store:
-    dependency: transitive
-    description:
-      path: "../../online_store"
-      relative: true
-    source: path
-    version: "0.0.1"
   package_config:
     dependency: transitive
     description:

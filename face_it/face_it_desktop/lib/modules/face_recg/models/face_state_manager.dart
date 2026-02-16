@@ -1,4 +1,4 @@
-import 'package:cl_servers/cl_servers.dart';
+import 'package:cl_server_services/cl_server_services.dart';
 
 import '../../faces/models/registered_person.dart';
 import 'detected_face.dart';

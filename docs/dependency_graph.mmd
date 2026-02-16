@@ -15,7 +15,7 @@ graph TD
     entity_viewers["cl_entity_viewers"]
     
     %% Intermediate Packages
-    servers["cl_servers"]
+    cl_server_services["cl_server_services"]
     content_store["content_store"]
     store_tasks["store_tasks"]
     media_editors["media_editors"]
@@ -32,7 +32,7 @@ graph TD
     local_store --> store_base
     online_store --> basic_types
     online_store --> dart_client
-    online_store --> servers
+    online_store --> cl_server_services
     online_store --> store_base
 
     widgets --> basic_types
@@ -42,14 +42,14 @@ graph TD
     entity_viewers --> widgets
     entity_viewers --> date_picker
 
-    servers --> basic_types
-    servers --> dart_client
-    servers --> widgets
+    cl_server_services --> basic_types
+    cl_server_services --> dart_client
+    cl_server_services --> widgets
 
     content_store --> basic_types
     content_store --> entity_viewers
     content_store --> media_tools
-    content_store --> servers
+    content_store --> cl_server_services
     content_store --> widgets
     content_store --> local_store
     content_store --> online_store
@@ -74,7 +74,7 @@ graph TD
     services --> entity_viewers
     services --> media_tools
     services --> dart_client
-    services --> servers
+    services --> cl_server_services
     services --> widgets
     services --> content_store
     services --> form_factory
@@ -84,7 +84,7 @@ graph TD
     services --> store_tasks
 
     face_it --> basic_types
-    face_it --> servers
+    face_it --> cl_server_services
     face_it --> widgets
     face_it --> content_store
     face_it --> store_base

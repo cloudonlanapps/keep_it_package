@@ -1,4 +1,4 @@
-import 'package:cl_servers/cl_servers.dart'
+import 'package:cl_server_services/cl_server_services.dart'
     show CLServer, serverPreferenceProvider;
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:face_it_desktop/modules/server/views/server_tile.dart';

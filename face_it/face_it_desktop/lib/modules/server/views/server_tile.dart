@@ -1,4 +1,4 @@
-import 'package:cl_servers/cl_servers.dart' show CLServer;
+import 'package:cl_server_services/cl_server_services.dart' show CLServer;
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
