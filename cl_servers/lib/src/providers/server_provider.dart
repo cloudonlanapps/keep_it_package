@@ -7,7 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../models/cl_server.dart';
-import '../models/remote_service_location_config.dart';
+import '../models/location_config.dart';
 import '../models/server_health_status.dart';
 import 'network_scanner.dart';
 import 'server_health_check.dart';

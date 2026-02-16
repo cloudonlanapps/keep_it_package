@@ -4,9 +4,8 @@ export 'src/builders/get_nw_scanner.dart' show GetNetworkScanner;
 export 'src/builders/get_server_session.dart' show GetServerSession;
 export 'src/models/cl_server.dart' show CLServer;
 export 'src/models/cl_socket.dart' show CLSocket;
+export 'src/models/location_config.dart' show RemoteServiceLocationConfig;
 export 'src/models/network_scanner.dart' show NetworkScanner;
-export 'src/models/remote_service_location_config.dart'
-    show RemoteServiceLocationConfig;
 export 'src/models/rest_api.dart' show RESTAPi;
 export 'src/models/server_health_status.dart' show ServerHealthStatus;
 export 'src/models/server_preferences.dart' show ServerPreferences;

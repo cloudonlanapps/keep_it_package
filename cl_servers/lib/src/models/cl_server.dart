@@ -3,7 +3,7 @@ import 'package:cl_server_dart_client/cl_server_dart_client.dart' as sdk;
 import 'package:flutter/foundation.dart' hide ValueGetter;
 import 'package:http/http.dart' as http;
 
-import 'remote_service_location_config.dart';
+import 'location_config.dart';
 import 'server_health_status.dart';
 
 @immutable
@@ -57,10 +57,16 @@ class CLServer with CLLogger {
       locationConfig: locationConfig ?? this.locationConfig,
       healthStatus: healthStatus ?? this.healthStatus,
       client: client != null ? client.call() : this.client,
-      sessionManager: sessionManager != null ? sessionManager.call() : this.sessionManager,
+      sessionManager: sessionManager != null
+          ? sessionManager.call()
+          : this.sessionManager,
       currentUser: currentUser != null ? currentUser.call() : this.currentUser,
-      loginTimestamp: loginTimestamp != null ? loginTimestamp.call() : this.loginTimestamp,
-      storeManager: storeManager != null ? storeManager.call() : this.storeManager,
+      loginTimestamp: loginTimestamp != null
+          ? loginTimestamp.call()
+          : this.loginTimestamp,
+      storeManager: storeManager != null
+          ? storeManager.call()
+          : this.storeManager,
     );
   }
 

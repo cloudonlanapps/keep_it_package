@@ -4,7 +4,7 @@ import 'package:cl_basic_types/cl_basic_types.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 
-import '../models/remote_service_location_config.dart';
+import '../models/location_config.dart';
 
 // Provider definition
 final AsyncNotifierProviderFamily<ServerHealthCheckNotifier, bool,

@@ -7,8 +7,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nsd/nsd.dart';
 
+import '../models/location_config.dart';
 import '../models/network_scanner.dart';
-import '../models/remote_service_location_config.dart';
 
 extension ServiceExtDiscovery on Discovery {
   Future<void> stop() async => stopDiscovery(this);
@@ -121,8 +121,7 @@ class NetworkScannerNotifier extends StateNotifier<NetworkScanner>
   @visibleForTesting
   (RemoteServiceLocationConfig, BroadcastHealth?)? parseServiceForTest(
     Service service,
-  ) =>
-      _parseService(service);
+  ) => _parseService(service);
 
   /// Parse a discovered service into RemoteServiceLocationConfig and BroadcastHealth
   /// Returns a tuple of (config, broadcastHealth) or null if parsing fails
@@ -204,7 +203,8 @@ class NetworkScannerNotifier extends StateNotifier<NetworkScanner>
       );
 
       // Create BroadcastHealth if health info is present
-      final broadcastHealth = (broadcastStatus != null || broadcastErrors != null)
+      final broadcastHealth =
+          (broadcastStatus != null || broadcastErrors != null)
           ? BroadcastHealth(
               status: broadcastStatus,
               errors: broadcastErrors,

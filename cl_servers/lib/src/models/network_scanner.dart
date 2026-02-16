@@ -1,7 +1,7 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 
-import 'remote_service_location_config.dart';
+import 'location_config.dart';
 
 /// Broadcast health information for a discovered server
 @immutable
