@@ -2,14 +2,11 @@ name: media_editors
 description: "A new Flutter package project."
 version: 0.0.1
 
-publish_to: none
 
 environment:
   sdk: ^3.9.2
 
 dependencies:
-  colan_widgets:
-    path: ../colan_widgets
   collection: ^1.19.0
   extended_image: ^10.0.1
   flutter:

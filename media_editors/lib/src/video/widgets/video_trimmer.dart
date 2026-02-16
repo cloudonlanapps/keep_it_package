@@ -1,10 +1,11 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:media_editors/src/editor_finalizer.dart';
 import 'package:video_trimmer/video_trimmer.dart';
+
+import '../../utils/icons.dart';
 
 class VideoTrimmerView extends StatefulWidget {
   const VideoTrimmerView(
@@ -162,13 +163,13 @@ class _VideoTrimmerViewState extends State<VideoTrimmerView> {
               Expanded(
                 child: TextButton(
                   child: _isPlaying
-                      ? Icon(
-                          clIcons.playerPause,
+                      ? const Icon(
+                          EditorIcons.playerPause,
                           size: 80,
                           color: Colors.white,
                         )
-                      : Icon(
-                          clIcons.playerPlay,
+                      : const Icon(
+                          EditorIcons.playerPlay,
                           size: 80,
                           color: Colors.white,
                         ),
@@ -198,8 +199,8 @@ class _VideoTrimmerViewState extends State<VideoTrimmerView> {
                   },
                   child: Icon(
                     hasEditAction
-                        ? clIcons.doneEditMedia
-                        : clIcons.closeFullscreen,
+                        ? EditorIcons.doneEditMedia
+                        : EditorIcons.closeFullscreen,
                     size: 60,
                     color: hasEditAction ? Colors.red : Colors.white,
                   ),

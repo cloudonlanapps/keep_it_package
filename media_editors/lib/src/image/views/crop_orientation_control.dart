@@ -1,5 +1,7 @@
-import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
+
+import '../../utils/icons.dart';
 
 import '../models/aspect_ratio.dart' as aratio;
 
@@ -67,10 +69,10 @@ class _DeviceInOrientation extends StatelessWidget {
       scaleX: isLandscape ? 16 / 9 : 1,
       scaleY: isLandscape ? 1 : 16 / 9,
       child: Icon(
-        clIcons.mediaOrientation,
+        EditorIcons.mediaOrientation,
         color: isDisabled
-            ? CLTheme.of(context).colors.disabledIconColor
-            : CLTheme.of(context).colors.iconColor,
+            ? ShadTheme.of(context).colorScheme.mutedForeground
+            : ShadTheme.of(context).colorScheme.foreground,
         size: 16,
       ),
     );

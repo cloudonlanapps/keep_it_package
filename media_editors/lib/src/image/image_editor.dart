@@ -1,12 +1,12 @@
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:colan_widgets/colan_widgets.dart';
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
 import '../editor_finalizer.dart';
+import '../utils/icons.dart';
 import 'models/aspect_ratio.dart' as aratio;
 import 'models/image_processing.dart';
 import 'views/crop_control.dart';
@@ -96,21 +96,23 @@ class _ImageEditorState extends State<ImageEditor> {
                       children: [
                         ShadButton.ghost(
                           size: ShadButtonSize.sm,
-                          child: Icon(clIcons.imageEditRotateRight),
+                          child: const Icon(EditorIcons.imageEditRotateRight),
                           onPressed: () {
                             controller.currentState?.rotate();
                           },
                         ),
                         ShadButton.ghost(
                           size: ShadButtonSize.sm,
-                          child: Icon(clIcons.imageEditFlipHirizontal),
+                          child: const Icon(
+                            EditorIcons.imageEditFlipHirizontal,
+                          ),
                           onPressed: () {
                             controller.currentState?.flip();
                           },
                         ),
                         ShadButton.ghost(
                           size: ShadButtonSize.sm,
-                          child: Icon(clIcons.imageEditRotateLeft),
+                          child: const Icon(EditorIcons.imageEditRotateLeft),
                           onPressed: () {
                             controller.currentState?.rotate(degree: -90);
                           },

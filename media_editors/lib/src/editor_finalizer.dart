@@ -1,7 +1,9 @@
 import 'dart:async';
 
-import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
+
+import 'utils/icons.dart';
 
 enum EditorFinalActions {
   save,
@@ -41,8 +43,8 @@ class EditorFinalizer extends StatelessWidget {
         child:
             child ??
             Icon(
-              clIcons.closeFullscreen,
-              color: CLTheme.of(context).colors.iconColor,
+              EditorIcons.closeFullscreen,
+              color: ShadTheme.of(context).colorScheme.foreground,
               size: 20,
             ),
       );
@@ -51,8 +53,8 @@ class EditorFinalizer extends StatelessWidget {
       child:
           child ??
           Icon(
-            clIcons.doneEditMedia,
-            color: Colors.red, //CLTheme.of(context).colors.iconColor,
+            EditorIcons.doneEditMedia,
+            color: Colors.red,
             size: 20,
           ),
       onSelected: (value) async {

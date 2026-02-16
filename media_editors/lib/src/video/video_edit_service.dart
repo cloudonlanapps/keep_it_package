@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:colan_widgets/colan_widgets.dart';
+import '../utils/icons.dart';
 
 import 'package:flutter/material.dart';
 
@@ -130,16 +130,16 @@ class _AudioMuterState extends State<AudioMuter> {
       child: isMuting
           ? const CircularProgressIndicator()
           : widget.isMuted
-              ? Icon(
-                  clIcons.audioMuted,
-                  size: 60,
-                  color: Colors.white,
-                )
-              : Icon(
-                  clIcons.audioUnmuted,
-                  size: 60,
-                  color: Colors.white,
-                ),
+          ? const Icon(
+              EditorIcons.audioMuted,
+              size: 60,
+              color: Colors.white,
+            )
+          : const Icon(
+              EditorIcons.audioUnmuted,
+              size: 60,
+              color: Colors.white,
+            ),
     );
   }
 }
