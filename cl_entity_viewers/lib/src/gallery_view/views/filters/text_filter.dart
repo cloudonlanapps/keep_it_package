@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:shadcn_ui/shadcn_ui.dart';
 
-import 'package:cl_basic_types/cl_basic_types.dart';
+import 'package:cl_basic_types/viewer_types.dart';
 import '../../models/filter/base_filter.dart';
 import '../../models/filter/string_filter.dart';
 import '../../providers/media_filters.dart';

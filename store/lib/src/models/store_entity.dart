@@ -3,6 +3,8 @@ import 'package:intl/intl.dart';
 import 'package:meta/meta.dart';
 import 'package:store/src/models/cl_store.dart';
 
+import 'cl_entity.dart';
+
 @immutable
 class StoreEntity implements ViewerEntity {
   factory StoreEntity({
@@ -110,7 +112,8 @@ class StoreEntity implements ViewerEntity {
   Future<StoreEntity> accept(StoreEntity entity) async {
     if (!isCollection) {
       throw Exception(
-          "A media entity can't accept another media. Use collection");
+        "A media entity can't accept another media. Use collection",
+      );
     }
     if (id == null) {
       throw Exception('the collection must saved before accepting media');
@@ -196,6 +199,8 @@ class StoreEntity implements ViewerEntity {
   double? get duration => clEntity.duration;
 
   Map<String, dynamic> toMapForDisplay() => clEntity.toMapForDisplay();
-  StoreEntity clone({ValueGetter<int?>? id}) =>
-      StoreEntity(clEntity: clEntity.clone(id: id), clStore: store);
+  StoreEntity clone({ValueGetter<int?>? id}) => StoreEntity(
+    clEntity: clEntity.clone(id: id),
+    clStore: store,
+  );
 }

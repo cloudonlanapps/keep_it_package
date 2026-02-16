@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
-import 'package:cl_basic_types/cl_basic_types.dart';
+import 'package:cl_basic_types/viewer_types.dart';
 import '../models/selector.dart';
 
 import '../providers/select_mode.dart';

@@ -1,7 +1,7 @@
-import 'package:cl_basic_types/cl_basic_types.dart';
 import 'package:collection/collection.dart';
 import 'package:meta/meta.dart';
 
+import 'cl_entity.dart';
 import 'cl_store.dart';
 
 @immutable

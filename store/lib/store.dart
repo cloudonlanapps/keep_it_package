@@ -1,5 +1,6 @@
 export 'app_logger.dart';
 
+export 'src/models/cl_entity.dart' show CLEntity;
 export 'src/models/cl_store.dart' show CLStore;
 export 'src/models/db_model.dart' show DBModel;
 export 'src/models/entity_store.dart';

@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'dart:math' as math;
 
-import 'package:cl_basic_types/cl_basic_types.dart';
+import 'package:cl_basic_types/viewer_types.dart';
 
 import 'package:colan_widgets/colan_widgets.dart';
 

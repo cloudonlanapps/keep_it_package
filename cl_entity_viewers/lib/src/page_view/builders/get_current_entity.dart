@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:cl_basic_types/cl_basic_types.dart';
+import 'package:cl_basic_types/viewer_types.dart';
 import '../providers/ui_state.dart';
 
 class GetCurrentEntity extends ConsumerWidget {
