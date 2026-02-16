@@ -1,17 +1,18 @@
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
 import 'package:shadcn_ui/shadcn_ui.dart';
 
-import '../../../builders/on_init_done.dart';
+import '../../init_service/builders/get_app_init_status.dart';
+import '../../models/app_descriptor.dart';
+import '../../preference_service/builders/get_theme_mode.dart';
+import '../../services/incoming_media_service/incoming_media_monitor.dart';
 
-import '../../../models/app_descriptor.dart';
-import '../../incoming_media_service/incoming_media_monitor.dart';
-import '../notifiers/app_preferences.dart';
-
-class AppStartService extends ConsumerWidget {
-  const AppStartService({
+/// Root application widget.
+///
+/// Sets up ProviderScope and initializes the app with theme management.
+class AppStartView extends ConsumerWidget {
+  const AppStartView({
     required this.appDescriptor,
     super.key,
   });
@@ -26,24 +27,23 @@ class AppStartService extends ConsumerWidget {
   }
 }
 
-class AppStart extends ConsumerWidget {
+/// Internal app widget that sets up ShadApp with theme and routing.
+class AppStart extends StatelessWidget {
   const AppStart({required this.appDescriptor, super.key});
   final AppDescriptor appDescriptor;
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final app = appDescriptor;
-    final themeMode =
-        ref.watch(appPreferenceProvider.select((e) => e.themeMode));
-    return ShadApp(
+    return GetThemeMode(
+      builder: (themeMode, actions) => ShadApp(
       title: app.title,
       initialRoute: '/',
-      home: CLTheme(
-        colors: const DefaultCLColors(),
-        // noteTheme: const DefaultNotesTheme(),
-        child: OnInitDone(
-          app: app,
-          uri: Uri.parse('/'),
-          builder: () {
+        home: CLTheme(
+          colors: const DefaultCLColors(),
+          // noteTheme: const DefaultNotesTheme(),
+          child: GetAppInitStatus(
+            app: app,
+            builder: () {
             final screen = app.screens
                 .where(
                   (s) => s.name == '',
@@ -79,9 +79,8 @@ class AppStart extends ConsumerWidget {
           pageBuilder: (context, animation, secondaryAnimation) => CLTheme(
             colors: const DefaultCLColors(),
             // noteTheme: const DefaultNotesTheme(),
-            child: OnInitDone(
+            child: GetAppInitStatus(
               app: app,
-              uri: uri,
               builder: () {
                 final screen = app.screens
                     .where(
@@ -103,6 +102,7 @@ class AppStart extends ConsumerWidget {
           ),
         );
       },
+      ),
     );
   }
 }

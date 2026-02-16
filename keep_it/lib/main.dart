@@ -191,5 +191,5 @@ void main() {
     setWindowMinSize(const Size(450, 450 * 16 / 9));
   }
 
-  runApp(AppStartService(appDescriptor: KeepItApp()));
+  runApp(AppStartView(appDescriptor: KeepItApp()));
 }

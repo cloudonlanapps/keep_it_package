@@ -5,12 +5,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 class AppPreferences {
   const AppPreferences({
     required this.themeMode,
-    this.iconColor = const Color.fromARGB(255, 80, 140, 224),
-    this.iconSize = 30,
   });
   final ThemeMode themeMode;
-  final Color iconColor;
-  final double iconSize;
 
   AppPreferences copyWith({
     ThemeMode? themeMode,
