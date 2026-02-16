@@ -1,4 +1,4 @@
-import 'package:content_store/src/stores/models/registered_service_locations.dart';
+import 'package:cl_basic_types/cl_basic_types.dart';
 import 'package:content_store/src/stores/providers/registerred_urls.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

@@ -5,7 +5,6 @@ import 'package:cl_server_services/cl_server_services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:local_store/local_store.dart';
 
-import '../models/registered_service_locations.dart';
 import 'store_provider.dart';
 
 class RegisteredServiceLocationsNotifier

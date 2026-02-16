@@ -1,8 +1,6 @@
 import 'package:cl_basic_types/cl_basic_types.dart';
-import 'package:cl_server_services/cl_server_services.dart';
 import 'package:collection/collection.dart';
-import 'package:flutter/foundation.dart';
-import 'package:local_store/local_store.dart';
+import 'package:meta/meta.dart';
 
 /// Registry of available service locations (local and remote).
 ///
@@ -101,9 +99,13 @@ class RegisteredServiceLocations {
   ServiceLocationConfig get activeConfig => availableConfigs[activeIndex];
   ServiceLocationConfig get defaultConfig => availableConfigs[0];
 
-  List<RemoteServiceLocationConfig> get remoteConfigs =>
-      availableConfigs.whereType<RemoteServiceLocationConfig>().toList();
+  List<ServiceLocationConfig> get remoteConfigs =>
+      availableConfigs.where((element) {
+        return !element.isLocal;
+      }).toList();
 
-  List<LocalServiceLocationConfig> get localConfigs =>
-      availableConfigs.whereType<LocalServiceLocationConfig>().toList();
+  List<ServiceLocationConfig> get localConfigs =>
+      availableConfigs.where((element) {
+        return element.isLocal;
+      }).toList();
 }

@@ -11,8 +11,7 @@ export 'src/stores/builders/get_registerred_urls.dart'
     show GetRegisteredServiceLocations;
 export 'src/stores/builders/get_store.dart' show GetStore;
 export 'src/stores/builders/get_store_status.dart' show GetStoreStatus;
-export 'src/stores/models/registered_service_locations.dart'
-    show RegisteredServiceLocations;
+
 export 'src/stores/providers/active_store_provider.dart'
     show activeStoreProvider;
 export 'src/stores/providers/refresh_cache.dart' show reloadProvider;
