@@ -1,4 +1,3 @@
-
 export 'src/gallery_view/models/cl_context_menu.dart' show CLContextMenu;
 export 'src/gallery_view/builders/get_selection_mode.dart'
     show GetSelectionMode;
@@ -23,4 +22,5 @@ export 'src/gallery_view/builders/get_filterred.dart' show GetFilterred;
 
 export 'src/common/views/preview/collection_preview_raw.dart' show CLEntityView;
 export 'src/gallery_view/views/cl_grid.dart' show CLGrid;
+export 'src/common/views/overlays.dart' show OverlayIcon, OverlayWidgets;
 export 'src/common/views/preview/collection_folder_item.dart' show FolderItem;

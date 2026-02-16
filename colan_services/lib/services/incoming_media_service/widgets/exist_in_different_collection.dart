@@ -3,6 +3,7 @@ import 'package:cl_entity_viewers/cl_entity_viewers.dart' show MediaThumbnail;
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:store/store.dart';
 
 class ExistInDifferentCollection extends StatelessWidget {
@@ -20,8 +21,11 @@ class ExistInDifferentCollection extends StatelessWidget {
   Widget build(BuildContext context) {
     final duplicates = targetMismatch;
     if (duplicates.isEmpty) {
-      return const Center(
-        child: CLText.large('Nothing to show here'),
+      return Center(
+        child: Text(
+          'Nothing to show here',
+          style: ShadTheme.of(context).textTheme.h3,
+        ),
       );
     }
     return Padding(
@@ -33,9 +37,12 @@ class ExistInDifferentCollection extends StatelessWidget {
             right: 0,
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 4),
-              child: CLText.verySmall(
+              child: Text(
                 'Swipe individual items to leave it in the same group.',
-                color: Theme.of(context).disabledColor,
+                style: ShadTheme.of(context).textTheme.small.copyWith(
+                  color: Theme.of(context).disabledColor,
+                  fontSize: 12,
+                ),
               ),
             ),
           ),
@@ -99,10 +106,11 @@ class ExistInDifferentCollection extends StatelessWidget {
                                 ),
                                 child: Align(
                                   alignment: Alignment.centerLeft,
-                                  child: CLText.standard(
+                                  child: Text(
                                     'Found in '
                                     '"${currCollectionLabel.trim()}"',
                                     textAlign: TextAlign.start,
+                                    style: ShadTheme.of(context).textTheme.h4,
                                   ),
                                 ),
                               ),

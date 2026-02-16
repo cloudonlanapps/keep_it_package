@@ -1,11 +1,9 @@
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
 
 class Menu extends StatelessWidget {
-  const Menu({
-    required this.menuItems,
-    super.key,
-  });
+  const Menu({required this.menuItems, super.key});
   final List<CLMenuItem> menuItems;
 
   @override
@@ -38,15 +36,33 @@ class Menu extends StatelessWidget {
                 .map(
                   (e) => Padding(
                     padding: const EdgeInsets.only(left: 16),
-                    child: CLButtonIconLabelled.small(
-                      e.icon,
-                      e.title,
-                      color: Theme.of(context).colorScheme.onPrimaryContainer,
-                      onTap: () async {
+                    child: ShadButton.ghost(
+                      onPressed: () async {
                         if (context.mounted) {
                           await e.onTap?.call();
                         }
                       },
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            e.icon,
+                            size: 20,
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onPrimaryContainer,
+                          ),
+                          Text(
+                            e.title,
+                            style: TextStyle(
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.onPrimaryContainer,
+                              fontSize: 12,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 )

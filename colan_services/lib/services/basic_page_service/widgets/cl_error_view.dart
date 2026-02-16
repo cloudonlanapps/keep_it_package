@@ -1,4 +1,3 @@
-import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
@@ -21,11 +20,12 @@ class CLErrorView extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         mainAxisSize: MainAxisSize.min,
         children: [
-          CLIcon.veryLarge(
+          Icon(
             LucideIcons.folder,
+            size: 32,
             color: Theme.of(context).colorScheme.error,
           ),
-          CLText.large(trim(errorMessage)),
+          Text(trim(errorMessage), style: ShadTheme.of(context).textTheme.h3),
           ...[
             const SizedBox(
               height: 32,

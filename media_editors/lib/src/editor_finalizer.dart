@@ -40,18 +40,20 @@ class EditorFinalizer extends StatelessWidget {
         },
         child:
             child ??
-            CLIcon.small(
+            Icon(
               clIcons.closeFullscreen,
               color: CLTheme.of(context).colors.iconColor,
+              size: 20,
             ),
       );
     }
     return PopupMenuButton<EditorFinalActions>(
       child:
           child ??
-          CLIcon.small(
+          Icon(
             clIcons.doneEditMedia,
             color: Colors.red, //CLTheme.of(context).colors.iconColor,
+            size: 20,
           ),
       onSelected: (value) async {
         switch (value) {

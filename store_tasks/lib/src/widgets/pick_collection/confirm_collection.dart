@@ -3,12 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
 class ConfirmCollection extends StatelessWidget {
-  const ConfirmCollection(
-      {required this.menuItem,
-      super.key,
-      this.backgroundColor,
-      this.disabledColor,
-      this.foregroundColor});
+  const ConfirmCollection({
+    required this.menuItem,
+    super.key,
+    this.backgroundColor,
+    this.disabledColor,
+    this.foregroundColor,
+  });
   final CLMenuItem menuItem;
   final Color? backgroundColor;
   final Color? disabledColor;
@@ -29,14 +30,20 @@ class ConfirmCollection extends StatelessWidget {
           ),
         ),
         child: Align(
-          child: CLButtonIconLabelled.standard(
-            menuItem.icon,
-            menuItem.title,
-            onTap: menuItem.onTap,
-            color: menuItem.onTap == null
+          child: ShadButton.ghost(
+            foregroundColor: menuItem.onTap == null
                 ? disabledColor ?? Colors.grey.shade400
                 : foregroundColor ??
-                    ShadTheme.of(context).colorScheme.primaryForeground,
+                      ShadTheme.of(context).colorScheme.primaryForeground,
+            onPressed: menuItem.onTap,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(menuItem.icon, size: 24),
+                const SizedBox(height: 4),
+                Text(menuItem.title),
+              ],
+            ),
           ),
         ),
       ),

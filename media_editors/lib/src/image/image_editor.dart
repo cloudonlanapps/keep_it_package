@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
 
 import '../editor_finalizer.dart';
 import 'models/aspect_ratio.dart' as aratio;
@@ -93,21 +94,24 @@ class _ImageEditorState extends State<ImageEditor> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        CLButtonIcon.small(
-                          clIcons.imageEditRotateRight,
-                          onTap: () {
+                        ShadButton.ghost(
+                          size: ShadButtonSize.sm,
+                          child: Icon(clIcons.imageEditRotateRight),
+                          onPressed: () {
                             controller.currentState?.rotate();
                           },
                         ),
-                        CLButtonIcon.small(
-                          clIcons.imageEditFlipHirizontal,
-                          onTap: () {
+                        ShadButton.ghost(
+                          size: ShadButtonSize.sm,
+                          child: Icon(clIcons.imageEditFlipHirizontal),
+                          onPressed: () {
                             controller.currentState?.flip();
                           },
                         ),
-                        CLButtonIcon.small(
-                          clIcons.imageEditRotateLeft,
-                          onTap: () {
+                        ShadButton.ghost(
+                          size: ShadButtonSize.sm,
+                          child: Icon(clIcons.imageEditRotateLeft),
+                          onPressed: () {
                             controller.currentState?.rotate(degree: -90);
                           },
                         ),
@@ -142,8 +146,9 @@ class _ImageEditorState extends State<ImageEditor> {
 
                 await editAndSave(
                   state.rawImageData,
-                  cropRect:
-                      editActionDetails.needCrop ? state.getCropRect() : null,
+                  cropRect: editActionDetails.needCrop
+                      ? state.getCropRect()
+                      : null,
                   needFlip: editActionDetails.needFlip,
                   rotateAngle: editActionDetails.hasRotateDegrees
                       ? editActionDetails.rotateDegrees

@@ -1,9 +1,8 @@
 import 'dart:math';
 
-import 'package:colan_widgets/src/basics/cl_text.dart';
 import 'package:flutter/material.dart';
-
 import 'package:percent_indicator/percent_indicator.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
 
 class StreamProgressView<T> extends StatelessWidget {
   const StreamProgressView({
@@ -45,11 +44,13 @@ class StreamProgressView<T> extends StatelessWidget {
                             lineWidth: 13,
                             animation: true,
                             percent: percent,
-                            center: CLText.veryLarge(
+                            center: Text(
                               '${(percent * 100).toInt()} %',
+                              style: ShadTheme.of(context).textTheme.h2,
                             ),
-                            footer: CLText.large(
+                            footer: Text(
                               labelExtractor(snapshot.data as T),
+                              style: ShadTheme.of(context).textTheme.h3,
                             ),
                             circularStrokeCap: CircularStrokeCap.round,
                             progressColor: Colors.purple,

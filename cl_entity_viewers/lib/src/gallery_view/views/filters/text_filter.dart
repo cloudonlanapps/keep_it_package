@@ -10,10 +10,7 @@ import '../../models/filter/string_filter.dart';
 import '../../providers/media_filters.dart';
 
 class TextFilterView extends ConsumerStatefulWidget {
-  const TextFilterView({
-    required this.filter,
-    super.key,
-  });
+  const TextFilterView({required this.filter, super.key});
   final CLFilter<ViewerEntity> filter;
 
   @override
@@ -36,9 +33,9 @@ class _TextFilterViewState extends ConsumerState<TextFilterView> {
   }
 
   void updateFilter() {
-    ref.read(mediaFiltersProvider.notifier).updateDefautTextSearchFilter(
-          controller.text,
-        );
+    ref
+        .read(mediaFiltersProvider.notifier)
+        .updateDefautTextSearchFilter(controller.text);
   }
 
   @override
@@ -56,42 +53,19 @@ class _TextFilterViewState extends ConsumerState<TextFilterView> {
       placeholder: const Text('Search Media'),
       trailing: controller.text.isNotEmpty
           ? ShadButton(
-              width: CLScaleType.verySmall.iconSize,
-              height: CLScaleType.verySmall.iconSize,
+              width: 16,
+              height: 16,
               padding: EdgeInsets.zero,
               decoration: const ShadDecoration(
                 secondaryBorder: ShadBorder.none,
                 secondaryFocusedBorder: ShadBorder.none,
               ),
-              child: Icon(
-                clIcons.textClear,
-              ),
+              child: Icon(clIcons.textClear, size: 16),
               onPressed: () {
                 controller.clear();
               },
             )
           : null,
     );
-    /* return SizedBox(
-      width: 200,
-      height: 50,
-      child: TextField(
-        controller: controller,
-        decoration: InputDecoration(
-          border: const OutlineInputBorder(),
-          labelText: 'Search',
-          suffixIcon: Padding(
-            padding: const EdgeInsets.all(8),
-            child: CLButtonIcon.tiny(
-              Icons.backspace_outlined,
-              onTap: () {
-                controller.clear();
-              },
-            ),
-          ),
-        ),
-        //  autofocus: true,
-      ),
-    ); */
   }
 }

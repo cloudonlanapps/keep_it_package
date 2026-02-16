@@ -1,7 +1,7 @@
 import 'dart:math';
 
 import 'package:cl_basic_types/cl_basic_types.dart';
-import 'package:colan_widgets/colan_widgets.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
@@ -19,16 +19,17 @@ Duration doubleToDuration(double position) =>
 
 extension ExtVideoPlayerValue on VideoPlayerValue {
   double get bufferedInSeconds => min(
-        buffered.isEmpty ? 0.0 : buffered.last.end.inSeconds.toDouble(),
-        duration.inSeconds.toDouble(),
-      );
+    buffered.isEmpty ? 0.0 : buffered.last.end.inSeconds.toDouble(),
+    duration.inSeconds.toDouble(),
+  );
   double get durationInSeconds => durationToDouble(duration);
   double get positionInSeconds => durationToDouble(position);
 
   String playTimeString(double? seekValue) {
     final isLive = durationToDouble(duration) > 10 * 60 * 60;
-    final currentPosition =
-        seekValue == null ? position : doubleToDuration(seekValue);
+    final currentPosition = seekValue == null
+        ? position
+        : doubleToDuration(seekValue);
 
     if (isLive) {
       if (isCompleted) {
@@ -42,10 +43,7 @@ extension ExtVideoPlayerValue on VideoPlayerValue {
 }
 
 class VideoProgress extends ConsumerStatefulWidget {
-  const VideoProgress({
-    required this.uri,
-    super.key,
-  });
+  const VideoProgress({required this.uri, super.key});
 
   final Uri uri;
 
@@ -88,7 +86,6 @@ class _VideoProgressState extends ConsumerState<VideoProgress> {
                               child: Stack(
                                 children: [
                                   // required only for network
-
                                   if (showBuffering)
                                     SliderTheme(
                                       data: SliderTheme.of(context).copyWith(
@@ -133,8 +130,9 @@ class _VideoProgressState extends ConsumerState<VideoProgress> {
                                           setState(() => seekValue = value),
                                       onChangeEnd: (double value) {
                                         setState(() => seekValue = null);
-                                        playerControls
-                                            .seekTo(doubleToDuration(value));
+                                        playerControls.seekTo(
+                                          doubleToDuration(value),
+                                        );
                                       },
                                     ),
                                   ),
@@ -148,11 +146,9 @@ class _VideoProgressState extends ConsumerState<VideoProgress> {
                           child: FittedBox(
                             child: Text(
                               playStatus.playTimeString(seekValue),
-                              style: ShadTheme.of(context)
-                                  .textTheme
-                                  .muted
+                              style: ShadTheme.of(context).textTheme.muted
                                   .copyWith(
-                                    fontSize: CLScaleType.tiny.fontSize,
+                                    fontSize: 10,
                                     color: playerUIPreferences.foregroundColor,
                                   ),
                             ),
@@ -213,7 +209,8 @@ class SmallOverlayShape extends SliderComponentShape {
     required Size sizeWithOverflow,
   }) {
     final paint = Paint()
-      ..color = sliderTheme.overlayColor?.withValues(alpha: 255 * 0.2) ??
+      ..color =
+          sliderTheme.overlayColor?.withValues(alpha: 255 * 0.2) ??
           Colors.grey.withValues(alpha: 255 * 0.2);
     context.canvas.drawCircle(center, size / 2, paint);
   }
@@ -229,9 +226,7 @@ class MenuBackground2 extends ConsumerWidget {
       decoration: BoxDecoration(
         color: const Color.fromARGB(192, 96, 96, 96),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: foregroundColor,
-        ),
+        border: Border.all(color: foregroundColor),
       ),
       // margin: const EdgeInsets.all(16),
       padding: const EdgeInsets.all(8),

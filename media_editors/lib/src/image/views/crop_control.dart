@@ -1,9 +1,8 @@
-import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
 
 import '../models/aspect_ratio.dart' as aratio;
 
-import '../models/aspect_ratio.dart';
 import 'crop_orientation_control.dart';
 
 class CropperControls extends StatelessWidget {
@@ -22,11 +21,10 @@ class CropperControls extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = ShadTheme.of(context);
     return Container(
       decoration: BoxDecoration(
-        color: CLTheme.of(context)
-            .colors
-            .wizardButtonForegroundColor, // Color for the circular container
+        color: theme.colorScheme.background, // Color for the circular container
       ),
       child: Row(
         children: [
@@ -39,10 +37,11 @@ class CropperControls extends StatelessWidget {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Align(
+                      Align(
                         alignment: Alignment.centerLeft,
-                        child: CLText.large(
+                        child: Text(
                           'Crop',
+                          style: theme.textTheme.h3,
                         ),
                       ),
                       Align(
@@ -80,21 +79,18 @@ class CropperControls extends StatelessWidget {
                           ),
                           child: Column(
                             children: [
-                              CLButtonText.standard(
-                                'Free form',
-                                disabledColor: CLTheme.of(context)
-                                    .colors
-                                    .disabledIconColor,
-                                color: CLTheme.of(context).colors.iconColor,
-                                onTap: aspectRatio == null
+                              ShadButton.ghost(
+                                onPressed: aspectRatio == null
                                     ? null
                                     : () => onChangeAspectRatio(null),
+                                child: const Text('Free form'),
                               ),
                             ],
                           ),
                         ),
-                        for (final ratio in const SupportedAspectRatiosDefault()
-                            .aspectRatios)
+                        for (final ratio
+                            in const aratio.SupportedAspectRatiosDefault()
+                                .aspectRatios)
                           Padding(
                             padding: const EdgeInsets.only(
                               right: 16,
@@ -103,13 +99,8 @@ class CropperControls extends StatelessWidget {
                             ),
                             child: Column(
                               children: [
-                                CLButtonText.standard(
-                                  ratio.title,
-                                  disabledColor: CLTheme.of(context)
-                                      .colors
-                                      .disabledIconColor,
-                                  color: CLTheme.of(context).colors.iconColor,
-                                  onTap: aspectRatio?.ratio == ratio.ratio
+                                ShadButton.ghost(
+                                  onPressed: aspectRatio?.ratio == ratio.ratio
                                       ? null
                                       : () {
                                           onChangeAspectRatio(
@@ -119,6 +110,7 @@ class CropperControls extends StatelessWidget {
                                             ),
                                           );
                                         },
+                                  child: Text(ratio.title),
                                 ),
                               ],
                             ),

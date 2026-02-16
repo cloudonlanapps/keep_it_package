@@ -20,9 +20,10 @@ class BrokenImage extends StatelessWidget {
             child: Padding(
               padding: const EdgeInsets.all(1),
               child: Center(
-                child: CLIcon.large(
+                child: Icon(
                   clIcons.brokenImage,
                   color: Theme.of(context).colorScheme.error,
+                  size: 24,
                 ),
               ),
             ),

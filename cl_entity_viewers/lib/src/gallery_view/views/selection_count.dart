@@ -1,4 +1,3 @@
-import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
@@ -20,14 +19,13 @@ class SelectionCountView extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Flexible(
-            child: child,
-          ),
+          Flexible(child: child),
           if (buttonLabel != null)
             ShadButton.secondary(
               onPressed: onPressed,
-              child: CLText.small(
+              child: Text(
                 buttonLabel!,
+                style: ShadTheme.of(context).textTheme.small,
               ),
             ),
         ],

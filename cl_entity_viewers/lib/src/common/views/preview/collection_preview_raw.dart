@@ -9,8 +9,11 @@ import 'collection_folder_item.dart';
 
 //
 class EntityViewRaw extends StatelessWidget {
-  const EntityViewRaw(
-      {super.key, required this.entity, this.grayFilter = false});
+  const EntityViewRaw({
+    super.key,
+    required this.entity,
+    this.grayFilter = false,
+  });
   final ViewerEntity entity;
   final bool grayFilter;
 
@@ -27,56 +30,57 @@ class EntityViewRaw extends StatelessWidget {
                 width: constrain.maxWidth,
                 height: constrain.maxHeight,
               ),
-              CLText.veryLarge(
+              Text(
                 entity.label!.characters.first,
+                style: ShadTheme.of(context).textTheme.h2,
               ),
             ],
           );
         },
       );
     } else {
-      widget = MediaThumbnail(
-        media: entity,
-      );
+      widget = MediaThumbnail(media: entity);
     }
 
     if (grayFilter) {
       return ColorFiltered(
-          colorFilter: const ColorFilter.matrix(<double>[
-            0.2126,
-            0.7152,
-            0.0722,
-            0,
-            0,
-            0.2126,
-            0.7152,
-            0.0722,
-            0,
-            0,
-            0.2126,
-            0.7152,
-            0.0722,
-            0,
-            0,
-            0,
-            0,
-            0,
-            1,
-            0,
-          ]),
-          child: widget);
+        colorFilter: const ColorFilter.matrix(<double>[
+          0.2126,
+          0.7152,
+          0.0722,
+          0,
+          0,
+          0.2126,
+          0.7152,
+          0.0722,
+          0,
+          0,
+          0.2126,
+          0.7152,
+          0.0722,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+        ]),
+        child: widget,
+      );
     }
     return widget;
   }
 }
 
 class CLEntityView extends StatelessWidget {
-  const CLEntityView(
-      {required this.entity,
-      this.children = const ViewerEntities([]),
-      super.key,
-      this.counter,
-      this.isFilterredOut});
+  const CLEntityView({
+    required this.entity,
+    this.children = const ViewerEntities([]),
+    super.key,
+    this.counter,
+    this.isFilterredOut,
+  });
   final ViewerEntity entity;
   final ViewerEntities children;
   final Widget? counter;

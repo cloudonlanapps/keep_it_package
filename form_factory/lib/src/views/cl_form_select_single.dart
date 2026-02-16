@@ -24,44 +24,46 @@ class CLFormSelectSingle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FormField<Object?>(
-        autovalidateMode: AutovalidateMode.onUserInteraction,
-        validator: (value) {
-          final res = descriptors.onValidate?.call(value);
+      autovalidateMode: AutovalidateMode.onUserInteraction,
+      validator: (value) {
+        final res = descriptors.onValidate?.call(value);
 
-          if (res != null) return res;
+        if (res != null) return res;
 
-          state.selectedEntitry.clear();
-          state.selectedEntitry.add(value);
+        state.selectedEntitry.clear();
+        state.selectedEntitry.add(value);
 
-          return null;
-        },
-        initialValue: descriptors.initialValues,
-        builder: (fieldState) {
-          return InputDecorator(
-            decoration: FormDesign.inputDecoration(
-              context,
-              label: descriptors.label,
-              actionBuilder: fieldState.value == null ? null : actionBuilder,
-            ),
-            child: Align(
-              alignment: Alignment.topLeft,
-              child: SearchAnchor(
-                searchController: state.searchController,
-                isFullScreen: false,
-                viewBackgroundColor: Theme.of(context).colorScheme.surface,
-                suggestionsBuilder: (context, controller) {
-                  return suggestionsBuilder(context,
-                      suggestions: descriptors.suggestionsAvailable,
-                      controller: controller,
-                      labelBuilder: descriptors.labelBuilder,
-                      fieldState: fieldState);
-                },
-                builder: (context, controller) {
-                  return GestureDetector(
-                    onTap: controller.openView,
-                    child: SizedBox.expand(
-                      child: Center(
-                          child: TextField(
+        return null;
+      },
+      initialValue: descriptors.initialValues,
+      builder: (fieldState) {
+        return InputDecorator(
+          decoration: FormDesign.inputDecoration(
+            context,
+            label: descriptors.label,
+            actionBuilder: fieldState.value == null ? null : actionBuilder,
+          ),
+          child: Align(
+            alignment: Alignment.topLeft,
+            child: SearchAnchor(
+              searchController: state.searchController,
+              isFullScreen: false,
+              viewBackgroundColor: Theme.of(context).colorScheme.surface,
+              suggestionsBuilder: (context, controller) {
+                return suggestionsBuilder(
+                  context,
+                  suggestions: descriptors.suggestionsAvailable,
+                  controller: controller,
+                  labelBuilder: descriptors.labelBuilder,
+                  fieldState: fieldState,
+                );
+              },
+              builder: (context, controller) {
+                return GestureDetector(
+                  onTap: controller.openView,
+                  child: SizedBox.expand(
+                    child: Center(
+                      child: TextField(
                         controller: controller,
                         onTap: () {
                           controller.openView();
@@ -69,30 +71,16 @@ class CLFormSelectSingle extends StatelessWidget {
                         onChanged: (_) {
                           controller.openView();
                         },
-                      )
-                          /* fieldState.value == null
-                            ? const cl.CLText.large("Tap here to select")
-                            : Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  cl.CLText.large(descriptors
-                                      .labelBuilder(fieldState.value!)),
-                                  if (fieldState.hasError)
-                                    cl.CLText.small(fieldState.errorText!,
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .error),
-                                  const cl.CLText.small("Tap here to change")
-                                ],
-                              ), */
-                          ),
+                      ),
                     ),
-                  );
-                },
-              ),
+                  ),
+                );
+              },
             ),
-          );
-        });
+          ),
+        );
+      },
+    );
   }
 
   FutureOr<Iterable<Widget>> suggestionsBuilder(
@@ -109,13 +97,12 @@ class CLFormSelectSingle extends StatelessWidget {
       filterredSuggestion = suggestions;
     } else {
       filterredSuggestion = suggestions
-          ?.where(
-            (element) => labelBuilder(element).contains(controllerText),
-          )
+          ?.where((element) => labelBuilder(element).contains(controllerText))
           .toList();
     }
 
-    final list = filterredSuggestion?.map<Widget>((e) {
+    final list =
+        filterredSuggestion?.map<Widget>((e) {
           final description = descriptionBuilder?.call(e);
           return ListTile(
             title: Text(labelBuilder(e)),
@@ -153,14 +140,11 @@ class CLFormSelectSingle extends StatelessWidget {
         );
       }
     }
-    return list
-      ..add(
-        ListTile(
-          title: SizedBox(
-            height: MediaQuery.of(context).viewInsets.bottom,
-          ),
-        ),
-      );
+    return list..add(
+      ListTile(
+        title: SizedBox(height: MediaQuery.of(context).viewInsets.bottom),
+      ),
+    );
   }
 
   Future<void> _onSelect(

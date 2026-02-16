@@ -1,5 +1,6 @@
 import 'package:cl_basic_types/cl_basic_types.dart';
 import 'package:colan_widgets/colan_widgets.dart';
+import '../../common/views/overlays.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -29,14 +30,17 @@ class SelectableItem extends ConsumerWidget {
       return itemWidget;
     }
 
-    final isSelected = ref.watch(selectorProvider
-            .select((e) => e.isSelected(ViewerEntities([item])))) !=
+    final isSelected =
+        ref.watch(
+          selectorProvider.select((e) => e.isSelected(ViewerEntities([item]))),
+        ) !=
         SelectionStatus.selectedNone;
 
     final decoration = isSelected
         ? BoxDecoration(
-            border:
-                Border.all(color: const Color.fromARGB(255, 0x08, 0xFF, 0x08)),
+            border: Border.all(
+              color: const Color.fromARGB(255, 0x08, 0xFF, 0x08),
+            ),
           )
         : BoxDecoration(
             color: Theme.of(context).colorScheme.surface.withAlpha(128),

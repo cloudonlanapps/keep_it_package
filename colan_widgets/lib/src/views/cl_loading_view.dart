@@ -1,7 +1,7 @@
-import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:progress_indicators/progress_indicators.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:shimmer/shimmer.dart';
 
 enum CLLoaderKind { hidden, widget, shimmer }
@@ -56,19 +56,20 @@ class CLLoader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return switch (kind) {
-      CLLoaderKind.hidden => kDebugMode
-          ? CLLoaderWidget(
-              debugMessage: debugMessage,
-              message: null,
-            )
-          : const SizedBox.shrink(),
+      CLLoaderKind.hidden =>
+        kDebugMode
+            ? CLLoaderWidget(
+                debugMessage: debugMessage,
+                message: null,
+              )
+            : const SizedBox.shrink(),
       CLLoaderKind.widget => CLLoaderWidget(
-          message: message,
-          debugMessage: debugMessage,
-        ),
+        message: message,
+        debugMessage: debugMessage,
+      ),
       CLLoaderKind.shimmer => CLLoaderShimmer(
-          debugMessage: debugMessage,
-        ),
+        debugMessage: debugMessage,
+      ),
     };
   }
 }
@@ -86,7 +87,9 @@ class CLLoaderWidget extends StatelessWidget {
     final Widget child;
 
     if (kDebugMode && debugMessage != null) {
-      child = Center(child: CLText.standard(debugMessage!));
+      child = Center(
+        child: Text(debugMessage!, style: ShadTheme.of(context).textTheme.p),
+      );
     } else {
       child = Center(child: ScalingText(message ?? 'Loading ...'));
     }
@@ -124,7 +127,12 @@ class CLLoaderShimmer extends StatelessWidget {
           ],
         ),
         child: kDebugMode && debugMessage != null
-            ? Center(child: CLText.standard(debugMessage!))
+            ? Center(
+                child: Text(
+                  debugMessage!,
+                  style: ShadTheme.of(context).textTheme.p,
+                ),
+              )
             : null,
       ),
     );

@@ -1,4 +1,4 @@
-import 'package:colan_widgets/colan_widgets.dart' show OverlayWidgets;
+import '../../common/views/overlays.dart' show OverlayWidgets;
 import 'package:flutter/material.dart';
 
 import 'media_viewer.dart';

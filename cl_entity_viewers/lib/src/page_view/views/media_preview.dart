@@ -4,6 +4,8 @@ import 'dart:math' as math;
 import 'package:cl_basic_types/cl_basic_types.dart';
 
 import 'package:colan_widgets/colan_widgets.dart';
+
+import '../../common/views/overlays.dart';
 import 'package:flutter/material.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
@@ -53,11 +55,12 @@ class MediaPreviewWithOverlays extends StatelessWidget {
               builder: (context, snapshot) {
                 return Transform.rotate(
                   angle: math.pi / 4,
-                  child: CLIcon.veryLarge(
+                  child: Icon(
                     snapshot.data ?? false ? clIcons.brokenPin : clIcons.pinned,
                     color: snapshot.data ?? false
                         ? Colors.red
                         : const Color.fromARGB(255, 33, 243, 47),
+                    size: 32,
                   ),
                 );
               },
@@ -73,9 +76,10 @@ class MediaPreviewWithOverlays extends StatelessWidget {
                   192,
                 ), // Color for the circular container
               ),
-              child: CLIcon.veryLarge(
+              child: Icon(
                 clIcons.playerPlay,
                 color: CLTheme.of(context).colors.iconColorTransparent,
+                size: 32,
               ),
             ),
           ),
@@ -104,7 +108,7 @@ class MediaThumbnail extends StatelessWidget {
       return MediaViewerOverlays(
         uri: media.previewUri!,
         mime: 'image/jpeg',
-        overlays: overlays ?? const [],
+        overlays: overlays ?? const <OverlayWidgets>[],
         child: MediaViewer(
           heroTag: '/item/${media.id}',
           uri: media.previewUri!,

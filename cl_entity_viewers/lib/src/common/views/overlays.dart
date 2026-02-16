@@ -1,9 +1,5 @@
 import 'package:flutter/material.dart';
 
-/// open issues
-/// the network images are not cached. Should we allow configuring it?
-///
-
 class OverlayWidgets extends StatelessWidget {
   factory OverlayWidgets({
     required Widget child,
@@ -59,9 +55,34 @@ class OverlayWidgets extends StatelessWidget {
         widthFactor: widthFactor,
         heightFactor: heightFactor,
         child: ClipRect(
-          child: FittedBox(
-            fit: fit ?? BoxFit.contain,
-            child: child,
+          child: FittedBox(fit: fit ?? BoxFit.contain, child: child),
+        ),
+      ),
+    );
+  }
+}
+
+class OverlayIcon extends StatelessWidget {
+  const OverlayIcon(this.iconData, {super.key});
+  final IconData iconData;
+
+  @override
+  Widget build(BuildContext context) {
+    return FractionallySizedBox(
+      widthFactor: 0.3,
+      heightFactor: 0.3,
+      child: FittedBox(
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: Theme.of(context).colorScheme.onSurface.withAlpha(
+              192,
+            ), // Color for the circular container
+          ),
+          child: Icon(
+            iconData,
+            color: const Color.fromARGB(192, 255, 255, 255),
+            size: 64,
           ),
         ),
       ),

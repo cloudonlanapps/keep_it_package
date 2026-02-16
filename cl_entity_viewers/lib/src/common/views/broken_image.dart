@@ -2,9 +2,7 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 
 class BrokenImage extends StatelessWidget {
-  const BrokenImage({
-    super.key,
-  });
+  const BrokenImage({super.key});
   static Widget? cachedWidget;
 
   @override
@@ -20,9 +18,10 @@ class BrokenImage extends StatelessWidget {
             child: Padding(
               padding: const EdgeInsets.all(1),
               child: Center(
-                child: CLIcon.large(
+                child: Icon(
                   clIcons.brokenImage,
                   color: Theme.of(context).colorScheme.error,
+                  size: 24,
                 ),
               ),
             ),

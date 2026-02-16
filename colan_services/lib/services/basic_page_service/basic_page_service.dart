@@ -1,5 +1,6 @@
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
 
 import 'widgets/page_manager.dart';
 
@@ -45,13 +46,14 @@ class BasicPageService extends StatelessWidget {
           Expanded(
             child: (message is String)
                 ? Center(
-                    child: CLText.large(
+                    child: Text(
                       message as String,
+                      style: ShadTheme.of(context).textTheme.h3,
                     ),
                   )
                 : (message is Widget)
-                    ? message as Widget
-                    : throw Exception('must be either widget or a string'),
+                ? message as Widget
+                : throw Exception('must be either widget or a string'),
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -59,22 +61,37 @@ class BasicPageService extends StatelessWidget {
             children: [
               if (menuItems == null) ...[
                 if (PageManager.of(context).canPop())
-                  CLButtonIconLabelled.standard(
-                    clIcons.pagePop,
-                    'Back',
-                    onTap: PageManager.of(context).pop,
+                  ShadButton.ghost(
+                    onPressed: PageManager.of(context).pop,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(clIcons.pagePop),
+                        const Text('Back'),
+                      ],
+                    ),
                   ),
-                CLButtonIconLabelled.standard(
-                  clIcons.navigateHome,
-                  'Home',
-                  onTap: () => PageManager.of(context).home(),
-                )
+                ShadButton.ghost(
+                  onPressed: () => PageManager.of(context).home(),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(clIcons.navigateHome),
+                      const Text('Home'),
+                    ],
+                  ),
+                ),
               ] else
                 ...menuItems!.map((e) {
-                  return CLButtonIconLabelled.standard(
-                    e.icon,
-                    e.title,
-                    onTap: e.onTap,
+                  return ShadButton.ghost(
+                    onPressed: e.onTap,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(e.icon),
+                        Text(e.title),
+                      ],
+                    ),
                   );
                 }),
             ],
@@ -82,14 +99,5 @@ class BasicPageService extends StatelessWidget {
         ],
       ),
     );
-    /* 
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(8),
-        child: CLText.large(
-          message,
-        ),
-      ),
-    ); */
   }
 }

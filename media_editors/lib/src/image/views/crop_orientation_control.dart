@@ -18,8 +18,9 @@ class CropOrientation extends StatelessWidget {
   bool isAspectLandScape() {
     final isRotated = rotateAngle == 90 || rotateAngle == 270;
     final isAspectRatioLandscape = aspectRatio?.isLandscape ?? false;
-    final isLandscape =
-        (isRotated ? !isAspectRatioLandscape : isAspectRatioLandscape);
+    final isLandscape = (isRotated
+        ? !isAspectRatioLandscape
+        : isAspectRatioLandscape);
     return isLandscape;
   }
 
@@ -65,11 +66,12 @@ class _DeviceInOrientation extends StatelessWidget {
     return Transform.scale(
       scaleX: isLandscape ? 16 / 9 : 1,
       scaleY: isLandscape ? 1 : 16 / 9,
-      child: CLIcon.verySmall(
+      child: Icon(
         clIcons.mediaOrientation,
         color: isDisabled
             ? CLTheme.of(context).colors.disabledIconColor
             : CLTheme.of(context).colors.iconColor,
+        size: 16,
       ),
     );
   }

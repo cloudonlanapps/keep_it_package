@@ -14,6 +14,7 @@ dependencies:
     sdk: flutter
   colan_widgets:
     path: ../colan_widgets
+  shadcn_ui: ^0.38.5
 
 dev_dependencies:
   flutter_test:

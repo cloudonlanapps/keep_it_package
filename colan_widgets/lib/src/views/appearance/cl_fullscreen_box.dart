@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../basics/cl_button.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
 import '../../models/ext_color.dart';
 import '../../theme/models/cl_icons.dart';
 
@@ -132,11 +132,14 @@ class WrapCloseButton extends StatelessWidget {
               child: SizedBox(
                 height: 32 + 20,
                 child: Padding(
-                  padding:
-                      const EdgeInsets.only(top: 16, right: 16, bottom: 16),
-                  child: CLButtonIcon.small(
-                    clIcons.closeFullscreen,
-                    onTap: onCancel,
+                  padding: const EdgeInsets.only(
+                    top: 16,
+                    right: 16,
+                    bottom: 16,
+                  ),
+                  child: ShadButton.ghost(
+                    onPressed: onCancel,
+                    child: Icon(clIcons.closeFullscreen, size: 20),
                   ),
                 ),
               ),
@@ -189,21 +192,22 @@ class CLBackground extends StatelessWidget {
         Container(
           decoration: BoxDecoration(
             gradient: LinearGradient(
-              colors: [
-                Colors.red,
-                Colors.orange,
-                Colors.yellow,
-                Colors.green,
-                Colors.blue,
-                Colors.indigo,
-                Colors.purple,
-              ]
-                  .map(
-                    (e) => backgroundBrightness < 0
-                        ? e.reduceBrightness(-backgroundBrightness)
-                        : e.increaseBrightness(backgroundBrightness),
-                  )
-                  .toList(),
+              colors:
+                  [
+                        Colors.red,
+                        Colors.orange,
+                        Colors.yellow,
+                        Colors.green,
+                        Colors.blue,
+                        Colors.indigo,
+                        Colors.purple,
+                      ]
+                      .map(
+                        (e) => backgroundBrightness < 0
+                            ? e.reduceBrightness(-backgroundBrightness)
+                            : e.increaseBrightness(backgroundBrightness),
+                      )
+                      .toList(),
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),

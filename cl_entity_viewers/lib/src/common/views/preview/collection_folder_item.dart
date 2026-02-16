@@ -1,4 +1,4 @@
-import 'package:colan_widgets/colan_widgets.dart';
+import '../overlays.dart';
 import 'package:flutter/material.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
@@ -35,12 +35,7 @@ class FolderItem extends StatelessWidget {
           },
         ),
         if (counter != null)
-          Positioned(
-            bottom: 8,
-            left: 0,
-            right: 0,
-            child: counter!,
-          ),
+          Positioned(bottom: 8, left: 0, right: 0, child: counter!),
         if (name != null)
           OverlayWidgets(
             heightFactor: 0.2,
@@ -50,18 +45,17 @@ class FolderItem extends StatelessWidget {
             child: Container(
               alignment: Alignment.center,
               margin: const EdgeInsets.symmetric(horizontal: 4),
-              color: ShadTheme.of(context)
-                  .colorScheme
-                  .foreground
-                  .withValues(alpha: 0.5),
+              color: ShadTheme.of(
+                context,
+              ).colorScheme.foreground.withValues(alpha: 0.5),
               child: Text(
                 name!,
                 textAlign: TextAlign.center,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: ShadTheme.of(context).textTheme.small.copyWith(
-                      color: ShadTheme.of(context).colorScheme.background,
-                    ),
+                  color: ShadTheme.of(context).colorScheme.background,
+                ),
               ),
             ),
           ),

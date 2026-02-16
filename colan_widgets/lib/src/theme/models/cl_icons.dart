@@ -4,8 +4,6 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
-import '../../models/cl_scale_type.dart';
-
 extension IconOnIconData on IconData {
   Widget iconFormatted({
     double? size,
@@ -55,7 +53,7 @@ class SyncIcons {
 
   final Widget inSync = Center(
     child: Symbols.cloud_done_sharp.iconFormatted(
-      size: CLScaleType.veryLarge.iconSize,
+      size: 32,
       weight: 700,
       grade: 100,
       color: const Color.fromARGB(

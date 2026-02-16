@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../basics/cl_button.dart';
-import '../../basics/cl_text.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
 import '../../models/cl_menu_item.dart';
 import '../../theme/state/cl_theme.dart';
 
@@ -34,13 +33,13 @@ class WizardDialog extends StatelessWidget implements PreferredSizeWidget {
                   alignment: Alignment.centerRight,
                   child: Container(
                     decoration: BoxDecoration(
-                      color: CLTheme.of(context)
-                          .colors
-                          .wizardButtonBackgroundColor,
+                      color: CLTheme.of(
+                        context,
+                      ).colors.wizardButtonBackgroundColor,
                       border: Border.all(
-                        color: CLTheme.of(context)
-                            .colors
-                            .wizardButtonBackgroundColor,
+                        color: CLTheme.of(
+                          context,
+                        ).colors.wizardButtonBackgroundColor,
                       ),
                       borderRadius: const BorderRadius.all(
                         Radius.circular(16),
@@ -51,13 +50,19 @@ class WizardDialog extends StatelessWidget implements PreferredSizeWidget {
                         horizontal: 8,
                         vertical: 4,
                       ),
-                      child: CLButtonText.large(
-                        option3!.title,
-                        onTap: option3!.onTap,
-                        color: CLTheme.of(context)
-                            .colors
-                            .wizardButtonForegroundColor,
-                        disabledColor: Colors.grey,
+                      child: ShadButton(
+                        onPressed: option3!.onTap,
+                        backgroundColor: CLTheme.of(
+                          context,
+                        ).colors.wizardButtonBackgroundColor,
+                        child: Text(
+                          option3!.title,
+                          style: ShadTheme.of(context).textTheme.large.copyWith(
+                            color: CLTheme.of(
+                              context,
+                            ).colors.wizardButtonForegroundColor,
+                          ),
+                        ),
                       ),
                     ),
                   ),
@@ -90,9 +95,9 @@ class WizardDialog extends StatelessWidget implements PreferredSizeWidget {
                           child: Container(
                             margin: const EdgeInsets.only(right: 1),
                             decoration: BoxDecoration(
-                              color: CLTheme.of(context)
-                                  .colors
-                                  .wizardButtonBackgroundColor,
+                              color: CLTheme.of(
+                                context,
+                              ).colors.wizardButtonBackgroundColor,
                               border: const Border(
                                 top: BorderSide(
                                   color: Colors.transparent,
@@ -107,16 +112,21 @@ class WizardDialog extends StatelessWidget implements PreferredSizeWidget {
                             ),
                             child: Center(
                               child: Padding(
-                                padding:
-                                    const EdgeInsets.only(top: 8, right: 2),
+                                padding: const EdgeInsets.only(
+                                  top: 8,
+                                  right: 2,
+                                ),
                                 child: FittedBox(
-                                  child: CLLabel.large(
+                                  child: Text(
                                     option2!.title,
-                                    color: option2!.onTap == null
-                                        ? Colors.grey
-                                        : CLTheme.of(context)
-                                            .colors
-                                            .wizardButtonForegroundColor,
+                                    style: ShadTheme.of(context).textTheme.large
+                                        .copyWith(
+                                          color: option2!.onTap == null
+                                              ? Colors.grey
+                                              : CLTheme.of(context)
+                                                    .colors
+                                                    .wizardButtonForegroundColor,
+                                        ),
                                   ),
                                 ),
                               ),
@@ -132,9 +142,9 @@ class WizardDialog extends StatelessWidget implements PreferredSizeWidget {
                           child: Container(
                             margin: const EdgeInsets.only(left: 1),
                             decoration: BoxDecoration(
-                              color: CLTheme.of(context)
-                                  .colors
-                                  .wizardButtonBackgroundColor,
+                              color: CLTheme.of(
+                                context,
+                              ).colors.wizardButtonBackgroundColor,
                               border: const Border(
                                 top: BorderSide(
                                   color: Colors.transparent,
@@ -151,13 +161,16 @@ class WizardDialog extends StatelessWidget implements PreferredSizeWidget {
                               child: Padding(
                                 padding: const EdgeInsets.only(top: 8, left: 2),
                                 child: FittedBox(
-                                  child: CLLabel.large(
+                                  child: Text(
                                     option1!.title,
-                                    color: option1!.onTap == null
-                                        ? Colors.grey
-                                        : CLTheme.of(context)
-                                            .colors
-                                            .wizardButtonForegroundColor,
+                                    style: ShadTheme.of(context).textTheme.large
+                                        .copyWith(
+                                          color: option1!.onTap == null
+                                              ? Colors.grey
+                                              : CLTheme.of(context)
+                                                    .colors
+                                                    .wizardButtonForegroundColor,
+                                        ),
                                   ),
                                 ),
                               ),
