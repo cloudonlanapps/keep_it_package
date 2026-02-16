@@ -3,8 +3,8 @@ import 'package:cl_entity_viewers/cl_entity_viewers.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
-import 'package:store_tasks/store_tasks.dart';
 
+import '../../../../store_tasks_service/store_tasks_service.dart';
 import '../../../basic_page_service/widgets/page_manager.dart';
 import '../../models/entity_actions.dart';
 import '../../views/context_menu.dart';

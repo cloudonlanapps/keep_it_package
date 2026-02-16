@@ -3,17 +3,15 @@ import 'dart:io';
 import 'package:cl_basic_types/cl_basic_types.dart';
 import 'package:cl_camera/cl_camera.dart';
 import 'package:cl_media_tools/cl_media_tools.dart';
-
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
 import 'package:path/path.dart' as p;
 import 'package:store/store.dart';
-import 'package:store_tasks/store_tasks.dart';
 
 import '../../providers/captured_media.dart';
+import '../../store_tasks_service/store_tasks_service.dart';
 import '../basic_page_service/widgets/fullscreen_layout.dart';
 import '../basic_page_service/widgets/page_manager.dart';
 import 'models/default_theme.dart';

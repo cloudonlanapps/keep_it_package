@@ -2,12 +2,11 @@ import 'package:cl_basic_types/cl_basic_types.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
-
 import 'package:store/store.dart';
-import 'package:store_tasks/store_tasks.dart';
 
 import '../../models/cl_media_candidate.dart';
 import '../../providers/incoming_media.dart';
+import '../../store_tasks_service/store_tasks_service.dart';
 import 'incoming_media_service.dart';
 
 class IncomingMediaMonitor extends ConsumerWidget {

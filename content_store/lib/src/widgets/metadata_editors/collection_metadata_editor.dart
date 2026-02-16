@@ -74,8 +74,7 @@ class CollectionMetadataEditor extends ConsumerStatefulWidget {
       _CollectionMetadataEditorState();
 
   static Future<StoreEntity?> openSheet(
-    BuildContext context,
-    WidgetRef ref, {
+    BuildContext context, {
     required StoreEntity? collection,
     required CLStore? store,
     required String? suggestedLabel,

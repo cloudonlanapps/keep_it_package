@@ -23,7 +23,7 @@ class CreateNewCollection extends ConsumerWidget {
     return GestureDetector(
       onTap: () async {
         final collection = await CollectionMetadataEditor.openSheet(
-            context, ref,
+            context,
             collection: null,
             store: targetStore,
             suggestedLabel: suggestedName,

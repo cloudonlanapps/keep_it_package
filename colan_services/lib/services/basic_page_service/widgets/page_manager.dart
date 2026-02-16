@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:store/store.dart';
-import 'package:store_tasks/store_tasks.dart';
+import '../../../store_tasks_service/store_tasks_service.dart';
 
 import '../../camera_service/camera_service.dart';
 import '../../camera_service/models/default_theme.dart';

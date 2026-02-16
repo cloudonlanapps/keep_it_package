@@ -77,8 +77,6 @@ dependencies:
   sqlite_async: ^0.12.2 
   store:
     path: ../store
-  store_tasks:
-    path: ../store_tasks
   stream_channel: ^2.1.2
   tar: ^2.0.0
   uuid: ^4.4.0

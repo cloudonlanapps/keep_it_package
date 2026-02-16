@@ -9,6 +9,7 @@ export 'src/stores/builders/get_default_store.dart' show GetDefaultStore;
 export 'src/stores/builders/get_entities.dart' show GetEntities, GetEntity;
 export 'src/stores/builders/get_registerred_urls.dart'
     show GetRegisteredServiceLocations;
+export 'src/stores/builders/get_reload.dart' show GetReload;
 export 'src/stores/builders/get_store.dart' show GetStore;
 export 'src/stores/builders/get_store_status.dart' show GetStoreStatus;
 

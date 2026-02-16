@@ -2,8 +2,7 @@ import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:store_tasks/store_tasks.dart';
-
+import '../../views/store_task_widgets/store_task_wizard.dart';
 import '../basic_page_service/widgets/page_manager.dart';
 
 class MediaWizardService extends ConsumerWidget {
