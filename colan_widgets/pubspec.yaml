@@ -7,8 +7,6 @@ environment:
 
 dependencies:
   # audio_waveforms: ^1.0.5
-  cl_basic_types:
-    path: ../cl_basic_types
   collection: ^1.19.0
   crypto: ^3.0.3
   event_bus: ^2.0.0

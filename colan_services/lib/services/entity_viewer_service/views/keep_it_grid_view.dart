@@ -1,18 +1,17 @@
 import 'package:cl_basic_types/cl_basic_types.dart';
 import 'package:cl_entity_viewers/cl_entity_viewers.dart';
 import 'package:colan_widgets/colan_widgets.dart';
-
 import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 import 'package:store_tasks/store_tasks.dart';
 
+import '../../basic_page_service/widgets/page_manager.dart';
 import '../models/entity_actions.dart';
 import '../widgets/preview/entity_preview.dart';
 import '../widgets/stale_media_banner.dart';
 import '../widgets/when_empty.dart';
-import '../../basic_page_service/widgets/page_manager.dart';
 import 'bottom_bar_grid_view.dart';
 import 'top_bar.dart';
 

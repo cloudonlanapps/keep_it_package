@@ -1,7 +1,7 @@
 import 'dart:math';
 
-import 'package:cl_basic_types/cl_basic_types.dart';
 import 'package:colan_widgets/colan_widgets.dart';
+import 'package:colan_widgets/src/utils/double_extension.dart';
 import 'package:flutter/material.dart';
 
 @immutable
@@ -58,7 +58,8 @@ class CLMediaCollage extends StatelessWidget {
       vCount: vCount,
       keepAspectRatio: keepAspectRatio ?? false,
       canScroll: vCount == null,
-      maxPageDimension: maxPageDimension ??
+      maxPageDimension:
+          maxPageDimension ??
           const CLDimension(itemsInRow: 6, itemsInColumn: 6),
       itemBuilder: itemBuilder,
     );
@@ -78,7 +79,8 @@ class CLMediaCollage extends StatelessWidget {
       key: key,
       keepAspectRatio: keepAspectRatio ?? false,
       canScroll: canScroll,
-      maxPageDimension: maxPageDimension ??
+      maxPageDimension:
+          maxPageDimension ??
           const CLDimension(itemsInRow: 6, itemsInColumn: 6),
       itemBuilder: itemBuilder,
     );
@@ -130,26 +132,26 @@ class CLMediaCollage extends StatelessWidget {
         }
         return switch (y) {
           null => Matrix2D.scrollable(
-              itemCount: itemCount,
-              hCount: x,
-              itemBuilder: (context, index) {
-                return onBuildItem(
-                  context,
-                  itemBuilder(context, index),
-                );
-              },
-            ),
+            itemCount: itemCount,
+            hCount: x,
+            itemBuilder: (context, index) {
+              return onBuildItem(
+                context,
+                itemBuilder(context, index),
+              );
+            },
+          ),
           _ => Matrix2D(
-              itemCount: itemCount,
-              hCount: x,
-              vCount: y,
-              itemBuilder: (context, index) {
-                return onBuildItem(
-                  context,
-                  itemBuilder(context, index),
-                );
-              },
-            )
+            itemCount: itemCount,
+            hCount: x,
+            vCount: y,
+            itemBuilder: (context, index) {
+              return onBuildItem(
+                context,
+                itemBuilder(context, index),
+              );
+            },
+          ),
         };
       },
     );

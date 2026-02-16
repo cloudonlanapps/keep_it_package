@@ -49,8 +49,8 @@ class AnalysePage extends StatelessWidget {
                 };
               },
         ),
-        progressExtractor: (Progress p) => p.fractCompleted,
-        labelExtractor: (Progress p) => p.currentItem,
+        progressExtractor: (p) => p.fractCompleted,
+        labelExtractor: (p) => p.currentItem,
         onCancel: onCancel,
       ),
     );

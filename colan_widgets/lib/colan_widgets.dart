@@ -31,8 +31,8 @@ export 'src/views/appearance/cl_fullscreen_box.dart'
     show CLDialogWrapper, CLFullscreenBox;
 export 'src/views/appearance/cl_scaffold.dart' show CLScaffold;
 export 'src/views/cl_loading_view.dart' show CLLoader;
-export 'src/views/stale_media_indicator_view.dart' show BannerView;
 export 'src/views/progress_view/stream_progress_view.dart'
     show StreamProgressView;
+export 'src/views/stale_media_indicator_view.dart' show BannerView;
 export 'src/views/wizards/wizard_dialog.dart' show WizardDialog;
 export 'src/views/wizards/wizard_layout.dart' show WizardLayout, WizardLayout2;
