@@ -16,7 +16,7 @@ export 'package:cl_server_dart_client/cl_server_dart_client.dart'
         ServerPreferences;
 
 // Export builders
-export 'builders/get_active_a_i_server.dart' show GetActiveAIServer;
+export 'builders/get_active_ai_server.dart' show GetActiveAIServer;
 export 'builders/get_auth_status.dart'
     show AuthActions, AuthStatusData, GetAuthStatus;
 export 'builders/get_available_servers.dart' show GetAvailableServers;
