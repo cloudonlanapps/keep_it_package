@@ -24,7 +24,8 @@ class CLStore with CLLogger {
 
   @override
   String get logPrefix => 'CLStore';
-  String get label => entityStore.locationConfig.label ?? entityStore.locationConfig.displayName;
+  String get label =>
+      entityStore.config.label ?? entityStore.config.displayName;
 
   CLStore copyWith({
     EntityStore? entityStore,
@@ -53,7 +54,9 @@ class CLStore with CLLogger {
 
   @override
   int get hashCode =>
-      entityStore.hashCode ^ tempCollectionName.hashCode ^ tempFilePath.hashCode;
+      entityStore.hashCode ^
+      tempCollectionName.hashCode ^
+      tempFilePath.hashCode;
 
   Future<StoreEntity?> dbSave(
     StoreEntity entity, {

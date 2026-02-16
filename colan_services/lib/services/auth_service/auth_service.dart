@@ -39,7 +39,7 @@ class AuthService extends ConsumerWidget {
           config: null,
         ),
         data: (activeStore) {
-          final locationConfig = activeStore.entityStore.locationConfig;
+          final locationConfig = activeStore.entityStore.config;
 
           // Only show auth UI for remote stores
           if (locationConfig is! RemoteServiceLocationConfig) {

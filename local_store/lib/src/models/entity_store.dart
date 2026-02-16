@@ -18,8 +18,7 @@ class LocalSQLiteEntityStore extends EntityStore
     with SQLiteDBTableMixin<CLEntity> {
   LocalSQLiteEntityStore(
     this.agent, {
-    required super.identity,
-    required LocalServiceLocationConfig super.locationConfig,
+    required LocalServiceLocationConfig super.config,
     required this.mediaPath,
     required this.previewPath,
     required this.generatePreview,
@@ -273,8 +272,7 @@ class LocalSQLiteEntityStore extends EntityStore
 
     return LocalSQLiteEntityStore(
       agent,
-      identity: identity,
-      locationConfig: locationConfig,
+      config: locationConfig,
       mediaPath: mediaPath,
       previewPath: previewPath,
       generatePreview: generatePreview,

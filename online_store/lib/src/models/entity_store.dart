@@ -12,8 +12,7 @@ import 'query_filter_adapter.dart';
 @immutable
 class OnlineEntityStore extends EntityStore {
   const OnlineEntityStore({
-    required super.identity,
-    required RemoteServiceLocationConfig super.locationConfig,
+    required super.config,
     required this.server,
   });
 
@@ -180,24 +179,26 @@ class OnlineEntityStore extends EntityStore {
   @override
   Uri? mediaUri(CLEntity item) {
     if (item.id == null) return null;
-    final config = locationConfig as RemoteServiceLocationConfig;
-    return Uri.parse('${config.storeUrl}/entities/${item.id}/media');
+
+    return Uri.parse(
+      '${(config as RemoteServiceLocationConfig).storeUrl}/entities/${item.id}/media',
+    );
   }
 
   @override
   Uri? previewUri(CLEntity item) {
     if (item.id == null) return null;
-    final config = locationConfig as RemoteServiceLocationConfig;
-    return Uri.parse('${config.storeUrl}/entities/${item.id}/preview');
+    return Uri.parse(
+      '${(config as RemoteServiceLocationConfig).storeUrl}/entities/${item.id}/preview',
+    );
   }
 
   static Future<EntityStore> createStore({
-    required RemoteServiceLocationConfig locationConfig,
+    required RemoteServiceLocationConfig config,
     required CLServer server,
   }) async {
     return OnlineEntityStore(
-      identity: locationConfig.storeUrl,
-      locationConfig: locationConfig,
+      config: config,
       server: server,
     );
   }
@@ -210,6 +211,6 @@ Future<EntityStore> createOnlineEntityStore({
 }) async {
   return OnlineEntityStore.createStore(
     server: server,
-    locationConfig: config,
+    config: config,
   );
 }
