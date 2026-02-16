@@ -2,8 +2,6 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:shadcn_ui/shadcn_ui.dart';
-
 import '../models/app_descriptor.dart';
 import '../providers/app_init.dart';
 import '../services/basic_page_service/widgets/cl_error_view.dart';
@@ -29,13 +27,13 @@ class OnInitDone extends ConsumerWidget {
         return builder();
       },
       error: (err, _) {
-        return ShadApp(
-          home: CLErrorView(errorMessage: err.toString()),
+        return Scaffold(
+          body: CLErrorView(errorMessage: err.toString()),
         );
       },
       loading: () {
-        return ShadApp(
-          home: CLLoader.widget(
+        return Scaffold(
+          body: CLLoader.widget(
             debugMessage: 'appInitAsync',
           ),
         );
