@@ -38,7 +38,3 @@ export 'src/cl_logger.dart' show CLLogger;
 
 //export 'src/server_model/rest_api.dart';
 export 'src/service_location_config.dart' show ServiceLocationConfig;
-export 'src/remote_service_location_config.dart'
-    show RemoteServiceLocationConfig;
-export 'src/server_health_status.dart' show ServerHealthStatus;
-export 'src/cl_server.dart' show CLServer;

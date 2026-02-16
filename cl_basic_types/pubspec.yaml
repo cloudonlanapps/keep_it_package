@@ -7,8 +7,6 @@ environment:
 publish_to: none
 
 dependencies:
-  cl_server_dart_client:
-    path: ../../../sdks/dartsdk
   meta: ^1.16.0
   collection: ^1.19.1
   crypto: ^3.0.6

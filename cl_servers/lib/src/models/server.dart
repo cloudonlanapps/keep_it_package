@@ -1,4 +1,5 @@
 import 'package:cl_basic_types/cl_basic_types.dart';
+import 'package:cl_server_dart_client/cl_server_dart_client.dart';
 import 'package:meta/meta.dart';
 
 @immutable

@@ -1,4 +1,4 @@
-export 'package:cl_basic_types/cl_basic_types.dart'
+export 'package:cl_server_dart_client/cl_server_dart_client.dart'
     show CLServer, RemoteServiceLocationConfig, ServerHealthStatus;
 
 export 'src/builders/get_active_a_i_server.dart' show GetActiveAIServer;

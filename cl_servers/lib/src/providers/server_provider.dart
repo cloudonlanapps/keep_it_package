@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:cl_basic_types/cl_basic_types.dart';
-import 'package:cl_server_dart_client/cl_server_dart_client.dart' as sdk;
+import 'package:cl_server_dart_client/cl_server_dart_client.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -101,10 +101,10 @@ class ServerNotifier
       }
 
       // Auth state (only if server is healthy)
-      sdk.SessionManager? sessionManager;
-      sdk.UserResponse? currentUser;
+      SessionManager? sessionManager;
+      UserResponse? currentUser;
       DateTime? loginTimestamp;
-      sdk.StoreManager? storeManager;
+      StoreManager? storeManager;
 
       if (healthStatus.isHealthy) {
         // Try auto-login from saved credentials
@@ -113,7 +113,7 @@ class ServerNotifier
         );
         if (credentials != null) {
           try {
-            sessionManager = sdk.SessionManager(
+            sessionManager = SessionManager(
               serverConfig: config.serverConfig,
             );
             await sessionManager.login(credentials.$1, credentials.$2);
@@ -182,7 +182,7 @@ class ServerNotifier
         throw Exception('Server not connected');
       }
 
-      final sessionManager = sdk.SessionManager(serverConfig: arg.serverConfig);
+      final sessionManager = SessionManager(serverConfig: arg.serverConfig);
       await sessionManager.login(username, password);
       final user = await sessionManager.getCurrentUser();
 
@@ -241,7 +241,7 @@ class ServerNotifier
   ///
   /// Calls getValidToken() every 30 seconds. Since tokens expire at 60 seconds,
   /// this provides a 30-second safety margin.
-  void _startTokenRefreshTimer(sdk.SessionManager sessionManager) {
+  void _startTokenRefreshTimer(SessionManager sessionManager) {
     _stopTokenRefreshTimer();
 
     _tokenRefreshTimer = Timer.periodic(
