@@ -1,7 +1,6 @@
+import 'package:cl_basic_types/cl_basic_types.dart';
 import 'package:collection/collection.dart';
-import 'package:flutter/foundation.dart';
-
-import 'location_config.dart';
+import 'package:meta/meta.dart';
 
 /// Broadcast health information for a discovered server
 @immutable

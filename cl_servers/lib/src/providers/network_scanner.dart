@@ -7,7 +7,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nsd/nsd.dart';
 
-import '../models/location_config.dart';
 import '../models/network_scanner.dart';
 
 extension ServiceExtDiscovery on Discovery {

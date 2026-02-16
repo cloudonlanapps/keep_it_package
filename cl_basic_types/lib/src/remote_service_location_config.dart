@@ -1,12 +1,12 @@
-import 'package:cl_basic_types/cl_basic_types.dart';
 import 'package:cl_server_dart_client/cl_server_dart_client.dart';
 import 'package:meta/meta.dart';
+
+import 'service_location_config.dart';
 
 /// Configuration for a remote service location.
 ///
 /// Represents services running on a remote server with multiple service endpoints
 /// (auth, store, compute, mqtt).
-@immutable
 @immutable
 class RemoteServiceLocationConfig extends ServiceLocationConfig {
   const RemoteServiceLocationConfig({

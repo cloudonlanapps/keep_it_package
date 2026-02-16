@@ -4,13 +4,18 @@ import 'package:cl_basic_types/cl_basic_types.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 
-import '../models/location_config.dart';
-
 // Provider definition
-final AsyncNotifierProviderFamily<ServerHealthCheckNotifier, bool,
-        RemoteServiceLocationConfig> serverHealthCheckProvider =
-    AsyncNotifierProvider.family<ServerHealthCheckNotifier, bool,
-        RemoteServiceLocationConfig>(ServerHealthCheckNotifier.new);
+final AsyncNotifierProviderFamily<
+  ServerHealthCheckNotifier,
+  bool,
+  RemoteServiceLocationConfig
+>
+serverHealthCheckProvider =
+    AsyncNotifierProvider.family<
+      ServerHealthCheckNotifier,
+      bool,
+      RemoteServiceLocationConfig
+    >(ServerHealthCheckNotifier.new);
 
 class ServerHealthCheckNotifier
     extends FamilyAsyncNotifier<bool, RemoteServiceLocationConfig>
@@ -37,14 +42,15 @@ class ServerHealthCheckNotifier
       final allHealthy = results.every((healthy) => healthy);
 
       if (!allHealthy) {
-        log('Health check failed for ${config.label} - '
-            'Auth: ${results[0]}, Store: ${results[1]}, Compute: ${results[2]}');
+        log(
+          'Health check failed for ${config.label} - '
+          'Auth: ${results[0]}, Store: ${results[1]}, Compute: ${results[2]}',
+        );
       }
 
       return allHealthy;
     } catch (e, stackTrace) {
-      log('Error checking server health: $e',
-          error: e, stackTrace: stackTrace);
+      log('Error checking server health: $e', error: e, stackTrace: stackTrace);
       return false;
     }
   }

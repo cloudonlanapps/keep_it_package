@@ -6,9 +6,6 @@ import 'package:cl_server_dart_client/cl_server_dart_client.dart' as sdk;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../models/cl_server.dart';
-import '../models/location_config.dart';
-import '../models/server_health_status.dart';
 import 'network_scanner.dart';
 import 'server_health_check.dart';
 

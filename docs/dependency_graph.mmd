@@ -1,0 +1,93 @@
+graph TD
+    %% Base Packages
+    dart_client["cl_server_dart_client (dart)"]
+    basic_types["cl_basic_types (dart)"]
+    store_base["store (dart)"]
+    local_store["local_store (dart)"]
+    online_store["online_store (dart)"]
+
+    %% Utility Packages
+    widgets["colan_widgets"]
+    media_tools["cl_media_tools"]
+    camera["cl_camera"]
+    date_picker["yet_another_date_picker"]
+    form_factory["form_factory"]
+    entity_viewers["cl_entity_viewers"]
+    
+    %% Intermediate Packages
+    servers["cl_servers"]
+    content_store["content_store"]
+    store_tasks["store_tasks"]
+    media_editors["media_editors"]
+    services["colan_services"]
+
+    %% Apps
+    face_it["face_it_desktop"]
+    keep_it["keep_it"]
+
+    %% Dependencies
+    basic_types --> dart_client
+    store_base --> basic_types
+    local_store --> basic_types
+    local_store --> store_base
+    online_store --> basic_types
+    online_store --> dart_client
+    online_store --> servers
+    online_store --> store_base
+
+    widgets --> basic_types
+    media_tools --> basic_types
+    entity_viewers --> basic_types
+    entity_viewers --> media_tools
+    entity_viewers --> widgets
+    entity_viewers --> date_picker
+
+    servers --> basic_types
+    servers --> dart_client
+    servers --> widgets
+
+    content_store --> basic_types
+    content_store --> entity_viewers
+    content_store --> media_tools
+    content_store --> servers
+    content_store --> widgets
+    content_store --> local_store
+    content_store --> online_store
+    content_store --> store_base
+    content_store --> date_picker
+
+    form_factory --> basic_types
+    form_factory --> widgets
+
+    store_tasks --> basic_types
+    store_tasks --> entity_viewers
+    store_tasks --> media_tools
+    store_tasks --> widgets
+    store_tasks --> content_store
+    store_tasks --> form_factory
+    store_tasks --> store_base
+
+    media_editors --> widgets
+
+    services --> basic_types
+    services --> camera
+    services --> entity_viewers
+    services --> media_tools
+    services --> dart_client
+    services --> servers
+    services --> widgets
+    services --> content_store
+    services --> form_factory
+    services --> local_store
+    services --> media_editors
+    services --> store_base
+    services --> store_tasks
+
+    face_it --> basic_types
+    face_it --> servers
+    face_it --> widgets
+    face_it --> content_store
+    face_it --> store_base
+
+    keep_it --> services
+    keep_it --> widgets

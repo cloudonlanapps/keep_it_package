@@ -1,5 +1,4 @@
 import 'package:cl_basic_types/cl_basic_types.dart';
-import 'package:cl_servers/cl_servers.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
@@ -30,13 +29,14 @@ class ContentSourceSelectorIconState
   @override
   Widget build(BuildContext context) {
     return ShadPopover(
-        controller: popoverController,
-        popover: (context) =>
-            const SizedBox(width: 288, child: ShowAvailableServers()),
-        child: ShadButton.ghost(
-          onPressed: popoverController.toggle,
-          child: clIcons.connectToServer.iconFormatted(),
-        ));
+      controller: popoverController,
+      popover: (context) =>
+          const SizedBox(width: 288, child: ShowAvailableServers()),
+      child: ShadButton.ghost(
+        onPressed: popoverController.toggle,
+        child: clIcons.connectToServer.iconFormatted(),
+      ),
+    );
   }
 }
 
@@ -51,14 +51,15 @@ class ShowAvailableServers extends ConsumerWidget {
       child: Icon(LucideIcons.triangleAlert),
     );
     return GetRegisteredServiceLocations(
-        loadingBuilder: () => loadingWidget,
-        errorBuilder: (p0, p1) => errorWidget,
-        builder: (availableStores) {
-          return KnownServersList(
-            servers: availableStores,
-            supportedSchema: supportedSchema,
-          );
-        });
+      loadingBuilder: () => loadingWidget,
+      errorBuilder: (p0, p1) => errorWidget,
+      builder: (availableStores) {
+        return KnownServersList(
+          servers: availableStores,
+          supportedSchema: supportedSchema,
+        );
+      },
+    );
   }
 }
 
@@ -90,24 +91,27 @@ class KnownServersList extends ConsumerWidget {
     return ListView(
       shrinkWrap: true,
       children: configs
-          .map((config) => GetStore(
+          .map(
+            (config) => GetStore(
               storeURL: config,
               errorBuilder: (p0, p1) => ServerTile(
-                    config: config,
-                    isLoading: false,
-                    isActive: servers.isActiveConfig(config),
-                  ),
+                config: config,
+                isLoading: false,
+                isActive: servers.isActiveConfig(config),
+              ),
               loadingBuilder: () => ServerTile(
-                    config: config,
-                    isLoading: true,
-                    isActive: servers.isActiveConfig(config),
-                  ),
+                config: config,
+                isLoading: true,
+                isActive: servers.isActiveConfig(config),
+              ),
               builder: (store) => ServerTile(
-                    config: config,
-                    store: store,
-                    isLoading: false,
-                    isActive: servers.isActiveConfig(config),
-                  )))
+                config: config,
+                store: store,
+                isLoading: false,
+                isActive: servers.isActiveConfig(config),
+              ),
+            ),
+          )
           .toList(),
     );
   }
@@ -153,8 +157,11 @@ class ServerTile extends ConsumerWidget {
         style: ShadTheme.of(context).textTheme.small,
       ),
       onTap: (!isLoading && store != null)
-          ? () => ref.read(registeredServiceLocationsProvider.notifier).activeConfig =
-              config
+          ? () =>
+                ref
+                        .read(registeredServiceLocationsProvider.notifier)
+                        .activeConfig =
+                    config
           : null,
     );
 

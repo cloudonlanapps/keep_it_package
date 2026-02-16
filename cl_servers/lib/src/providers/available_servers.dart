@@ -1,8 +1,8 @@
 import 'dart:async';
 
+import 'package:cl_basic_types/cl_basic_types.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../models/cl_server.dart';
 import 'network_scanner.dart';
 import 'server_provider.dart';
 
@@ -31,7 +31,9 @@ class AvailableServersNotifier
         .toList();
     final servers = detectedServers
         .map((detectedServer) {
-          final server = ref.watch(serverProvider(detectedServer.locationConfig));
+          final server = ref.watch(
+            serverProvider(detectedServer.locationConfig),
+          );
 
           return server.whenOrNull(data: (data) => data);
         })
