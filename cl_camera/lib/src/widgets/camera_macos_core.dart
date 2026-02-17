@@ -116,7 +116,6 @@ class _CLCameraMacOSCoreState extends State<CLCameraMacOSCore> {
       );
 
       await _controller!.recordVideo(
-        url: null,
         enableAudio: _config.enableAudio,
       );
       if (mounted) {

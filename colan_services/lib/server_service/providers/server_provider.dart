@@ -66,7 +66,7 @@ class ServerNotifier
 
   @override
   FutureOr<CLServer> build(RemoteServiceLocationConfig arg) async {
-    log('Building ServerNotifier for ${arg.label} (identity: ${_keySuffix})');
+    log('Building ServerNotifier for ${arg.label} (identity: $_keySuffix)');
     try {
       final config = arg;
 
@@ -109,7 +109,7 @@ class ServerNotifier
 
       if (healthStatus.isHealthy) {
         // Try auto-login from saved credentials
-        log('Attempting auto-login for ${_keySuffix}...');
+        log('Attempting auto-login for $_keySuffix...');
         final credentials = await _CredentialStorage.load(
           keySuffix: _keySuffix,
         );
@@ -133,7 +133,7 @@ class ServerNotifier
             await _CredentialStorage.clear(keySuffix: _keySuffix);
           }
         } else {
-          log('No saved credentials found for ${_keySuffix}');
+          log('No saved credentials found for $_keySuffix');
         }
       } else {
         log('Server ${config.label} is unhealthy, skipping auth');

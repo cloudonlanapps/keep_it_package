@@ -128,8 +128,8 @@ class CLMediaCollage extends StatelessWidget {
           null => Matrix2D.scrollable(
             itemCount: itemCount,
             hCount: x,
-            crossAxisSpacing: 2.0,
-            mainAxisSpacing: 2.0,
+            crossAxisSpacing: 2,
+            mainAxisSpacing: 2,
             itemBuilder: (context, index) {
               return onBuildItem(context, itemBuilder(context, index));
             },
@@ -138,8 +138,8 @@ class CLMediaCollage extends StatelessWidget {
             itemCount: itemCount,
             hCount: x,
             vCount: y,
-            crossAxisSpacing: 2.0,
-            mainAxisSpacing: 2.0,
+            crossAxisSpacing: 2,
+            mainAxisSpacing: 2,
             itemBuilder: (context, index) {
               return onBuildItem(context, itemBuilder(context, index));
             },

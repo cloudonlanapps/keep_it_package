@@ -4,11 +4,11 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
-import '../page_manager.dart';
 import '../../views/auth_views/logged_in_view.dart';
 import '../../views/auth_views/logged_out_view.dart';
 import '../common_widgets/action_buttons.dart';
 import '../common_widgets/content_source_selector.dart';
+import '../page_manager.dart';
 
 /// Authentication view.
 ///
