@@ -2,14 +2,13 @@ import 'dart:io';
 
 import 'package:cl_basic_types/cl_basic_types.dart' hide ValueGetter;
 import 'package:cl_entity_viewers/cl_entity_viewers.dart';
+import 'package:colan_services/colan_services.dart';
 import 'package:colan_widgets/colan_widgets.dart';
-import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
 import '../../../models/platform_support.dart';
-import '../../../store_tasks_service/store_tasks_service.dart';
 import '../../basic_page_service/widgets/dialogs.dart';
 import '../../basic_page_service/widgets/page_manager.dart';
 

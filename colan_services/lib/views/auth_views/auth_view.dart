@@ -1,8 +1,7 @@
+import 'package:colan_services/colan_services.dart';
 import 'package:colan_widgets/colan_widgets.dart';
-import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
 
-import '../../server_service/server_service.dart';
 import '../../views/auth_views/logged_in_view.dart';
 import '../../views/auth_views/logged_out_view.dart';
 

@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:cl_basic_types/cl_basic_types.dart';
 import 'package:cl_entity_viewers/cl_entity_viewers.dart' show MediaThumbnail;
 import 'package:colan_widgets/colan_widgets.dart';
-import 'package:content_store/content_store.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -11,7 +10,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:store/store.dart';
 
-import 'map_info.dart';
+import '../../../content_store_service/content_store_service.dart';
 
 class MediaMetadataEditor extends StatelessWidget {
   factory MediaMetadataEditor({
@@ -74,17 +73,17 @@ class MediaMetadataEditor extends StatelessWidget {
   }
 
   Widget loading(BuildContext context, String debugMessage) => ShadSheet(
-        title: const Text('Loading'),
-        description: const Text(
-          'Loading Collection ',
-        ),
-        child: SizedBox(
-          height: 100,
-          child: CLLoader.widget(
-            debugMessage: debugMessage,
-          ),
-        ),
-      );
+    title: const Text('Loading'),
+    description: const Text(
+      'Loading Collection ',
+    ),
+    child: SizedBox(
+      height: 100,
+      child: CLLoader.widget(
+        debugMessage: debugMessage,
+      ),
+    ),
+  );
   Widget errorBuilder(Object e, StackTrace st) {
     throw UnimplementedError('errorBuilder');
   }
@@ -116,7 +115,7 @@ class MediaMetadataEditor extends StatelessWidget {
   }
 }
 
-class StatefulMediaEditor extends ConsumerStatefulWidget {
+class StatefulMediaEditor extends StatefulWidget {
   const StatefulMediaEditor({
     required this.media,
     required this.onSubmit,
@@ -130,11 +129,10 @@ class StatefulMediaEditor extends ConsumerStatefulWidget {
   final void Function() onCancel;
 
   @override
-  ConsumerState<StatefulMediaEditor> createState() =>
-      _StatefulMediaEditorState();
+  State<StatefulMediaEditor> createState() => _StatefulMediaEditorState();
 }
 
-class _StatefulMediaEditorState extends ConsumerState<StatefulMediaEditor> {
+class _StatefulMediaEditorState extends State<StatefulMediaEditor> {
   final formKey = GlobalKey<ShadFormState>();
   Map<Object, dynamic> formValue = {};
   late final TextEditingController labelController;
@@ -202,10 +200,9 @@ class _StatefulMediaEditorState extends ConsumerState<StatefulMediaEditor> {
                   description: () => description == null
                       ? null
                       : description.isEmpty
-                          ? null
-                          : description,
-                ))
-                    ?.dbSave();
+                      ? null
+                      : description,
+                ))?.dbSave();
                 if (updated == null) {
                   throw Exception('updated should not be null!');
                 }
@@ -261,8 +258,9 @@ class _StatefulMediaEditorState extends ConsumerState<StatefulMediaEditor> {
                             ),
                             const SizedBox(height: 4),
                             SelectableText(
-                              const JsonEncoder.withIndent('    ')
-                                  .convert(formValue),
+                              const JsonEncoder.withIndent(
+                                '    ',
+                              ).convert(formValue),
                               style: theme.textTheme.small,
                             ),
                           ],

@@ -1,26 +1,29 @@
 import 'package:cl_basic_types/cl_basic_types.dart';
-import 'package:content_store/src/stores/providers/registerred_urls.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:store/store.dart';
 
-/// Builder widget for accessing registered service locations
-class GetRegisteredServiceLocations extends ConsumerWidget {
-  const GetRegisteredServiceLocations({
+import '../providers/store_provider.dart';
+
+class GetStore extends ConsumerWidget {
+  const GetStore({
+    required this.storeURL,
     required this.builder,
     required this.errorBuilder,
     required this.loadingBuilder,
     super.key,
   });
 
-  final Widget Function(RegisteredServiceLocations locations) builder;
+  final ServiceLocationConfig storeURL;
+  final Widget Function(CLStore) builder;
   final Widget Function(Object, StackTrace) errorBuilder;
   final Widget Function() loadingBuilder;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final locationsAsync = ref.watch(registeredServiceLocationsProvider);
+    final storeAsync = ref.watch(storeProvider(storeURL));
 
-    return locationsAsync.when(
+    return storeAsync.when(
       data: builder,
       error: errorBuilder,
       loading: loadingBuilder,

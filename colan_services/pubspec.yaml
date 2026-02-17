@@ -27,8 +27,8 @@ dependencies:
   collection: ^1.19.0
 
   connectivity_plus: ^7.0.0 
-  content_store:
-    path: ../content_store
+
+
   dio: ^5.7.0
   event_bus: ^2.0.0
   exif: ^3.3.0
@@ -83,6 +83,7 @@ dependencies:
   video_player: ^2.8.7
 
   watcher: ^1.1.0
+
 
 dev_dependencies:
   flutter_lints: ^6.0.0

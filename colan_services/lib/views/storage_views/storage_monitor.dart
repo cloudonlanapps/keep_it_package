@@ -1,17 +1,15 @@
 import 'package:cl_basic_types/cl_basic_types.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
-import 'get_device_directories.dart';
-import 'storage_info_entry.dart';
+import '../../storage_service/storage_service.dart';
 
-class StorageMonitor extends ConsumerWidget {
+class StorageMonitor extends StatelessWidget {
   const StorageMonitor({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     return GetDeviceDirectories(
       loadingBuilder: () => CLLoader.widget(
         debugMessage: 'GetDeviceDirectories',

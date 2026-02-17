@@ -242,13 +242,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.0.1"
-  content_store:
-    dependency: "direct main"
-    description:
-      path: "../../content_store"
-      relative: true
-    source: path
-    version: "0.0.1"
   convert:
     dependency: transitive
     description:
@@ -1353,13 +1346,6 @@ packages:
       relative: true
     source: path
     version: "1.0.0"
-  store_tasks:
-    dependency: transitive
-    description:
-      path: "../../store_tasks"
-      relative: true
-    source: path
-    version: "0.0.1"
   stream_channel:
     dependency: transitive
     description:

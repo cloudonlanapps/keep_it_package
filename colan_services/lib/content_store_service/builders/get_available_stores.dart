@@ -1,8 +1,9 @@
-import 'package:content_store/src/stores/providers/registerred_urls.dart';
-import 'package:content_store/src/stores/providers/store_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
+
+import '../providers/registerred_urls.dart';
+import '../providers/store_provider.dart';
 
 class GetAvailableStores extends ConsumerWidget {
   const GetAvailableStores({

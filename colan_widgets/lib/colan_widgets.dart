@@ -1,6 +1,7 @@
 /// Colan Widgets
 library;
 
+export 'src/basics/broken_image.dart';
 export 'src/basics/cl_banner.dart' show CLBanner;
 export 'src/basics/cl_blink.dart' show CLBlink;
 export 'src/basics/cl_circled_icon.dart' show CircledIcon, CircledSvgIcon;
@@ -11,8 +12,10 @@ export 'src/basics/cl_media_collage.dart' show CLDimension, CLMediaCollage;
 export 'src/basics/cl_refresh.dart' show CLRefreshButton, CLRefreshWrapper;
 export 'src/basics/folder_clip.dart'
     show FolderClipper, FolderPainter, FolderWidget;
+export 'src/basics/map_info.dart';
 export 'src/basics/on_swipe.dart' show OnSwipe;
 export 'src/basics/progress_bar.dart' show ProgressBar;
+export 'src/basics/shimmer.dart' show GreyShimmer;
 export 'src/basics/svg_icon.dart' show SvgIcon, SvgIcons;
 export 'src/models/cl_menu_item.dart'
     show CLMenuItem, Ext1DCLMenuItem, Ext2DCLMenuItem;

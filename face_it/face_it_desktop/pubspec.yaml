@@ -15,8 +15,7 @@ dependencies:
   colan_widgets:
     path: ../../colan_widgets
   collection: ^1.19.1
-  content_store:
-    path : ../../content_store
+
   dotted_border: ^3.1.0
   fl_chart: 1.0.0
   flutter:

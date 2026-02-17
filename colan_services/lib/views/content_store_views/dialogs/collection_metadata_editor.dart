@@ -2,14 +2,14 @@ import 'dart:convert';
 
 import 'package:cl_basic_types/cl_basic_types.dart';
 import 'package:colan_widgets/colan_widgets.dart';
-import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:store/store.dart';
 
-class CollectionMetadataEditor extends ConsumerStatefulWidget {
+import '../../../content_store_service/content_store_service.dart';
+
+class CollectionMetadataEditor extends StatefulWidget {
   factory CollectionMetadataEditor({
     required int? id,
     required void Function(StoreEntity collection) onSubmit,
@@ -50,15 +50,16 @@ class CollectionMetadataEditor extends ConsumerStatefulWidget {
       description: description,
     );
   }
-  const CollectionMetadataEditor._(
-      {required this.id,
-      required this.isDialog,
-      required this.onSubmit,
-      required this.onCancel,
-      required this.store,
-      required this.suggestedLabel,
-      required this.description,
-      super.key});
+  const CollectionMetadataEditor._({
+    required this.id,
+    required this.isDialog,
+    required this.onSubmit,
+    required this.onCancel,
+    required this.store,
+    required this.suggestedLabel,
+    required this.description,
+    super.key,
+  });
 
   final int? id;
 
@@ -70,7 +71,7 @@ class CollectionMetadataEditor extends ConsumerStatefulWidget {
   final String? description;
 
   @override
-  ConsumerState<CollectionMetadataEditor> createState() =>
+  State<CollectionMetadataEditor> createState() =>
       _CollectionMetadataEditorState();
 
   static Future<StoreEntity?> openSheet(
@@ -98,8 +99,7 @@ class CollectionMetadataEditor extends ConsumerStatefulWidget {
   }
 }
 
-class _CollectionMetadataEditorState
-    extends ConsumerState<CollectionMetadataEditor> {
+class _CollectionMetadataEditorState extends State<CollectionMetadataEditor> {
   final formKey = GlobalKey<ShadFormState>();
   Map<Object, dynamic> formValue = {};
   late final FocusNode focusNode;
@@ -130,17 +130,17 @@ class _CollectionMetadataEditorState
   }
 
   Widget loading(String debugMessage) => ShadSheet(
-        title: const Text('Loading'),
-        description: const Text(
-          'Loading Collection ',
-        ),
-        child: SizedBox(
-          height: 100,
-          child: CLLoader.widget(
-            debugMessage: debugMessage,
-          ),
-        ),
-      );
+    title: const Text('Loading'),
+    description: const Text(
+      'Loading Collection ',
+    ),
+    child: SizedBox(
+      height: 100,
+      child: CLLoader.widget(
+        debugMessage: debugMessage,
+      ),
+    ),
+  );
   Widget errorBuilder(Object e, StackTrace st) {
     throw UnimplementedError('errorBuilder');
   }
@@ -193,12 +193,14 @@ class _CollectionMetadataEditorState
                               description: () => desc == null
                                   ? null
                                   : desc.isEmpty
-                                      ? null
-                                      : desc,
+                                  ? null
+                                  : desc,
                             );
                           } else {
                             updated = await widget.store?.createCollection(
-                                label: label, description: () => desc);
+                              label: label,
+                              description: () => desc,
+                            );
                           }
                           if (updated == null) {
                             throw Exception('update failed');
@@ -241,8 +243,9 @@ class _CollectionMetadataEditorState
                           label: const Text(' About'),
                           initialValue:
                               widget.description ?? collection?.description,
-                          placeholder:
-                              const Text('Describe about this collection'),
+                          placeholder: const Text(
+                            'Describe about this collection',
+                          ),
                           maxLines: 4,
                           focusNode: focusNode2,
                         ),
@@ -255,8 +258,9 @@ class _CollectionMetadataEditorState
                                 Text('FormValue', style: theme.textTheme.p),
                                 const SizedBox(height: 4),
                                 SelectableText(
-                                  const JsonEncoder.withIndent('    ')
-                                      .convert(formValue),
+                                  const JsonEncoder.withIndent(
+                                    '    ',
+                                  ).convert(formValue),
                                   style: theme.textTheme.small,
                                 ),
                               ],

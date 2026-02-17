@@ -16,7 +16,7 @@ dependencies:
   image: ^4.5.4
   intl: ^0.20.2
   logger: ^2.4.0
-  meta: ^1.18.1 # this version 1.12.0 is required for flutter_test
+  meta: ^1.12.0
   path: ^1.9.0
   
   # path: ^1.8.0

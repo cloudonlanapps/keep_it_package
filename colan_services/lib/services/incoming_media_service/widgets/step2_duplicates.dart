@@ -1,7 +1,6 @@
 import 'package:cl_basic_types/cl_basic_types.dart';
-
+import 'package:colan_services/colan_services.dart';
 import 'package:colan_widgets/colan_widgets.dart';
-import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
 
 import '../../basic_page_service/basic_page_service.dart';

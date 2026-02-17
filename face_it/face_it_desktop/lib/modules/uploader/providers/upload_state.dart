@@ -1,5 +1,5 @@
 import 'package:cl_basic_types/cl_basic_types.dart';
-import 'package:content_store/content_store.dart';
+import 'package:colan_services/colan_services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../models/upload_state.dart';

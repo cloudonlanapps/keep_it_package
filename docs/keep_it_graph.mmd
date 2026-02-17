@@ -17,11 +17,8 @@ graph TD
         
     end
 
-    subgraph "Feature Packages"
-        
-        content_store["content_store"]
-        services["colan_services"]
-    end
+   
+    services["colan_services"]
 
     subgraph "Applications"
         keep_it["keep_it"]
@@ -52,14 +49,7 @@ graph TD
     entity_viewers --> colan_widgets
     entity_viewers --> date_picker
 
-    %% content_store Dependencies
-    content_store --> basic_types
-    content_store --> entity_viewers
-    content_store --> media_tools
-    content_store --> dart_client
-    content_store --> colan_widgets
-    content_store --> local_store
-    content_store --> store
+  
     
     
     %% colan_services Dependencies
@@ -74,8 +64,7 @@ graph TD
     services --> media_editors
     services --> store
 
-    %% Circular Dependency Note
-    content_store <-. circular .-> services
+   
 
     %% App Dependencies
     keep_it --> services

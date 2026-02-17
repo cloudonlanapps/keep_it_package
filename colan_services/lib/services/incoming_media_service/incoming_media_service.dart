@@ -1,14 +1,13 @@
 import 'dart:async';
 
 import 'package:cl_basic_types/cl_basic_types.dart';
+import 'package:colan_services/colan_services.dart';
 import 'package:colan_widgets/colan_widgets.dart';
-import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
 import '../../models/cl_media_candidate.dart';
-import '../../store_tasks_service/store_tasks_service.dart';
 import '../basic_page_service/widgets/cl_error_view.dart';
 import '../basic_page_service/widgets/fullscreen_layout.dart';
 import '../basic_page_service/widgets/page_manager.dart';

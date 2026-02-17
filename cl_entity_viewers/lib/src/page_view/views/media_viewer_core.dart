@@ -1,13 +1,12 @@
 import 'package:cl_basic_types/viewer_types.dart';
 
-import 'package:colan_widgets/colan_widgets.dart' show SvgIcon, SvgIcons;
+import 'package:colan_widgets/colan_widgets.dart'
+    show BrokenImage, GreyShimmer, SvgIcon, SvgIcons;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
-import '../../common/views/broken_image.dart' show BrokenImage;
-import '../../common/views/shimmer.dart' show GreyShimmer;
 import '../models/cl_icons.dart';
 import '../models/video_player_controls.dart';
 import '../builders/get_video_player_controls.dart';

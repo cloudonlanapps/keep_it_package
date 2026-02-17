@@ -9,8 +9,6 @@ import '../../common/views/overlays.dart';
 import 'package:flutter/material.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
-import '../../common/views/broken_image.dart' show BrokenImage;
-import '../../common/views/shimmer.dart' show GreyShimmer;
 import 'media_viewer.dart';
 import 'media_viewer_overlays.dart';
 

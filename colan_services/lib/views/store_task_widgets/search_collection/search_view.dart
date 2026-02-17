@@ -1,10 +1,9 @@
 import 'package:cl_entity_viewers/cl_entity_viewers.dart';
+import 'package:colan_services/colan_services.dart';
 import 'package:colan_widgets/colan_widgets.dart';
-import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
 import 'package:store/store.dart';
 
-import '../../../store_tasks_service/builders/get_target_store.dart';
 import '../pick_collection/wizard_error.dart';
 import 'create_new_collection.dart';
 import 'suggested_collection.dart';
