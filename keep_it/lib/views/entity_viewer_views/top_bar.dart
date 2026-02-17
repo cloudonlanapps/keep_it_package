@@ -41,14 +41,16 @@ class TopBar extends StatelessWidget implements PreferredSizeWidget {
                     CLRefreshButton(
                       onRefresh: () async => reload(),
                     ),
+                if (serverId != null)
+                  ShadButton.ghost(
+                    onPressed: () =>
+                        PageManager.of(context).openAuthenticator(),
+                    child: const Icon(LucideIcons.user, size: 25),
+                  ),
                 const OnDarkMode(),
                 ShadButton.ghost(
                   onPressed: () => PageManager.of(context).openSettings(),
                   child: const Icon(LucideIcons.settings, size: 25),
-                ),
-                ShadButton.ghost(
-                  onPressed: () => PageManager.of(context).openAuthenticator(),
-                  child: const Icon(LucideIcons.user, size: 25),
                 ),
               ],
             ),

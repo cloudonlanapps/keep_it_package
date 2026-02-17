@@ -7,8 +7,8 @@ import 'package:keep_it/views/entity_viewer_views/keep_it_page_view.dart';
 
 import '../page_manager.dart';
 
-class EntityViewerService extends StatelessWidget {
-  const EntityViewerService({
+class EntitiesView extends StatelessWidget {
+  const EntitiesView({
     required this.serverId,
     required this.id,
     super.key,

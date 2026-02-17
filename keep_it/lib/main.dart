@@ -33,7 +33,7 @@ class KeepItApp implements AppDescriptor {
           serverId = 'default';
         }
 
-        return EntityViewerService(
+        return EntitiesView(
           serverId: serverId,
           id: null,
         );
@@ -56,7 +56,7 @@ class KeepItApp implements AppDescriptor {
           throw Exception('serverId must be present');
         }
 
-        return EntityViewerService(
+        return EntitiesView(
           serverId: serverId,
           id: mediaId,
         );
