@@ -18,14 +18,65 @@ class EntitiesView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    CLLoadingView loadBuilder() =>
-        const CLLoadingView.custom(child: _LoadingView());
+    CLLoadingView loadBuilder() => CLLoadingView.page(
+      topBar: TopBar(
+        serverId: null,
+        entity: null,
+        children: null,
+      ),
+      onSwipe: () {
+        if (PageManager.of(context).canPop()) {
+          PageManager.of(context).pop();
+        }
+      },
+    );
+
+    CLErrorView errorBuilder(Object e, StackTrace st) {
+      return CLErrorView.custom(
+        child: GetStoreStatus(
+          loadingBuilder: () => CLLoadingView.widget(debugMessage: null),
+          errorBuilder: (activeConfigErr, activeConfigST) => CLErrorView.local(
+            message: activeConfigErr.toString(),
+          ),
+          builder:
+              ({
+                required activeConfig,
+                required isConnected,
+                required store,
+              }) {
+                final storeError = !store.entityStore.isAlive
+                    ? '${activeConfig.displayName} is not accessible'
+                    : e.toString();
+
+                final message = switch (activeConfig.isLocal) {
+                  true => e.toString(),
+                  false =>
+                    isConnected
+                        ? storeError
+                        : 'Connection lost. Connect to your homenetwork to access this server',
+                };
+
+                return CLErrorView.page(
+                  message: message,
+                  topBar: TopBar(
+                    serverId: null,
+                    entity: null,
+                    children: null,
+                  ),
+                  onSwipe: () {
+                    if (PageManager.of(context).canPop()) {
+                      PageManager.of(context).pop();
+                    }
+                  },
+                );
+              },
+        ),
+      );
+    }
 
     return GetRegisteredServiceLocations(
       loadingBuilder: loadBuilder,
-      errorBuilder: (e, st) => CLErrorView.custom(
-        child: _ErrorView(e: e, st: st),
-      ),
+      errorBuilder: errorBuilder,
       builder: (registeredURLs, _) {
         if (id != null) {
           try {
@@ -38,17 +89,13 @@ class EntitiesView extends StatelessWidget {
               );
             }
           } catch (e, st) {
-            return CLErrorView.custom(
-              child: _ErrorView(e: e, st: st),
-            );
+            return errorBuilder(e, st);
           }
         }
         return GetContent(
           id: id,
           loadingBuilder: loadBuilder,
-          errorBuilder: (e, st) => CLErrorView.custom(
-            child: _ErrorView(e: e, st: st),
-          ),
+          errorBuilder: errorBuilder,
           builder: (entity, children, siblings) {
             if (entity?.isCollection ?? true) {
               return KeepItGridView(
@@ -66,85 +113,6 @@ class EntitiesView extends StatelessWidget {
           },
         );
       },
-    );
-  }
-}
-
-class _LoadingView extends StatelessWidget {
-  const _LoadingView();
-
-  @override
-  Widget build(BuildContext context) {
-    return CLScaffold(
-      topMenu: const TopBar(
-        serverId: null,
-        entity: null,
-        children: null,
-      ),
-      body: OnSwipe(
-        onSwipe: () {
-          if (PageManager.of(context).canPop()) {
-            PageManager.of(context).pop();
-          }
-        },
-        child: CLLoadingView.widget(debugMessage: null),
-      ),
-    );
-  }
-}
-
-class _ErrorView extends StatelessWidget {
-  const _ErrorView({
-    required this.e,
-    required this.st,
-  });
-  final Object e;
-  final StackTrace st;
-
-  @override
-  Widget build(BuildContext context) {
-    return CLScaffold(
-      topMenu: const TopBar(
-        serverId: null,
-        entity: null,
-        children: null,
-      ),
-      body: Center(
-        child: GetStoreStatus(
-          loadingBuilder: () => CLLoadingView.widget(debugMessage: null),
-          errorBuilder: (activeConfigErr, activeConfigST) => CLErrorView.local(
-            message: activeConfigErr.toString(),
-          ),
-          builder:
-              ({
-                required activeConfig,
-                required isConnected,
-                required store,
-              }) {
-                final storeError = !store.entityStore.isAlive
-                    ? CLErrorView.local(
-                        message:
-                            '${activeConfig.displayName} is not accessible',
-                      )
-                    : CLErrorView.local(
-                        message: e.toString(),
-                      );
-
-                return switch (activeConfig.isLocal) {
-                  true => CLErrorView.local(
-                    message: e.toString(),
-                  ),
-                  false =>
-                    isConnected
-                        ? storeError
-                        : const CLErrorView.local(
-                            message:
-                                'Connection lost. Connect to your homenetwork to access this server',
-                          ),
-                };
-              },
-        ),
-      ),
     );
   }
 }

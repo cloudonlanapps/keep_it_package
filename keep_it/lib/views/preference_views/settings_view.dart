@@ -16,7 +16,7 @@ class SettingsView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CLScaffold(
-      topMenu: AppBar(
+      topMenu: CLTopBar(
         title: Text(
           'Settings',
           style: ShadTheme.of(context).textTheme.h1,

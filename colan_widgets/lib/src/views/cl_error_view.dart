@@ -26,6 +26,8 @@ abstract class CLErrorView extends StatelessWidget {
     String? details,
     IconData? icon,
     List<Widget>? actions,
+    CLTopBar? topBar,
+    VoidCallback? onSwipe,
     Key? key,
   }) = _CLErrorViewPage;
 
@@ -98,6 +100,8 @@ class _CLErrorViewPage extends CLErrorView {
     this.details,
     this.icon,
     this.actions,
+    this.topBar,
+    this.onSwipe,
     super.key,
   });
 
@@ -105,6 +109,8 @@ class _CLErrorViewPage extends CLErrorView {
   final String? details;
   final IconData? icon;
   final List<Widget>? actions;
+  final CLTopBar? topBar;
+  final VoidCallback? onSwipe;
 
   @override
   Widget build(BuildContext context) {
@@ -117,8 +123,11 @@ class _CLErrorViewPage extends CLErrorView {
 
     final shouldWrap = !ValidateLayout.isValidLayout(context);
 
-    if (shouldWrap) {
-      return CLScaffold(body: content);
+    if (shouldWrap || topBar != null) {
+      return CLScaffold(
+        topMenu: topBar,
+        body: content,
+      );
     }
     return content;
   }

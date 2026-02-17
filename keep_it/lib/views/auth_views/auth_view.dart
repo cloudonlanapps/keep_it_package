@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 
 import '../../views/auth_views/logged_in_view.dart';
 import '../../views/auth_views/logged_out_view.dart';
+import '../common_widgets/action_buttons.dart';
+import '../common_widgets/content_source_selector.dart';
 
 /// Authentication view.
 ///
@@ -23,7 +25,12 @@ class AuthView extends StatelessWidget {
         // Only show auth UI for remote stores
         if (locationConfig is! RemoteServiceLocationConfig) {
           return CLScaffold(
-            topMenu: AppBar(),
+            topMenu: const CLTopBar(
+              actions: [
+                ContentSourceSelector(),
+                ThemeToggleButton(),
+              ],
+            ),
             body: Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -42,7 +49,7 @@ class AuthView extends StatelessWidget {
 
         // Use GetAuthStatus builder to check authentication status
         return CLScaffold(
-          topMenu: AppBar(),
+          topMenu: const CLTopBar(),
           body: GetAuthStatus(
             config: locationConfig,
             builder: (authStatus, actions) {

@@ -13,7 +13,7 @@ class CLEntitiesPageView extends ConsumerWidget {
     super.key,
   });
 
-  final PreferredSizeWidget Function(ViewerEntity? entity) topMenuBuilder;
+  final CLTopBar Function(ViewerEntity? entity) topMenuBuilder;
   final PreferredSizeWidget bottomMenu;
   @override
   Widget build(BuildContext context, WidgetRef ref) {

@@ -27,6 +27,7 @@ export 'src/theme/state/cl_theme.dart' show CLTheme;
 export 'src/utils/key_listener.dart' show CLKeyListener;
 export 'src/utils/validate_layout.dart' show ValidateLayout;
 export 'src/views/appearance/cl_scaffold.dart' show CLScaffold;
+export 'src/views/appearance/cl_top_bar.dart' show CLTopBar;
 export 'src/views/cl_error_view.dart' show CLErrorKind, CLErrorView;
 export 'src/views/cl_loading_view.dart' show CLLoadingView, CLLoadingViewKind;
 export 'src/views/progress_view/stream_progress_view.dart'

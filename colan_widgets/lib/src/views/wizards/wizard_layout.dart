@@ -23,7 +23,7 @@ class WizardLayout extends StatelessWidget {
       hasBackground: true,
       hasBorder: true,
       borderColor: CLTheme.of(context).colors.wizardButtonBackgroundColor,
-      topMenu: AppBar(
+      topMenu: CLTopBar(
         automaticallyImplyLeading: false,
         title: Text(
           title ?? '',
@@ -73,7 +73,7 @@ class WizardLayout2 extends StatelessWidget {
   Widget build(BuildContext context) {
     return CLScaffold(
       hasBorder: true,
-      topMenu: AppBar(
+      topMenu: CLTopBar(
         automaticallyImplyLeading: false,
         centerTitle: false,
         title: Text(title ?? ''),

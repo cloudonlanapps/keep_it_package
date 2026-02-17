@@ -1,3 +1,5 @@
+import 'package:colan_widgets/src/basics/on_swipe.dart';
+import 'package:colan_widgets/src/views/appearance/cl_top_bar.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:progress_indicators/progress_indicators.dart';
@@ -27,6 +29,8 @@ abstract class CLLoadingView extends StatelessWidget {
   const factory CLLoadingView.page({
     String? message,
     String? debugMessage,
+    CLTopBar? topBar,
+    VoidCallback? onSwipe,
     Key? key,
   }) = _CLLoadingViewPage;
 
@@ -108,11 +112,15 @@ class _CLLoadingViewPage extends CLLoadingView {
   const _CLLoadingViewPage({
     this.message,
     this.debugMessage,
+    this.topBar,
+    this.onSwipe,
     super.key,
   });
 
   final String? message;
   final String? debugMessage;
+  final CLTopBar? topBar;
+  final VoidCallback? onSwipe;
 
   @override
   Widget build(BuildContext context) {
@@ -123,10 +131,20 @@ class _CLLoadingViewPage extends CLLoadingView {
 
     final shouldWrap = !ValidateLayout.isValidLayout(context);
 
-    if (shouldWrap) {
-      return CLScaffold(body: child);
+    var content = child;
+    if (onSwipe != null) {
+      content = OnSwipe(
+        onSwipe: onSwipe!,
+        child: content,
+      );
     }
-    return child;
+    if (shouldWrap || topBar != null) {
+      return CLScaffold(
+        topMenu: topBar,
+        body: content,
+      );
+    }
+    return content;
   }
 }
 

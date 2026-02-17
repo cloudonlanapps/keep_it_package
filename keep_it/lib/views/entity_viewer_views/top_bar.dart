@@ -3,71 +3,48 @@ import 'package:cl_entity_viewers/cl_entity_viewers.dart';
 import 'package:colan_services/colan_services.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
-import 'package:keep_it/views/common_widgets/action_buttons.dart'
-    show OnDarkMode;
+import 'package:keep_it/views/common_widgets/action_buttons.dart';
 
-import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:store/store.dart';
 
 import '../common_widgets/content_source_selector.dart';
-import '../page_manager.dart';
 import 'media_title.dart';
 import 'popover_menu.dart';
 
-class TopBar extends StatelessWidget implements PreferredSizeWidget {
-  const TopBar({
-    required this.serverId,
-    required this.entity,
-    required this.children,
+class TopBar extends CLTopBar {
+  TopBar({
+    required String? serverId,
+    required StoreEntity? entity,
+    required ViewerEntities? children,
     super.key,
-  });
-  final String? serverId;
-  final StoreEntity? entity;
-  final ViewerEntities? children;
-
-  @override
-  Widget build(BuildContext context) {
-    return GetReload(
-      builder: (reload) {
-        return Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            AppBar(
-              title: MediaTitle(entity: entity),
-              actions: [
-                if (entity == null) const ContentSourceSelector(),
-                if (entity == null)
-                  if (!ColanPlatformSupport.isMobilePlatform)
-                    CLRefreshButton(
-                      onRefresh: () async => reload(),
-                    ),
-                if (serverId != null)
-                  ShadButton.ghost(
-                    onPressed: () =>
-                        PageManager.of(context).openAuthenticator(),
-                    child: const Icon(LucideIcons.user, size: 25),
-                  ),
-                const OnDarkMode(),
-                ShadButton.ghost(
-                  onPressed: () => PageManager.of(context).openSettings(),
-                  child: const Icon(LucideIcons.settings, size: 25),
-                ),
-              ],
-            ),
-            if (children?.entities.isNotEmpty ?? false)
-              const Row(
-                spacing: 8,
-                children: [
-                  Flexible(child: TextFilterBox()),
-                  FilterPopOverMenu(),
-                ],
-              ),
-          ],
-        );
-      },
-    );
-  }
-
-  @override
-  Size get preferredSize => const Size.fromHeight(kToolbarHeight * 2);
+  }) : super(
+         title: MediaTitle(entity: entity),
+         actions: [
+           if (entity == null) const ContentSourceSelector(),
+           if (entity == null)
+             if (!ColanPlatformSupport.isMobilePlatform)
+               GetReload(
+                 builder: (reload) =>
+                     ReloadButton(onReload: () async => reload()),
+               ),
+           if (serverId != null) const UserAccountButton(),
+           const ThemeToggleButton(),
+           const SettingsButton(),
+         ],
+         bottom: (children?.entities.isNotEmpty ?? false)
+             ? const PreferredSize(
+                 preferredSize: Size.fromHeight(kToolbarHeight),
+                 child: Padding(
+                   padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                   child: Row(
+                     spacing: 8,
+                     children: [
+                       Flexible(child: TextFilterBox()),
+                       FilterPopOverMenu(),
+                     ],
+                   ),
+                 ),
+               )
+             : null,
+       );
 }

@@ -5,6 +5,7 @@ import '../../basics/on_swipe.dart';
 import '../../models/ext_color.dart';
 import '../../utils/key_listener.dart';
 import '../../utils/validate_layout.dart';
+import 'cl_top_bar.dart';
 
 class CLScaffold extends StatelessWidget {
   const CLScaffold({
@@ -21,7 +22,7 @@ class CLScaffold extends StatelessWidget {
     this.onSwipe,
     super.key,
   });
-  final PreferredSizeWidget? topMenu;
+  final CLTopBar? topMenu;
   final PreferredSizeWidget? bottomMenu;
   final List<Widget> banners;
   final Widget body;
