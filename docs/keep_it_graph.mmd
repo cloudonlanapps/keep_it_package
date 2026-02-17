@@ -1,79 +1,109 @@
 %%{init: {'flowchart': {'defaultRenderer': 'elk'}} }%%
-graph TD
-     basic_types["cl_basic_types"]
-    subgraph "Core Dart Packages"
-       
+graph LR
+    basic_types["cl_basic_types"]
+    colan_widgets["colan_widgets"]
+   
+    subgraph "Store"
         store["store"]
         dart_client["cl_server_dart_client"]
         local_store["local_store"]
-    end
-
-    subgraph "Utility Flutter Packages"
-        colan_widgets["colan_widgets"]
-        
-        
-        
-        form_factory["form_factory"]
         
     end
-
-   
-    services["colan_services"]
-
-    subgraph "Applications"
-        keep_it["keep_it"]
-       %%  face_it["face_it_desktop"]
-    end
+    subgraph "Camera Service"
     camera["cl_camera"]
-    media_editors["media_editors"]
-    entity_viewers["cl_entity_viewers"]
-    media_tools["cl_media_tools"]
-    date_picker["yet_another_date_picker"]
+    camera_svc["camera_service"]
+    end
+  
 
+    subgraph "Feature Packages"
+        form_factory["form_factory"]
+        media_tools["cl_media_tools"]
+        date_picker["yet_another_date_picker"]
+        
+        media_editors["media_editors"]
+        entity_viewers["cl_entity_viewers"]
+    end
 
-    %% Core Dependencies
+    subgraph cl_services["colan_services"]
+        content_store_svc["content_store_service"]
+        server_svc["server_service"]
+        incoming_media_svc["incoming_media_service"]
+        store_tasks_svc["store_tasks_service"]
+        storage_svc["storage_service"]
+        init_svc["init_service"]
+        preference_svc["preference_service"]
+    end
+
+  
+    keep_it["keep_it"]
+   
+
+    %% Core Package Dependencies
+    
     store --> basic_types
-    dart_client --> basic_types
+    
+    
     dart_client --> store
-    local_store --> basic_types
+   
     local_store --> store
 
-    %% Utility Dependencies
+    %% Utility Package Dependencies
     media_tools --> basic_types
-    form_factory --> basic_types
+  
+   
     form_factory --> colan_widgets
-
-    %% Feature Dependencies
     entity_viewers --> basic_types
-    entity_viewers --> media_tools
+    
     entity_viewers --> colan_widgets
     entity_viewers --> date_picker
 
-  
-    
-    
-    %% colan_services Dependencies
-    services --> basic_types
-    services --> camera
-    services --> entity_viewers
-    services --> media_tools
-    services --> dart_client
-    services --> colan_widgets
-    services --> form_factory
-    services --> local_store
-    services --> media_editors
-    services --> store
+    %% Service Dependencies - camera_service
+    camera_svc --> basic_types
+    camera_svc --> camera
+    camera_svc --> colan_widgets
+    camera_svc --> store
 
+    %% Service Dependencies - content_store_service
+    content_store_svc --> basic_types
    
+    content_store_svc --> media_tools
+    content_store_svc --> dart_client
+    content_store_svc --> local_store
+    content_store_svc --> store
+
+    %% Service Dependencies - incoming_media_service
+    incoming_media_svc --> basic_types
+   
+    incoming_media_svc --> media_tools
+    incoming_media_svc --> store
+
+    %% Service Dependencies - init_service
+    %% (minimal dependencies - only flutter/riverpod)
+
+    %% Service Dependencies - preference_service
+    %% (minimal dependencies - only flutter/riverpod)
+
+    %% Service Dependencies - server_service
+   
+    server_svc --> dart_client
+
+    
+
+    %% Service Dependencies - store_tasks_service
+    store_tasks_svc --> store
 
     %% App Dependencies
-    keep_it --> services
-   
-
-    %% face_it --> basic_types
-    %% face_it --> services
-    %% face_it --> colan_widgets
-    %% face_it --> content_store
-    %% face_it --> store
+    keep_it --> cl_services
+    keep_it --> basic_types
+    keep_it --> camera
+    keep_it --> entity_viewers
+ 
+    keep_it --> media_tools
+    keep_it --> dart_client
+    keep_it --> colan_widgets
+    keep_it --> form_factory
+    keep_it --> local_store
+    keep_it --> media_editors
+    keep_it --> store
 
     linkStyle 2 stroke-width:0px;
