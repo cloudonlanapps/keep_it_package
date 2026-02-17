@@ -2,7 +2,15 @@ import 'dart:io';
 
 import 'package:colan_services/colan_services.dart';
 import 'package:flutter/material.dart';
+import 'package:keep_it/views/auth_views/auth_view.dart' show AuthView;
+import 'package:keep_it/views/preference_views/settings_view.dart';
 import 'package:window_size/window_size.dart';
+
+import 'views/app_start_views/app_start_view.dart';
+import 'views/camera_views/camera_view.dart';
+import 'views/entity_viewer_views/entity_viewer_view.dart';
+import 'views/media_edit_views/media_edit_view.dart';
+import 'views/store_task_views/media_wizard_view.dart';
 
 class KeepItApp implements AppDescriptor {
   @override

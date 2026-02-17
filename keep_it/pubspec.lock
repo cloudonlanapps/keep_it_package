@@ -98,7 +98,7 @@ packages:
     source: hosted
     version: "8.12.0"
   camera:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: camera
       sha256: d6ec2cbdbe2fa8f5e0d07d8c06368fe4effa985a4a5ddade9cc58a8cd849557d
@@ -162,35 +162,35 @@ packages:
     source: hosted
     version: "2.0.4"
   cl_basic_types:
-    dependency: transitive
+    dependency: "direct main"
     description:
       path: "../cl_basic_types"
       relative: true
     source: path
     version: "1.0.0"
   cl_camera:
-    dependency: transitive
+    dependency: "direct main"
     description:
       path: "../cl_camera"
       relative: true
     source: path
     version: "0.0.1"
   cl_entity_viewers:
-    dependency: transitive
+    dependency: "direct main"
     description:
       path: "../cl_entity_viewers"
       relative: true
     source: path
     version: "0.0.1"
   cl_media_tools:
-    dependency: transitive
+    dependency: "direct main"
     description:
       path: "../cl_media_tools"
       relative: true
     source: path
     version: "0.0.1"
   cl_server_dart_client:
-    dependency: transitive
+    dependency: "direct main"
     description:
       path: "../../../sdks/dartsdk"
       relative: true
@@ -228,7 +228,7 @@ packages:
     source: path
     version: "0.0.1"
   colan_widgets:
-    dependency: transitive
+    dependency: "direct main"
     description:
       path: "../colan_widgets"
       relative: true
@@ -485,7 +485,7 @@ packages:
     source: hosted
     version: "0.1.3"
   flutter_speed_dial:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: flutter_speed_dial
       sha256: "698a037274a66dbae8697c265440e6acb6ab6cae9ac5f95c749e7944d8f28d41"
@@ -514,7 +514,7 @@ packages:
     source: sdk
     version: "0.0.0"
   form_factory:
-    dependency: transitive
+    dependency: "direct main"
     description:
       path: "../form_factory"
       relative: true
@@ -585,7 +585,7 @@ packages:
     source: hosted
     version: "4.5.4"
   image_picker:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: image_picker
       sha256: "736eb56a911cf24d1859315ad09ddec0b66104bc41a7f8c5b96b4e2620cf5041"
@@ -681,7 +681,7 @@ packages:
     source: hosted
     version: "6.0.0"
   local_store:
-    dependency: transitive
+    dependency: "direct main"
     description:
       path: "../local_store"
       relative: true
@@ -752,7 +752,7 @@ packages:
     source: hosted
     version: "4.2874.0"
   media_editors:
-    dependency: transitive
+    dependency: "direct main"
     description:
       path: "../media_editors"
       relative: true
@@ -879,7 +879,7 @@ packages:
     source: hosted
     version: "2.2.0"
   path:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: path
       sha256: "75cca69d1490965be98c73ceaea117e8a04dd21217b37b292c9ddbec0d955bc5"
@@ -1095,7 +1095,7 @@ packages:
     source: hosted
     version: "2.6.1"
   shadcn_ui:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: shadcn_ui
       sha256: f7f18b1d3c6e10628b72a7bc80fce32c91722800828efbfb248f6d846f36d5cb
@@ -1103,7 +1103,7 @@ packages:
     source: hosted
     version: "0.38.5"
   share_handler:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: share_handler
       sha256: "0a6d007f0e44fbee27164adcd159ecbc88238864313f4e5c58161cae2180328d"
@@ -1135,7 +1135,7 @@ packages:
     source: hosted
     version: "0.0.6"
   share_plus:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: share_plus
       sha256: "3424e9d5c22fd7f7590254ba09465febd6f8827c8b19a44350de4ac31d92d3a6"
@@ -1207,7 +1207,7 @@ packages:
     source: hosted
     version: "2.4.1"
   shimmer:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: shimmer
       sha256: "5f88c883a22e9f9f299e5ba0e4f7e6054857224976a5d9f839d4ebdc94a14ac9"
@@ -1316,7 +1316,7 @@ packages:
     source: hosted
     version: "1.0.0"
   store:
-    dependency: transitive
+    dependency: "direct main"
     description:
       path: "../store"
       relative: true

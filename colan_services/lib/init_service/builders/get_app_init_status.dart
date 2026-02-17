@@ -1,8 +1,6 @@
-import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../views/common_widgets/cl_error_view.dart';
 import '../models/app_descriptor.dart';
 import '../providers/app_init_provider.dart';
 
@@ -15,11 +13,15 @@ class GetAppInitStatus extends ConsumerWidget {
   const GetAppInitStatus({
     required this.app,
     required this.builder,
+    required this.errorBuilder,
+    required this.loadingBuilder,
     super.key,
   });
 
   final AppDescriptor app;
   final Widget Function() builder;
+  final Widget Function(Object, StackTrace) errorBuilder;
+  final Widget Function() loadingBuilder;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -28,16 +30,14 @@ class GetAppInitStatus extends ConsumerWidget {
       data: (done) {
         return builder();
       },
-      error: (err, _) {
+      error: (err, st) {
         return Scaffold(
-          body: CLErrorView(errorMessage: err.toString()),
+          body: errorBuilder(err, st),
         );
       },
       loading: () {
         return Scaffold(
-          body: CLLoader.widget(
-            debugMessage: 'appInitAsync',
-          ),
+          body: loadingBuilder(),
         );
       },
     );
