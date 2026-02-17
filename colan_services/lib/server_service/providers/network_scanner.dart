@@ -96,6 +96,11 @@ class NetworkScannerNotifier extends StateNotifier<NetworkScanner>
         servers.add(result.$1);
         if (result.$2 != null) {
           broadcastHealthMap[result.$1] = result.$2!;
+        } else {
+          // If we find a service record for this config that HAS NO health info (meaning it's healthy),
+          // we should remove any previously added unhealthy status for the same config.
+          // This handles cases where stale/ghost records persist in the discovery list alongside new ones.
+          broadcastHealthMap.remove(result.$1);
         }
       }
     }
