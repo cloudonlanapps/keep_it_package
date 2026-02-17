@@ -32,10 +32,4 @@ export 'src/extensions/on_double.dart' show UtilExtensionOnDouble;
 export 'src/extensions/on_duration.dart' show UtilExtensionOnDuration;
 export 'src/extensions/on_map.dart' show UtilExtensionOnMap;
 export 'src/not_null_value.dart' show NotNullValue;
-export 'src/store_reply.dart' show StoreReply, StoreError, StoreResult;
 export 'src/cl_logger.dart' show CLLogger;
-
-//export 'src/server_model/rest_api.dart';
-export 'src/service_location_config.dart' show ServiceLocationConfig;
-
-export 'src/registered_service_locations.dart' show RegisteredServiceLocations;

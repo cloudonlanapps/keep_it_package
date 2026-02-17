@@ -4,13 +4,12 @@ import 'package:cl_basic_types/cl_basic_types.dart';
 import 'package:colan_services/colan_services.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
-
 import 'package:store/store.dart';
 
 import '../../incoming_media_service/models/cl_media_candidate.dart';
-import '../page_manager.dart';
 import '../common_widgets/cl_error_view.dart';
 import '../common_widgets/fullscreen_layout.dart';
+import '../page_manager.dart';
 import 'widgets/step1_analyse.dart';
 import 'widgets/step2_duplicates.dart';
 

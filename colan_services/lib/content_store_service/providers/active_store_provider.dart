@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:cl_basic_types/cl_basic_types.dart' show CLLogger;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
@@ -14,8 +13,9 @@ class ActiveStoreNotifier extends AsyncNotifier<CLStore> with CLLogger {
   @override
   FutureOr<CLStore> build() async {
     try {
-      final registeredLocations =
-          await ref.watch(registeredServiceLocationsProvider.future);
+      final registeredLocations = await ref.watch(
+        registeredServiceLocationsProvider.future,
+      );
       final config = registeredLocations.activeConfig;
 
       final activeStore = ref.watch(storeProvider(config).future);

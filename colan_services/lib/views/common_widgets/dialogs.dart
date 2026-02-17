@@ -1,11 +1,10 @@
 import 'package:cl_basic_types/cl_basic_types.dart';
-
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:store/store.dart';
 
-import '../page_manager.dart';
 import '../entity_viewer_views/preview/entity_preview.dart';
+import '../page_manager.dart';
 
 class DialogService {
   static Future<bool?> template(

@@ -6,12 +6,11 @@ import 'package:cl_media_tools/cl_media_tools.dart';
 import 'package:colan_services/colan_services.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
-
 import 'package:path/path.dart' as p;
 import 'package:store/store.dart';
 
-import '../page_manager.dart';
 import '../../views/common_widgets/fullscreen_layout.dart';
+import '../page_manager.dart';
 
 class CameraService extends StatelessWidget {
   const CameraService({

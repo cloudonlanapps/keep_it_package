@@ -5,11 +5,11 @@ import 'package:cl_entity_viewers/cl_entity_viewers.dart';
 import 'package:colan_services/colan_services.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
-import 'package:store/store.dart';
+import 'package:store/store.dart' hide ValueGetter;
 
 import '../../init_service/models/platform_support.dart';
-import '../../views/page_manager.dart';
 import '../../views/common_widgets/dialogs.dart';
+import '../../views/page_manager.dart';
 
 @immutable
 class EntityActions extends CLContextMenu {
