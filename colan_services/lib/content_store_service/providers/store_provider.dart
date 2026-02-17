@@ -25,6 +25,13 @@ class StoreNotifier extends FamilyAsyncNotifier<CLStore, ServiceLocationConfig>
         directories.stores.pathString,
         config.displayName,
       );
+      if (config is LocalServiceLocationConfig) {
+        log(
+          'Store Path: $storePath, fullDBPath: $storePath/db/${config.storePath}.db',
+        );
+      } else {
+        log('Store Path: $storePath');
+      }
 
       final EntityStore entityStore;
 

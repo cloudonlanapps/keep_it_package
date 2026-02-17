@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:video_player/video_player.dart';
 
@@ -27,9 +28,7 @@ class VideoPlayerNotifier extends AutoDisposeAsyncNotifier<VideoPlayerState>
   }
 
   @override
-  Future<void> resetVideo({
-    required bool autoPlay,
-  }) async {
+  Future<void> resetVideo({required bool autoPlay}) async {
     if (state.value?.path != null) {
       await setVideo(state.value!.path!, autoPlay: autoPlay, forced: true);
     }
@@ -69,6 +68,9 @@ class VideoPlayerNotifier extends AutoDisposeAsyncNotifier<VideoPlayerState>
       if (!controller.value.isInitialized) {
         throw Exception('Failed to load Video');
       }
+      debugPrint(
+        'VideoPlayer: Setting volume to ${universalConfig.audioVolume}',
+      );
       await controller.setVolume(universalConfig.audioVolume);
       await controller.seekTo(uriConfig.lastKnownPlayPosition);
       await controller.setLooping(true); // FIXME: [LATER] from configuration
@@ -95,9 +97,9 @@ class VideoPlayerNotifier extends AutoDisposeAsyncNotifier<VideoPlayerState>
         final laskKnownPosition = uriConfig.lastKnownPlayPosition;
         final diff = (position! - laskKnownPosition).abs();
         if (diff > const Duration(seconds: 1)) {
-          ref.read(uriConfigurationProvider(uri).notifier).onChange(
-                lastKnownPlayPosition: position,
-              );
+          ref
+              .read(uriConfigurationProvider(uri).notifier)
+              .onChange(lastKnownPlayPosition: position);
         }
       });
     }
@@ -212,5 +214,5 @@ class VideoPlayerNotifier extends AutoDisposeAsyncNotifier<VideoPlayerState>
 
 final videoPlayerProvider =
     AsyncNotifierProvider.autoDispose<VideoPlayerNotifier, VideoPlayerState>(
-  VideoPlayerNotifier.new,
-);
+      VideoPlayerNotifier.new,
+    );

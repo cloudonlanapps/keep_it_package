@@ -462,38 +462,56 @@ class CLStore with CLLogger {
           fractCompleted: (i + 1) / contentList.length,
         );
 
-        final item = await getValidMediaFile(
-          mediaFile,
-          downloadDirectory: Directory(tempFilePath),
-        ); // May be wrong?
+        try {
+          final item = await getValidMediaFile(
+            mediaFile,
+            downloadDirectory: Directory(tempFilePath),
+          ); // May be wrong?
 
-        if (item != null) {
-          Future<bool> processSupportedMediaContent() async {
-            if ([CLMediaType.image, CLMediaType.video].contains(item.type)) {
-              final mediaInDB = await get(md5: item.md5);
-              if (mediaInDB != null) {
-                existingEntities.add(mediaInDB);
-                return true;
-              } else {
-                final newEntity = await createMedia(
-                  mediaFile: item,
-                );
-                if (newEntity != null) {
-                  final saved = await newEntity.dbSave(item.path);
-                  if (saved != null) {
-                    newEntities.add(saved);
-                    return true;
+          if (item != null) {
+            Future<bool> processSupportedMediaContent() async {
+              log(
+                'Processing media file: ${item.identity} (type: ${item.type})',
+              );
+              if ([CLMediaType.image, CLMediaType.video].contains(item.type)) {
+                final mediaInDB = await get(md5: item.md5);
+                if (mediaInDB != null) {
+                  log('Media found in DB: ${item.md5}');
+                  existingEntities.add(mediaInDB);
+                  return true;
+                } else {
+                  log('Media not in DB, creating new entity...');
+                  final newEntity = await createMedia(
+                    mediaFile: item,
+                  );
+                  if (newEntity != null) {
+                    log('Entity created, saving to DB...');
+                    final saved = await newEntity.dbSave(item.path);
+                    if (saved != null) {
+                      log('Entity saved to DB successfully.');
+                      newEntities.add(saved);
+                      return true;
+                    } else {
+                      log('Failed to save entity to DB.');
+                    }
+                  } else {
+                    log('Failed to create media entity.');
                   }
                 }
+              } else {
+                log('Unsupported media type for processing: ${item.type}');
               }
+              return false;
             }
-            return false;
-          }
 
-          if (!(await processSupportedMediaContent())) {
+            if (!(await processSupportedMediaContent())) {
+              invalidContent.add(mediaFile);
+            }
+          } else {
             invalidContent.add(mediaFile);
           }
-        } else {
+        } catch (e, st) {
+          log('Error processing file ${mediaFile.identity}: $e\n$st');
           invalidContent.add(mediaFile);
         }
       }
@@ -501,8 +519,9 @@ class CLStore with CLLogger {
         currentItem: 'processed all files',
         fractCompleted: 1,
       );
-    } catch (e) {
-      // Need to check and add items into invalidContent
+    } catch (e, st) {
+      log('Critical error in getValidMediaFiles loop: $e\n$st');
+      // Should not happen often if inner try-catch works
     }
     onDone?.call(
       existingEntities: ViewerEntities(existingEntities),

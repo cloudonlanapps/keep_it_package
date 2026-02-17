@@ -1,4 +1,5 @@
-import 'package:cl_extensions/cl_extensions.dart' show UtilExtensionOnMap;
+import 'package:cl_extensions/cl_extensions.dart'
+    show CLLogger, UtilExtensionOnMap;
 import 'package:collection/collection.dart';
 import 'package:meta/meta.dart';
 import 'package:sqlite_async/sqlite_async.dart';
@@ -7,7 +8,7 @@ import 'db_exception.dart';
 import 'map_operations.dart';
 
 @immutable
-class DBCommand {
+class DBCommand with CLLogger {
   const DBCommand(
     this.sql,
     this.parameters,
@@ -196,7 +197,11 @@ class DBCommand {
       }
       return true;
     } catch (e) {
+      log('DBCommand: Execution failed: $e');
       throw const DBException(DBErrorCode.executionFailed);
     }
   }
+
+  @override
+  String get logPrefix => 'DBCommand';
 }

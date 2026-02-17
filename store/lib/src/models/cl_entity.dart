@@ -328,7 +328,6 @@ class CLEntity {
       'duration': duration,
       'isHidden': isHidden,
       'pin': pin,
-      'faces': faces,
     };
   }
 

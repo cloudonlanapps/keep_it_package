@@ -29,13 +29,19 @@ class ConfirmCollection extends StatelessWidget {
             bottomRight: Radius.circular(16),
           ),
         ),
-        child: Align(
-          child: ShadButton.ghost(
-            foregroundColor: menuItem.onTap == null
-                ? disabledColor ?? Colors.grey.shade400
-                : foregroundColor ??
-                      ShadTheme.of(context).colorScheme.primaryForeground,
-            onPressed: menuItem.onTap,
+        clipBehavior: Clip.antiAlias,
+        padding: const EdgeInsets.all(8),
+        child: ShadButton.ghost(
+          width: double.infinity,
+          height: double.infinity,
+          padding: const EdgeInsets.all(4),
+          foregroundColor: menuItem.onTap == null
+              ? disabledColor ?? Colors.grey.shade400
+              : foregroundColor ??
+                    ShadTheme.of(context).colorScheme.primaryForeground,
+          onPressed: menuItem.onTap,
+          child: FittedBox(
+            fit: BoxFit.scaleDown,
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [

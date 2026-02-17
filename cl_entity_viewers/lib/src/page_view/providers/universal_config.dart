@@ -15,22 +15,21 @@ class UniversalConfigNotifier extends AsyncNotifier<UniversalConfiguration> {
       storeKey,
       const UniversalConfiguration().toJson(),
     );
-    return UniversalConfiguration.fromJson(json);
+    final config = UniversalConfiguration.fromJson(json);
+    if (config.lastKnownVolume <= 0) {
+      return config.copyWith(lastKnownVolume: 1.0);
+    }
+    return config;
   }
 
-  set isManuallyPaused(bool value) => state = AsyncValue.data(
-        state.value!.copyWith(
-          isManuallyPaused: value,
-        ),
-      );
+  set isManuallyPaused(bool value) =>
+      state = AsyncValue.data(state.value!.copyWith(isManuallyPaused: value));
 
-  Future<void> onChange({
-    bool? isAudioMuted,
-    double? lastKnownVolume,
-  }) async {
+  Future<void> onChange({bool? isAudioMuted, double? lastKnownVolume}) async {
     final store = await ref.read(internalJSONStoreprovider.future);
-    final volume =
-        lastKnownVolume != null && lastKnownVolume <= 0 ? 1.0 : lastKnownVolume;
+    final volume = lastKnownVolume != null && lastKnownVolume <= 0
+        ? 1.0
+        : lastKnownVolume;
 
     state = AsyncValue.data(
       state.value!.copyWith(
@@ -44,5 +43,5 @@ class UniversalConfigNotifier extends AsyncNotifier<UniversalConfiguration> {
 
 final universalConfigProvider =
     AsyncNotifierProvider<UniversalConfigNotifier, UniversalConfiguration>(
-  UniversalConfigNotifier.new,
-);
+      UniversalConfigNotifier.new,
+    );

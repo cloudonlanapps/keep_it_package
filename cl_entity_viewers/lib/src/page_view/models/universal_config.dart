@@ -6,15 +6,16 @@ import 'package:flutter/foundation.dart';
 /// NOTE: isManuallyPaused is not persistant
 @immutable
 class UniversalConfiguration {
-  const UniversalConfiguration(
-      {this.isAudioMuted = false,
-      this.lastKnownVolume = 1.0,
-      this.isManuallyPaused = false});
+  const UniversalConfiguration({
+    this.isAudioMuted = false,
+    this.lastKnownVolume = 1.0,
+    this.isManuallyPaused = false,
+  });
 
   factory UniversalConfiguration.fromMap(Map<String, dynamic> map) {
     return UniversalConfiguration(
       isAudioMuted: (map['isAudioMuted'] ?? false) as bool,
-      lastKnownVolume: (map['lastKnownVolume'] ?? 0.0) as double,
+      lastKnownVolume: (map['lastKnownVolume'] ?? 1.0) as double,
     );
   }
 

@@ -4,6 +4,7 @@ import 'package:cl_basic_types/cl_basic_types.dart';
 import 'package:colan_services/colan_services.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:store/store.dart';
 
 import '../page_manager.dart';
@@ -151,15 +152,28 @@ class IncomingMediaHandlerState extends State<IncomingMediaHandler> {
     isSavingState = true;
     widget.onDiscard(result: mg.isNotEmpty);
 
-    storeTaskManager.add(
-      StoreTask(
-        items: mg.entities.cast<StoreEntity>(),
-        contentOrigin: widget.incomingMedia.contentOrigin,
-      ),
-    );
-    await PageManager.of(
-      context,
-    ).openWizard(widget.incomingMedia.contentOrigin);
+    if (mg.isNotEmpty) {
+      storeTaskManager.add(
+        StoreTask(
+          items: mg.entities.cast<StoreEntity>(),
+          contentOrigin: widget.incomingMedia.contentOrigin,
+        ),
+      );
+      await PageManager.of(
+        context,
+      ).openWizard(widget.incomingMedia.contentOrigin);
+    } else {
+      _infoLogger('No valid media to save.');
+      // Optionally show a toast here if desired, but for now just logging.
+      if (mounted) {
+        ShadToaster.of(context).show(
+          const ShadToast.destructive(
+            title: Text('Nothing to save'),
+            description: Text('No valid media files were found.'),
+          ),
+        );
+      }
+    }
 
     duplicateCandidates = null;
     newCandidates = null;
@@ -175,7 +189,7 @@ class IncomingMediaHandlerState extends State<IncomingMediaHandler> {
   }
 }
 
-bool _disableInfoLogger = true;
+bool _disableInfoLogger = false;
 void _infoLogger(String msg) {
   if (!_disableInfoLogger) {
     logger.i('Incoming Media Handler: $msg');

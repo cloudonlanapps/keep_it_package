@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:cl_extensions/cl_extensions.dart' show CLLogger;
 import 'package:collection/collection.dart';
 import 'package:meta/meta.dart';
 import 'package:sqlite_async/sqlite_async.dart';
@@ -8,7 +9,7 @@ import '../../models/db_query.dart';
 import 'db_utils/db_command.dart';
 
 @immutable
-class SQLiteTableAgent<T> {
+class SQLiteTableAgent<T> with CLLogger {
   const SQLiteTableAgent({
     required this.db,
     required this.table,
@@ -33,7 +34,11 @@ class SQLiteTableAgent<T> {
     SqliteWriteContext tx,
     Map<String, dynamic> map,
   ) async {
-    return DBCommand.update(map, table: table).execute(tx);
+    final filteredMap = {
+      for (final key in map.keys)
+        if (validColumns.contains(key)) key: map[key],
+    };
+    return DBCommand.update(filteredMap, table: table).execute(tx);
   }
 
   Future<T?> readBack(SqliteWriteContext tx, T obj) async =>
@@ -47,18 +52,25 @@ class SQLiteTableAgent<T> {
     final T? result;
     final map = toMap(obj);
 
-    _infoLogger('upsert to $table: $obj');
+    log('upsert to $table: $obj');
+
+    // Filter the map to include only valid columns
+    final filteredMap = {
+      for (final key in map!.keys)
+        if (validColumns.contains(key)) key: map[key],
+    };
+
     if (ignore) {
-      if (map == null) return null;
+      if (filteredMap.isEmpty) return null;
       await DBCommand.insert(
-        map,
+        filteredMap,
         table: table,
         ignore: ignore,
         autoIncrementId: autoIncrementId,
       ).execute(tx);
       result = await readBack.call(tx, obj);
     } else {
-      if (map == null) {
+      if (filteredMap.isEmpty) {
         throw Exception("couldn't not get map for the given object");
       }
 
@@ -66,13 +78,13 @@ class SQLiteTableAgent<T> {
 
       insertStatus = await DBCommand.upsert(
         tx,
-        map,
+        filteredMap,
         autoIncrementId: autoIncrementId,
         table: table,
         getItemByColumnValue: (key, value) async {
-          return (await tx
-                  .getAll('SELECT * FROM $table WHERE $key = ?', [value]))
-              .firstOrNull;
+          return (await tx.getAll('SELECT * FROM $table WHERE $key = ?', [
+            value,
+          ])).firstOrNull;
         },
         uniqueColumn: getUniqueColumns(obj),
       );
@@ -83,7 +95,7 @@ class SQLiteTableAgent<T> {
 
       result = await readBack(tx, obj);
     }
-    _infoLogger('upsertNote: Done :  $result');
+    log('upsertNote: Done :  $result');
     return result;
   }
 
@@ -94,8 +106,14 @@ class SQLiteTableAgent<T> {
   }) async {
     final map = toMap(obj);
     if (map == null) return;
+
+    final filteredMap = {
+      for (final key in map.keys)
+        if (validColumns.contains(key)) key: map[key],
+    };
+
     await DBCommand.delete(
-      map,
+      filteredMap,
       table: table,
       identifiers: identifier,
     ).execute(tx);
@@ -127,7 +145,7 @@ class SQLiteTableAgent<T> {
         (final MapEntry<String, dynamic> _)
             when removeValues.contains(e.value) =>
           null,
-        _ => e.value
+        _ => e.value,
       };
       if (value != null) {
         updatedMap[e.key] = value;
@@ -140,7 +158,7 @@ class SQLiteTableAgent<T> {
     final sql = query.sql;
     final parameters = query.parameters;
 
-    _infoLogger('cmd: $sql, $parameters');
+    log('cmd: $sql, $parameters');
 
     final fectched = await tx.getAll(sql, parameters ?? []);
     final objs = fectched
@@ -148,7 +166,7 @@ class SQLiteTableAgent<T> {
         .where((e) => e != null)
         .map((e) => e! as T)
         .toList();
-    _infoLogger("read: ${objs.map((e) => e.toString()).join(', ')}");
+    log("read: ${objs.map((e) => e.toString()).join(', ')}");
     return objs;
   }
 
@@ -156,18 +174,21 @@ class SQLiteTableAgent<T> {
     final sql = query.sql;
     final parameters = query.parameters;
 
-    _infoLogger('cmd: $sql, $parameters');
+    log('cmd: $sql, $parameters');
 
     final obj = (await tx.getAll(sql, parameters ?? []))
         .map((e) => (fromMap != null) ? fromMap!(fixedMap(e)) : e as T)
         .firstOrNull;
-    _infoLogger('read $obj');
+    log('read $obj');
     return obj;
   }
+
+  @override
+  String get logPrefix => 'SQLiteTableAgent';
 }
 
 const _filePrefix = 'DB Write (internal): ';
-bool _disableInfoLogger = true;
+bool _disableInfoLogger = false;
 
 String? prefixedMsg(String msg) {
   if (!_disableInfoLogger) {
@@ -175,6 +196,3 @@ String? prefixedMsg(String msg) {
   }
   return null;
 }
-
-// Use prefixedMsg to log!
-void _infoLogger(String msg) {}

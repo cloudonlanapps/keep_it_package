@@ -18,12 +18,15 @@ class EntitiesNotifier
     final dbQuery = arg;
 
     ref.watch(reloadProvider);
+    final ViewerEntities result;
     if (dbQuery.store == null) {
       final store = await ref.watch(activeStoreProvider.future);
-      return store.getAll(dbQuery);
+      result = await store.getAll(dbQuery);
     } else {
-      return dbQuery.store!.getAll(dbQuery);
+      result = await dbQuery.store!.getAll(dbQuery);
     }
+    log('Query: ${dbQuery.map} -> ${result.length} items');
+    return result;
   }
 }
 

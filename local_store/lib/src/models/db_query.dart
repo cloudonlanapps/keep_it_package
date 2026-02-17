@@ -22,19 +22,23 @@ class DBQuery<T> {
         final key = query.key;
         final value = query.value;
         if (validColumns.contains(key)) {
-          switch (value as Object?) {
-            case null:
-              whereParts.add('$key IS NULL');
-            case (final List<dynamic> e) when e.isNotEmpty:
-              whereParts.add(
-                '$key IN (${List.filled(e.length, '?').join(', ')})',
-              );
-              params.addAll(e);
-            case (final NotNullValue _):
-              whereParts.add('$key IS NOT NULL');
-            default:
-              whereParts.add('$key IS ?');
-              params.add(value);
+          if (key == 'parentId' && (value == null || value == 0)) {
+            whereParts.add('($key IS NULL OR $key = 0)');
+          } else {
+            switch (value as Object?) {
+              case null:
+                whereParts.add('$key IS NULL');
+              case (final List<dynamic> e) when e.isNotEmpty:
+                whereParts.add(
+                  '$key IN (${List.filled(e.length, '?').join(', ')})',
+                );
+                params.addAll(e);
+              case (final NotNullValue _):
+                whereParts.add('$key IS NOT NULL');
+              default:
+                whereParts.add('$key IS ?');
+                params.add(value);
+            }
           }
         }
       }

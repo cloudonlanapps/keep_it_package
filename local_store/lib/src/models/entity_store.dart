@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:cl_extensions/cl_extensions.dart' show CLLogger;
 import 'package:meta/meta.dart';
 import 'package:path/path.dart' as p;
 import 'package:sqlite_async/sqlite_async.dart';
@@ -14,7 +15,7 @@ import 'local_service_location_config.dart';
 
 @immutable
 class LocalSQLiteEntityStore extends EntityStore
-    with SQLiteDBTableMixin<CLEntity> {
+    with SQLiteDBTableMixin<CLEntity>, CLLogger {
   LocalSQLiteEntityStore(
     this.agent, {
     required super.config,
@@ -189,32 +190,42 @@ class LocalSQLiteEntityStore extends EntityStore
 
       prevMediaPath = prev == null ? null : absoluteMediaPath(prev);
     } catch (e) {
+      log('Error preparing upsert: $e');
       return prev;
     }
 
     Future<CLEntity?> cb(SqliteWriteContext tx) async {
-      final parent = await dbGet(
-        tx,
-        agent,
-        StoreQuery<CLEntity>({'id': updated.parentId}),
-      );
+      try {
+        final parent = await dbGet(
+          tx,
+          agent,
+          StoreQuery<CLEntity>({'id': updated.parentId}),
+        );
 
-      final entityFromDB = await dbUpsert(
-        tx,
-        agent,
-        updated.copyWith(
-          isHidden: updated.isHidden || (parent?.isHidden ?? false),
-        ),
-      );
-      if (entityFromDB == null) throw Exception('failed to update DB');
-      if (path != null) {
-        // do we need to check this against prevMediaPath
-        // if they are same, still this overwrites.
-        await createMediaFiles(updated, path, generatePreview: generatePreview);
+        final entityFromDB = await dbUpsert(
+          tx,
+          agent,
+          updated.copyWith(
+            isHidden: updated.isHidden || (parent?.isHidden ?? false),
+          ),
+        );
+        if (entityFromDB == null) throw Exception('failed to update DB');
+        if (path != null) {
+          // do we need to check this against prevMediaPath
+          // if they are same, still this overwrites.
+          await createMediaFiles(
+            updated,
+            path,
+            generatePreview: generatePreview,
+          );
+        }
+        // generate preview here
+
+        return entityFromDB;
+      } catch (e) {
+        log('Transaction error: $e');
+        rethrow;
       }
-      // generate preview here
-
-      return entityFromDB;
     }
 
     try {
@@ -228,6 +239,7 @@ class LocalSQLiteEntityStore extends EntityStore
         return saved;
       }
     } catch (e) {
+      log('Write transaction failed: $e');
       if (currentMediaPath != null && prevMediaPath != currentMediaPath) {
         await deleteMediaFiles(updated);
       }
@@ -277,6 +289,9 @@ class LocalSQLiteEntityStore extends EntityStore
       generatePreview: generatePreview,
     );
   }
+
+  @override
+  String get logPrefix => 'LocalSQLiteEntityStore';
 }
 
 Future<EntityStore> createEntityStore(
