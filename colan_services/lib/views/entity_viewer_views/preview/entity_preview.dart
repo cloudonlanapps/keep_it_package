@@ -5,9 +5,9 @@ import 'package:flutter/widgets.dart';
 
 import 'package:store/store.dart';
 
-import '../../../../views/entity_viewer_views/context_menu.dart';
-import '../../../basic_page_service/widgets/page_manager.dart';
-import '../../models/entity_actions.dart';
+import '../../../entity_viewer_service/models/entity_actions.dart';
+import '../../../page_manager.dart';
+import '../context_menu.dart';
 import 'collection_preview.dart';
 
 class EntityPreview extends StatelessWidget {

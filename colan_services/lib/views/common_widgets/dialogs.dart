@@ -4,8 +4,8 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:store/store.dart';
 
-import '../../entity_viewer_service/widgets/preview/entity_preview.dart';
-import 'page_manager.dart';
+import '../../page_manager.dart';
+import '../entity_viewer_views/preview/entity_preview.dart';
 
 class DialogService {
   static Future<bool?> template(
@@ -14,76 +14,72 @@ class DialogService {
     required String title,
     required String message,
     ViewerEntities? entity,
-  }) async =>
-      showDialog<bool?>(
-        context: context,
-        builder: (context) => AlertDialog(
-          alignment: Alignment.center,
-          title: Text(title),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              if (entity != null && entity.entities.isNotEmpty)
-                switch (entity.entities.first) {
-                  final StoreEntity e when !e.isCollection => SizedBox.square(
-                      dimension: 100,
-                      child: CLMediaCollage.byMatrixSize(
-                        entity.length,
-                        hCount: 3,
-                        vCount: 3,
-                        itemBuilder: (context, index) {
-                          return EntityPreview(
-                            serverId: serverId,
-                            item: entity.entities[index] as StoreEntity,
-                            parentId: entity.entities[index].parentId,
-                            entities: const ViewerEntities([]),
-                          );
-                        },
-                      ),
-                    ),
-                  _ => Container()
-                },
-              Text(
-                message,
+  }) async => showDialog<bool?>(
+    context: context,
+    builder: (context) => AlertDialog(
+      alignment: Alignment.center,
+      title: Text(title),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (entity != null && entity.entities.isNotEmpty)
+            switch (entity.entities.first) {
+              final StoreEntity e when !e.isCollection => SizedBox.square(
+                dimension: 100,
+                child: CLMediaCollage.byMatrixSize(
+                  entity.length,
+                  hCount: 3,
+                  vCount: 3,
+                  itemBuilder: (context, index) {
+                    return EntityPreview(
+                      serverId: serverId,
+                      item: entity.entities[index] as StoreEntity,
+                      parentId: entity.entities[index].parentId,
+                      entities: const ViewerEntities([]),
+                    );
+                  },
+                ),
               ),
-            ],
+              _ => Container(),
+            },
+          Text(
+            message,
           ),
-          actions: [
-            OverflowBar(
-              alignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                ElevatedButton(
-                  onPressed: () async =>
-                      PageManager.of(context).closeDialog(false),
-                  child: const Text('No'),
-                ),
-                ElevatedButton(
-                  child: const Text('Yes'),
-                  onPressed: () async =>
-                      PageManager.of(context).closeDialog(true),
-                ),
-              ],
+        ],
+      ),
+      actions: [
+        OverflowBar(
+          alignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            ElevatedButton(
+              onPressed: () async => PageManager.of(context).closeDialog(false),
+              child: const Text('No'),
+            ),
+            ElevatedButton(
+              child: const Text('Yes'),
+              onPressed: () async => PageManager.of(context).closeDialog(true),
             ),
           ],
         ),
-      );
+      ],
+    ),
+  );
 
   static Future<bool?> deleteEntity(
     BuildContext context, {
     required String serverId,
     required StoreEntity entity,
-  }) async =>
-      template(
-        context,
-        serverId: serverId,
-        title: 'Confirm Delete',
-        message: entity.isCollection
-            ? 'Are you sure you want to delete '
-                '"${entity.label}" and its content?'
-            : 'Are you sure you want to delete '
-                'this ${entity.mediaType}?',
-        entity: ViewerEntities([entity]),
-      );
+  }) async => template(
+    context,
+    serverId: serverId,
+    title: 'Confirm Delete',
+    message: entity.isCollection
+        ? 'Are you sure you want to delete '
+              '"${entity.label}" and its content?'
+        : 'Are you sure you want to delete '
+              'this ${entity.mediaType}?',
+    entity: ViewerEntities([entity]),
+  );
 
   static Future<bool?> deleteMultipleEntities(
     BuildContext context, {
@@ -195,23 +191,22 @@ class DialogService {
     BuildContext context, {
     required String serverId,
     required StoreEntity media,
-  }) async =>
-      template(
-        context,
-        serverId: serverId,
-        title: 'Confirm Replace',
-        message: 'This will replace the original file with the above media',
-      );
+  }) async => template(
+    context,
+    serverId: serverId,
+    title: 'Confirm Replace',
+    message: 'This will replace the original file with the above media',
+  );
   static Future<bool?> cloneAndReplaceMedia(
     BuildContext context, {
     required String serverId,
     required StoreEntity media,
-  }) async =>
-      template(
-        context,
-        serverId: serverId,
-        title: 'Save',
-        message: 'This will save the above media as a separate copy, '
-            'other propertes will be copied from original media',
-      );
+  }) async => template(
+    context,
+    serverId: serverId,
+    title: 'Save',
+    message:
+        'This will save the above media as a separate copy, '
+        'other propertes will be copied from original media',
+  );
 }

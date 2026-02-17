@@ -1,7 +1,7 @@
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 
-import '../../services/basic_page_service/widgets/page_manager.dart';
+import '../../page_manager.dart';
 import 'top_bar.dart';
 
 class KeepItLoadView extends StatelessWidget {

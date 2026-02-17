@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:store/store.dart';
 
-import '../../services/basic_page_service/widgets/page_manager.dart';
+import '../../page_manager.dart';
 
 class SettingsView extends StatelessWidget {
   const SettingsView({

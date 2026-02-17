@@ -1,4 +1,4 @@
-import 'package:colan_services/services/basic_page_service/widgets/page_manager.dart';
+import 'package:colan_services/page_manager.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';

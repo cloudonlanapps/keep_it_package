@@ -7,10 +7,9 @@ import 'package:flutter/material.dart';
 import 'package:media_editors/media_editors.dart';
 
 import '../../init_service/models/platform_support.dart';
-import '../../services/basic_page_service/basic_page_service.dart';
-import '../../services/basic_page_service/widgets/dialogs.dart';
-import '../../services/basic_page_service/widgets/fullscreen_layout.dart';
-import '../../services/basic_page_service/widgets/page_manager.dart';
+import '../../page_manager.dart';
+import '../../views/common_widgets/dialogs.dart';
+import '../../views/common_widgets/fullscreen_layout.dart';
 
 class MediaEditView extends StatelessWidget {
   const MediaEditView({

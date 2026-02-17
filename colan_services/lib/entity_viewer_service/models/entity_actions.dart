@@ -7,9 +7,9 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:store/store.dart';
 
-import '../../../init_service/models/platform_support.dart';
-import '../../basic_page_service/widgets/dialogs.dart';
-import '../../basic_page_service/widgets/page_manager.dart';
+import '../../init_service/models/platform_support.dart';
+import '../../page_manager.dart';
+import '../../views/common_widgets/dialogs.dart';
 
 @immutable
 class EntityActions extends CLContextMenu {

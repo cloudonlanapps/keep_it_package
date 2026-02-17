@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:store/store.dart';
 
-import '../../services/entity_viewer_service/models/entity_actions.dart';
+import '../../entity_viewer_service/models/entity_actions.dart';
 
 class BottomBarPageView extends StatelessWidget implements PreferredSizeWidget {
   const BottomBarPageView({required this.serverId, super.key});

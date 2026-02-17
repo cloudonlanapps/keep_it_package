@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../basic_page_service/widgets/cl_error_view.dart';
+import '../common_widgets/cl_error_view.dart';
 
 class WhenEmpty extends ConsumerWidget {
   const WhenEmpty({

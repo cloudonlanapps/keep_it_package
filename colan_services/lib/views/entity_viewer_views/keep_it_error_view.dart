@@ -2,7 +2,7 @@ import 'package:colan_services/colan_services.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 
-import '../../services/basic_page_service/widgets/cl_error_view.dart';
+import '../common_widgets/cl_error_view.dart';
 import 'top_bar.dart';
 
 class KeepItErrorView extends StatelessWidget {

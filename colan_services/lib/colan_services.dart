@@ -8,8 +8,6 @@ export 'init_service/models/app_descriptor.dart'
 export 'init_service/models/cl_route_descriptor.dart' show CLRouteDescriptor;
 export 'preference_service/preference_service.dart';
 export 'server_service/server_service.dart';
-export 'services/entity_viewer_service/entity_viewer_service.dart'
-    show EntityViewerService;
 export 'storage_service/storage_service.dart';
 export 'store_tasks_service/store_tasks_service.dart';
 
@@ -20,10 +18,13 @@ export 'views/camera_views/camera_view.dart'
     show CLCameraService0, CameraService;
 export 'views/camera_views/preview.dart' show PreviewCapturedMedia;
 export 'views/common_widgets/action_buttons.dart' show OnDarkMode;
+export 'views/common_widgets/basic_page_service.dart';
 export 'views/common_widgets/content_source_selector.dart';
 export 'views/common_widgets/server_bar.dart';
 export 'views/content_store_views/dialogs/collection_metadata_editor.dart';
 export 'views/content_store_views/dialogs/media_metadata_editor.dart';
+export 'views/entity_viewer_views/entity_viewer_view.dart'
+    show EntityViewerService;
 export 'views/incoming_media_views/incoming_media_monitor.dart'
     show IncomingMediaMonitor;
 export 'views/media_edit_views/media_edit_view.dart' show MediaEditView;

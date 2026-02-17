@@ -8,9 +8,9 @@ import 'package:flutter/material.dart';
 import 'package:store/store.dart';
 
 import '../../incoming_media_service/models/cl_media_candidate.dart';
-import '../../services/basic_page_service/widgets/cl_error_view.dart';
-import '../../services/basic_page_service/widgets/fullscreen_layout.dart';
-import '../../services/basic_page_service/widgets/page_manager.dart';
+import '../../page_manager.dart';
+import '../common_widgets/cl_error_view.dart';
+import '../common_widgets/fullscreen_layout.dart';
 import 'widgets/step1_analyse.dart';
 import 'widgets/step2_duplicates.dart';
 

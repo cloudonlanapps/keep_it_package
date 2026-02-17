@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
-import '../basic_page_service.dart';
+import 'basic_page_service.dart';
 
 class CLErrorView extends StatelessWidget {
   const CLErrorView({

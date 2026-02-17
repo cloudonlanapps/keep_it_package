@@ -8,9 +8,8 @@ import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:store/store.dart';
 
 import '../../init_service/models/platform_support.dart';
-
-import '../../services/basic_page_service/widgets/page_manager.dart';
-import '../../services/entity_viewer_service/widgets/media_title.dart';
+import '../../page_manager.dart';
+import 'media_title.dart';
 import 'popover_menu.dart';
 
 class TopBar extends StatelessWidget implements PreferredSizeWidget {

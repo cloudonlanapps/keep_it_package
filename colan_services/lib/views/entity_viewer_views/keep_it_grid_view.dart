@@ -6,13 +6,13 @@ import 'package:flutter/material.dart';
 
 import 'package:store/store.dart';
 
-import '../../services/basic_page_service/widgets/page_manager.dart';
-import '../../services/entity_viewer_service/models/entity_actions.dart';
-import '../../services/entity_viewer_service/widgets/preview/entity_preview.dart';
-import '../../services/entity_viewer_service/widgets/stale_media_banner.dart';
-import '../../services/entity_viewer_service/widgets/when_empty.dart';
+import '../../entity_viewer_service/models/entity_actions.dart';
+import '../../page_manager.dart';
 import 'bottom_bar_grid_view.dart';
+import 'preview/entity_preview.dart';
+import 'stale_media_banner.dart';
 import 'top_bar.dart';
+import 'when_empty.dart';
 
 class KeepItGridView extends StatelessWidget {
   const KeepItGridView({

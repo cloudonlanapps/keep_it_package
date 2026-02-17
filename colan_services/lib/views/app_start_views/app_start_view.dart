@@ -8,7 +8,6 @@ import '../../init_service/models/app_descriptor.dart';
 import '../../preference_service/builders/get_theme_mode.dart';
 import '../../views/incoming_media_views/incoming_media_monitor.dart';
 
-/// Internal app widget that sets up ShadApp with theme and routing.
 class AppStartView extends StatelessWidget {
   const AppStartView({required this.appDescriptor, super.key});
   final AppDescriptor appDescriptor;

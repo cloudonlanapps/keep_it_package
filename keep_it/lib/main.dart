@@ -10,129 +10,130 @@ class KeepItApp implements AppDescriptor {
 
   @override
   CLAppInitializer get appInitializer => (ref) async {
-        return true;
-      };
+    return true;
+  };
 
   @override
   List<CLRouteDescriptor> get screens => [
-        CLRouteDescriptor(
-          name: '',
-          builder: (context, parameters) {
-            final String serverId;
-            if (parameters.keys.contains('serverId')) {
-              serverId = parameters['serverId']!;
-            } else {
-              serverId = 'default';
-            }
+    CLRouteDescriptor(
+      name: '',
+      builder: (context, parameters) {
+        final String serverId;
+        if (parameters.keys.contains('serverId')) {
+          serverId = parameters['serverId']!;
+        } else {
+          serverId = 'default';
+        }
 
-            return EntityViewerService(
-              serverId: serverId,
-              id: null,
-            );
-          },
-        ),
-        CLRouteDescriptor(
-          name: 'media',
-          builder: (context, parameters) {
-            final int? mediaId;
+        return EntityViewerService(
+          serverId: serverId,
+          id: null,
+        );
+      },
+    ),
+    CLRouteDescriptor(
+      name: 'media',
+      builder: (context, parameters) {
+        final int? mediaId;
 
-            if (parameters.keys.contains('id')) {
-              mediaId = int.parse(parameters['id']!);
-            } else {
-              mediaId = null;
-            }
-            final String serverId;
-            if (parameters.keys.contains('serverId')) {
-              serverId = parameters['serverId']!;
-            } else {
-              throw Exception('serverId must be present');
-            }
+        if (parameters.keys.contains('id')) {
+          mediaId = int.parse(parameters['id']!);
+        } else {
+          mediaId = null;
+        }
+        final String serverId;
+        if (parameters.keys.contains('serverId')) {
+          serverId = parameters['serverId']!;
+        } else {
+          throw Exception('serverId must be present');
+        }
 
-            return EntityViewerService(
-              serverId: serverId,
-              id: mediaId,
-            );
-          },
-        ),
-        CLRouteDescriptor(
-          name: 'settings',
-          builder: (context, parameters) {
-            return const SettingsService();
-          },
-        ),
-        CLRouteDescriptor(
-          name: 'camera',
-          builder: (context, parameters) {
-            final int? parentId;
-            if (parameters.keys.contains('parentId')) {
-              parentId = int.parse(parameters['parentId']!);
-            } else {
-              parentId = null;
-            }
-            final String serverId;
-            if (parameters.keys.contains('serverId')) {
-              serverId = parameters['serverId']!;
-            } else {
-              throw Exception('serverId must be present');
-            }
-            return CameraService(
-              serverId: serverId,
-              parentId: parentId,
-            );
-          },
-        ),
-        CLRouteDescriptor(
-          name: 'edit',
-          builder: (context, parameters) {
-            final int? mediaId;
-            final bool canDuplicateMedia;
-            if (parameters.keys.contains('id')) {
-              mediaId = int.parse(parameters['id']!);
-            } else {
-              mediaId = null;
-            }
-            if (parameters.keys.contains('canDuplicateMedia')) {
-              canDuplicateMedia = parameters['canDuplicateMedia']! == '1';
-            } else {
-              canDuplicateMedia = false;
-            }
-            final String serverId;
-            if (parameters.keys.contains('serverId')) {
-              serverId = parameters['serverId']!;
-            } else {
-              throw Exception('serverId must be present');
-            }
+        return EntityViewerService(
+          serverId: serverId,
+          id: mediaId,
+        );
+      },
+    ),
+    CLRouteDescriptor(
+      name: 'settings',
+      builder: (context, parameters) {
+        return const SettingsView();
+      },
+    ),
+    CLRouteDescriptor(
+      name: 'camera',
+      builder: (context, parameters) {
+        final int? parentId;
+        if (parameters.keys.contains('parentId')) {
+          parentId = int.parse(parameters['parentId']!);
+        } else {
+          parentId = null;
+        }
+        final String serverId;
+        if (parameters.keys.contains('serverId')) {
+          serverId = parameters['serverId']!;
+        } else {
+          throw Exception('serverId must be present');
+        }
+        return CameraService(
+          serverId: serverId,
+          parentId: parentId,
+        );
+      },
+    ),
+    CLRouteDescriptor(
+      name: 'edit',
+      builder: (context, parameters) {
+        final int? mediaId;
+        final bool canDuplicateMedia;
+        if (parameters.keys.contains('id')) {
+          mediaId = int.parse(parameters['id']!);
+        } else {
+          mediaId = null;
+        }
+        if (parameters.keys.contains('canDuplicateMedia')) {
+          canDuplicateMedia = parameters['canDuplicateMedia']! == '1';
+        } else {
+          canDuplicateMedia = false;
+        }
+        final String serverId;
+        if (parameters.keys.contains('serverId')) {
+          serverId = parameters['serverId']!;
+        } else {
+          throw Exception('serverId must be present');
+        }
 
-            return MediaEditService(
-              serverId: serverId,
-              mediaId: mediaId,
-              canDuplicateMedia: canDuplicateMedia,
-            );
-          },
-        ),
-        CLRouteDescriptor(
-          name: 'wizard',
-          builder: (context, parameters) {
-            final String type;
-            if (parameters.keys.contains('type')) {
-              type = parameters['type']!;
-            } else {
-              throw Exception('serverId must be present');
-            }
+        return MediaEditView(
+          serverId: serverId,
+          mediaId: mediaId,
+          canDuplicateMedia: canDuplicateMedia,
+        );
+      },
+    ),
+    CLRouteDescriptor(
+      name: 'wizard',
+      builder: (context, parameters) {
+        final String type;
+        if (parameters.keys.contains('type')) {
+          type = parameters['type']!;
+        } else {
+          throw Exception('serverId must be present');
+        }
 
-            return MediaWizardService(type: type);
-          },
-        ),
-        CLRouteDescriptor(
-          name: 'auth',
-          builder: (context, parameters) {
-            return const AuthView();
-          },
-        ),
-      ];
+        return MediaWizardView(type: type);
+      },
+    ),
+    CLRouteDescriptor(
+      name: 'auth',
+      builder: (context, parameters) {
+        return const AuthView();
+      },
+    ),
+  ];
 
   @override
-  CLTransitionBuilder get transitionBuilder => (
+  CLTransitionBuilder get transitionBuilder =>
+      (
         BuildContext context,
         Animation<double> animation,
         Animation<double> secondaryAnimation,
@@ -142,8 +143,10 @@ class KeepItApp implements AppDescriptor {
         switch (scheme) {
           case 'slide':
             return SlideTransition(
-              position: Tween(begin: const Offset(1, 0), end: Offset.zero)
-                  .animate(animation),
+              position: Tween(
+                begin: const Offset(1, 0),
+                end: Offset.zero,
+              ).animate(animation),
               child: child,
             );
           case 'scale':
@@ -171,14 +174,14 @@ class KeepItApp implements AppDescriptor {
 
   @override
   CLRedirector get redirector => (String location) async {
-        const redirectTo = '';
+    const redirectTo = '';
 
-        if (redirectTo.isNotEmpty) {
-          if (location != redirectTo) return redirectTo;
-        }
+    if (redirectTo.isNotEmpty) {
+      if (location != redirectTo) return redirectTo;
+    }
 
-        return null;
-      };
+    return null;
+  };
 }
 
 void main() {
