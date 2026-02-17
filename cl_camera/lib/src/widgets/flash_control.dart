@@ -1,6 +1,6 @@
 import 'package:camera/camera.dart';
-
 import 'package:flutter/material.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
 
 import '../state/camera_theme.dart';
 import 'cl_circular_button.dart';
@@ -21,12 +21,7 @@ class FlashControl extends StatelessWidget {
       },
       size: 32,
       hasDecoration: false,
-      foregroundColor: switch (controller.value.flashMode) {
-        FlashMode.off => Theme.of(context).colorScheme.primary,
-        FlashMode.auto => Theme.of(context).colorScheme.primary,
-        FlashMode.always => Theme.of(context).colorScheme.primary,
-        FlashMode.torch => Theme.of(context).colorScheme.primary,
-      },
+      foregroundColor: ShadTheme.of(context).colorScheme.foreground,
       onPressed: () async {
         var currentFlashMode = controller.value.flashMode;
         var success = false;

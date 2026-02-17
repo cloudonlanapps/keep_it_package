@@ -1,7 +1,9 @@
 import 'dart:async';
+import 'dart:io' show Platform;
 
 import 'package:camera/camera.dart';
 
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -9,15 +11,16 @@ import '../cl_camera.dart';
 import 'models/camera_config.dart';
 import 'state/camera_theme.dart';
 import 'widgets/camera_core.dart';
+import 'widgets/camera_macos_core.dart';
 import 'widgets/permission_denied.dart';
 import 'widgets/permission_wait.dart';
 
 class CLCamera extends StatefulWidget {
   const CLCamera({
-    required this.cameras,
     required this.previewWidget,
     required this.onCapture,
     required this.themeData,
+    this.cameras = const [],
     this.cameraMode = CameraMode.photo,
     this.onError,
     super.key,
@@ -38,6 +41,8 @@ class CLCamera extends StatefulWidget {
   State<CLCamera> createState() => _CLCameraState();
 
   static Future<Map<Permission, PermissionStatus>> checkPermission() async {
+    // macOS handles camera/microphone permissions via entitlements natively.
+    if (!kIsWeb && Platform.isMacOS) return {};
     var statuses = <Permission, PermissionStatus>{};
     statuses[Permission.camera] = await Permission.camera.status;
     statuses[Permission.microphone] = await Permission.microphone.status;
@@ -53,6 +58,7 @@ class CLCamera extends StatefulWidget {
   }
 
   static Future<bool> get hasPermission async {
+    if (!kIsWeb && Platform.isMacOS) return true;
     final statuses = await checkPermission();
     return statuses.values.every((e) => e.isGranted);
   }
@@ -62,6 +68,10 @@ class CLCamera extends StatefulWidget {
     Future<void> Function() callback, {
     required CLCameraThemeData themeData,
   }) async {
+    if (!kIsWeb && Platform.isMacOS) {
+      await callback();
+      return true;
+    }
     final statuses = await checkPermission();
     final hasPermission = statuses.values.every((e) => e.isGranted);
     if (hasPermission) {
@@ -118,6 +128,33 @@ class _CLCameraState extends State<CLCamera> {
 
   @override
   Widget build(BuildContext context) {
+    // macOS uses camera_macos which manages its own permissions via entitlements.
+    if (!kIsWeb && Platform.isMacOS) {
+      return CameraTheme(
+        themeData: widget.themeData,
+        child: FutureBuilder(
+          future: CameraConfig.loadConfig(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting ||
+                !snapshot.hasData) {
+              return CameraPermissionWait(
+                message: 'Loading Config',
+                onDone: widget.onCancel,
+              );
+            }
+            return CLCameraMacOSCore(
+              config: snapshot.data!,
+              previewWidget: widget.previewWidget,
+              onCapture: widget.onCapture,
+              onCancel: widget.onCancel,
+              onError: widget.onError,
+              cameraMode: widget.cameraMode,
+            );
+          },
+        ),
+      );
+    }
+
     return CameraTheme(
       themeData: widget.themeData,
       child: switch (hasPermission) {

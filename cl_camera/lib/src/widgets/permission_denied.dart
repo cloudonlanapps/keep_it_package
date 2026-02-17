@@ -1,6 +1,7 @@
 import 'package:cl_camera/src/state/camera_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
 
 class CameraPermissionDenied extends StatelessWidget {
   const CameraPermissionDenied({
@@ -33,28 +34,24 @@ class CameraPermissionDenied extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 if (onDone != null)
-                  Center(
-                    child: ElevatedButton.icon(
-                      onPressed: onDone,
-                      label: const Text('Go Back'),
-                      icon: Icon(
-                        CameraTheme.of(context).themeData.exitCamera,
-                      ),
+                  ShadButton(
+                    onPressed: onDone,
+                    leading: Icon(
+                      CameraTheme.of(context).themeData.exitCamera,
                     ),
+                    child: const Text('Go Back'),
                   ),
                 if (onDone != null && onOpenSettings != null)
                   const SizedBox(
                     width: 16,
                   ),
                 if (onOpenSettings != null)
-                  Center(
-                    child: ElevatedButton.icon(
-                      onPressed: onOpenSettings,
-                      label: const Text('Open Settings'),
-                      icon: Icon(
-                        CameraTheme.of(context).themeData.cameraSettings,
-                      ),
+                  ShadButton(
+                    onPressed: onOpenSettings,
+                    leading: Icon(
+                      CameraTheme.of(context).themeData.cameraSettings,
                     ),
+                    child: const Text('Open Settings'),
                   ),
               ],
             ),
@@ -89,7 +86,9 @@ class ShowPermissionStatus extends StatelessWidget {
               child: LabeledIcon(
                 iconData: CameraTheme.of(context).themeData.iconPermission(e),
                 label: havePermission ? null : 'Denied',
-                color: havePermission ? Colors.green : Colors.red,
+                color: havePermission
+                    ? ShadTheme.of(context).colorScheme.primary
+                    : ShadTheme.of(context).colorScheme.destructive,
               ),
             ),
           );
@@ -123,7 +122,7 @@ class LabeledIcon extends StatelessWidget {
         ),
         Text(
           label ?? '  ',
-          style: CameraTheme.of(context).themeData.displayTextStyle,
+          style: ShadTheme.of(context).textTheme.large,
         ),
       ],
     );
@@ -145,8 +144,8 @@ class ShowPermissionDeniedInfo extends StatelessWidget {
       children: [
         Text(
           'Some permissions are denied. Open Settings to fix the issues',
-          style: CameraTheme.of(context).themeData.displayTextStyle.copyWith(
-                color: Colors.red,
+          style: ShadTheme.of(context).textTheme.large.copyWith(
+                color: ShadTheme.of(context).colorScheme.destructive,
                 fontWeight: FontWeight.bold,
               ),
           textAlign: TextAlign.center,

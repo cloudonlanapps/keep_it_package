@@ -1,6 +1,5 @@
 import 'package:cl_camera/cl_camera.dart';
 import 'package:colan_widgets/colan_widgets.dart';
-import 'package:flutter/material.dart';
 
 class DefaultCLCameraIcons extends CLCameraThemeData {
   DefaultCLCameraIcons()
@@ -26,8 +25,8 @@ class DefaultCLCameraIcons extends CLCameraThemeData {
         popMenuSelectedItem: clIcons.popMenuSelectedItem,
         cameraSettings: clIcons.cameraSettings,
         pagePop: clIcons.pagePop,
-        displayTextStyle: const TextStyle(fontSize: 20),
+        // displayTextStyle: const TextStyle(fontSize: 20),
         displayIconSize: 35,
-        textStyle: const TextStyle(fontSize: 16),
+        //textStyle: const TextStyle(fontSize: 16),
       );
 }

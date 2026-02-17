@@ -4,6 +4,7 @@ import 'package:camera/camera.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
 
 import '../models/camera_config.dart';
 import '../models/camera_mode.dart';
@@ -188,9 +189,11 @@ class CLCameraCoreState extends State<CLCameraCore>
         children: <Widget>[
           Row(
             children: [
-              if (widget.onCancel != null)
-                IconButton(
-                  icon: Icon(cameraThemeData.pagePop, size: 32),
+              if (widget.onCancel != null && Navigator.canPop(context))
+                CircularButton(
+                  icon: cameraThemeData.pagePop,
+                  size: 32,
+                  hasDecoration: false,
                   onPressed: widget.onCancel,
                 ),
               Expanded(
@@ -222,8 +225,8 @@ class CLCameraCoreState extends State<CLCameraCore>
                   border: Border.all(
                     color:
                         controller != null && controller!.value.isRecordingVideo
-                        ? Colors.redAccent
-                        : Colors.grey,
+                        ? ShadTheme.of(context).colorScheme.destructive
+                        : ShadTheme.of(context).colorScheme.mutedForeground,
                     width: 2,
                   ),
                 ),
@@ -248,7 +251,7 @@ class CLCameraCoreState extends State<CLCameraCore>
                             alignment: Alignment.centerRight,
                             child: Text(
                               formatDuration(recordingDuration),
-                              style: const TextStyle(fontSize: 30),
+                              style: ShadTheme.of(context).textTheme.h2,
                             ),
                           ),
                         ),
@@ -260,7 +263,7 @@ class CLCameraCoreState extends State<CLCameraCore>
                           alignment: Alignment.centerRight,
                           child: Text(
                             formatDuration(recordingDuration),
-                            style: const TextStyle(fontSize: 30),
+                            style: ShadTheme.of(context).textTheme.h2,
                           ),
                         ),
                       ),
@@ -386,8 +389,7 @@ class CLCameraCoreState extends State<CLCameraCore>
                 behavior: HitTestBehavior.opaque,
                 onScaleStart: _handleScaleStart,
                 onScaleUpdate: _handleScaleUpdate,
-                onTapDown: (details) =>
-                    onViewFinderTap(details, constraints),
+                onTapDown: (details) => onViewFinderTap(details, constraints),
               );
             },
           ),
@@ -699,76 +701,85 @@ class CLCameraCoreState extends State<CLCameraCore>
   }
 
   Widget exposureModeSettings(CameraController? controller) {
-    final styleAuto = TextButton.styleFrom(
-      foregroundColor: controller?.value.exposureMode == ExposureMode.auto
-          ? Colors.orange
-          : Colors.blue,
-    );
-    final styleLocked = TextButton.styleFrom(
-      foregroundColor: controller?.value.exposureMode == ExposureMode.locked
-          ? Colors.orange
-          : Colors.blue,
-    );
-    return Column(
-      children: <Widget>[
-        const Center(
-          child: Text('Exposure Mode'),
-        ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+    return Builder(
+      builder: (context) {
+        final isAutoSelected =
+            controller?.value.exposureMode == ExposureMode.auto;
+        final isLockedSelected =
+            controller?.value.exposureMode == ExposureMode.locked;
+        final selectedColor = ShadTheme.of(context).colorScheme.primary;
+        final unselectedColor = ShadTheme.of(
+          context,
+        ).colorScheme.mutedForeground;
+        return Column(
           children: <Widget>[
-            TextButton(
-              style: styleAuto,
-              onPressed: () =>
-                  onSetExposureModeButtonPressed(ExposureMode.auto),
-              onLongPress: controller == null
-                  ? null
-                  : () {
-                      unawaited(controller.setExposurePoint(null));
-                      // showInSnackBar('Resetting exposure point');
-                    },
-              child: const Text('AUTO'),
+            const Center(
+              child: Text('Exposure Mode'),
             ),
-            TextButton(
-              style: styleLocked,
-              onPressed: () =>
-                  onSetExposureModeButtonPressed(ExposureMode.locked),
-              child: const Text('LOCKED'),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: <Widget>[
+                ShadButton.ghost(
+                  onPressed: () =>
+                      onSetExposureModeButtonPressed(ExposureMode.auto),
+                  onLongPress: controller == null
+                      ? null
+                      : () {
+                          unawaited(controller.setExposurePoint(null));
+                        },
+                  child: Text(
+                    'AUTO',
+                    style: TextStyle(
+                      color: isAutoSelected ? selectedColor : unselectedColor,
+                    ),
+                  ),
+                ),
+                ShadButton.ghost(
+                  onPressed: () =>
+                      onSetExposureModeButtonPressed(ExposureMode.locked),
+                  child: Text(
+                    'LOCKED',
+                    style: TextStyle(
+                      color: isLockedSelected ? selectedColor : unselectedColor,
+                    ),
+                  ),
+                ),
+                ShadButton.ghost(
+                  onPressed: () {
+                    unawaited(setExposureOffset(0));
+                  },
+                  child: Text(
+                    'RESET OFFSET',
+                    style: TextStyle(color: unselectedColor),
+                  ),
+                ),
+              ],
             ),
-            TextButton(
-              style: styleLocked,
-              onPressed: () {
-                unawaited(setExposureOffset(0));
-              },
-              child: const Text('RESET OFFSET'),
+            const Center(
+              child: Text('Exposure Offset'),
             ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: <Widget>[
+                Text(minAvailableExposureOffset.toString()),
+                Slider(
+                  value: currentExposureOffset,
+                  min: minAvailableExposureOffset,
+                  max: maxAvailableExposureOffset,
+                  label: currentExposureOffset.toString(),
+                  onChanged:
+                      minAvailableExposureOffset == maxAvailableExposureOffset
+                      ? null
+                      : setExposureOffset,
+                ),
+                Text(maxAvailableExposureOffset.toString()),
+              ],
+            ),
+            const SizedBox(height: 16),
+            ShadButton(onPressed: closeSettings, child: const Text('Close')),
           ],
-        ),
-        const Center(
-          child: Text('Exposure Offset'),
-        ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: <Widget>[
-            Text(minAvailableExposureOffset.toString()),
-            Slider(
-              value: currentExposureOffset,
-              min: minAvailableExposureOffset,
-              max: maxAvailableExposureOffset,
-              label: currentExposureOffset.toString(),
-              onChanged:
-                  minAvailableExposureOffset == maxAvailableExposureOffset
-                  ? null
-                  : setExposureOffset,
-            ),
-            Text(maxAvailableExposureOffset.toString()),
-          ],
-        ),
-        const SizedBox(
-          height: 16,
-        ),
-        ElevatedButton(onPressed: closeSettings, child: const Text('Close')),
-      ],
+        );
+      },
     );
   }
 
@@ -813,51 +824,57 @@ class CLCameraCoreState extends State<CLCameraCore>
   }
 
   Widget focusModeSettings(CameraController? controller) {
-    final styleAuto = TextButton.styleFrom(
-      foregroundColor: controller?.value.focusMode == FocusMode.auto
-          ? Colors.orange
-          : Colors.blue,
-    );
-    final styleLocked = TextButton.styleFrom(
-      foregroundColor: controller?.value.focusMode == FocusMode.locked
-          ? Colors.orange
-          : Colors.blue,
-    );
-    return Column(
-      children: <Widget>[
-        const Center(
-          child: Text('Focus Mode'),
-        ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+    return Builder(
+      builder: (context) {
+        final isAutoSelected = controller?.value.focusMode == FocusMode.auto;
+        final isLockedSelected =
+            controller?.value.focusMode == FocusMode.locked;
+        final selectedColor = ShadTheme.of(context).colorScheme.primary;
+        final unselectedColor = ShadTheme.of(
+          context,
+        ).colorScheme.mutedForeground;
+        return Column(
           children: <Widget>[
-            TextButton(
-              style: styleAuto,
-              onPressed: controller != null
-                  ? () => onSetFocusModeButtonPressed(FocusMode.auto)
-                  : null,
-              onLongPress: () {
-                if (controller != null) {
-                  unawaited(controller.setFocusPoint(null));
-                }
-                //showInSnackBar('Resetting focus point');
-              },
-              child: const Text('AUTO'),
+            const Center(
+              child: Text('Focus Mode'),
             ),
-            TextButton(
-              style: styleLocked,
-              onPressed: controller != null
-                  ? () => onSetFocusModeButtonPressed(FocusMode.locked)
-                  : null,
-              child: const Text('LOCKED'),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: <Widget>[
+                ShadButton.ghost(
+                  onPressed: controller != null
+                      ? () => onSetFocusModeButtonPressed(FocusMode.auto)
+                      : null,
+                  onLongPress: () {
+                    if (controller != null) {
+                      unawaited(controller.setFocusPoint(null));
+                    }
+                  },
+                  child: Text(
+                    'AUTO',
+                    style: TextStyle(
+                      color: isAutoSelected ? selectedColor : unselectedColor,
+                    ),
+                  ),
+                ),
+                ShadButton.ghost(
+                  onPressed: controller != null
+                      ? () => onSetFocusModeButtonPressed(FocusMode.locked)
+                      : null,
+                  child: Text(
+                    'LOCKED',
+                    style: TextStyle(
+                      color: isLockedSelected ? selectedColor : unselectedColor,
+                    ),
+                  ),
+                ),
+              ],
             ),
+            const SizedBox(height: 16),
+            ShadButton(onPressed: closeSettings, child: const Text('Close')),
           ],
-        ),
-        const SizedBox(
-          height: 16,
-        ),
-        ElevatedButton(onPressed: closeSettings, child: const Text('Close')),
-      ],
+        );
+      },
     );
   }
 
@@ -886,63 +903,62 @@ class CLCameraCoreState extends State<CLCameraCore>
 
   Widget cameraSelector(List<CameraDescription> cameras) {
     final cameraThemeData = CameraTheme.of(context).themeData;
+    final headerStyle = ShadTheme.of(context).textTheme.large.copyWith(
+      fontWeight: FontWeight.bold,
+    );
+    final bodyStyle = ShadTheme.of(context).textTheme.p;
+    final primaryColor = ShadTheme.of(context).colorScheme.primary;
+    final mutedColor = ShadTheme.of(context).colorScheme.mutedForeground;
+
+    Widget cameraToggleRow({
+      required List<CameraDescription> cameras,
+      required int selectedIndex,
+      required Future<void> Function(int) onSelect,
+    }) {
+      return Wrap(
+        spacing: 4,
+        children: cameras.indexed.map((entry) {
+          final (index, _) = entry;
+          final isSelected = index == selectedIndex;
+          return isSelected
+              ? ShadButton(
+                  onPressed: () => onSelect(index),
+                  child: Text('Camera $index', style: bodyStyle),
+                )
+              : ShadButton.outline(
+                  onPressed: () => onSelect(index),
+                  child: Text(
+                    'Camera $index',
+                    style: bodyStyle.copyWith(color: mutedColor),
+                  ),
+                );
+        }).toList(),
+      );
+    }
+
+    final frontCameras = widget.cameras
+        .where((e) => e.lensDirection == CameraLensDirection.front)
+        .toList();
+    final backCameras = widget.cameras
+        .where((e) => e.lensDirection == CameraLensDirection.back)
+        .toList();
+
     return Padding(
       padding: const EdgeInsets.all(4),
       child: Column(
         mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
               Padding(
                 padding: const EdgeInsets.all(8),
-                child: Text(
-                  'Front Camera:',
-                  style: Theme.of(
-                    context,
-                  ).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold),
-                ),
+                child: Text('Front Camera:', style: headerStyle),
               ),
-              ToggleButtons(
-                borderRadius: const BorderRadius.all(Radius.circular(8)),
-                selectedBorderColor: Colors.green[700],
-                selectedColor: Colors.white,
-                fillColor: Colors.green[200],
-                color: Colors.green[400],
-                isSelected: widget.cameras
-                    .where(
-                      (e) => e.lensDirection == CameraLensDirection.front,
-                    )
-                    .indexed
-                    .map((e) {
-                      final (index, _) = e;
-                      return index == config.defaultFrontCameraIndex;
-                    })
-                    .toList(),
-                children:
-                    List<int>.generate(
-                          widget.cameras
-                              .where(
-                                (e) =>
-                                    e.lensDirection ==
-                                    CameraLensDirection.front,
-                              )
-                              .length,
-                          (i) => i,
-                        )
-                        .map(
-                          (e) => Padding(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 8,
-                              vertical: 2,
-                            ),
-                            child: Text(
-                              'Camera $e',
-                              style: Theme.of(context).textTheme.bodyMedium,
-                            ),
-                          ),
-                        )
-                        .toList(),
-                onPressed: (index) async {
+              cameraToggleRow(
+                cameras: frontCameras,
+                selectedIndex: config.defaultFrontCameraIndex,
+                onSelect: (index) async {
                   if (index != config.defaultFrontCameraIndex) {
                     config = config.copyWith(defaultFrontCameraIndex: index);
                     await config.saveConfig();
@@ -952,60 +968,17 @@ class CLCameraCoreState extends State<CLCameraCore>
               ),
             ],
           ),
-          const SizedBox(
-            height: 4,
-          ),
+          const SizedBox(height: 4),
           Row(
             children: [
               Padding(
                 padding: const EdgeInsets.all(8),
-                child: Text(
-                  'Back Camera:',
-                  style: Theme.of(
-                    context,
-                  ).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold),
-                ),
+                child: Text('Back Camera:', style: headerStyle),
               ),
-              ToggleButtons(
-                borderRadius: const BorderRadius.all(Radius.circular(8)),
-                selectedBorderColor: Colors.green[700],
-                selectedColor: Colors.white,
-                fillColor: Colors.green[200],
-                color: Colors.green[400],
-                isSelected: widget.cameras
-                    .where(
-                      (e) => e.lensDirection == CameraLensDirection.back,
-                    )
-                    .indexed
-                    .map((e) {
-                      final (index, _) = e;
-                      return index == config.defaultBackCameraIndex;
-                    })
-                    .toList(),
-                children:
-                    List<int>.generate(
-                          widget.cameras
-                              .where(
-                                (e) =>
-                                    e.lensDirection == CameraLensDirection.back,
-                              )
-                              .length,
-                          (i) => i,
-                        )
-                        .map(
-                          (e) => Padding(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 8,
-                              vertical: 2,
-                            ),
-                            child: Text(
-                              'Camera $e',
-                              style: Theme.of(context).textTheme.bodyMedium,
-                            ),
-                          ),
-                        )
-                        .toList(),
-                onPressed: (index) async {
+              cameraToggleRow(
+                cameras: backCameras,
+                selectedIndex: config.defaultBackCameraIndex,
+                onSelect: (index) async {
                   if (index != config.defaultBackCameraIndex) {
                     config = config.copyWith(defaultBackCameraIndex: index);
                     await config.saveConfig();
@@ -1015,71 +988,56 @@ class CLCameraCoreState extends State<CLCameraCore>
               ),
             ],
           ),
-          Align(
-            alignment: Alignment.centerLeft,
-            child: Padding(
-              padding: const EdgeInsets.all(8),
-              child: Text(
-                'Image Resolution:',
-                style: Theme.of(
-                  context,
-                ).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold),
-              ),
-            ),
+          Padding(
+            padding: const EdgeInsets.all(8),
+            child: Text('Image Resolution:', style: headerStyle),
           ),
-          FittedBox(
-            child: ToggleButtons(
-              borderRadius: const BorderRadius.all(Radius.circular(8)),
-              selectedBorderColor: Colors.green[700],
-              selectedColor: Colors.white,
-              fillColor: Colors.green[200],
-              color: Colors.green[400],
-              isSelected: ResolutionPreset.values.map((e) {
-                return e == config.resolutionPreset;
-              }).toList(),
-              children: ResolutionPreset.values
-                  .map(
-                    (e) => Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 8,
-                        vertical: 2,
-                      ),
+          Wrap(
+            spacing: 4,
+            children: ResolutionPreset.values.map((preset) {
+              final isSelected = preset == config.resolutionPreset;
+              return isSelected
+                  ? ShadButton(
+                      onPressed: () async {
+                        if (preset != config.resolutionPreset) {
+                          config = config.copyWith(resolutionPreset: preset);
+                          await config.saveConfig();
+                          await initializeCameraController(backCamera);
+                        }
+                      },
+                      child: Text(preset.name, style: bodyStyle),
+                    )
+                  : ShadButton.outline(
+                      onPressed: () async {
+                        config = config.copyWith(resolutionPreset: preset);
+                        await config.saveConfig();
+                        await initializeCameraController(backCamera);
+                      },
                       child: Text(
-                        e.name,
-                        style: Theme.of(context).textTheme.bodyMedium,
+                        preset.name,
+                        style: bodyStyle.copyWith(color: mutedColor),
                       ),
-                    ),
-                  )
-                  .toList(),
-              onPressed: (index) async {
-                if (index !=
-                    ResolutionPreset.values.indexOf(config.resolutionPreset)) {
-                  config = config.copyWith(
-                    resolutionPreset: ResolutionPreset.values[index],
-                  );
-                  await config.saveConfig();
-                  await initializeCameraController(backCamera);
-                }
-              },
-            ),
+                    );
+            }).toList(),
           ),
           if (controller?.value.previewSize != null)
             Text(
               'Current Resolution ${controller!.value.previewSize!.width} '
               ' x ${controller!.value.previewSize!.height}',
+              style: bodyStyle,
             ),
           Row(
             children: [
               Padding(
                 padding: const EdgeInsets.all(8),
-                child: Text(
-                  'Audio',
-                  style: Theme.of(
-                    context,
-                  ).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold),
-                ),
+                child: Text('Audio', style: headerStyle),
               ),
-              IconButton(
+              CircularButton(
+                icon: config.enableAudio
+                    ? cameraThemeData.recordingAudioOn
+                    : cameraThemeData.recordingAudioOff,
+                hasDecoration: false,
+                foregroundColor: config.enableAudio ? primaryColor : mutedColor,
                 onPressed: () async {
                   config = config.copyWith(
                     enableAudio: !config.enableAudio,
@@ -1089,19 +1047,12 @@ class CLCameraCoreState extends State<CLCameraCore>
                     currDescription ?? backCamera,
                   );
                 },
-                icon: Icon(
-                  config.enableAudio
-                      ? cameraThemeData.recordingAudioOn
-                      : cameraThemeData.recordingAudioOff,
-                ),
               ),
               if (!config.enableAudio) const Text('(Muted)'),
             ],
           ),
-          const SizedBox(
-            height: 16,
-          ),
-          ElevatedButton(onPressed: closeSettings, child: const Text('Close')),
+          const SizedBox(height: 16),
+          ShadButton(onPressed: closeSettings, child: const Text('Close')),
         ],
       ),
     );
@@ -1109,7 +1060,14 @@ class CLCameraCoreState extends State<CLCameraCore>
 
   Widget audioMute() {
     final cameraThemeData = CameraTheme.of(context).themeData;
-    return IconButton(
+    return CircularButton(
+      icon: config.enableAudio
+          ? cameraThemeData.recordingAudioOn
+          : cameraThemeData.recordingAudioOff,
+      hasDecoration: false,
+      foregroundColor: config.enableAudio
+          ? null
+          : ShadTheme.of(context).colorScheme.destructive,
       onPressed: _isRecordingInProgress
           ? null
           : () async {
@@ -1119,12 +1077,6 @@ class CLCameraCoreState extends State<CLCameraCore>
               await config.saveConfig();
               await initializeCameraController(currDescription ?? backCamera);
             },
-      icon: Icon(
-        config.enableAudio
-            ? cameraThemeData.recordingAudioOn
-            : cameraThemeData.recordingAudioOff,
-        color: config.enableAudio ? null : Theme.of(context).colorScheme.error,
-      ),
     );
   }
 

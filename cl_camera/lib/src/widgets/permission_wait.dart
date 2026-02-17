@@ -1,5 +1,6 @@
 import 'package:cl_camera/src/state/camera_theme.dart';
 import 'package:flutter/material.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
 
 class CameraPermissionWait extends StatelessWidget {
   const CameraPermissionWait({
@@ -20,24 +21,24 @@ class CameraPermissionWait extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const CircularProgressIndicator(
-                color: Colors.grey,
+              CircularProgressIndicator(
+                color: ShadTheme.of(context).colorScheme.mutedForeground,
               ),
               const SizedBox(
                 height: 16,
               ),
               Text(
                 message,
-                style: CameraTheme.of(context).themeData.displayTextStyle,
+                style: ShadTheme.of(context).textTheme.large,
               ),
               if (onDone != null) ...[
                 const SizedBox(
                   height: 16,
                 ),
-                ElevatedButton.icon(
+                ShadButton(
                   onPressed: onDone,
-                  label: const Text('Go back'),
-                  icon: Icon(CameraTheme.of(context).themeData.exitCamera),
+                  leading: Icon(CameraTheme.of(context).themeData.exitCamera),
+                  child: const Text('Go back'),
                 ),
               ],
             ],

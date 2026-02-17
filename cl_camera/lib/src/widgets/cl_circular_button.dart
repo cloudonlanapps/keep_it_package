@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
 
 class CircularButton extends StatelessWidget {
   const CircularButton({
@@ -27,6 +28,7 @@ class CircularButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final mutedColor = ShadTheme.of(context).colorScheme.muted;
     return GestureDetector(
       onTap: onPressed,
       child: Padding(
@@ -36,14 +38,15 @@ class CircularButton extends StatelessWidget {
               ? BoxDecoration(
                   shape: BoxShape.circle,
                   color: isOpaque
-                      ? backgroundColor ?? Theme.of(context).colorScheme.surface
-                      : (backgroundColor ??
-                              Theme.of(context).colorScheme.surface)
-                          .withAlpha(128),
+                      ? backgroundColor ?? mutedColor
+                      : (backgroundColor ?? mutedColor).withAlpha(128),
                   boxShadow: hasShadow
                       ? [
                           BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.3),
+                            color: ShadTheme.of(context)
+                                .colorScheme
+                                .foreground
+                                .withValues(alpha: 0.3),
                             spreadRadius: 2,
                             blurRadius: 5,
                             offset: const Offset(0, 3),
@@ -60,12 +63,7 @@ class CircularButton extends StatelessWidget {
                   child: Icon(
                     icon,
                     size: size,
-                    color:
-                        foregroundColor /* ??
-                        (hasDecoration
-                            ? Theme.of(context).colorScheme.onSurface
-                            : Theme.of(context).colorScheme.surface) */
-                    ,
+                    color: foregroundColor,
                   ),
                 ),
         ),

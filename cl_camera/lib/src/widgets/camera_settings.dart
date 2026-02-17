@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
 
 import '../state/camera_theme.dart';
 import 'cl_circular_button.dart';
@@ -32,7 +33,7 @@ class CameraSettingsHandler extends StatelessWidget {
                       child: Icon(
                         cameraThemeData.popMenuSelectedItem,
                         color: (e == currentSelection)
-                            ? Colors.black
+                            ? ShadTheme.of(context).colorScheme.foreground
                             : Colors.transparent,
                       ),
                     ),
@@ -47,7 +48,7 @@ class CameraSettingsHandler extends StatelessWidget {
         icon: cameraThemeData.popMenuAnchor,
         size: 32,
         hasDecoration: false,
-        foregroundColor: Theme.of(context).colorScheme.primary,
+        foregroundColor: ShadTheme.of(context).colorScheme.foreground,
       ),
     );
   }
