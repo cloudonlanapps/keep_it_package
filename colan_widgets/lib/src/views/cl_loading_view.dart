@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:progress_indicators/progress_indicators.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:shimmer/shimmer.dart';
+import '../utils/validate_layout.dart';
+import 'appearance/cl_scaffold.dart';
 
 enum CLLoaderKind { hidden, widget, shimmer }
 
@@ -93,14 +95,10 @@ class CLLoaderWidget extends StatelessWidget {
     } else {
       child = Center(child: ScalingText(message ?? 'Loading ...'));
     }
-    if (hasScaffold(context)) {
+    if (ValidateLayout.isValidLayout(context)) {
       return child;
     }
-    return Scaffold(body: child);
-  }
-
-  bool hasScaffold(BuildContext context) {
-    return Scaffold.maybeOf(context) != null;
+    return CLScaffold(body: child);
   }
 }
 
@@ -110,7 +108,7 @@ class CLLoaderShimmer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Shimmer.fromColors(
+    final Widget content = Shimmer.fromColors(
       baseColor: Colors.grey[300]!,
       highlightColor: Colors.grey[100]!,
       child: Container(
@@ -136,5 +134,10 @@ class CLLoaderShimmer extends StatelessWidget {
             : null,
       ),
     );
+
+    if (ValidateLayout.isValidLayout(context)) {
+      return content;
+    }
+    return CLScaffold(body: content);
   }
 }
