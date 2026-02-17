@@ -44,4 +44,9 @@ final migrations = SqliteMigrations()
 
 ''');
     }),
+  )
+  ..add(
+    SqliteMigration(2, (tx) async {
+      await tx.execute('ALTER TABLE Entity ADD COLUMN childrenCount INTEGER');
+    }),
   );

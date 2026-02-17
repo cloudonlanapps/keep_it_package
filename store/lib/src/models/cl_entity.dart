@@ -29,6 +29,7 @@ class CLEntity {
     required this.isHidden,
     required this.pin,
     required this.faces,
+    this.childrenCount,
   });
 
   factory CLEntity.fromMap(Map<String, dynamic> map) {
@@ -63,6 +64,7 @@ class CLEntity {
       faces: map['faces'] != null
           ? (map['faces'] as List).cast<String>()
           : null,
+      childrenCount: map['childrenCount'] as int?,
     );
   }
 
@@ -99,6 +101,7 @@ class CLEntity {
       isHidden: false,
       pin: null,
       faces: null,
+      childrenCount: 0,
     );
   }
 
@@ -144,6 +147,7 @@ class CLEntity {
       isHidden: isHidden,
       pin: pin,
       faces: faces,
+      childrenCount: 0,
     );
   }
 
@@ -171,6 +175,7 @@ class CLEntity {
   final bool isHidden;
   final String? pin;
   final List<String>? faces;
+  final int? childrenCount;
 
   CLEntity copyWith({
     ValueGetter<int?>? id,
@@ -193,6 +198,7 @@ class CLEntity {
     bool? isHidden,
     ValueGetter<String?>? pin,
     ValueGetter<List<String>?>? faces,
+    ValueGetter<int?>? childrenCount,
   }) {
     return CLEntity(
       id: id != null ? id.call() : this.id,
@@ -215,12 +221,15 @@ class CLEntity {
       isHidden: isHidden ?? this.isHidden,
       pin: pin != null ? pin.call() : this.pin,
       faces: faces != null ? faces() : this.faces,
+      childrenCount: childrenCount != null
+          ? childrenCount()
+          : this.childrenCount,
     );
   }
 
   @override
   String toString() {
-    return 'CLEntity(id: $id, isCollection: $isCollection, addedDate: $addedDate, updatedDate: $updatedDate, isDeleted: $isDeleted, label: $label, description: $description, parentId: $parentId, md5: $md5, fileSize: $fileSize, mimeType: $mimeType, type: $type, extension: $extension, createDate: $createDate, height: $height, width: $width, duration: $duration, isHidden: $isHidden, pin: $pin, faces: $faces)';
+    return 'CLEntity(id: $id, isCollection: $isCollection, addedDate: $addedDate, updatedDate: $updatedDate, isDeleted: $isDeleted, label: $label, description: $description, parentId: $parentId, md5: $md5, fileSize: $fileSize, mimeType: $mimeType, type: $type, extension: $extension, createDate: $createDate, height: $height, width: $width, duration: $duration, isHidden: $isHidden, pin: $pin, faces: $faces, childrenCount: $childrenCount)';
   }
 
   @override
@@ -247,6 +256,7 @@ class CLEntity {
         other.duration == duration &&
         other.isHidden == isHidden &&
         other.pin == pin &&
+        other.childrenCount == childrenCount &&
         listEquals(other.faces, faces);
   }
 
@@ -271,7 +281,8 @@ class CLEntity {
         duration.hashCode ^
         isHidden.hashCode ^
         pin.hashCode ^
-        faces.hashCode;
+        faces.hashCode ^
+        childrenCount.hashCode;
   }
 
   DateTime get sortDate => createDate ?? updatedDate;
@@ -304,6 +315,7 @@ class CLEntity {
       isHidden: isHidden,
       pin: pin,
       faces: faces,
+      childrenCount: childrenCount,
     );
   }
 
@@ -328,6 +340,7 @@ class CLEntity {
       'duration': duration,
       'isHidden': isHidden,
       'pin': pin,
+      'childrenCount': childrenCount,
     };
   }
 
@@ -400,6 +413,7 @@ class CLEntity {
         other.duration == duration &&
         other.isHidden == isHidden &&
         other.pin == pin &&
+        other.childrenCount == childrenCount &&
         listEquals(other.faces, faces);
   }
 
@@ -421,6 +435,7 @@ class CLEntity {
         other.height == height &&
         other.width == width &&
         other.duration == duration &&
+        other.childrenCount == childrenCount &&
         listEquals(other.faces, faces);
   }
 

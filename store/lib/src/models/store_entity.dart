@@ -187,6 +187,8 @@ class StoreEntity implements ViewerEntity {
 
   @override
   bool get isHidden => clEntity.isHidden;
+  @override
+  int? get childrenCount => clEntity.childrenCount;
 
   String? get description => clEntity.extension;
   String? get md5 => clEntity.md5;

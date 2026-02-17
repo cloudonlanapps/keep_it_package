@@ -3,6 +3,7 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:keep_it/views/entity_viewer_views/keep_it_grid_view.dart';
 import 'package:keep_it/views/entity_viewer_views/keep_it_page_view.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
 
 import '../page_manager.dart';
 import 'top_bar.dart';
@@ -59,10 +60,16 @@ class EntitiesView extends StatelessWidget {
                 return CLErrorView.page(
                   message: message,
                   topBar: TopBar(
-                    serverId: null,
+                    serverId: activeConfig.displayName,
                     entity: null,
                     children: null,
                   ),
+                  actions: [
+                    ShadButton.outline(
+                      onPressed: () => PageManager.of(context).home(),
+                      child: const Text('Go Home'),
+                    ),
+                  ],
                   onSwipe: () {
                     if (PageManager.of(context).canPop()) {
                       PageManager.of(context).pop();

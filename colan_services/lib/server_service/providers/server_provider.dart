@@ -173,16 +173,22 @@ class ServerNotifier
     String password, {
     required bool rememberMe,
   }) async {
+    log('Login method called for $username');
+    final currentServer = await future;
+    log('Login: build completed, proceeding with login');
+
     state = const AsyncValue.loading();
 
     state = await AsyncValue.guard(() async {
-      final currentServer = await future;
+      log('Attempting login for user: $username on server: ${arg.label}');
 
       if (!currentServer.connected) {
+        log('Login failed: Server not connected');
         throw Exception('Server not connected');
       }
 
       final sessionManager = SessionManager(serverConfig: arg.serverConfig);
+
       await sessionManager.login(username, password);
       final user = await sessionManager.getCurrentUser();
 
@@ -200,6 +206,7 @@ class ServerNotifier
       // Start token refresh timer
       _startTokenRefreshTimer(sessionManager);
 
+      log('Login successful for user: $username');
       return currentServer.copyWith(
         sessionManager: () => sessionManager,
         currentUser: () => user,
@@ -211,13 +218,15 @@ class ServerNotifier
 
   /// Logout and optionally clear saved credentials (replaces AuthNotifier.logout).
   Future<void> logout({bool clearCredentials = true}) async {
+    log('Logout method called');
+    final currentServer = await future;
+    log('Logout: build completed, proceeding with logout');
+
     _stopTokenRefreshTimer();
 
     state = const AsyncValue.loading();
 
     state = await AsyncValue.guard(() async {
-      final currentServer = await future;
-
       // Close StoreManager first
       await currentServer.storeManager?.close();
 

@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:cl_server_dart_client/cl_server_dart_client.dart';
 import 'package:flutter/material.dart';
 
@@ -49,6 +51,7 @@ class _LoggedOutViewState extends State<LoggedOutView> {
 
   Future<void> _handleLogin() async {
     if (widget.config == null) {
+      log('Login skipped: No active server selected');
       setState(() {
         _errorMessage = 'No active server selected.';
       });
@@ -63,12 +66,15 @@ class _LoggedOutViewState extends State<LoggedOutView> {
     });
 
     try {
+      log('Login button pressed for user: ${_usernameController.text.trim()}');
       await widget.onLogin(
         _usernameController.text.trim(),
         _passwordController.text,
         rememberMe: _rememberMe,
       );
+      log('Login future completed successfully');
     } catch (e) {
+      log('Login future failed: $e');
       if (mounted) {
         setState(() {
           _errorMessage = 'Login failed: $e';

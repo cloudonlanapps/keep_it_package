@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:cl_extensions/cl_extensions.dart' show NotNullValue;
 import 'package:meta/meta.dart';
 import 'package:store/store.dart';
@@ -48,6 +50,7 @@ class DBQuery<T> {
         ? 'WHERE ${whereParts.join(' AND ')}'
         : '';
     final sql = 'SELECT * FROM $table $whereClause';
+    log('DBQuery.fromStoreQuery: $sql, params: $params');
 
     return DBQuery<T>(
       sql: sql,

@@ -2,7 +2,9 @@ import 'package:cl_server_dart_client/cl_server_dart_client.dart';
 import 'package:colan_services/colan_services.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
 
+import '../page_manager.dart';
 import '../../views/auth_views/logged_in_view.dart';
 import '../../views/auth_views/logged_out_view.dart';
 import '../common_widgets/action_buttons.dart';
@@ -72,8 +74,14 @@ class AuthView extends StatelessWidget {
           ),
         );
       },
-      loadingBuilder: () => const CLLoadingView.page(
+      loadingBuilder: () => CLLoadingView.page(
         debugMessage: 'Connecting to store...',
+        actions: [
+          ShadButton.outline(
+            onPressed: () => PageManager.of(context).home(),
+            child: const Text('Go Home'),
+          ),
+        ],
       ),
       errorBuilder: (error, stack) => CLErrorView.page(
         message: 'Failed to connect to store',

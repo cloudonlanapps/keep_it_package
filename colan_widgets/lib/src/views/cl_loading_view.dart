@@ -31,6 +31,7 @@ abstract class CLLoadingView extends StatelessWidget {
     String? debugMessage,
     CLTopBar? topBar,
     VoidCallback? onSwipe,
+    List<Widget>? actions,
     Key? key,
   }) = _CLLoadingViewPage;
 
@@ -114,6 +115,7 @@ class _CLLoadingViewPage extends CLLoadingView {
     this.debugMessage,
     this.topBar,
     this.onSwipe,
+    this.actions,
     super.key,
   });
 
@@ -121,12 +123,14 @@ class _CLLoadingViewPage extends CLLoadingView {
   final String? debugMessage;
   final CLTopBar? topBar;
   final VoidCallback? onSwipe;
+  final List<Widget>? actions;
 
   @override
   Widget build(BuildContext context) {
     final Widget child = _CLLoadingViewWidget(
       message: message,
       debugMessage: debugMessage,
+      actions: actions,
     );
 
     final shouldWrap = !ValidateLayout.isValidLayout(context);
@@ -208,17 +212,48 @@ class _CLLoadingViewWidget extends StatelessWidget {
   const _CLLoadingViewWidget({
     this.debugMessage,
     this.message,
+    this.actions,
   });
   final String? message;
   final String? debugMessage;
+  final List<Widget>? actions;
+
   @override
   Widget build(BuildContext context) {
     if (kDebugMode && debugMessage != null) {
       return Center(
-        child: Text(debugMessage!, style: ShadTheme.of(context).textTheme.p),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(debugMessage!, style: ShadTheme.of(context).textTheme.p),
+            if (actions != null) ...[
+              const SizedBox(height: 16),
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                spacing: 8,
+                children: actions!,
+              ),
+            ],
+          ],
+        ),
       );
     } else {
-      return Center(child: ScalingText(message ?? 'Loading ...'));
+      return Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ScalingText(message ?? 'Loading ...'),
+            if (actions != null) ...[
+              const SizedBox(height: 16),
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                spacing: 8,
+                children: actions!,
+              ),
+            ],
+          ],
+        ),
+      );
     }
   }
 }

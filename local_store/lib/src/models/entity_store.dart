@@ -54,8 +54,8 @@ class LocalSQLiteEntityStore extends EntityStore
   Future<CLEntity?> get({int? id, String? md5, String? label}) async {
     Future<CLEntity?> cb(SqliteWriteContext tx) async {
       final query = StoreQuery<CLEntity>({
-        'id': ?id,
-        'md5': ?md5,
+        if (id != null) 'id': id,
+        if (md5 != null) 'md5': md5,
         if (label != null) ...{'label': label, 'isCollection': 1},
       });
       return dbGet(tx, agent, query);

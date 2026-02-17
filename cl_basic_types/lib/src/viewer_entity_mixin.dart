@@ -19,6 +19,7 @@ abstract class ViewerEntity {
   String? get label;
   String? get pin;
   bool get isHidden;
+  int? get childrenCount;
 
   String? get dateString;
   Future<ViewerEntity?> updateWith({
