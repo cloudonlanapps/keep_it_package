@@ -8,38 +8,45 @@ import '../providers/scroll_position.dart';
 import 'cl_grid.dart';
 
 class CLRawGalleryGridView extends ConsumerStatefulWidget {
-  const CLRawGalleryGridView(
-      {required this.galleryIdentifier,
-      required this.incoming,
-      required this.itemBuilder,
-      required this.labelBuilder,
-      required this.bannersBuilder,
-      required this.columns,
-      required this.whenEmpty,
-      super.key,
-      this.draggableMenuBuilder});
+  const CLRawGalleryGridView({
+    required this.galleryIdentifier,
+    required this.incoming,
+    required this.itemBuilder,
+    required this.labelBuilder,
+    required this.bannersBuilder,
+    required this.columns,
+    required this.whenEmpty,
+    super.key,
+    this.draggableMenuBuilder,
+  });
   final String galleryIdentifier;
   final ViewerEntities incoming;
   final int columns;
   final Widget Function(
-          BuildContext context, ViewerEntity item, ViewerEntities entities)
-      itemBuilder;
+    BuildContext context,
+    ViewerEntity item,
+    ViewerEntities entities,
+  )
+  itemBuilder;
 
   final Widget? Function(
     BuildContext context,
     List<ViewerEntityGroup<ViewerEntity>> galleryMap,
     ViewerEntityGroup<ViewerEntity> gallery,
-  ) labelBuilder;
+  )
+  labelBuilder;
   final List<Widget> Function(
     BuildContext,
     List<ViewerEntityGroup<ViewerEntity>>,
-  ) bannersBuilder;
+  )
+  bannersBuilder;
   final Widget whenEmpty;
 
   final Widget Function(
     BuildContext context, {
     required GlobalKey<State<StatefulWidget>> parentKey,
-  })? draggableMenuBuilder;
+  })?
+  draggableMenuBuilder;
 
   @override
   ConsumerState<CLRawGalleryGridView> createState() =>
@@ -53,25 +60,23 @@ class CLRawGalleryGridViewState extends ConsumerState<CLRawGalleryGridView> {
   void initState() {
     super.initState();
     _scrollController = ScrollController(
-      initialScrollOffset:
-          ref.read(tabScrollPositionProvider(widget.galleryIdentifier)),
+      initialScrollOffset: ref.read(
+        tabScrollPositionProvider(widget.galleryIdentifier),
+      ),
     );
 
     // Listen for scroll changes
     _scrollController.addListener(() {
       ref
           .read(tabScrollPositionProvider(widget.galleryIdentifier).notifier)
-          .state = _scrollController.offset;
+          .state = _scrollController
+          .offset;
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    final galleryGroups = ref.watch(
-      groupedMediaProvider(
-        widget.incoming,
-      ),
-    );
+    final galleryGroups = ref.watch(groupedMediaProvider(widget.incoming));
     final child = Column(
       children: [
         ...widget.bannersBuilder(context, galleryGroups),
@@ -86,20 +91,31 @@ class CLRawGalleryGridViewState extends ConsumerState<CLRawGalleryGridView> {
               itemBuilder: (BuildContext context, int groupIndex) {
                 if (groupIndex == galleryGroups.length) {
                   return SizedBox(
-                    height: MediaQuery.of(context).viewPadding.bottom + 80,
+                    height: MediaQuery.of(context).padding.bottom + 16,
                   );
                 }
-                final gallery = galleryGroups[groupIndex];
-                return CLGrid(
-                  itemCount: gallery.items.length,
-                  columns: widget.columns,
-                  itemBuilder: (context, itemIndex) {
-                    final itemWidget = widget.itemBuilder(
-                        context, gallery.items[itemIndex], widget.incoming);
 
-                    return itemWidget;
-                  },
-                  header: widget.labelBuilder(context, galleryGroups, gallery),
+                final gallery = galleryGroups[groupIndex];
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 12),
+                  child: CLGrid(
+                    itemCount: gallery.items.length,
+                    columns: widget.columns,
+                    itemBuilder: (context, itemIndex) {
+                      final itemWidget = widget.itemBuilder(
+                        context,
+                        gallery.items[itemIndex],
+                        widget.incoming,
+                      );
+
+                      return itemWidget;
+                    },
+                    header: widget.labelBuilder(
+                      context,
+                      galleryGroups,
+                      gallery,
+                    ),
+                  ),
                 );
               },
             ),

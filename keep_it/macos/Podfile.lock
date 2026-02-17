@@ -1,4 +1,6 @@
 PODS:
+  - camera_macos_plus (0.0.1):
+    - FlutterMacOS
   - cl_media_tools (0.0.1):
     - FlutterMacOS
   - connectivity_plus (0.0.1):
@@ -53,6 +55,7 @@ PODS:
     - FlutterMacOS
 
 DEPENDENCIES:
+  - camera_macos_plus (from `Flutter/ephemeral/.symlinks/plugins/camera_macos_plus/macos`)
   - cl_media_tools (from `Flutter/ephemeral/.symlinks/plugins/cl_media_tools/macos`)
   - connectivity_plus (from `Flutter/ephemeral/.symlinks/plugins/connectivity_plus/macos`)
   - file_selector_macos (from `Flutter/ephemeral/.symlinks/plugins/file_selector_macos/macos`)
@@ -72,6 +75,8 @@ SPEC REPOS:
     - sqlite3
 
 EXTERNAL SOURCES:
+  camera_macos_plus:
+    :path: Flutter/ephemeral/.symlinks/plugins/camera_macos_plus/macos
   cl_media_tools:
     :path: Flutter/ephemeral/.symlinks/plugins/cl_media_tools/macos
   connectivity_plus:
@@ -100,6 +105,7 @@ EXTERNAL SOURCES:
     :path: Flutter/ephemeral/.symlinks/plugins/window_size/macos
 
 SPEC CHECKSUMS:
+  camera_macos_plus: f0379ba8611c138bdc937f0afd3a8a21e256fe06
   cl_media_tools: cc2711c7932758562a850faef563adbec8d809ba
   connectivity_plus: 4adf20a405e25b42b9c9f87feff8f4b6fde18a4e
   file_selector_macos: 6280b52b459ae6c590af5d78fc35c7267a3c4b31

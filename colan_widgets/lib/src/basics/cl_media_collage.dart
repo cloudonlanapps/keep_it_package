@@ -6,10 +6,7 @@ import 'package:flutter/material.dart';
 
 @immutable
 class CLDimension {
-  const CLDimension({
-    required this.itemsInRow,
-    required this.itemsInColumn,
-  });
+  const CLDimension({required this.itemsInRow, required this.itemsInColumn});
   final int itemsInRow;
   final int itemsInColumn;
 
@@ -121,10 +118,7 @@ class CLMediaCollage extends StatelessWidget {
           }
         } else {
           final pageMatrix = computePageMatrix(
-            pageSize: Size(
-              constraints.maxWidth,
-              constraints.maxHeight,
-            ),
+            pageSize: Size(constraints.maxWidth, constraints.maxHeight),
             itemSize: childSize!,
           );
           x = pageMatrix.itemsInRow;
@@ -134,22 +128,20 @@ class CLMediaCollage extends StatelessWidget {
           null => Matrix2D.scrollable(
             itemCount: itemCount,
             hCount: x,
+            crossAxisSpacing: 2.0,
+            mainAxisSpacing: 2.0,
             itemBuilder: (context, index) {
-              return onBuildItem(
-                context,
-                itemBuilder(context, index),
-              );
+              return onBuildItem(context, itemBuilder(context, index));
             },
           ),
           _ => Matrix2D(
             itemCount: itemCount,
             hCount: x,
             vCount: y,
+            crossAxisSpacing: 2.0,
+            mainAxisSpacing: 2.0,
             itemBuilder: (context, index) {
-              return onBuildItem(
-                context,
-                itemBuilder(context, index),
-              );
+              return onBuildItem(context, itemBuilder(context, index));
             },
           ),
         };
@@ -193,6 +185,7 @@ class CLMediaCollage extends StatelessWidget {
       );
     }
     return CLAspectRationDecorated(
+      borderRadius: BorderRadius.circular(4),
       // padding: const EdgeInsets.all(1),
       child: child,
     );

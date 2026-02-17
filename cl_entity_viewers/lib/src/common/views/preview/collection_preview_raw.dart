@@ -23,23 +23,29 @@ class EntityViewRaw extends StatelessWidget {
     if (entity.isCollection) {
       widget = LayoutBuilder(
         builder: (context, constrain) {
-          return Stack(
-            children: [
-              Image.asset(
-                'assets/icon/icon.png',
-                width: constrain.maxWidth,
-                height: constrain.maxHeight,
-              ),
-              Text(
-                entity.label!.characters.first,
-                style: ShadTheme.of(context).textTheme.h2,
-              ),
-            ],
+          return ClipRRect(
+            borderRadius: BorderRadius.circular(12),
+            child: Stack(
+              children: [
+                Image.asset(
+                  'assets/icon/icon.png',
+                  width: constrain.maxWidth,
+                  height: constrain.maxHeight,
+                ),
+                Text(
+                  entity.label!.characters.first,
+                  style: ShadTheme.of(context).textTheme.h2,
+                ),
+              ],
+            ),
           );
         },
       );
     } else {
-      widget = MediaThumbnail(media: entity);
+      widget = ClipRRect(
+        borderRadius: BorderRadius.circular(12),
+        child: MediaThumbnail(media: entity),
+      );
     }
 
     if (grayFilter) {

@@ -45,9 +45,12 @@ class FolderItem extends StatelessWidget {
             child: Container(
               alignment: Alignment.center,
               margin: const EdgeInsets.symmetric(horizontal: 4),
-              color: ShadTheme.of(
-                context,
-              ).colorScheme.foreground.withValues(alpha: 0.5),
+              decoration: BoxDecoration(
+                color: ShadTheme.of(
+                  context,
+                ).colorScheme.foreground.withValues(alpha: 0.5),
+                borderRadius: BorderRadius.circular(4),
+              ),
               child: Text(
                 name!,
                 textAlign: TextAlign.center,

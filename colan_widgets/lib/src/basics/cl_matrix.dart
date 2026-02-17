@@ -10,6 +10,8 @@ class Matrix2D extends StatelessWidget {
     required int vCount,
     required this.itemCount,
     this.strictMartrix = true,
+    this.crossAxisSpacing = 0.0,
+    this.mainAxisSpacing = 0.0,
     super.key,
   }) : vCount_ = vCount;
   const Matrix2D.scrollable({
@@ -17,6 +19,8 @@ class Matrix2D extends StatelessWidget {
     required this.hCount,
     required this.itemCount,
     this.strictMartrix = true,
+    this.crossAxisSpacing = 0.0,
+    this.mainAxisSpacing = 0.0,
     super.key,
   }) : vCount_ = null;
 
@@ -26,6 +30,8 @@ class Matrix2D extends StatelessWidget {
   final int? vCount_;
   final int itemCount;
   final bool strictMartrix;
+  final double crossAxisSpacing;
+  final double mainAxisSpacing;
 
   @override
   Widget build(BuildContext context) {
@@ -33,32 +39,44 @@ class Matrix2D extends StatelessWidget {
     final lastCount = (strictMartrix
         ? hCount
         : (hCount * numRows > itemCount)
-            ? itemCount - hCount * (numRows - 1)
-            : hCount);
+        ? itemCount - hCount * (numRows - 1)
+        : hCount);
     if (vCount_ == null) {
       return ComputeSizeAndBuild(
         builder: (context, size) {
           return ListView.builder(
             itemCount: numRows,
             itemBuilder: (context, r) {
-              return SizedBox(
-                height: size.width / hCount,
-                width: size.width / hCount,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    for (var c = 0;
+              return Padding(
+                padding: EdgeInsets.only(
+                  bottom: r == (numRows - 1) ? 0 : mainAxisSpacing,
+                ),
+                child: SizedBox(
+                  height:
+                      (size.width - (hCount - 1) * crossAxisSpacing) / hCount,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      for (
+                        var c = 0;
                         c < (r == (numRows - 1) ? lastCount : hCount);
-                        c++)
-                      SizedBox.square(
-                        dimension: size.width / hCount,
-                        child: ((r * hCount + c) >= itemCount)
-                            ? strictMartrix
-                                ? Container()
-                                : throw Exception('Unexpected')
-                            : itemBuilder(context, r * hCount + c),
-                      ),
-                  ],
+                        c++
+                      ) ...[
+                        SizedBox.square(
+                          dimension:
+                              (size.width - (hCount - 1) * crossAxisSpacing) /
+                              hCount,
+                          child: ((r * hCount + c) >= itemCount)
+                              ? strictMartrix
+                                    ? Container()
+                                    : throw Exception('Unexpected')
+                              : itemBuilder(context, r * hCount + c),
+                        ),
+                        if (c < (r == (numRows - 1) ? lastCount : hCount) - 1)
+                          SizedBox(width: crossAxisSpacing),
+                      ],
+                    ],
+                  ),
                 ),
               );
             },
@@ -68,29 +86,37 @@ class Matrix2D extends StatelessWidget {
     }
     return ComputeSizeAndBuild(
       builder: (context, size) {
-        final width = size.width / hCount;
-        final height = size.height / numRows;
+        final width = (size.width - (hCount - 1) * crossAxisSpacing) / hCount;
+        final height =
+            (size.height - (numRows - 1) * mainAxisSpacing) / numRows;
 
         return Column(
           children: [
-            for (var r = 0; r < numRows; r++)
+            for (var r = 0; r < numRows; r++) ...[
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  for (var c = 0;
-                      c < (r == (numRows - 1) ? lastCount : hCount);
-                      c++)
+                  for (
+                    var c = 0;
+                    c < (r == (numRows - 1) ? lastCount : hCount);
+                    c++
+                  ) ...[
                     SizedBox(
                       width: width,
                       height: height,
                       child: ((r * hCount + c) >= itemCount)
                           ? strictMartrix
-                              ? Container()
-                              : throw Exception('Unexpected')
+                                ? Container()
+                                : throw Exception('Unexpected')
                           : itemBuilder(context, r * hCount + c),
                     ),
+                    if (c < (r == (numRows - 1) ? lastCount : hCount) - 1)
+                      SizedBox(width: crossAxisSpacing),
+                  ],
                 ],
               ),
+              if (r < numRows - 1) SizedBox(height: mainAxisSpacing),
+            ],
           ],
         );
       },

@@ -66,6 +66,7 @@ class ServerNotifier
 
   @override
   FutureOr<CLServer> build(RemoteServiceLocationConfig arg) async {
+    log('Building ServerNotifier for ${arg.label} (identity: ${_keySuffix})');
     try {
       final config = arg;
 
@@ -108,14 +109,14 @@ class ServerNotifier
 
       if (healthStatus.isHealthy) {
         // Try auto-login from saved credentials
+        log('Attempting auto-login for ${_keySuffix}...');
         final credentials = await _CredentialStorage.load(
           keySuffix: _keySuffix,
         );
         if (credentials != null) {
+          log('Found saved credentials for user: ${credentials.$1}');
           try {
-            sessionManager = SessionManager(
-              serverConfig: config.serverConfig,
-            );
+            sessionManager = SessionManager(serverConfig: config.serverConfig);
             await sessionManager.login(credentials.$1, credentials.$2);
             currentUser = await sessionManager.getCurrentUser();
             loginTimestamp = DateTime.now();
@@ -128,9 +129,11 @@ class ServerNotifier
 
             log('Auto-login successful for ${config.label}');
           } catch (e) {
-            log('Auto-login failed: $e');
+            log('Auto-login failed for ${config.label}: $e', error: e);
             await _CredentialStorage.clear(keySuffix: _keySuffix);
           }
+        } else {
+          log('No saved credentials found for ${_keySuffix}');
         }
       } else {
         log('Server ${config.label} is unhealthy, skipping auth');
@@ -173,7 +176,9 @@ class ServerNotifier
     String password, {
     required bool rememberMe,
   }) async {
-    log('Login method called for $username');
+    log(
+      'Login method called for $username (rememberMe: $rememberMe, keySuffix: $_keySuffix)',
+    );
     final currentServer = await future;
     log('Login: build completed, proceeding with login');
 
@@ -198,6 +203,7 @@ class ServerNotifier
           password,
           keySuffix: _keySuffix,
         );
+        log('Credentials saved successfully for $_keySuffix');
       }
 
       // Create StoreManager automatically
@@ -253,17 +259,14 @@ class ServerNotifier
   void _startTokenRefreshTimer(SessionManager sessionManager) {
     _stopTokenRefreshTimer();
 
-    _tokenRefreshTimer = Timer.periodic(
-      const Duration(seconds: 30),
-      (_) async {
-        try {
-          await sessionManager.getValidToken();
-        } catch (e) {
-          log('Token refresh failed: $e');
-          await logout();
-        }
-      },
-    );
+    _tokenRefreshTimer = Timer.periodic(const Duration(seconds: 30), (_) async {
+      try {
+        await sessionManager.getValidToken();
+      } catch (e) {
+        log('Token refresh failed: $e');
+        await logout();
+      }
+    });
   }
 
   /// Stop the token refresh timer.
@@ -292,6 +295,4 @@ final serverProvider =
       ServerNotifier,
       CLServer,
       RemoteServiceLocationConfig
-    >(
-      ServerNotifier.new,
-    );
+    >(ServerNotifier.new);

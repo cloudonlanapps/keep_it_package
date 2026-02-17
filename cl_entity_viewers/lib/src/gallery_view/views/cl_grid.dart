@@ -12,8 +12,8 @@ class CLGrid extends StatelessWidget {
     this.physics = const NeverScrollableScrollPhysics(),
     this.header,
     this.footer,
-    this.crossAxisSpacing = 8.0,
-    this.mainAxisSpacing = 8.0,
+    this.crossAxisSpacing = 12.0,
+    this.mainAxisSpacing = 12.0,
     super.key,
   });
   final int itemCount;
@@ -46,8 +46,8 @@ class CLGrid extends StatelessWidget {
       children: [
         ?header,
         GridView.builder(
-          padding: const EdgeInsets.only(top: 2),
           shrinkWrap: true,
+
           physics: physics,
           itemBuilder: (context, index) {
             if (index >= limitCount) {
