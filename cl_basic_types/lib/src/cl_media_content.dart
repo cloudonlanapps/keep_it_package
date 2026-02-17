@@ -10,9 +10,9 @@ abstract class CLMediaContent {
 
 @immutable
 class CLMediaText extends CLMediaContent {
+  const CLMediaText(this.text);
   final String text;
-  final CLMediaType type;
-  const CLMediaText(this.text) : type = CLMediaType.text;
+  CLMediaType get type => CLMediaType.text;
 
   @override
   String get identity => text;
@@ -20,18 +20,18 @@ class CLMediaText extends CLMediaContent {
 
 @immutable
 class CLMediaURI extends CLMediaContent {
+  const CLMediaURI(this.uri);
   final Uri uri;
-  final CLMediaType type;
-  const CLMediaURI(this.uri) : type = CLMediaType.uri;
+  CLMediaType get type => CLMediaType.uri;
   @override
   String get identity => uri.toString();
 }
 
 @immutable
 class CLMediaUnknown extends CLMediaContent {
+  const CLMediaUnknown(this.path);
   final String path;
-  final CLMediaType type;
-  const CLMediaUnknown(this.path) : type = CLMediaType.unknown;
+  CLMediaType get type => CLMediaType.unknown;
 
   @override
   String get identity => path;

@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:cl_basic_types/cl_basic_types.dart';
+import 'package:cl_extensions/cl_extensions.dart' show UtilExtensionOnList;
 import 'package:flutter/material.dart';
 
 import '../models/cl_form_field_descriptors.dart';

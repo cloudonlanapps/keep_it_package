@@ -10,6 +10,8 @@ dependencies:
   background_downloader: ^9.2.5
   cl_basic_types:
     path: ../../cl_basic_types
+  cl_extensions:
+    path: ../../cl_extensions
   cl_server_dart_client:
     path: ../../../../sdks/dartsdk
   colan_services:

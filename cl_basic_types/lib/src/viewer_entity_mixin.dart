@@ -1,6 +1,7 @@
+import 'package:cl_extensions/cl_extensions.dart';
+
 import 'cl_media_file.dart';
 import 'cl_media_type.dart';
-import 'extensions/value_getter.dart';
 
 enum UpdateStrategy { skip, overwrite, mergeAppend }
 

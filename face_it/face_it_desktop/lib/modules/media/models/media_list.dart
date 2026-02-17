@@ -1,4 +1,4 @@
-import 'package:cl_basic_types/cl_basic_types.dart' show ValueGetter;
+import 'package:cl_extensions/cl_extensions.dart' show ValueGetter;
 import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart' hide ValueGetter;
 import 'package:image_picker/image_picker.dart';

@@ -10,6 +10,8 @@ environment:
 dependencies:
   cl_basic_types:
     path: ../cl_basic_types
+  cl_extensions:
+    path: ../cl_extensions
   flutter:
     sdk: flutter
   colan_widgets:

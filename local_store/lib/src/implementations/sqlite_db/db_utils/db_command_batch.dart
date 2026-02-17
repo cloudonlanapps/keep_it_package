@@ -1,4 +1,4 @@
-import 'package:cl_basic_types/cl_basic_types.dart';
+import 'package:cl_extensions/cl_extensions.dart' show UtilExtensionOnMap;
 import 'package:meta/meta.dart';
 import 'package:sqlite_async/sqlite_async.dart';
 

@@ -16,6 +16,8 @@ dependencies:
     path: ../cl_camera
   cl_entity_viewers:
     path: ../cl_entity_viewers
+  cl_extensions:
+    path: ../cl_extensions
   cl_media_tools:
     path: ../cl_media_tools
   cl_server_dart_client:

@@ -182,6 +182,13 @@ packages:
       relative: true
     source: path
     version: "0.0.1"
+  cl_extensions:
+    dependency: "direct main"
+    description:
+      path: "../cl_extensions"
+      relative: true
+    source: path
+    version: "1.0.0"
   cl_media_tools:
     dependency: "direct main"
     description:
@@ -1610,5 +1617,5 @@ packages:
     source: path
     version: "0.2.0"
 sdks:
-  dart: ">=3.10.1 <4.0.0"
+  dart: ">=3.11.0 <4.0.0"
   flutter: ">=3.35.0"

@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:cl_basic_types/cl_basic_types.dart';
+import 'package:cl_extensions/cl_extensions.dart' show UtilExtensionOnNum;
 import 'package:flutter/foundation.dart';
 
 @immutable
@@ -41,9 +41,7 @@ class CLDirectoryInfo {
     var totalSize = 0;
 
     if (dir.existsSync()) {
-      dir
-          .listSync(recursive: true, followLinks: false)
-          .forEach((entity) {
+      dir.listSync(recursive: true, followLinks: false).forEach((entity) {
         if (entity is File) {
           fileCount++;
           totalSize += entity.lengthSync();

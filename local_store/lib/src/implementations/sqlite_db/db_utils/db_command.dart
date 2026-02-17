@@ -1,4 +1,4 @@
-import 'package:cl_basic_types/cl_basic_types.dart';
+import 'package:cl_extensions/cl_extensions.dart' show UtilExtensionOnMap;
 import 'package:collection/collection.dart';
 import 'package:meta/meta.dart';
 import 'package:sqlite_async/sqlite_async.dart';
@@ -22,7 +22,8 @@ class DBCommand {
       throw const DBException(DBErrorCode.autoIncrementIdViolationException);
     }
 
-    final sql = 'INSERT ${ignore ? "OR IGNORE" : ""} '
+    final sql =
+        'INSERT ${ignore ? "OR IGNORE" : ""} '
         'INTO $table (${map.keys.join(', ')}) '
         'VALUES (${map.keys.map((e) => '?').join(', ')}) ';
     final parameters = map.values.map((e) => e as Object?).toList();
@@ -40,7 +41,8 @@ class DBCommand {
 
     final map1 = map.removeId();
 
-    final sql = 'UPDATE '
+    final sql =
+        'UPDATE '
         '$table SET ${map1.keys.map((e) => '$e =?').join(', ')} '
         'WHERE id = ? ';
 
@@ -74,7 +76,8 @@ class DBCommand {
     } else {
       final keys = map.keys.where((e) => identifiers.contains(e));
       final map1 = {for (final e in keys) e: map[e]};
-      sql = 'DELETE FROM $table '
+      sql =
+          'DELETE FROM $table '
           'WHERE ${map1.keys.map((e) => '$e = ?').join(' AND ')}';
       parameters = map1.values.toList();
     }
@@ -149,7 +152,7 @@ class DBCommand {
     Map<String, dynamic> newMap, {
     required String table,
     required Future<Map<String, dynamic>?> Function(String column, Object id)
-        getItemByColumnValue,
+    getItemByColumnValue,
     required List<String> uniqueColumn,
     bool autoIncrementId = true,
   }) async {

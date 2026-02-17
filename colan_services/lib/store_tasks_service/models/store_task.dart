@@ -1,3 +1,4 @@
+import 'package:cl_extensions/cl_extensions.dart' show ValueGetter;
 import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart' hide ValueGetter;
 import 'package:store/store.dart';

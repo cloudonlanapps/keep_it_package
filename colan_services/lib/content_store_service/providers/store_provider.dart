@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:cl_extensions/cl_extensions.dart' show CLLogger;
 import 'package:cl_media_tools/cl_media_tools.dart';
 import 'package:cl_server_dart_client/cl_server_dart_client.dart';
 import 'package:colan_services/server_service/server_service.dart';

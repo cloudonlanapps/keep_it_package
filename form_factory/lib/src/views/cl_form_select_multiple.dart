@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:cl_basic_types/cl_basic_types.dart';
+import 'package:cl_extensions/cl_extensions.dart' show UtilExtensionOnList;
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 
@@ -27,102 +27,105 @@ class CLFormSelectMultiple extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FormField<List<Object>>(
-        autovalidateMode: AutovalidateMode.onUserInteraction,
-        validator: (value) {
-          {
-            final res = descriptors.onValidate?.call(value);
+      autovalidateMode: AutovalidateMode.onUserInteraction,
+      validator: (value) {
+        {
+          final res = descriptors.onValidate?.call(value);
 
-            if (res != null) return res;
+          if (res != null) return res;
 
-            state.selectedEntities.clear();
-            if (value?.isNotEmpty ?? false) {
-              for (var item in value!) {
-                state.selectedEntities.add(item);
-              }
+          state.selectedEntities.clear();
+          if (value?.isNotEmpty ?? false) {
+            for (var item in value!) {
+              state.selectedEntities.add(item);
             }
-            return null;
           }
-        },
-        initialValue: List.from(state.selectedEntities),
-        builder: (fieldState) {
-          return InputDecorator(
-            decoration: FormDesign.inputDecoration(
-              context,
-              label: descriptors.label,
-              actionBuilder: fieldState.value!.isEmpty ? null : actionBuilder,
-            ),
-            child: Align(
-              alignment: Alignment.topCenter,
-              child: SingleChildScrollView(
-                controller: state.scrollController,
-                child: Align(
-                  alignment: Alignment.topLeft,
-                  child: Wrap(
-                    key: state.wrapKey,
-                    spacing: 1,
-                    runSpacing: 1,
-                    children: [
-                      ...fieldState.value!.map(
-                        (e) => Theme(
-                          data: Theme.of(context).copyWith(
-                            chipTheme: const ChipThemeData(
-                              side: BorderSide.none,
-                            ),
-                            canvasColor: Colors.transparent,
-                          ),
-                          child: Chip(
-                            label: Text(descriptors.labelBuilder(e)),
-                            onDeleted: () {
-                              fieldState.value!.remove(e);
-                              onRefresh();
-                            },
-                          ),
+          return null;
+        }
+      },
+      initialValue: List.from(state.selectedEntities),
+      builder: (fieldState) {
+        return InputDecorator(
+          decoration: FormDesign.inputDecoration(
+            context,
+            label: descriptors.label,
+            actionBuilder: fieldState.value!.isEmpty ? null : actionBuilder,
+          ),
+          child: Align(
+            alignment: Alignment.topCenter,
+            child: SingleChildScrollView(
+              controller: state.scrollController,
+              child: Align(
+                alignment: Alignment.topLeft,
+                child: Wrap(
+                  key: state.wrapKey,
+                  spacing: 1,
+                  runSpacing: 1,
+                  children: [
+                    ...fieldState.value!.map(
+                      (e) => Theme(
+                        data: Theme.of(context).copyWith(
+                          chipTheme: const ChipThemeData(side: BorderSide.none),
+                          canvasColor: Colors.transparent,
+                        ),
+                        child: Chip(
+                          label: Text(descriptors.labelBuilder(e)),
+                          onDeleted: () {
+                            fieldState.value!.remove(e);
+                            onRefresh();
+                          },
                         ),
                       ),
-                      SearchAnchor(
-                        searchController: state.searchController,
-                        isFullScreen: false,
-                        viewBackgroundColor:
-                            Theme.of(context).colorScheme.surface,
-                        suggestionsBuilder: (context, controller) {
-                          return suggestionsBuilder(context,
-                              suggestions: descriptors.suggestionsAvailable
-                                  .excludeByLabel(
-                                    fieldState.value!,
-                                    descriptors.labelBuilder,
-                                  )
-                                  .toList(),
-                              controller: controller,
-                              labelBuilder: descriptors.labelBuilder,
-                              fieldState: fieldState);
-                        },
-                        builder: (context, controller) {
-                          return Theme(
-                            data: Theme.of(context).copyWith(
-                              canvasColor: Colors.transparent,
+                    ),
+                    SearchAnchor(
+                      searchController: state.searchController,
+                      isFullScreen: false,
+                      viewBackgroundColor: Theme.of(
+                        context,
+                      ).colorScheme.surface,
+                      suggestionsBuilder: (context, controller) {
+                        return suggestionsBuilder(
+                          context,
+                          suggestions: descriptors.suggestionsAvailable
+                              .excludeByLabel(
+                                fieldState.value!,
+                                descriptors.labelBuilder,
+                              )
+                              .toList(),
+                          controller: controller,
+                          labelBuilder: descriptors.labelBuilder,
+                          fieldState: fieldState,
+                        );
+                      },
+                      builder: (context, controller) {
+                        return Theme(
+                          data: Theme.of(
+                            context,
+                          ).copyWith(canvasColor: Colors.transparent),
+                          child: ActionChip(
+                            avatar: clIcons.insertItem.iconFormatted(),
+                            label: Text(
+                              fieldState.value!.isEmpty ? 'Add' : 'Add',
                             ),
-                            child: ActionChip(
-                              avatar: clIcons.insertItem.iconFormatted(),
-                              label: Text(
-                                fieldState.value!.isEmpty ? 'Add' : 'Add',
-                              ),
-                              onPressed: controller.openView,
-                              shape: const ContinuousRectangleBorder(
-                                side: BorderSide(),
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(16)),
+                            onPressed: controller.openView,
+                            shape: const ContinuousRectangleBorder(
+                              side: BorderSide(),
+                              borderRadius: BorderRadius.all(
+                                Radius.circular(16),
                               ),
                             ),
-                          );
-                        },
-                      ),
-                    ],
-                  ),
+                          ),
+                        );
+                      },
+                    ),
+                  ],
                 ),
               ),
             ),
-          );
-        });
+          ),
+        );
+      },
+    );
   }
 
   FutureOr<Iterable<Widget>> suggestionsBuilder(
@@ -139,13 +142,12 @@ class CLFormSelectMultiple extends StatelessWidget {
       filterredSuggestion = suggestions;
     } else {
       filterredSuggestion = suggestions
-          ?.where(
-            (element) => labelBuilder(element).contains(controllerText),
-          )
+          ?.where((element) => labelBuilder(element).contains(controllerText))
           .toList();
     }
 
-    final list = filterredSuggestion?.map<Widget>((e) {
+    final list =
+        filterredSuggestion?.map<Widget>((e) {
           final description = descriptionBuilder?.call(e);
           return ListTile(
             title: Text(labelBuilder(e)),
@@ -169,10 +171,7 @@ class CLFormSelectMultiple extends StatelessWidget {
               if (controllerText.isNotEmpty) {
                 controller.closeView(controllerText);
 
-                final c = suggestions?.getByLabel(
-                  controllerText,
-                  labelBuilder,
-                );
+                final c = suggestions?.getByLabel(controllerText, labelBuilder);
                 if (c == null) {
                   _onCreateByLabel(fieldState, controllerText, onRefresh);
                 } else {
@@ -184,14 +183,11 @@ class CLFormSelectMultiple extends StatelessWidget {
         );
       }
     }
-    return list
-      ..add(
-        ListTile(
-          title: SizedBox(
-            height: MediaQuery.of(context).viewInsets.bottom,
-          ),
-        ),
-      );
+    return list..add(
+      ListTile(
+        title: SizedBox(height: MediaQuery.of(context).viewInsets.bottom),
+      ),
+    );
   }
 
   Future<void> _onSelect(

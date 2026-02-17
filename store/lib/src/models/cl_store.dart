@@ -1,6 +1,8 @@
 import 'dart:io';
 
 import 'package:cl_basic_types/cl_basic_types.dart';
+import 'package:cl_extensions/cl_extensions.dart'
+    show CLLogger, TimeStampExtension, UtilExtensionOnFile, ValueGetter;
 import 'package:meta/meta.dart';
 
 import 'cl_entity.dart';

@@ -1,4 +1,4 @@
-import 'package:cl_basic_types/cl_basic_types.dart';
+import 'package:cl_extensions/cl_extensions.dart' show UtilExtensionOnString;
 import 'package:colan_services/colan_services.dart';
 import 'package:flutter/material.dart';
 

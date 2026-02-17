@@ -1,16 +1,8 @@
-import 'extensions/on_list.dart';
-
-import 'extensions/on_date_time.dart';
+import 'package:cl_extensions/cl_extensions.dart';
 import 'package:collection/collection.dart';
 import 'package:meta/meta.dart';
 
 import 'viewer_entity_mixin.dart';
-
-// ignore_for_file: public_member_api_docs, sort_constructors_first
-/* import 'package:store/src/extensions/ext_datetime.dart';
-import 'package:store/src/extensions/ext_list.dart';
-
-import 'gallery_group.dart'; */
 
 @immutable
 class ViewerEntities {
@@ -72,7 +64,7 @@ class ViewerEntities {
 
   Iterable<ViewerEntity> get _stored => entities.where((e) => e.id != null);
   Iterable<ViewerEntity> _targetMismatch(int? parentId) =>
-      _stored.where((e) => e.parentId != parentId && !(e).isHidden);
+      _stored.where((e) => e.parentId != parentId && !e.isHidden);
 
   ViewerEntities targetMismatch(int? parentId) =>
       ViewerEntities(_targetMismatch(parentId).toList());

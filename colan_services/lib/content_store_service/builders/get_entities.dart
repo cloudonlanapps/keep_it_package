@@ -1,4 +1,5 @@
 import 'package:cl_basic_types/cl_basic_types.dart';
+import 'package:cl_extensions/cl_extensions.dart' show NotNullValue;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
@@ -6,15 +7,16 @@ import 'package:store/store.dart';
 import '../providers/store_query_result.dart';
 
 class GetEntity extends ConsumerWidget {
-  const GetEntity(
-      {required this.builder,
-      required this.errorBuilder,
-      required this.loadingBuilder,
-      this.id,
-      super.key,
-      this.label, // Searches only collection
-      this.md5, // Searches only media
-      this.store});
+  const GetEntity({
+    required this.builder,
+    required this.errorBuilder,
+    required this.loadingBuilder,
+    this.id,
+    super.key,
+    this.label, // Searches only collection
+    this.md5, // Searches only media
+    this.store,
+  });
   final Widget Function(StoreEntity? item) builder;
   final Widget Function(Object, StackTrace) errorBuilder;
   final Widget Function() loadingBuilder;
@@ -63,17 +65,18 @@ class GetEntity extends ConsumerWidget {
 }
 
 class GetEntities extends ConsumerWidget {
-  const GetEntities(
-      {required this.builder,
-      required this.errorBuilder,
-      required this.loadingBuilder,
-      this.parentId, // parentID = 0 ignores parentId, null is a valid parentId
-      this.isCollection, // isCollection = null ignores isCollection
-      super.key,
-      this.isHidden = false, // isHidden = null ignores isHidden
-      this.isDeleted = false, // isDeleted = null ignores isDeleted
-      this.hasPin,
-      this.store});
+  const GetEntities({
+    required this.builder,
+    required this.errorBuilder,
+    required this.loadingBuilder,
+    this.parentId, // parentID = 0 ignores parentId, null is a valid parentId
+    this.isCollection, // isCollection = null ignores isCollection
+    super.key,
+    this.isHidden = false, // isHidden = null ignores isHidden
+    this.isDeleted = false, // isDeleted = null ignores isDeleted
+    this.hasPin,
+    this.store,
+  });
   final Widget Function(ViewerEntities items) builder;
   final Widget Function(Object, StackTrace) errorBuilder;
   final Widget Function() loadingBuilder;

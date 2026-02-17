@@ -1,6 +1,3 @@
-export 'package:cl_basic_types/cl_basic_types.dart'
-    show CLLogger, NotNullValue, ValueGetter;
-
 export 'app_logger.dart';
 
 export 'src/models/cl_entity.dart' show CLEntity;

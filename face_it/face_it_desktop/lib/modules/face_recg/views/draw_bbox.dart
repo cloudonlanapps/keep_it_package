@@ -1,4 +1,4 @@
-import 'package:cl_basic_types/cl_basic_types.dart';
+import 'package:cl_extensions/cl_extensions.dart' show CLLogger;
 import 'package:dotted_border/dotted_border.dart';
 import 'package:face_it_desktop/modules/settings/providers/face_box_preferences.dart';
 import 'package:flutter/material.dart';

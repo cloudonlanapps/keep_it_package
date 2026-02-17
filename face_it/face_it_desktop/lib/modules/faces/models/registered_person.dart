@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:cl_basic_types/cl_basic_types.dart';
+import 'package:cl_extensions/cl_extensions.dart' show CLLogger, ValueGetter;
 import 'package:collection/collection.dart';
 
 import 'package:flutter/widgets.dart' hide ValueGetter;

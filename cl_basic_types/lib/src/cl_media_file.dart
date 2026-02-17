@@ -1,27 +1,14 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
-
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:cl_basic_types/src/extensions/on_date_time.dart';
+import 'package:cl_extensions/cl_extensions.dart';
 import 'package:meta/meta.dart';
 
 import 'cl_media_content.dart';
 import 'cl_media_type.dart';
-import 'extensions/value_getter.dart';
 
 @immutable
 class CLMediaFile extends CLMediaContent {
-  final String path;
-  final String md5;
-  final int fileSize;
-  final String mimeType;
-  final CLMediaType type;
-  final String fileSuffix;
-  final DateTime? createDate;
-  final int? height;
-  final int? width;
-  final double? duration;
   const CLMediaFile({
     required this.path,
     required this.md5,
@@ -34,21 +21,6 @@ class CLMediaFile extends CLMediaContent {
     this.width,
     this.duration,
   });
-
-  Map<String, dynamic> toMap() {
-    return <String, dynamic>{
-      'path': path,
-      'md5': md5,
-      'fileSize': fileSize,
-      'mimeType': mimeType,
-      'type': type.name,
-      'fileSuffix': fileSuffix,
-      'createDate': createDate?.utcTimeStamp,
-      'height': height,
-      'width': width,
-      'duration': duration,
-    };
-  }
 
   factory CLMediaFile.fromMap(Map<String, dynamic> map) {
     return CLMediaFile(
@@ -70,10 +42,35 @@ class CLMediaFile extends CLMediaContent {
     );
   }
 
-  String toJson() => json.encode(toMap());
-
   factory CLMediaFile.fromJson(String source) =>
       CLMediaFile.fromMap(json.decode(source) as Map<String, dynamic>);
+  final String path;
+  final String md5;
+  final int fileSize;
+  final String mimeType;
+  final CLMediaType type;
+  final String fileSuffix;
+  final DateTime? createDate;
+  final int? height;
+  final int? width;
+  final double? duration;
+
+  Map<String, dynamic> toMap() {
+    return <String, dynamic>{
+      'path': path,
+      'md5': md5,
+      'fileSize': fileSize,
+      'mimeType': mimeType,
+      'type': type.name,
+      'fileSuffix': fileSuffix,
+      'createDate': createDate?.utcTimeStamp,
+      'height': height,
+      'width': width,
+      'duration': duration,
+    };
+  }
+
+  String toJson() => json.encode(toMap());
 
   CLMediaFile copyWith({
     String? path,

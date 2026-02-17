@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:cl_basic_types/cl_basic_types.dart';
+import 'package:cl_extensions/cl_extensions.dart' show UtilExtensionOnNum;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path/path.dart' as p;
@@ -45,9 +45,7 @@ class StorageStatistics {
     var totalSize = 0;
 
     if (dir.existsSync()) {
-      dir
-          .listSync(recursive: true, followLinks: false)
-          .forEach((entity) {
+      dir.listSync(recursive: true, followLinks: false).forEach((entity) {
         if (entity is File) {
           fileCount++;
           totalSize += entity.lengthSync();
@@ -65,18 +63,19 @@ class StorageStatistics {
 }
 
 final StreamProviderFamily<StorageStatistics, Directory>
-    storageStatisticsProvider =
-    StreamProvider.family<StorageStatistics, Directory>((ref, dir) async* {
-  final streamController = StreamController<StorageStatistics>();
-  final watcher = DirectoryWatcher(
-    p.absolute(dir.path),
-    pollingDelay: const Duration(seconds: 1),
-  );
+storageStatisticsProvider = StreamProvider.family<StorageStatistics, Directory>(
+  (ref, dir) async* {
+    final streamController = StreamController<StorageStatistics>();
+    final watcher = DirectoryWatcher(
+      p.absolute(dir.path),
+      pollingDelay: const Duration(seconds: 1),
+    );
 
-  streamController.add(await StorageStatistics.storageUse(dir));
-  watcher.events.listen((watchEvent) async {
     streamController.add(await StorageStatistics.storageUse(dir));
-  });
+    watcher.events.listen((watchEvent) async {
+      streamController.add(await StorageStatistics.storageUse(dir));
+    });
 
-  yield* streamController.stream;
-});
+    yield* streamController.stream;
+  },
+);

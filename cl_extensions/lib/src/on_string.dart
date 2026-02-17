@@ -55,4 +55,9 @@ extension UtilExtensionOnStringNullable on String? {
     }
     return this!.capitalizeWords();
   }
+
+  int? toInt() {
+    if (this == null) return null;
+    return int.parse(this!);
+  }
 }

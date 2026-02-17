@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:cl_basic_types/cl_basic_types.dart';
+import 'package:cl_extensions/cl_extensions.dart' show UtilExtensionOnString;
 import 'package:colan_services/content_store_service/content_store_service.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
