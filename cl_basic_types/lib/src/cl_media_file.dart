@@ -8,7 +8,7 @@ import 'package:meta/meta.dart';
 
 import 'cl_media_content.dart';
 import 'cl_media_type.dart';
-import 'value_getter.dart';
+import 'extensions/value_getter.dart';
 
 @immutable
 class CLMediaFile extends CLMediaContent {

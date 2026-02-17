@@ -4,7 +4,7 @@
 // viewer packages like cl_entity_viewers.
 
 export 'src/cl_media_type.dart' show CLMediaType;
-export 'src/value_getter.dart' show ValueGetter;
+export 'src/extensions/value_getter.dart' show ValueGetter;
 export 'src/viewer_entity_mixin.dart'
     show
         ViewerEntity,
@@ -12,8 +12,8 @@ export 'src/viewer_entity_mixin.dart'
         GalleryGroupStoreEntityListQuery,
         UpdateStrategy;
 export 'src/viewer_entities.dart' show ViewerEntities;
-export 'src/gallery_group.dart' show GalleryGroup;
-export 'src/not_null_value.dart' show NotNullValue;
+//export 'src/gallery_group.dart' show GalleryGroup;
+export 'src/extensions/not_null_value.dart' show NotNullValue;
 
 // Export relevant extensions for UI usage
 export 'src/extensions/on_date_time.dart'
