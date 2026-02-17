@@ -11,8 +11,7 @@ environment:
 dependencies:
   colan_services:
     path: ../colan_services
-  colan_widgets:
-    path: ../colan_widgets
+  
   flutter:
     sdk: flutter
   #fvp: ^0.29.0
