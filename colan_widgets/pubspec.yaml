@@ -7,22 +7,11 @@ environment:
 
 dependencies:
   # audio_waveforms: ^1.0.5
-  collection: ^1.19.0
-  crypto: ^3.0.3
-  event_bus: ^2.0.0
-
   flutter:
     sdk: flutter
-
-  http: ^1.5.0
-  http_parser: ^4.0.2
-
-  logger: ^2.1.0
   material_design_icons_flutter: ^7.0.7296
   material_symbols_icons: ^4.2785.1
-  path: ^1.9.0
   percent_indicator: ^4.2.3
-
   progress_indicators: ^1.0.0
   shadcn_ui: ^0.38.0
   shimmer: ^3.0.0

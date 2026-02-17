@@ -8,7 +8,6 @@ environment:
   sdk: ^3.9.2
 
 dependencies:
-  animated_icon: ^0.0.9
   # audio_waveforms: 1.0.5 # Upgrade has issues!
   # background_downloader: ^8.9.4
   camera: ^0.11.0+1
@@ -27,63 +26,22 @@ dependencies:
   colan_widgets:
     path: ../colan_widgets
   collection: ^1.19.0
-
   connectivity_plus: ^7.0.0 
-
-
-  dio: ^5.7.0
-  event_bus: ^2.0.0
-  exif: ^3.3.0
-
   flutter:
     sdk: flutter
   flutter_riverpod: ^2.6.1
-  flutter_speed_dial: ^7.0.0
-  form_factory:
-    path: ../form_factory
-
-  heif_converter: ^1.0.0
   http: ^1.5.0
-  http_parser: ^4.0.2
-  image: ^4.1.7
-  image_picker: ^1.1.2
-
   local_store:
     path: ../local_store
-  logger: ^2.4.0
-
-  media_editors:
-    path: ../media_editors
-
-  meta: ^1.12.0
-  mime: ^2.0.0
-
-  multicast_dns: ^0.3.2+7
-  mutex: ^3.1.0
   nsd: ^4.0.3
   path: ^1.9.0
-
   path_provider: ^2.1.4
-  percent_indicator: ^4.2.5
   photo_manager: ^3.2.3
-  pie_chart: ^5.4.0
-  progress_indicators: ^1.0.0
-  pull_down_button: ^0.10.2
-
-  shadcn_ui: ^0.38.0
   share_handler: ^0.0.21
   share_plus: ^12.0.0 
   shared_preferences: ^2.2.3
-  shimmer: ^3.0.0
-  socket_io_client: ^3.1.4
-  sqlite_async: ^0.12.2 
   store:
     path: ../store
-  stream_channel: ^2.1.2
-  tar: ^2.0.0
-  uuid: ^4.4.0
-  video_player: ^2.8.7
-
   watcher: ^1.1.0
 
 

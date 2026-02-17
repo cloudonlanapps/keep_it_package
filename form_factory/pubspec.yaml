@@ -8,8 +8,6 @@ environment:
   sdk: ^3.9.2
 
 dependencies:
-  cl_basic_types:
-    path: ../cl_basic_types
   cl_extensions:
     path: ../cl_extensions
   flutter:
