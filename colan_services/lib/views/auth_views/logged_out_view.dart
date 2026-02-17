@@ -1,8 +1,6 @@
 import 'package:cl_server_dart_client/cl_server_dart_client.dart';
 import 'package:flutter/material.dart';
 
-import '../../server_service/server_service.dart';
-
 /// View displayed when user is not logged in.
 ///
 /// This view is decoupled from Riverpod - it receives the login function

@@ -1,9 +1,10 @@
 import 'dart:async' show Completer, unawaited;
 import 'package:cl_basic_types/cl_basic_types.dart';
-import 'package:colan_services/server_service/server_service.dart';
 import 'package:face_it_desktop/modules/face_recg/models/ai_task.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:socket_io_client/socket_io_client.dart' as io;
+
+import '../../../services/ai_server_service/ai_server_service.dart';
 
 final schedulerNotifierProvider =
     StateNotifierProvider<SchedulerNotifier, List<AITask>>((ref) {

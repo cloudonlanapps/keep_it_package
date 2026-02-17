@@ -2,10 +2,11 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:cl_basic_types/cl_basic_types.dart';
-import 'package:colan_services/server_service/server_service.dart';
+import 'package:cl_server_dart_client/cl_server_dart_client.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../app/models/rest_api.dart' show RESTAPi;
+import '../../../services/ai_server_service/ai_server_service.dart';
 import '../models/registered_person.dart';
 import '../models/registered_persons.dart';
 

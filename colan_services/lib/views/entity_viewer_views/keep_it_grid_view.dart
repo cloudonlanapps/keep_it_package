@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 
 import 'package:store/store.dart';
 
-import '../../entity_viewer_service/models/entity_actions.dart';
+import '../content_store_views/models/entity_actions.dart';
 import '../page_manager.dart';
 import 'bottom_bar_grid_view.dart';
 import 'preview/entity_preview.dart';

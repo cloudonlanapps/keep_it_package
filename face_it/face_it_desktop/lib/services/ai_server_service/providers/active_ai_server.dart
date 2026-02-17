@@ -1,10 +1,8 @@
 import 'dart:async';
 
 import 'package:cl_server_dart_client/cl_server_dart_client.dart';
+import 'package:colan_services/server_service/server_service.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
-import 'available_servers.dart';
-import 'server_preference.dart';
 
 final activeAIServerProvider =
     AsyncNotifierProvider<ActiveAIServerNotifier, CLServer?>(

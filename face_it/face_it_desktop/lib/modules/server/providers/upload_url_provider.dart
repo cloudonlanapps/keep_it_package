@@ -1,5 +1,8 @@
-import 'package:colan_services/server_service/server_service.dart';
+import 'package:cl_server_dart_client/cl_server_dart_client.dart'
+    show CLServer, CLSocket;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import '../../../services/ai_server_service/ai_server_service.dart';
 
 final uploadURLProvider = StateProvider<String?>((ref) {
   CLSocket? session;

@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:collection/collection.dart';
-import 'package:meta/meta.dart';
+import 'package:flutter/foundation.dart';
 
 typedef ValueGetter<T> = T Function();
 

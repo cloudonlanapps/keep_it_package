@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path/path.dart' as p;
 
 import '../../../app/models/rest_api.dart' show RESTAPi;
+import '../../../services/ai_server_service/ai_server_service.dart';
 import '../models/ai_task.dart';
 import '../models/detected_face.dart';
 import '../models/face_descriptor.dart';

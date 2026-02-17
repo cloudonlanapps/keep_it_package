@@ -1,9 +1,10 @@
 import 'package:colan_services/server_service/server_service.dart'
-    show GetActiveAIServer, GetAvailableServers;
+    show GetAvailableServers;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
+import '../../../services/ai_server_service/ai_server_service.dart';
 import '../providers/auto_connect_monitor.dart';
 import 'connected_server.dart';
 import 'server_select.dart';

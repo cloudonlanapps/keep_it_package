@@ -1,5 +1,6 @@
+import 'package:cl_server_dart_client/cl_server_dart_client.dart' show CLServer;
 import 'package:colan_services/server_service/server_service.dart'
-    show CLServer, serverPreferenceProvider;
+    show serverPreferenceProvider;
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:face_it_desktop/modules/server/views/server_tile.dart';
 import 'package:flutter/material.dart';

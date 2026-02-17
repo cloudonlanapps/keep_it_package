@@ -1,12 +1,12 @@
 import 'dart:async';
 
 import 'package:colan_services/server_service/server_service.dart'
-    show GetServerSession, serverPreferenceProvider;
-
+    show serverPreferenceProvider;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
+import '../../../services/ai_server_service/ai_server_service.dart';
 import '../../uploader/providers/uploader.dart';
 
 class SessionConnect extends ConsumerWidget {

@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 
 import 'package:shadcn_ui/shadcn_ui.dart';
 
-import '../../entity_viewer_service/models/entity_actions.dart';
+import '../content_store_views/models/entity_actions.dart';
 
 class KeepItContextMenu extends StatelessWidget {
   const KeepItContextMenu({

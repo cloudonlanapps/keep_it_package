@@ -1,13 +1,12 @@
 import 'package:cl_basic_types/cl_basic_types.dart';
-import 'package:colan_services/server_service/server_service.dart';
 import 'package:face_it_desktop/modules/faces/models/registered_person.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
 import 'package:shadcn_ui/shadcn_ui.dart';
 
 import '../../../app/models/main_content_type.dart';
 import '../../../app/providers/main_content_type.dart';
+import '../../../services/ai_server_service/ai_server_service.dart';
 import '../providers/registered_persons.dart';
 
 final knownRegisteredPersonsProvider = StateProvider<List<RegisteredPerson>>((

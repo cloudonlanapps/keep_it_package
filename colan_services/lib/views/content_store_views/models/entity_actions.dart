@@ -7,9 +7,9 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:store/store.dart' hide ValueGetter;
 
-import '../../init_service/models/platform_support.dart';
-import '../../views/common_widgets/dialogs.dart';
-import '../../views/page_manager.dart';
+import '../../../init_service/models/platform_support.dart';
+import '../../common_widgets/dialogs.dart';
+import '../../page_manager.dart';
 
 @immutable
 class EntityActions extends CLContextMenu {

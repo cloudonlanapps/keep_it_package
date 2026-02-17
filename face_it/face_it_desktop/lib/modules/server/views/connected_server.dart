@@ -1,7 +1,8 @@
 import 'dart:async';
 
+import 'package:cl_server_dart_client/cl_server_dart_client.dart' show CLServer;
 import 'package:colan_services/server_service/server_service.dart'
-    show CLServer, serverPreferenceProvider;
+    show serverPreferenceProvider;
 import 'package:face_it_desktop/modules/uploader/providers/uploader.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

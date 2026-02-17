@@ -2,6 +2,8 @@ import 'package:cl_basic_types/cl_basic_types.dart';
 import 'package:colan_services/server_service/server_service.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../services/ai_server_service/ai_server_service.dart';
+
 class AutoConnectMonitor with CLLogger {
   // Call this function only inside a build
   void watch(WidgetRef ref) {

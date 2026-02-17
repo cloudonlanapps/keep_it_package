@@ -1,12 +1,12 @@
 import 'dart:io';
 
 import 'package:cl_basic_types/cl_basic_types.dart';
-import 'package:colan_services/server_service/server_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
+import '../../../services/ai_server_service/ai_server_service.dart';
 import '../../face_recg/providers/f_faces.dart';
 import '../providers/registered_persons.dart';
 
