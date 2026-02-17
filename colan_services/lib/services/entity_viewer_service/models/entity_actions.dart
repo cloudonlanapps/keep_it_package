@@ -7,7 +7,7 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:store/store.dart';
 
-import '../../../models/platform_support.dart';
+import '../../../init_service/models/platform_support.dart';
 import '../../basic_page_service/widgets/dialogs.dart';
 import '../../basic_page_service/widgets/page_manager.dart';
 

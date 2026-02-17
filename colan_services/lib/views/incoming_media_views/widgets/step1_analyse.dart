@@ -5,7 +5,7 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:store/store.dart';
 
-import '../../../models/cl_media_candidate.dart';
+import '../../../incoming_media_service/models/cl_media_candidate.dart';
 
 class AnalysePage extends StatelessWidget {
   const AnalysePage({

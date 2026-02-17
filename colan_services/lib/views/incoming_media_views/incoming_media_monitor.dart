@@ -4,7 +4,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:store/store.dart';
 
 import '../../incoming_media_service/builders/get_incoming_media.dart';
-import '../../models/cl_media_candidate.dart';
+import '../../incoming_media_service/models/cl_media_candidate.dart';
 import '../../store_tasks_service/store_tasks_service.dart';
 import 'incoming_media_handler.dart';
 

@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 
 import 'package:media_editors/media_editors.dart';
 
-import '../../models/platform_support.dart';
+import '../../init_service/models/platform_support.dart';
 import '../../services/basic_page_service/basic_page_service.dart';
 import '../../services/basic_page_service/widgets/dialogs.dart';
 import '../../services/basic_page_service/widgets/fullscreen_layout.dart';

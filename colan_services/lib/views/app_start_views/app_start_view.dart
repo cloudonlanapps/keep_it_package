@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
 import '../../init_service/builders/get_app_init_status.dart';
-import '../../models/app_descriptor.dart';
+import '../../init_service/models/app_descriptor.dart';
 import '../../preference_service/builders/get_theme_mode.dart';
 import '../../views/incoming_media_views/incoming_media_monitor.dart';
 

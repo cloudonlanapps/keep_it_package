@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:store/store.dart';
 
-import '../../models/platform_support.dart';
+import '../../init_service/models/platform_support.dart';
 
 import '../../services/basic_page_service/widgets/page_manager.dart';
 import '../../services/entity_viewer_service/widgets/media_title.dart';

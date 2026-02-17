@@ -3,7 +3,7 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import '../../../models/platform_support.dart';
+import '../../../init_service/models/platform_support.dart';
 
 enum CLScreenPopGesture { swipeLeft, onTap }
 

@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 
 import 'package:store/store.dart';
 
-import '../../models/cl_media_candidate.dart';
+import '../../incoming_media_service/models/cl_media_candidate.dart';
 import '../../services/basic_page_service/widgets/cl_error_view.dart';
 import '../../services/basic_page_service/widgets/fullscreen_layout.dart';
 import '../../services/basic_page_service/widgets/page_manager.dart';

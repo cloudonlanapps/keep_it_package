@@ -2,7 +2,7 @@ import 'package:cl_basic_types/cl_basic_types.dart';
 import 'package:flutter/foundation.dart';
 
 import 'package:store/store.dart';
-import '../store_tasks_service/store_tasks_service.dart';
+import '../../store_tasks_service/store_tasks_service.dart';
 
 @immutable
 class CLMediaFileGroup {

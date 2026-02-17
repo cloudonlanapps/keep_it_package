@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../models/cl_media_candidate.dart';
+import '../models/cl_media_candidate.dart';
 import '../providers/incoming_media_provider.dart';
 
 /// Actions for managing incoming media state.
