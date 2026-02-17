@@ -1,89 +1,90 @@
+%%{init: {'flowchart': {'defaultRenderer': 'elk'}} }%%
 graph TD
-    subgraph "Dart Packages"
-        dart_client["cl_server_dart_client (dart)"]
-        basic_types["cl_basic_types (dart)"]
-        store_base["store (dart)"]
-        local_store["local_store (dart)"]
+     basic_types["cl_basic_types"]
+    subgraph "Core Dart Packages"
+       
+        store["store"]
+        dart_client["cl_server_dart_client"]
+        local_store["local_store"]
     end
 
-    %% Utility Packages
-    widgets["colan_widgets"]
-    media_tools["cl_media_tools"]
+    subgraph "Utility Flutter Packages"
+        colan_widgets["colan_widgets"]
+        
+        
+        
+        form_factory["form_factory"]
+        
+    end
+
+    subgraph "Feature Packages"
+        
+        content_store["content_store"]
+        services["colan_services"]
+    end
+
+    subgraph "Applications"
+        keep_it["keep_it"]
+       %%  face_it["face_it_desktop"]
+    end
     camera["cl_camera"]
-    date_picker["yet_another_date_picker"]
-    form_factory["form_factory"]
-    entity_viewers["cl_entity_viewers"]
-    
-    %% Intermediate Packages
-    cl_server_services["cl_server_services"]
-    content_store["content_store"]
-    store_tasks["store_tasks"]
     media_editors["media_editors"]
-    services["colan_services"]
+    entity_viewers["cl_entity_viewers"]
+    media_tools["cl_media_tools"]
+    date_picker["yet_another_date_picker"]
 
-    %% Apps
-    keep_it["keep_it"]
 
-    %% Dependencies
-    %% cl_basic_types has no local dependencies
-
-    store_base --> basic_types
-
+    %% Core Dependencies
+    store --> basic_types
     dart_client --> basic_types
-    dart_client --> store_base
-
+    dart_client --> store
     local_store --> basic_types
-    local_store --> store_base
+    local_store --> store
 
-    widgets --> basic_types
-
+    %% Utility Dependencies
     media_tools --> basic_types
+    form_factory --> basic_types
+    form_factory --> colan_widgets
 
+    %% Feature Dependencies
     entity_viewers --> basic_types
     entity_viewers --> media_tools
-    entity_viewers --> widgets
+    entity_viewers --> colan_widgets
     entity_viewers --> date_picker
 
-    cl_server_services --> basic_types
-    cl_server_services --> dart_client
-    cl_server_services --> widgets
-
+    %% content_store Dependencies
     content_store --> basic_types
     content_store --> entity_viewers
     content_store --> media_tools
     content_store --> dart_client
-    content_store --> cl_server_services
-    content_store --> widgets
+    content_store --> colan_widgets
     content_store --> local_store
-    content_store --> store_base
-    content_store --> date_picker
-
-    form_factory --> basic_types
-    form_factory --> widgets
-
-    store_tasks --> basic_types
-    store_tasks --> entity_viewers
-    store_tasks --> media_tools
-    store_tasks --> widgets
-    store_tasks --> content_store
-    store_tasks --> form_factory
-    store_tasks --> store_base
-
-    media_editors --> widgets
-
+    content_store --> store
+    
+    
+    %% colan_services Dependencies
     services --> basic_types
     services --> camera
     services --> entity_viewers
     services --> media_tools
     services --> dart_client
-    services --> cl_server_services
-    services --> widgets
-    services --> content_store
+    services --> colan_widgets
     services --> form_factory
     services --> local_store
     services --> media_editors
-    services --> store_base
-    services --> store_tasks
+    services --> store
 
+    %% Circular Dependency Note
+    content_store <-. circular .-> services
+
+    %% App Dependencies
     keep_it --> services
-    keep_it --> widgets
+   
+
+    %% face_it --> basic_types
+    %% face_it --> services
+    %% face_it --> colan_widgets
+    %% face_it --> content_store
+    %% face_it --> store
+
+    linkStyle 2 stroke-width:0px;
