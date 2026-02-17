@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
 import 'package:store/store.dart';
+import '../../../camera_service/models/default_theme.dart';
 import '../../../store_tasks_service/store_tasks_service.dart';
 
-import '../../camera_service/camera_service.dart';
-import '../../camera_service/models/default_theme.dart';
+import '../../../views/camera_views/camera_view.dart';
 
 abstract class NavigatorAPI {
   void home(BuildContext context);
@@ -154,6 +154,7 @@ class PageManager {
   Future<void> openSettings() async {
     await navigator.pushNamed(context, '/settings');
   }
+
   Future<void> openAuthenticator() async {
     await navigator.pushNamed(context, '/auth');
   }

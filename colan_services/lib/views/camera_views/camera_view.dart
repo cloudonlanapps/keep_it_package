@@ -10,12 +10,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path/path.dart' as p;
 import 'package:store/store.dart';
 
-import '../../providers/captured_media.dart';
-import '../basic_page_service/widgets/fullscreen_layout.dart';
-import '../basic_page_service/widgets/page_manager.dart';
-import 'models/default_theme.dart';
-import 'widgets/get_cameras.dart';
-import 'widgets/preview.dart';
+import '../../services/basic_page_service/widgets/fullscreen_layout.dart';
+import '../../services/basic_page_service/widgets/page_manager.dart';
 
 class CameraService extends ConsumerWidget {
   const CameraService({

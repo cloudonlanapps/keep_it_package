@@ -3,14 +3,15 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../providers/camera_provider.dart';
-import '../../basic_page_service/widgets/cl_error_view.dart';
+import '../../services/basic_page_service/widgets/cl_error_view.dart';
+import '../providers/cameras_provider.dart';
 
 class GetCameras extends ConsumerWidget {
   const GetCameras({required this.builder, super.key});
   final Widget Function({
     required List<CameraDescription> cameras,
-  }) builder;
+  })
+  builder;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
