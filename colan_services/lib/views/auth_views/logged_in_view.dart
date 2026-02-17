@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 
-import '../../page_manager.dart';
+import '../page_manager.dart';
 import '../../server_service/server_service.dart';
 
 /// View displayed when user is logged in.

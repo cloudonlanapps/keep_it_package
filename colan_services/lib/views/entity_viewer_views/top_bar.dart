@@ -8,7 +8,7 @@ import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:store/store.dart';
 
 import '../../init_service/models/platform_support.dart';
-import '../../page_manager.dart';
+import '../page_manager.dart';
 import 'media_title.dart';
 import 'popover_menu.dart';
 

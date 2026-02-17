@@ -1,7 +1,7 @@
 import 'package:colan_services/colan_services.dart';
 import 'package:flutter/material.dart';
 
-import '../../page_manager.dart';
+import '../page_manager.dart';
 
 class MediaWizardView extends StatelessWidget {
   const MediaWizardView({

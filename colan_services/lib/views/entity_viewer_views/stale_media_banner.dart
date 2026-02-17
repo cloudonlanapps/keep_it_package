@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
-import '../../page_manager.dart';
+import '../page_manager.dart';
 
 class StaleMediaBanner extends ConsumerWidget {
   const StaleMediaBanner({

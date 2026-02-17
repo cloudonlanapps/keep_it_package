@@ -1,4 +1,4 @@
-import 'package:colan_services/with_provider_context.dart';
+import 'package:colan_services/init_service/with_provider_context.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';

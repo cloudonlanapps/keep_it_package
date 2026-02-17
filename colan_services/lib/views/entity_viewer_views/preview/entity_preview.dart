@@ -6,7 +6,7 @@ import 'package:flutter/widgets.dart';
 import 'package:store/store.dart';
 
 import '../../../entity_viewer_service/models/entity_actions.dart';
-import '../../../page_manager.dart';
+import '../../page_manager.dart';
 import '../context_menu.dart';
 import 'collection_preview.dart';
 

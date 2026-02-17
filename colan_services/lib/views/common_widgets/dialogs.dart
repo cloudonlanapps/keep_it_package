@@ -4,7 +4,7 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:store/store.dart';
 
-import '../../page_manager.dart';
+import '../page_manager.dart';
 import '../entity_viewer_views/preview/entity_preview.dart';
 
 class DialogService {

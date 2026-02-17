@@ -5,7 +5,7 @@ import 'package:colan_services/views/entity_viewer_views/keep_it_load_view.dart'
 import 'package:colan_services/views/entity_viewer_views/keep_it_page_view.dart';
 import 'package:flutter/material.dart';
 
-import '../../page_manager.dart';
+import '../page_manager.dart';
 
 class EntityViewerService extends StatelessWidget {
   const EntityViewerService({

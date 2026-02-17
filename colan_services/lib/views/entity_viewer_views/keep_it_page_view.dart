@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 
 import 'package:store/store.dart';
 
-import '../../page_manager.dart';
+import '../page_manager.dart';
 import 'bottom_bar_page_view.dart';
 import 'top_bar.dart';
 

@@ -10,7 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:path/path.dart' as p;
 import 'package:store/store.dart';
 
-import '../../page_manager.dart';
+import '../page_manager.dart';
 import '../../views/common_widgets/fullscreen_layout.dart';
 
 class CameraService extends StatelessWidget {

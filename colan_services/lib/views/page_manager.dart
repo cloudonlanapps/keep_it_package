@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
 import 'package:store/store.dart';
-import 'camera_service/models/default_theme.dart';
-import 'store_tasks_service/store_tasks_service.dart';
+import '../camera_service/models/default_theme.dart';
+import '../store_tasks_service/store_tasks_service.dart';
 
-import 'views/camera_views/camera_view.dart';
+import 'camera_views/camera_view.dart';
 
 abstract class NavigatorAPI {
   void home(BuildContext context);

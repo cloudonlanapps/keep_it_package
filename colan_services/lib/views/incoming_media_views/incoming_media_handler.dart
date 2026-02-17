@@ -8,7 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:store/store.dart';
 
 import '../../incoming_media_service/models/cl_media_candidate.dart';
-import '../../page_manager.dart';
+import '../page_manager.dart';
 import '../common_widgets/cl_error_view.dart';
 import '../common_widgets/fullscreen_layout.dart';
 import 'widgets/step1_analyse.dart';
