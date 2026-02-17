@@ -5,6 +5,7 @@ import 'package:colan_services/colan_services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path/path.dart' as p;
 
+import '../../../app/models/rest_api.dart' show RESTAPi;
 import '../models/ai_task.dart';
 import '../models/detected_face.dart';
 import '../models/face_descriptor.dart';

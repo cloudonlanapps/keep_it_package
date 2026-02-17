@@ -10,6 +10,8 @@ dependencies:
   background_downloader: ^9.2.5
   cl_basic_types:
     path: ../../cl_basic_types
+  cl_server_dart_client:
+    path: ../../../../sdks/dartsdk
   colan_services:
     path: ../../colan_services
   colan_widgets:
@@ -22,6 +24,7 @@ dependencies:
     sdk: flutter
   flutter_riverpod: ^2.6.1
   google_fonts: ^6.3.0
+  http: ^1.5.0
   image_picker: ^1.2.0
   intl: ^0.20.2
 

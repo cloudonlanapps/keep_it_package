@@ -9,7 +9,6 @@ export 'package:cl_server_dart_client/cl_server_dart_client.dart'
         CLServer,
         CLSocket,
         NetworkScanner,
-        RESTAPi,
         RemoteServiceLocationConfig,
         Server,
         ServerHealthStatus,

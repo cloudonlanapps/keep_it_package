@@ -182,7 +182,7 @@ packages:
     source: path
     version: "0.0.1"
   cl_server_dart_client:
-    dependency: transitive
+    dependency: "direct main"
     description:
       path: "../../../../sdks/dartsdk"
       relative: true
@@ -561,7 +561,7 @@ packages:
     source: hosted
     version: "0.15.6"
   http:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: http
       sha256: "87721a4a50b19c7f1d49001e51409bddc46303966ce89a65af4f4e6004896412"

@@ -5,6 +5,7 @@ import 'package:cl_basic_types/cl_basic_types.dart';
 import 'package:colan_services/server_service/server_service.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../app/models/rest_api.dart' show RESTAPi;
 import '../models/registered_person.dart';
 import '../models/registered_persons.dart';
 

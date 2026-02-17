@@ -5,6 +5,7 @@ import 'package:colan_services/server_service/server_service.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart' hide ValueGetter;
 
+import '../../../app/models/rest_api.dart' show RESTAPi;
 import '../../faces/models/registered_person.dart';
 import 'face_descriptor.dart';
 import 'face_state_manager.dart';

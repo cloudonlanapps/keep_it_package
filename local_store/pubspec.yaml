@@ -11,7 +11,7 @@ dependencies:
   cl_basic_types:
     path: ../cl_basic_types
   collection: ^1.19.0
-  http: ^1.2.2
+  http: ^1.5.0
   meta: ^1.12.0
   mockito: ^5.4.4
   path: ^1.9.0

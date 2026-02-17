@@ -12,7 +12,7 @@ dependencies:
     path: ../cl_basic_types
   collection: ^1.19.0
   crypto: ^3.0.4
-  http: ^1.2.2
+  http: ^1.5.0
   image: ^4.5.4
   intl: ^0.20.2
   logger: ^2.4.0

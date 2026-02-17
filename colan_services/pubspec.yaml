@@ -41,7 +41,7 @@ dependencies:
     path: ../form_factory
 
   heif_converter: ^1.0.0
-  http: ^1.2.2
+  http: ^1.5.0
   http_parser: ^4.0.2
   image: ^4.1.7
   image_picker: ^1.1.2
