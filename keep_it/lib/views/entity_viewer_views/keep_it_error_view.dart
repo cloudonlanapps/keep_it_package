@@ -24,8 +24,6 @@ class KeepItErrorView extends StatelessWidget {
         entity: null,
         children: null,
       ),
-      banners: const [],
-      bottomMenu: null,
       body: Center(
         child: GetStoreStatus(
           loadingBuilder: () => CLLoader.widget(debugMessage: null),

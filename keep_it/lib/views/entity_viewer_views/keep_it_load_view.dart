@@ -15,8 +15,6 @@ class KeepItLoadView extends StatelessWidget {
         entity: null,
         children: null,
       ),
-      bottomMenu: null,
-      banners: const [],
       body: OnSwipe(
         onSwipe: () {
           if (PageManager.of(context).canPop()) {

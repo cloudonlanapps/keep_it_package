@@ -17,25 +17,22 @@ class CLEntitiesPageView extends ConsumerWidget {
   final PreferredSizeWidget bottomMenu;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final showMenu =
-        ref.watch(mediaViewerUIStateProvider.select((e) => e.showMenu));
-    final currentItem =
-        ref.watch(mediaViewerUIStateProvider.select((e) => e.currentItem));
+    final showMenu = ref.watch(
+      mediaViewerUIStateProvider.select((e) => e.showMenu),
+    );
+    final currentItem = ref.watch(
+      mediaViewerUIStateProvider.select((e) => e.currentItem),
+    );
     if (showMenu) {
       return CLScaffold(
         topMenu: topMenuBuilder(currentItem),
-        banners: const [],
-        body: SafeArea(
-          child: MediaViewerCore(),
-        ),
+        body: SafeArea(child: MediaViewerCore()),
         bottomMenu: bottomMenu,
       );
     } else {
-      return Scaffold(
+      return CLScaffold(
         backgroundColor: Colors.black,
-        body: SafeArea(
-          child: MediaViewerCore(),
-        ),
+        body: SafeArea(child: MediaViewerCore()),
       );
     }
   }

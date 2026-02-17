@@ -36,7 +36,7 @@ class AppStartView extends StatelessWidget {
                     )
                     .firstOrNull;
                 if (screen == null) {
-                  return const Scaffold(
+                  return const CLScaffold(
                     body: Center(
                       child: Text('404: Page not found'),
                     ),
@@ -80,7 +80,7 @@ class AppStartView extends StatelessWidget {
                         )
                         .firstOrNull;
                     if (screen == null) {
-                      return const Scaffold(
+                      return const CLScaffold(
                         body: Center(
                           child: Text('404: Page not found'),
                         ),

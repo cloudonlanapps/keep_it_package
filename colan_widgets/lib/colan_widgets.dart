@@ -26,8 +26,7 @@ export 'src/theme/models/cl_icons.dart' show CLIcons, IconOnIconData, clIcons;
 
 export 'src/theme/state/cl_theme.dart' show CLTheme;
 export 'src/utils/key_listener.dart' show CLKeyListener;
-export 'src/views/appearance/cl_fullscreen_box.dart'
-    show CLDialogWrapper, CLFullscreenBox;
+export 'src/utils/validate_layout.dart' show ValidateLayout;
 export 'src/views/appearance/cl_scaffold.dart' show CLScaffold;
 export 'src/views/cl_loading_view.dart' show CLLoader;
 export 'src/views/progress_view/stream_progress_view.dart'

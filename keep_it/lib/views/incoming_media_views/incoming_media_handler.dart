@@ -7,7 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:store/store.dart';
 
 import '../common_widgets/cl_error_view.dart';
-import '../common_widgets/fullscreen_layout.dart';
 import '../page_manager.dart';
 import 'widgets/step1_analyse.dart';
 import 'widgets/step2_duplicates.dart';
@@ -40,8 +39,9 @@ class IncomingMediaHandlerState extends State<IncomingMediaHandler> {
   @override
   Widget build(BuildContext context) {
     final label = widget.incomingMedia.contentOrigin.label;
-    return FullscreenLayout(
-      child: GetDefaultStore(
+    return CLScaffold(
+      onSwipe: () => widget.onDiscard(result: false),
+      body: GetDefaultStore(
         errorBuilder: (e, st) => WizardLayout(
           title: '$label Error',
           onCancel: () => widget.onDiscard(result: false),

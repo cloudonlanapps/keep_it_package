@@ -9,7 +9,6 @@ import 'package:flutter/material.dart';
 import 'package:path/path.dart' as p;
 import 'package:store/store.dart';
 
-import '../../views/common_widgets/fullscreen_layout.dart';
 import '../common_widgets/cl_error_view.dart';
 import '../page_manager.dart';
 import 'preview.dart';
@@ -25,9 +24,9 @@ class CameraService extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return FullscreenLayout(
-      useSafeArea: false,
-      child: GetDefaultStore(
+    return CLScaffold(
+      onSwipe: () => PageManager.of(context).pop(),
+      body: GetDefaultStore(
         errorBuilder: (_, _) {
           throw UnimplementedError('errorBuilder');
         },

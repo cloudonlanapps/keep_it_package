@@ -22,8 +22,6 @@ class SettingsView extends StatelessWidget {
           style: ShadTheme.of(context).textTheme.h1,
         ),
       ),
-      bottomMenu: null,
-      banners: const [],
       body: GetStoreTaskManager(
         contentOrigin: ContentOrigin.deleted,
         builder: (deletedTaskManager) {

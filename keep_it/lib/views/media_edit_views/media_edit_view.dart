@@ -8,7 +8,6 @@ import 'package:keep_it/views/common_widgets/basic_page_service.dart'
 import 'package:media_editors/media_editors.dart';
 
 import '../../views/common_widgets/dialogs.dart';
-import '../../views/common_widgets/fullscreen_layout.dart';
 import '../page_manager.dart';
 
 class MediaEditView extends StatelessWidget {
@@ -26,9 +25,12 @@ class MediaEditView extends StatelessWidget {
   Widget build(BuildContext context) {
     return GetReload(
       builder: (reload) {
-        return FullscreenLayout(
+        return CLScaffold(
+          hasBackground: true,
+          hasBorder: true,
+          onSwipe: () => PageManager.of(context).pop(),
           backgroundColor: CLTheme.of(context).colors.editorBackgroundColor,
-          child: (mediaId == null)
+          body: (mediaId == null)
               ? BasicPageService.message(message: 'No Media Provided')
               : GetEntity(
                   id: mediaId,

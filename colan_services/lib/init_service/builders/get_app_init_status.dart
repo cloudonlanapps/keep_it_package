@@ -1,3 +1,4 @@
+import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -31,12 +32,12 @@ class GetAppInitStatus extends ConsumerWidget {
         return builder();
       },
       error: (err, st) {
-        return Scaffold(
+        return CLScaffold(
           body: errorBuilder(err, st),
         );
       },
       loading: () {
-        return Scaffold(
+        return CLScaffold(
           body: loadingBuilder(),
         );
       },

@@ -24,8 +24,6 @@ class AuthView extends StatelessWidget {
         if (locationConfig is! RemoteServiceLocationConfig) {
           return CLScaffold(
             topMenu: AppBar(),
-            bottomMenu: null,
-            banners: const [],
             body: Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -45,8 +43,6 @@ class AuthView extends StatelessWidget {
         // Use GetAuthStatus builder to check authentication status
         return CLScaffold(
           topMenu: AppBar(),
-          bottomMenu: null,
-          banners: const [],
           body: GetAuthStatus(
             config: locationConfig,
             builder: (authStatus, actions) {
@@ -100,8 +96,6 @@ class AuthView extends StatelessWidget {
       },
       loadingBuilder: () => CLScaffold(
         topMenu: AppBar(),
-        bottomMenu: null,
-        banners: const [],
         body: const Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -115,8 +109,6 @@ class AuthView extends StatelessWidget {
       ),
       errorBuilder: (error, stack) => CLScaffold(
         topMenu: AppBar(),
-        bottomMenu: null,
-        banners: const [],
         body: Center(
           child: Padding(
             padding: const EdgeInsets.all(32),
