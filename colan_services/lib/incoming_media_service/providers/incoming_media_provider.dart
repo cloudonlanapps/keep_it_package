@@ -6,9 +6,9 @@ import 'package:collection/collection.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:share_handler/share_handler.dart';
 
-import '../models/cl_media_candidate.dart';
-import '../models/platform_support.dart';
-import '../store_tasks_service/store_tasks_service.dart';
+import '../../models/cl_media_candidate.dart';
+import '../../models/platform_support.dart';
+import '../../store_tasks_service/store_tasks_service.dart';
 
 class IncomingMediaNotifier extends StateNotifier<List<CLMediaFileGroup>> {
   IncomingMediaNotifier() : intentDataStreamSubscription = null, super([]) {

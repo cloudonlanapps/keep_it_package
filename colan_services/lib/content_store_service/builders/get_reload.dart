@@ -9,10 +9,12 @@ class GetReload extends ConsumerWidget {
     super.key,
   });
 
-  final Widget Function(VoidCallback onReload) builder;
+  final Widget Function(void Function() reload) builder;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return builder(() => ref.read(reloadProvider.notifier).reload());
+    return builder(
+      () => ref.read(reloadProvider.notifier).reload(),
+    );
   }
 }

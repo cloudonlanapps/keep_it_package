@@ -1,0 +1,38 @@
+Resolving dependencies...
+Downloading packages...
+  _fe_analyzer_shared 93.0.0 (94.0.0 available)
+  analyzer 10.0.1 (10.0.2 available)
+  animated_icon 0.0.9 (1.0.0 available)
+  archive 4.0.7 (4.0.8 available)
+  camera_avfoundation 0.9.23+2 (0.10.0 available)
+  flutter_riverpod 2.6.1 (3.2.1 available)
+  meta 1.17.0 (1.18.1 available)
+  path_provider_foundation 2.5.1 (2.6.0 available)
+  petitparser 7.0.1 (7.0.2 available)
+  pointycastle 3.9.1 (4.0.0 available)
+  riverpod 2.6.1 (3.2.1 available)
+  shadcn_ui 0.38.5 (0.46.1 available)
+  solidart 1.5.4 (2.8.3 available)
+  sqlite3 2.9.4 (3.1.6 available)
+  sqlite3_flutter_libs 0.5.41 (0.6.0+eol available)
+  sqlite3_web 0.3.2 (0.5.0 available)
+  sqlite_async 0.12.2 (0.13.1 available)
+  test_api 0.7.8 (0.7.9 available)
+  theme_extensions_builder_annotation 6.0.1 (7.1.0 available)
+  very_good_analysis 10.1.0 (10.2.0 available)
+  video_player_avfoundation 2.9.2 (2.9.3 available)
+Got dependencies!
+21 packages have newer versions incompatible with dependency constraints.
+Try `flutter pub outdated` for more information.
+Analyzing colan_services...                                     
+
+   info • Sort directive sections alphabetically • lib/colan_services.dart:12:1 • directives_ordering
+   info • Sort directive sections alphabetically • lib/colan_services.dart:22:1 • directives_ordering
+   info • Sort directive sections alphabetically • lib/colan_services.dart:24:1 • directives_ordering
+   info • Sort directive sections alphabetically • lib/colan_services.dart:44:1 • directives_ordering
+   info • Library directives without comments or annotations should be avoided • lib/incoming_media_service/incoming_media_service.dart:1:1 • unnecessary_library_directive
+   info • Sort directive sections alphabetically • lib/services/entity_viewer_service/widgets/preview/entity_preview.dart:10:1 • directives_ordering
+   info • Sort directive sections alphabetically • lib/views/incoming_media_views/incoming_media_monitor.dart:8:1 • directives_ordering
+   info • Sort directive sections alphabetically • lib/views/incoming_media_views/incoming_media_monitor.dart:9:1 • directives_ordering
+
+8 issues found. (ran in 3.4s)

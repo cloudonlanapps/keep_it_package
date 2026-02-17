@@ -1,18 +1,17 @@
 import 'package:cl_entity_viewers/cl_entity_viewers.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:shadcn_ui/shadcn_ui.dart';
 
-class FilterPopOverMenu extends ConsumerStatefulWidget {
+class FilterPopOverMenu extends StatefulWidget {
   const FilterPopOverMenu({super.key});
 
   @override
-  ConsumerState<FilterPopOverMenu> createState() => _PopoverPageState();
+  State<FilterPopOverMenu> createState() => _PopoverPageState();
 }
 
-class _PopoverPageState extends ConsumerState<FilterPopOverMenu> {
+class _PopoverPageState extends State<FilterPopOverMenu> {
   final popoverController = ShadPopoverController();
 
   @override

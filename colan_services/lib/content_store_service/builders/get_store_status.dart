@@ -8,13 +8,22 @@ import '../providers/active_store_provider.dart';
 import '../providers/registerred_urls.dart';
 
 class GetStoreStatus extends ConsumerWidget {
-  const GetStoreStatus({required this.builder, super.key});
+  const GetStoreStatus({
+    required this.builder,
+    this.loadingBuilder,
+    this.errorBuilder,
+    super.key,
+  });
 
   final Widget Function({
-    required AsyncValue<ServiceLocationConfig> activeConfig,
+    required ServiceLocationConfig activeConfig,
     required bool isConnected,
-    required AsyncValue<CLStore> storeAsync,
-  }) builder;
+    required CLStore store,
+  })
+  builder;
+
+  final Widget Function()? loadingBuilder;
+  final Widget Function(Object e, StackTrace st)? errorBuilder;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -24,33 +33,34 @@ class GetStoreStatus extends ConsumerWidget {
     return locationsAsync.when(
       data: (locations) {
         if (!scanner.lanStatus) {
-          return builder(
-            isConnected: scanner.lanStatus,
-            activeConfig: AsyncData(locations.activeConfig),
-            storeAsync: const AsyncLoading(),
-          );
+          if (loadingBuilder != null) return loadingBuilder!();
+          return const Center(child: CircularProgressIndicator());
         } else {
           final storeAsync = ref.watch(activeStoreProvider);
-          return builder(
-            isConnected: scanner.lanStatus,
-            activeConfig: AsyncData(locations.activeConfig),
-            storeAsync: storeAsync,
+          return storeAsync.when(
+            data: (store) => builder(
+              isConnected: scanner.lanStatus,
+              activeConfig: locations.activeConfig,
+              store: store,
+            ),
+            error: (e, st) {
+              if (errorBuilder != null) return errorBuilder!(e, st);
+              return Center(child: Text(e.toString()));
+            },
+            loading: () {
+              if (loadingBuilder != null) return loadingBuilder!();
+              return const Center(child: CircularProgressIndicator());
+            },
           );
         }
       },
       error: (e, st) {
-        return builder(
-          isConnected: scanner.lanStatus,
-          activeConfig: AsyncError(e, st),
-          storeAsync: const AsyncLoading(),
-        );
+        if (errorBuilder != null) return errorBuilder!(e, st);
+        return Center(child: Text(e.toString()));
       },
       loading: () {
-        return builder(
-          isConnected: scanner.lanStatus,
-          activeConfig: const AsyncLoading(),
-          storeAsync: const AsyncLoading(),
-        );
+        if (loadingBuilder != null) return loadingBuilder!();
+        return const Center(child: CircularProgressIndicator());
       },
     );
   }

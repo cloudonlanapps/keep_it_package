@@ -4,17 +4,17 @@ import 'package:cl_basic_types/cl_basic_types.dart';
 import 'package:colan_services/colan_services.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import 'package:store/store.dart';
 
 import '../../models/cl_media_candidate.dart';
-import '../basic_page_service/widgets/cl_error_view.dart';
-import '../basic_page_service/widgets/fullscreen_layout.dart';
-import '../basic_page_service/widgets/page_manager.dart';
+import '../../services/basic_page_service/widgets/cl_error_view.dart';
+import '../../services/basic_page_service/widgets/fullscreen_layout.dart';
+import '../../services/basic_page_service/widgets/page_manager.dart';
 import 'widgets/step1_analyse.dart';
 import 'widgets/step2_duplicates.dart';
 
-class IncomingMediaHandler extends ConsumerStatefulWidget {
+class IncomingMediaHandler extends StatefulWidget {
   const IncomingMediaHandler({
     required this.incomingMedia,
     required this.onDiscard,
@@ -25,11 +25,10 @@ class IncomingMediaHandler extends ConsumerStatefulWidget {
   final void Function({required bool result}) onDiscard;
 
   @override
-  ConsumerState<ConsumerStatefulWidget> createState() =>
-      IncomingMediaHandlerState();
+  State<StatefulWidget> createState() => IncomingMediaHandlerState();
 }
 
-class IncomingMediaHandlerState extends ConsumerState<IncomingMediaHandler> {
+class IncomingMediaHandlerState extends State<IncomingMediaHandler> {
   ViewerEntities? duplicateCandidates;
   ViewerEntities? newCandidates;
 

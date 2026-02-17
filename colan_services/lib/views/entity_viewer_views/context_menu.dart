@@ -1,12 +1,12 @@
 import 'package:cl_entity_viewers/cl_entity_viewers.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import 'package:shadcn_ui/shadcn_ui.dart';
 
-import '../models/entity_actions.dart';
+import '../../services/entity_viewer_service/models/entity_actions.dart';
 
-class KeepItContextMenu extends ConsumerWidget {
+class KeepItContextMenu extends StatelessWidget {
   const KeepItContextMenu({
     required this.child,
     super.key,
@@ -19,7 +19,7 @@ class KeepItContextMenu extends ConsumerWidget {
   final EntityActions? contextMenu;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final textStyle = ShadTheme.of(context).textTheme.small;
     if (contextMenu == null) {
       return GestureDetector(
@@ -65,7 +65,8 @@ class KeepItContextMenu extends ConsumerWidget {
                   leading: SizedBox.square(
                     child: Center(
                       child: item.icon.iconFormatted(
-                          color: ShadTheme.of(context).colorScheme.destructive),
+                        color: ShadTheme.of(context).colorScheme.destructive,
+                      ),
                     ),
                   ),
                   textStyle: textStyle.copyWith(
@@ -89,29 +90,32 @@ class KeepItContextMenu extends ConsumerWidget {
   }
 }
 
-class SelectMenuItem extends ConsumerWidget {
+class SelectMenuItem extends StatelessWidget {
   const SelectMenuItem({
     super.key,
   });
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     return GetSelectionMode(
-      builder: ({
-        required void Function({required bool enable}) onUpdateSelectionmode,
-        required selectionMode,
-      }) {
-        return ShadContextMenuItem(
-          leading: SizedBox.square(
-            child: Center(
-                child: (selectionMode ? clIcons.selected : clIcons.deselected)
-                    .iconFormatted()),
-          ),
-          enabled: !selectionMode,
-          onPressed: () => onUpdateSelectionmode(enable: true),
-          child: const Text('Select'),
-        );
-      },
+      builder:
+          ({
+            required void Function({required bool enable})
+            onUpdateSelectionmode,
+            required selectionMode,
+          }) {
+            return ShadContextMenuItem(
+              leading: SizedBox.square(
+                child: Center(
+                  child: (selectionMode ? clIcons.selected : clIcons.deselected)
+                      .iconFormatted(),
+                ),
+              ),
+              enabled: !selectionMode,
+              onPressed: () => onUpdateSelectionmode(enable: true),
+              child: const Text('Select'),
+            );
+          },
     );
   }
 }

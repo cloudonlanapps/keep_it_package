@@ -3,7 +3,7 @@ import 'package:colan_services/colan_services.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 
-import '../../basic_page_service/basic_page_service.dart';
+import '../../../services/basic_page_service/basic_page_service.dart';
 import 'exist_in_different_collection.dart';
 
 class DuplicatePage extends StatefulWidget {

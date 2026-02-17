@@ -1,19 +1,19 @@
 import 'package:colan_services/colan_services.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:store/store.dart';
 
-import '../basic_page_service/widgets/page_manager.dart';
+import '../../services/basic_page_service/widgets/page_manager.dart';
 
-class SettingsService extends ConsumerWidget {
-  const SettingsService({
+class SettingsView extends StatelessWidget {
+  const SettingsView({
     super.key,
   });
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     return CLScaffold(
       topMenu: AppBar(
         title: Text(

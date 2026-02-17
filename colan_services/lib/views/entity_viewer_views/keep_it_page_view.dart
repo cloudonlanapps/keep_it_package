@@ -4,10 +4,10 @@ import 'package:cl_entity_viewers/cl_entity_viewers.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import 'package:store/store.dart';
 
-import '../../basic_page_service/widgets/page_manager.dart';
+import '../../services/basic_page_service/widgets/page_manager.dart';
 import 'bottom_bar_page_view.dart';
 import 'top_bar.dart';
 
@@ -37,7 +37,7 @@ class KeepItPageView extends StatelessWidget {
         child: CLEntitiesPageView(
           topMenuBuilder: (currentEntity) => TopBar(
             serverId: serverId,
-            entityAsync: AsyncData(currentEntity as StoreEntity?),
+            entity: currentEntity as StoreEntity?,
             children: const ViewerEntities([]),
           ),
           bottomMenu: BottomBarPageView(

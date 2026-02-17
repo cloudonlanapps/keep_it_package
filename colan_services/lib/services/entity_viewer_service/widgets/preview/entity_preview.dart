@@ -1,16 +1,16 @@
 import 'package:cl_basic_types/cl_basic_types.dart';
 import 'package:cl_entity_viewers/cl_entity_viewers.dart';
+import 'package:colan_services/colan_services.dart';
 import 'package:flutter/widgets.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import 'package:store/store.dart';
 
-import '../../../../store_tasks_service/store_tasks_service.dart';
+import '../../../../views/entity_viewer_views/context_menu.dart';
 import '../../../basic_page_service/widgets/page_manager.dart';
 import '../../models/entity_actions.dart';
-import '../../views/context_menu.dart';
 import 'collection_preview.dart';
 
-class EntityPreview extends ConsumerWidget {
+class EntityPreview extends StatelessWidget {
   const EntityPreview({
     required this.serverId,
     required this.item,
@@ -25,29 +25,40 @@ class EntityPreview extends ConsumerWidget {
   final String serverId;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final entity = item;
 
-    return GetStoreTaskManager(
-        contentOrigin: ContentOrigin.move,
-        builder: (moveTaskManager) {
-          final contextMenu = EntityActions.ofEntity(context, ref, entity,
-              serverId: serverId, moveTaskManager: moveTaskManager);
-          return KeepItContextMenu(
-            onTap: () async {
-              await PageManager.of(context)
-                  .openEntity(entity, serverId: serverId);
-              return true;
-            },
-            contextMenu: contextMenu,
-            child: entity.isCollection
-                ? CollectionPreview.preview(
-                    entity,
-                  )
-                : MediaPreviewWithOverlays(
-                    media: entity,
-                  ),
-          );
-        });
+    return GetReload(
+      builder: (reload) {
+        return GetStoreTaskManager(
+          contentOrigin: ContentOrigin.move,
+          builder: (moveTaskManager) {
+            final contextMenu = EntityActions.ofEntity(
+              context,
+              entity,
+              serverId: serverId,
+              moveTaskManager: moveTaskManager,
+              reload: reload,
+            );
+            return KeepItContextMenu(
+              onTap: () async {
+                await PageManager.of(
+                  context,
+                ).openEntity(entity, serverId: serverId);
+                return true;
+              },
+              contextMenu: contextMenu,
+              child: entity.isCollection
+                  ? CollectionPreview.preview(
+                      entity,
+                    )
+                  : MediaPreviewWithOverlays(
+                      media: entity,
+                    ),
+            );
+          },
+        );
+      },
+    );
   }
 }

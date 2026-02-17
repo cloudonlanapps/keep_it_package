@@ -5,7 +5,6 @@ import 'package:cl_entity_viewers/cl_entity_viewers.dart';
 import 'package:colan_services/colan_services.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
 import '../../../models/platform_support.dart';
@@ -62,10 +61,10 @@ class EntityActions extends CLContextMenu {
   }
   factory EntityActions.ofEntity(
     BuildContext context,
-    WidgetRef ref,
     StoreEntity entity, {
     required String serverId,
     required StoreTaskManager moveTaskManager,
+    required void Function() reload,
   }) {
     Future<bool> onEdit() async {
       if (context.mounted) {
@@ -79,12 +78,11 @@ class EntityActions extends CLContextMenu {
               )
             : MediaMetadataEditor.openSheet(
                 context,
-                ref,
                 media: entity,
               ));
         if (updated != null && context.mounted) {
           await updated.dbSave();
-          ref.read(reloadProvider.notifier).reload();
+          reload();
         }
       }
 
@@ -129,7 +127,7 @@ class EntityActions extends CLContextMenu {
 
       if (confirmed && context.mounted) {
         await entity.delete();
-        ref.read(reloadProvider.notifier).reload();
+        reload();
         return true;
       }
       return false;
@@ -139,7 +137,7 @@ class EntityActions extends CLContextMenu {
 
     Future<bool> onPin() async {
       await entity.onPin();
-      ref.read(reloadProvider.notifier).reload();
+      reload();
       return true;
     }
 

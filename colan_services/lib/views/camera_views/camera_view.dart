@@ -6,14 +6,14 @@ import 'package:cl_media_tools/cl_media_tools.dart';
 import 'package:colan_services/colan_services.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import 'package:path/path.dart' as p;
 import 'package:store/store.dart';
 
 import '../../services/basic_page_service/widgets/fullscreen_layout.dart';
 import '../../services/basic_page_service/widgets/page_manager.dart';
 
-class CameraService extends ConsumerWidget {
+class CameraService extends StatelessWidget {
   const CameraService({
     required this.serverId,
     required this.parentId,
@@ -23,7 +23,7 @@ class CameraService extends ConsumerWidget {
   final int? parentId;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     return FullscreenLayout(
       useSafeArea: false,
       child: GetDefaultStore(
@@ -88,7 +88,7 @@ class CameraService extends ConsumerWidget {
   }
 }
 
-class CLCameraService0 extends ConsumerWidget {
+class CLCameraService0 extends StatelessWidget {
   const CLCameraService0({
     required this.onDone,
     required this.onNewMedia,
@@ -114,43 +114,47 @@ class CLCameraService0 extends ConsumerWidget {
   );
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     return GetCameras(
       builder: ({required cameras}) {
-        return CLCamera(
-          onCancel: () {
-            // Confirm ?
-            ref.read(capturedMediaProvider.notifier).clear();
-            onCancel?.call();
-          },
-          cameras: cameras,
-          onCapture: (file, {required isVideo}) async {
-            String? updatedFile;
-            if (isVideo) {
-              /// Refer https://github.com/flutter/flutter/issues/148335
-              /// android_camerax plugin returns .temp extension
-              /// for recorded video
-              final currentExtension = p.extension(file);
-              if (currentExtension.toLowerCase() != '.mp4') {
-                updatedFile = p.setExtension(file, '.mp4');
-                File(file).copySync(updatedFile);
-                File(file).deleteSync();
-              }
-            }
-            final media = await onNewMedia(
-              updatedFile ?? file,
-              isVideo: isVideo,
+        return GetCapturedMedia(
+          builder: (media, actions) {
+            return CLCamera(
+              onCancel: () {
+                // Confirm ?
+                actions.clear();
+                onCancel?.call();
+              },
+              cameras: cameras,
+              onCapture: (file, {required isVideo}) async {
+                String? updatedFile;
+                if (isVideo) {
+                  /// Refer https://github.com/flutter/flutter/issues/148335
+                  /// android_camerax plugin returns .temp extension
+                  /// for recorded video
+                  final currentExtension = p.extension(file);
+                  if (currentExtension.toLowerCase() != '.mp4') {
+                    updatedFile = p.setExtension(file, '.mp4');
+                    File(file).copySync(updatedFile);
+                    File(file).deleteSync();
+                  }
+                }
+                final media = await onNewMedia(
+                  updatedFile ?? file,
+                  isVideo: isVideo,
+                );
+                // Validate if the media has id, has required files here.
+                if (media != null) {
+                  actions.add(media);
+                }
+              },
+              previewWidget: PreviewCapturedMedia(
+                sendMedia: onDone,
+              ),
+              themeData: DefaultCLCameraIcons(),
+              onError: onError,
             );
-            // Validate if the media has id, has required files here.
-            if (media != null) {
-              ref.read(capturedMediaProvider.notifier).add(media);
-            }
           },
-          previewWidget: PreviewCapturedMedia(
-            sendMedia: onDone,
-          ),
-          themeData: DefaultCLCameraIcons(),
-          onError: onError,
         );
       },
     );
