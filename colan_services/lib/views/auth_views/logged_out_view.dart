@@ -1,3 +1,4 @@
+import 'package:cl_server_dart_client/cl_server_dart_client.dart';
 import 'package:flutter/material.dart';
 
 import '../../server_service/server_service.dart';
@@ -20,7 +21,8 @@ class LoggedOutView extends StatefulWidget {
     String username,
     String password, {
     required bool rememberMe,
-  }) onLogin;
+  })
+  onLogin;
 
   @override
   State<LoggedOutView> createState() => _LoggedOutViewState();
