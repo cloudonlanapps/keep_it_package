@@ -48,45 +48,50 @@ class _CollectionSearchViewState extends State<CollectionSearchView> {
     return Padding(
       padding: const EdgeInsets.all(8),
       child: GetActiveStore(
-          loadingBuilder: () => CLLoader.widget(debugMessage: null),
-          errorBuilder: (e, st) {
-            return WizardError(
+        loadingBuilder: () => CLLoadingView.widget(debugMessage: null),
+        errorBuilder: (e, st) {
+          return CLErrorView.custom(
+            child: WizardError(
               error: e.toString(),
               onClose: onClose,
-            );
-          },
-          builder: (activeStore) {
-            return WithTargetStoreOverride(
-              store: widget.collection?.store ?? activeStore,
-              builder: () => Column(
-                spacing: 8,
-                children: [
-                  Align(
-                    alignment: Alignment.centerRight,
-                    child: ShadButton.ghost(
-                        onPressed: onClose,
-                        child: clIcons.closeFullscreen.iconFormatted()),
+            ),
+          );
+        },
+        builder: (activeStore) {
+          return WithTargetStoreOverride(
+            store: widget.collection?.store ?? activeStore,
+            builder: () => Column(
+              spacing: 8,
+              children: [
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: ShadButton.ghost(
+                    onPressed: onClose,
+                    child: clIcons.closeFullscreen.iconFormatted(),
                   ),
-                  PickWizard(
-                    child: EntitySearchBar(
-                      controller: controller,
-                      focusNode: focusNode,
-                      onClose: onClose,
-                    ),
+                ),
+                PickWizard(
+                  child: EntitySearchBar(
+                    controller: controller,
+                    focusNode: focusNode,
+                    onClose: onClose,
                   ),
-                  Expanded(
-                      child: ShadCard(
+                ),
+                Expanded(
+                  child: ShadCard(
                     padding: const EdgeInsets.all(8),
                     child: SearchView(
                       controller: controller,
                       onClose: onClose,
                       onSelect: onSelect,
                     ),
-                  )),
-                ],
-              ),
-            );
-          }),
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
+      ),
     );
   }
 }

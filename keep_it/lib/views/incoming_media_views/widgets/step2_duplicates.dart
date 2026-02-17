@@ -45,7 +45,7 @@ class DuplicatePageState extends State<DuplicatePage> {
       errorBuilder: (_, _) {
         throw UnimplementedError('errorBuilder');
       },
-      loadingBuilder: () => CLLoader.widget(
+      loadingBuilder: () => CLLoadingView.widget(
         debugMessage: 'GetAllCollection',
       ),
       builder: (newCollection) {

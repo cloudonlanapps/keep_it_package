@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:colan_widgets/colan_widgets.dart';
 
 import '../models/uri_config.dart';
 import '../providers/uri_config.dart';
@@ -23,8 +24,8 @@ class ImageViewer extends ConsumerWidget {
   final Uri uri;
   final void Function({required bool lock})? onLockPage;
   final bool isLocked;
-  final Widget Function(Object, StackTrace) errorBuilder;
-  final Widget Function() loadingBuilder;
+  final CLErrorView Function(Object, StackTrace) errorBuilder;
+  final CLLoadingView Function() loadingBuilder;
   final bool keepAspectRatio;
   final BoxFit? fit;
   final bool hasGesture;
@@ -32,27 +33,30 @@ class ImageViewer extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final uriConfigAsync = ref.watch(uriConfigurationProvider(uri));
-    final mode =
-        hasGesture ? ExtendedImageMode.gesture : ExtendedImageMode.none;
+    final mode = hasGesture
+        ? ExtendedImageMode.gesture
+        : ExtendedImageMode.none;
 
     return uriConfigAsync.when(
       data: (uriConfig) {
         return switch (uri.scheme) {
           'file' => ExtendedImage.file(
-              File(uri.toFilePath()),
-              fit: fit,
-              mode: mode,
-              initGestureConfigHandler:
-                  hasGesture ? initGestureConfigHandler : null,
-            ),
+            File(uri.toFilePath()),
+            fit: fit,
+            mode: mode,
+            initGestureConfigHandler: hasGesture
+                ? initGestureConfigHandler
+                : null,
+          ),
           _ => ExtendedImage.network(
-              uri.toString(),
-              fit: fit,
-              mode: mode,
-              initGestureConfigHandler:
-                  hasGesture ? initGestureConfigHandler : null,
-              cache: false,
-            )
+            uri.toString(),
+            fit: fit,
+            mode: mode,
+            initGestureConfigHandler: hasGesture
+                ? initGestureConfigHandler
+                : null,
+            cache: false,
+          ),
         };
       },
       error: errorBuilder,
@@ -87,8 +91,8 @@ class ImageFromState extends ConsumerWidget {
     this.fit,
   });
   final ExtendedImageState state;
-  final Widget Function(Object, StackTrace) errorBuilder;
-  final Widget Function() loadingBuilder;
+  final CLErrorView Function(Object, StackTrace) errorBuilder;
+  final CLLoadingView Function() loadingBuilder;
   final bool keepAspectRatio;
   final UriConfig uriConfig;
   final ExtendedImageMode mode;

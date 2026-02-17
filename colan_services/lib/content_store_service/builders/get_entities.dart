@@ -1,5 +1,6 @@
 import 'package:cl_basic_types/cl_basic_types.dart';
 import 'package:cl_extensions/cl_extensions.dart' show NotNullValue;
+import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
@@ -18,8 +19,8 @@ class GetEntity extends ConsumerWidget {
     this.store,
   });
   final Widget Function(StoreEntity? item) builder;
-  final Widget Function(Object, StackTrace) errorBuilder;
-  final Widget Function() loadingBuilder;
+  final CLErrorView Function(Object, StackTrace) errorBuilder;
+  final CLLoadingView Function() loadingBuilder;
 
   final int? id;
   final int? label;
@@ -78,8 +79,8 @@ class GetEntities extends ConsumerWidget {
     this.store,
   });
   final Widget Function(ViewerEntities items) builder;
-  final Widget Function(Object, StackTrace) errorBuilder;
-  final Widget Function() loadingBuilder;
+  final CLErrorView Function(Object, StackTrace) errorBuilder;
+  final CLLoadingView Function() loadingBuilder;
   final int? parentId;
   final bool? isCollection;
   final bool? isHidden;

@@ -1,9 +1,5 @@
+import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
-
-import '../../basics/cl_circled_icon.dart';
-import '../../theme/models/cl_icons.dart';
-import '../../theme/state/cl_theme.dart';
-import '../appearance/cl_scaffold.dart';
 
 class WizardLayout extends StatelessWidget {
   const WizardLayout({

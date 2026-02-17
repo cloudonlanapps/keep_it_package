@@ -50,5 +50,5 @@ class CLBanner extends StatelessWidget {
   }
 
   static Widget loading(String message) =>
-      CLLoader.widget(debugMessage: message);
+      CLLoadingView.widget(debugMessage: message);
 }

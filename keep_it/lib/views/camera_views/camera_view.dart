@@ -9,7 +9,6 @@ import 'package:flutter/material.dart';
 import 'package:path/path.dart' as p;
 import 'package:store/store.dart';
 
-import '../common_widgets/cl_error_view.dart';
 import '../page_manager.dart';
 import 'preview.dart';
 
@@ -27,10 +26,11 @@ class CameraService extends StatelessWidget {
     return CLScaffold(
       onSwipe: () => PageManager.of(context).pop(),
       body: GetDefaultStore(
-        errorBuilder: (_, _) {
-          throw UnimplementedError('errorBuilder');
-        },
-        loadingBuilder: () => CLLoader.widget(
+        errorBuilder: (e, st) => CLErrorView.page(
+          message: 'Failed to access store',
+          details: e.toString(),
+        ),
+        loadingBuilder: () => CLLoadingView.widget(
           debugMessage: 'GetStoreUpdater',
         ),
         builder: (theStore) {
@@ -39,10 +39,11 @@ class CameraService extends StatelessWidget {
             builder: (cameraTaskManager) {
               return GetEntity(
                 id: parentId,
-                errorBuilder: (_, _) {
-                  throw UnimplementedError('errorBuilder');
-                },
-                loadingBuilder: () => CLLoader.widget(
+                errorBuilder: (e, st) => CLErrorView.local(
+                  message: 'Failed to get collection',
+                  details: e.toString(),
+                ),
+                loadingBuilder: () => CLLoadingView.widget(
                   debugMessage: 'GetCollection',
                 ),
                 builder: (collection) {
@@ -116,10 +117,10 @@ class CLCameraService0 extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetCameras(
-      errorBuilder: (error, stackTrace) => CLErrorView(
-        errorMessage: error.toString(),
+      errorBuilder: (error, stackTrace) => CLErrorView.local(
+        message: error.toString(),
       ),
-      loadingBuilder: () => CLLoader.widget(
+      loadingBuilder: () => CLLoadingView.widget(
         debugMessage: 'GetCameras',
       ),
       builder: ({required cameras}) {

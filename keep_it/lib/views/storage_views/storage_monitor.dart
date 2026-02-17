@@ -10,11 +10,13 @@ class StorageMonitor extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetDeviceDirectories(
-      loadingBuilder: () => CLLoader.widget(
+      loadingBuilder: () => CLLoadingView.widget(
         debugMessage: 'GetDeviceDirectories',
       ),
       errorBuilder: (object, st) {
-        return const SizedBox.shrink();
+        return CLErrorView.hidden(
+          debugMessage: 'StorageMonitor error: $object',
+        );
       },
       builder: (deviceDirectories) {
         return Column(

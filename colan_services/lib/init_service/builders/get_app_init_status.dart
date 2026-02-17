@@ -21,8 +21,8 @@ class GetAppInitStatus extends ConsumerWidget {
 
   final AppDescriptor app;
   final Widget Function() builder;
-  final Widget Function(Object, StackTrace) errorBuilder;
-  final Widget Function() loadingBuilder;
+  final CLErrorView Function(Object, StackTrace) errorBuilder;
+  final CLLoadingView Function() loadingBuilder;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

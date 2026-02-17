@@ -1,3 +1,4 @@
+import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 
 import '../builders/get_directory_info.dart';
@@ -19,13 +20,17 @@ class StorageInfoEntry extends StatelessWidget {
   Widget build(BuildContext context) {
     return GetDirectoryInfo(
       directories: dirs,
-      loadingBuilder: () => ListTile(
-        title: Text(label),
-        subtitle: const Text('...'),
+      loadingBuilder: () => CLLoadingView.custom(
+        child: ListTile(
+          title: Text(label),
+          subtitle: const Text('...'),
+        ),
       ),
-      errorBuilder: (e, st) => ListTile(
-        title: Text(label),
-        subtitle: const Text('Error'),
+      errorBuilder: (e, st) => CLErrorView.custom(
+        child: ListTile(
+          title: Text(label),
+          subtitle: const Text('Error'),
+        ),
       ),
       builder: (info) {
         final statistics = info?.statistics ?? 'Empty';

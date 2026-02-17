@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
 import '../../views/incoming_media_views/incoming_media_monitor.dart';
-import '../common_widgets/cl_error_view.dart';
 
 class AppStartView extends StatelessWidget {
   const AppStartView({required this.appDescriptor, super.key});
@@ -23,10 +22,10 @@ class AppStartView extends StatelessWidget {
             // noteTheme: const DefaultNotesTheme(),
             child: GetAppInitStatus(
               app: app,
-              errorBuilder: (error, stackTrace) => CLErrorView(
-                errorMessage: error.toString(),
+              errorBuilder: (error, stackTrace) => CLErrorView.page(
+                message: error.toString(),
               ),
-              loadingBuilder: () => CLLoader.widget(
+              loadingBuilder: () => CLLoadingView.widget(
                 debugMessage: 'appInitAsync',
               ),
               builder: () {
@@ -67,10 +66,10 @@ class AppStartView extends StatelessWidget {
                 // noteTheme: const DefaultNotesTheme(),
                 child: GetAppInitStatus(
                   app: app,
-                  errorBuilder: (error, stackTrace) => CLErrorView(
-                    errorMessage: error.toString(),
+                  errorBuilder: (error, stackTrace) => CLErrorView.page(
+                    message: error.toString(),
                   ),
-                  loadingBuilder: () => CLLoader.widget(
+                  loadingBuilder: () => CLLoadingView.widget(
                     debugMessage: 'appInitAsync',
                   ),
                   builder: () {

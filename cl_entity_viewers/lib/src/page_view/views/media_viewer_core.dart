@@ -1,7 +1,7 @@
 import 'package:cl_basic_types/viewer_types.dart';
 
 import 'package:colan_widgets/colan_widgets.dart'
-    show BrokenImage, GreyShimmer, SvgIcon, SvgIcons;
+    show CLErrorView, CLLoadingView, GreyShimmer, SvgIcon, SvgIcons;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -84,8 +84,8 @@ class ViewMedia extends ConsumerWidget {
       isLocked: false,
       autoStart: autoStart,
       autoPlay: true, // Fixme
-      errorBuilder: (_, _) => const BrokenImage(),
-      loadingBuilder: () => const GreyShimmer(),
+      errorBuilder: (_, _) => const CLErrorView.image(),
+      loadingBuilder: () => const CLLoadingView.custom(child: GreyShimmer()),
       keepAspectRatio: stateManager.showMenu || isPlayable,
       hasGesture: !stateManager.showMenu,
     );

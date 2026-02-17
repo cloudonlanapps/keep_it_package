@@ -13,20 +13,23 @@ class StoreSelector extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GetTargetStore(builder: (targetStore, actions) {
-      return GetAvailableStores(
-          loadingBuilder: () => CLLoader.widget(
-                debugMessage: null,
-                message: 'Scanning Avaliable Servers ...',
-              ),
-          errorBuilder: (e, st) {
-            return Center(
-              child: ShadBadge.destructive(
+    return GetTargetStore(
+      builder: (targetStore, actions) {
+        return GetAvailableStores(
+          loadingBuilder: () => CLLoadingView.widget(
+            debugMessage: null,
+            message: 'Scanning Avaliable Servers ...',
+          ),
+          errorBuilder: (e, st) => CLErrorView.local(
+            message: 'Failed to get server list',
+            details: e.toString(),
+            actions: [
+              ShadButton.destructive(
                 onPressed: onClose,
-                child: const Text('Failed to get server list'),
+                child: const Text('Close'),
               ),
-            );
-          },
+            ],
+          ),
           builder: (stores) {
             if (!stores.contains(targetStore)) {
               return Center(
@@ -49,8 +52,12 @@ class StoreSelector extends StatelessWidget {
                     padding: EdgeInsets.zero,
                     initialValue: targetStore,
                     options: [
-                      ...stores.map((e) => ShadOption(
-                          value: e, child: Text(e.entityStore.identity))),
+                      ...stores.map(
+                        (e) => ShadOption(
+                          value: e,
+                          child: Text(e.entityStore.identity),
+                        ),
+                      ),
                     ],
                     selectedOptionBuilder: (context, value) {
                       return Text(value.entityStore.identity);
@@ -64,7 +71,9 @@ class StoreSelector extends StatelessWidget {
                 ),
               ],
             );
-          });
-    });
+          },
+        );
+      },
+    );
   }
 }

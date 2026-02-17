@@ -32,7 +32,7 @@ class SettingsView extends StatelessWidget {
             errorBuilder: (_, _) {
               throw UnimplementedError('errorBuilder');
             },
-            loadingBuilder: () => CLLoader.widget(
+            loadingBuilder: () => CLLoadingView.widget(
               debugMessage: 'GetDeletedMedia',
             ),
             builder: (deletedMedia) {

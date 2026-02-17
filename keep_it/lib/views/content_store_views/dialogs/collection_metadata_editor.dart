@@ -129,22 +129,6 @@ class _CollectionMetadataEditorState extends State<CollectionMetadataEditor> {
     super.dispose();
   }
 
-  Widget loading(String debugMessage) => ShadSheet(
-    title: const Text('Loading'),
-    description: const Text(
-      'Loading Collection ',
-    ),
-    child: SizedBox(
-      height: 100,
-      child: CLLoader.widget(
-        debugMessage: debugMessage,
-      ),
-    ),
-  );
-  Widget errorBuilder(Object e, StackTrace st) {
-    throw UnimplementedError('errorBuilder');
-  }
-
   @override
   Widget build(BuildContext context) {
     final theme = ShadTheme.of(context);
@@ -153,16 +137,28 @@ class _CollectionMetadataEditorState extends State<CollectionMetadataEditor> {
       padding: const EdgeInsets.symmetric(vertical: 20),
       child: GetEntity(
         id: widget.id,
-        errorBuilder: errorBuilder,
-        loadingBuilder: () => loading('GetCollection'),
+        errorBuilder: (e, st) => CLErrorView.local(
+          message: 'Error loading collection',
+          details: e.toString(),
+        ),
+        loadingBuilder: () => const CLLoadingView.local(
+          debugMessage: 'GetCollection',
+          message: 'Loading Collection ',
+        ),
         builder: (collection) {
           return GetEntities(
             store: widget.store,
             isHidden: null,
             isDeleted: null,
             isCollection: true,
-            errorBuilder: errorBuilder,
-            loadingBuilder: () => loading('GetAllCollection'),
+            errorBuilder: (e, st) => CLErrorView.local(
+              message: 'Error loading all collections',
+              details: e.toString(),
+            ),
+            loadingBuilder: () => const CLLoadingView.local(
+              debugMessage: 'GetAllCollection',
+              message: 'Loading Collection ',
+            ),
             builder: (allCollections) {
               return Padding(
                 padding: EdgeInsets.only(

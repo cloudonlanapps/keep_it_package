@@ -1,5 +1,6 @@
 import 'package:cl_extensions/cl_extensions.dart' show UtilExtensionOnString;
 import 'package:colan_services/colan_services.dart';
+import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 
 import 'package:shadcn_ui/shadcn_ui.dart';
@@ -15,8 +16,10 @@ class MediaTitle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetActiveStore(
-      loadingBuilder: () => const CustomListTile(title: 'Keep It'),
-      errorBuilder: (e, st) => const CustomListTile(title: 'Keep It'),
+      loadingBuilder: () =>
+          const CLLoadingView.custom(child: CustomListTile(title: 'Keep It')),
+      errorBuilder: (e, st) =>
+          const CLErrorView.custom(child: CustomListTile(title: 'Keep It')),
       builder: (activeStore) {
         const defaultTitle = CustomListTile(
           title: 'Keep It',

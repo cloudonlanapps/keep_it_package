@@ -1,5 +1,6 @@
 import 'package:colan_services/server_service/server_service.dart'
     show GetAvailableServers;
+import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
@@ -26,8 +27,10 @@ class ServerManageView extends ConsumerWidget {
       builder: (activeAIServer) {
         return GetAvailableServers(
           serverType: 'ai.',
-          loadingBuilder: () => loadingWidget,
-          errorBuilder: (p0, p1) => errorWidget,
+          loadingBuilder: () =>
+              const CLLoadingView.custom(child: loadingWidget),
+          errorBuilder: (p0, p1) =>
+              const CLErrorView.custom(child: errorWidget),
           builder: (servers) {
             return ListTile(
               title: servers.isEmpty

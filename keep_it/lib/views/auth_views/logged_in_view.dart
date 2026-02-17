@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:cl_server_dart_client/cl_server_dart_client.dart';
 import 'package:colan_services/colan_services.dart';
+import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 
 import '../page_manager.dart';
@@ -96,25 +97,12 @@ class LoggedInView extends StatelessWidget {
           ),
         );
       },
-      loadingBuilder: () => const Center(child: CircularProgressIndicator()),
-      errorBuilder: (error, stackTrace, actions) => Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(Icons.error_outline, size: 64, color: Colors.red),
-            const SizedBox(height: 16),
-            Text(
-              'Error loading auth status',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-            const SizedBox(height: 8),
-            Text(
-              error.toString(),
-              style: const TextStyle(color: Colors.red),
-              textAlign: TextAlign.center,
-            ),
-          ],
-        ),
+      loadingBuilder: () => const CLLoadingView.local(
+        debugMessage: 'LoggedInView',
+      ),
+      errorBuilder: (error, stackTrace, actions) => CLErrorView.local(
+        message: 'Error loading auth status',
+        details: error.toString(),
       ),
     );
   }

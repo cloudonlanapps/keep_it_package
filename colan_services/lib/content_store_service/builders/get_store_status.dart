@@ -1,4 +1,5 @@
 import 'package:colan_services/server_service/server_service.dart';
+import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
@@ -9,8 +10,8 @@ import '../providers/registerred_urls.dart';
 class GetStoreStatus extends ConsumerWidget {
   const GetStoreStatus({
     required this.builder,
-    this.loadingBuilder,
-    this.errorBuilder,
+    required this.loadingBuilder,
+    required this.errorBuilder,
     super.key,
   });
 
@@ -21,8 +22,8 @@ class GetStoreStatus extends ConsumerWidget {
   })
   builder;
 
-  final Widget Function()? loadingBuilder;
-  final Widget Function(Object e, StackTrace st)? errorBuilder;
+  final CLLoadingView Function() loadingBuilder;
+  final CLErrorView Function(Object e, StackTrace st) errorBuilder;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -32,8 +33,7 @@ class GetStoreStatus extends ConsumerWidget {
     return locationsAsync.when(
       data: (locations) {
         if (!scanner.lanStatus) {
-          if (loadingBuilder != null) return loadingBuilder!();
-          return const Center(child: CircularProgressIndicator());
+          return loadingBuilder();
         } else {
           final storeAsync = ref.watch(activeStoreProvider);
           return storeAsync.when(
@@ -42,25 +42,13 @@ class GetStoreStatus extends ConsumerWidget {
               activeConfig: locations.activeConfig,
               store: store,
             ),
-            error: (e, st) {
-              if (errorBuilder != null) return errorBuilder!(e, st);
-              return Center(child: Text(e.toString()));
-            },
-            loading: () {
-              if (loadingBuilder != null) return loadingBuilder!();
-              return const Center(child: CircularProgressIndicator());
-            },
+            error: errorBuilder,
+            loading: loadingBuilder,
           );
         }
       },
-      error: (e, st) {
-        if (errorBuilder != null) return errorBuilder!(e, st);
-        return Center(child: Text(e.toString()));
-      },
-      loading: () {
-        if (loadingBuilder != null) return loadingBuilder!();
-        return const Center(child: CircularProgressIndicator());
-      },
+      error: errorBuilder,
+      loading: loadingBuilder,
     );
   }
 }

@@ -55,82 +55,22 @@ class AuthView extends StatelessWidget {
                 );
               }
             },
-            loadingBuilder: () => const Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  CircularProgressIndicator(),
-                  SizedBox(height: 16),
-                  Text('Authenticating...'),
-                ],
-              ),
+            loadingBuilder: () => const CLLoadingView.local(
+              debugMessage: 'Authenticating...',
             ),
-            errorBuilder: (error, stack, actions) => Center(
-              child: Padding(
-                padding: const EdgeInsets.all(32),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Icon(
-                      Icons.error_outline,
-                      size: 64,
-                      color: Colors.red,
-                    ),
-                    const SizedBox(height: 16),
-                    Text(
-                      'Server Error',
-                      style: Theme.of(context).textTheme.headlineMedium,
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      error.toString(),
-                      style: const TextStyle(color: Colors.red),
-                      textAlign: TextAlign.center,
-                    ),
-                  ],
-                ),
-              ),
+            errorBuilder: (error, stack, actions) => CLErrorView.local(
+              message: 'Server Error',
+              details: error.toString(),
             ),
           ),
         );
       },
-      loadingBuilder: () => CLScaffold(
-        topMenu: AppBar(),
-        body: const Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              CircularProgressIndicator(),
-              SizedBox(height: 16),
-              Text('Connecting to store...'),
-            ],
-          ),
-        ),
+      loadingBuilder: () => const CLLoadingView.page(
+        debugMessage: 'Connecting to store...',
       ),
-      errorBuilder: (error, stack) => CLScaffold(
-        topMenu: AppBar(),
-        body: Center(
-          child: Padding(
-            padding: const EdgeInsets.all(32),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Icon(Icons.error_outline, size: 64, color: Colors.red),
-                const SizedBox(height: 16),
-                Text(
-                  'Failed to connect to store',
-                  style: Theme.of(context).textTheme.headlineMedium,
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  error.toString(),
-                  style: const TextStyle(color: Colors.red),
-                  textAlign: TextAlign.center,
-                ),
-              ],
-            ),
-          ),
-        ),
+      errorBuilder: (error, stack) => CLErrorView.page(
+        message: 'Failed to connect to store',
+        details: error.toString(),
       ),
     );
   }

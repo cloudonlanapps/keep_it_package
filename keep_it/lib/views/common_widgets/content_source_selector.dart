@@ -47,10 +47,12 @@ class ServerListPopover extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetRegisteredServiceLocations(
-      loadingBuilder: () =>
-          const Center(child: CircularProgressIndicator.adaptive()),
-      errorBuilder: (e, st) =>
-          const Center(child: Icon(LucideIcons.triangleAlert)),
+      loadingBuilder: () => const CLLoadingView.custom(
+        child: Center(child: CircularProgressIndicator.adaptive()),
+      ),
+      errorBuilder: (e, st) => const CLErrorView.custom(
+        child: Center(child: Icon(LucideIcons.triangleAlert)),
+      ),
       builder: (locations, actions) {
         // Actions available in closure!
         // Filter logic (was in KnownServersList)
@@ -76,16 +78,20 @@ class ServerListPopover extends StatelessWidget {
                 isActive: locations.isActiveConfig(config),
                 actions: actions, // Direct access from closure!
               ),
-              loadingBuilder: () => ServerTile(
-                config: config,
-                isLoading: true,
-                isActive: locations.isActiveConfig(config),
-                actions: actions,
+              loadingBuilder: () => CLLoadingView.custom(
+                child: ServerTile(
+                  config: config,
+                  isLoading: true,
+                  isActive: locations.isActiveConfig(config),
+                  actions: actions,
+                ),
               ),
-              errorBuilder: (e, st) => ServerTile(
-                config: config,
-                isActive: locations.isActiveConfig(config),
-                actions: actions,
+              errorBuilder: (e, st) => CLErrorView.custom(
+                child: ServerTile(
+                  config: config,
+                  isActive: locations.isActiveConfig(config),
+                  actions: actions,
+                ),
               ),
             );
           }).toList(),

@@ -1,4 +1,5 @@
 import 'package:cl_server_dart_client/cl_server_dart_client.dart';
+import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -33,7 +34,8 @@ class AuthActions {
     String username,
     String password, {
     required bool rememberMe,
-  }) login;
+  })
+  login;
 }
 
 /// Builder widget that watches serverProvider and exposes authentication status.
@@ -71,8 +73,8 @@ class GetAuthStatus extends ConsumerWidget {
 
   final RemoteServiceLocationConfig config;
   final Widget Function(AuthStatusData, AuthActions) builder;
-  final Widget Function() loadingBuilder;
-  final Widget Function(Object, StackTrace, AuthActions) errorBuilder;
+  final CLLoadingView Function() loadingBuilder;
+  final CLErrorView Function(Object, StackTrace, AuthActions) errorBuilder;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

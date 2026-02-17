@@ -1,5 +1,6 @@
 import 'package:cl_entity_viewers/cl_entity_viewers.dart';
 import 'package:colan_services/colan_services.dart';
+import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:store/store.dart';
 
@@ -22,12 +23,10 @@ class SuggestedCollection extends StatelessWidget {
         child: GetEntities(
           store: targetStore,
           parentId: item.id,
-          errorBuilder: (_, _) => CLEntityView(
-            entity: item,
-          ),
-          loadingBuilder: () => CLEntityView(
-            entity: item,
-          ),
+          errorBuilder: (_, _) =>
+              CLErrorView.custom(child: CLEntityView(entity: item)),
+          loadingBuilder: () =>
+              CLLoadingView.custom(child: CLEntityView(entity: item)),
           builder: (children) {
             return CLEntityView(entity: item, children: children);
           },

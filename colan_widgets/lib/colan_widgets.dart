@@ -1,7 +1,6 @@
 /// Colan Widgets
 library;
 
-export 'src/basics/broken_image.dart';
 export 'src/basics/cl_banner.dart' show CLBanner;
 export 'src/basics/cl_blink.dart' show CLBlink;
 export 'src/basics/cl_circled_icon.dart' show CircledIcon, CircledSvgIcon;
@@ -28,7 +27,8 @@ export 'src/theme/state/cl_theme.dart' show CLTheme;
 export 'src/utils/key_listener.dart' show CLKeyListener;
 export 'src/utils/validate_layout.dart' show ValidateLayout;
 export 'src/views/appearance/cl_scaffold.dart' show CLScaffold;
-export 'src/views/cl_loading_view.dart' show CLLoader;
+export 'src/views/cl_error_view.dart' show CLErrorKind, CLErrorView;
+export 'src/views/cl_loading_view.dart' show CLLoadingView, CLLoadingViewKind;
 export 'src/views/progress_view/stream_progress_view.dart'
     show StreamProgressView;
 export 'src/views/stale_media_indicator_view.dart' show BannerView;

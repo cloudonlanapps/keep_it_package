@@ -1,38 +1,51 @@
+import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
 import 'pick_wizard.dart';
 
-class WizardError extends StatefulWidget {
+class WizardError extends StatelessWidget {
   const WizardError({required this.onClose, super.key, this.error});
   final Object? error;
   final VoidCallback onClose;
 
   @override
-  State<WizardError> createState() => _WizardErrorState();
+  Widget build(BuildContext context) {
+    return _WizardErrorInternal(error: error, onClose: onClose);
+  }
 
-  static Widget show(
+  static CLErrorView show(
     BuildContext context, {
     required VoidCallback onClose,
     Object? e,
     StackTrace? st,
   }) {
-    return PickWizard(
-      child: WizardError(
-        error: e?.toString(),
-        onClose: onClose,
+    return CLErrorView.custom(
+      child: PickWizard(
+        child: WizardError(
+          error: e?.toString(),
+          onClose: onClose,
+        ),
       ),
     );
   }
 }
 
-class _WizardErrorState extends State<WizardError> {
+class _WizardErrorInternal extends StatefulWidget {
+  const _WizardErrorInternal({required this.onClose, this.error});
+  final Object? error;
+  final VoidCallback onClose;
+
+  @override
+  State<_WizardErrorInternal> createState() => _WizardErrorInternalState();
+}
+
+class _WizardErrorInternalState extends State<_WizardErrorInternal> {
   late final ShadPopoverController popoverController;
 
   @override
   void initState() {
     popoverController = ShadPopoverController();
-
     super.initState();
   }
 
@@ -53,7 +66,8 @@ class _WizardErrorState extends State<WizardError> {
             child: Text(
               'Something went wrong.',
               style: ShadTheme.of(context).textTheme.list.copyWith(
-                  color: ShadTheme.of(context).colorScheme.destructive),
+                color: ShadTheme.of(context).colorScheme.destructive,
+              ),
             ),
           ),
           ShadPopover(
@@ -70,18 +84,21 @@ class _WizardErrorState extends State<WizardError> {
               );
             },
             child: ShadButton.ghost(
-                onPressed: popoverController.toggle,
-                child: const Text(
-                  'Details',
-                )),
+              onPressed: popoverController.toggle,
+              child: const Text(
+                'Details',
+              ),
+            ),
           ),
           ShadButton.secondary(
-              onPressed: widget.onClose,
-              child: Text(
-                'Close',
-                style: ShadTheme.of(context).textTheme.list.copyWith(
-                    color: ShadTheme.of(context).colorScheme.destructive),
-              )),
+            onPressed: widget.onClose,
+            child: Text(
+              'Close',
+              style: ShadTheme.of(context).textTheme.list.copyWith(
+                color: ShadTheme.of(context).colorScheme.destructive,
+              ),
+            ),
+          ),
         ],
       ),
     );

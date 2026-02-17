@@ -6,7 +6,6 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:store/store.dart';
 
-import '../common_widgets/cl_error_view.dart';
 import '../page_manager.dart';
 import 'widgets/step1_analyse.dart';
 import 'widgets/step2_duplicates.dart';
@@ -42,15 +41,16 @@ class IncomingMediaHandlerState extends State<IncomingMediaHandler> {
     return CLScaffold(
       onSwipe: () => widget.onDiscard(result: false),
       body: GetDefaultStore(
-        errorBuilder: (e, st) => WizardLayout(
-          title: '$label Error',
-          onCancel: () => widget.onDiscard(result: false),
-          child: CLErrorView(errorMessage: e.toString()),
+        errorBuilder: (e, st) => CLErrorView.custom(
+          child: WizardLayout(
+            title: '$label Error',
+            onCancel: () => widget.onDiscard(result: false),
+            child: CLErrorView.local(message: e.toString()),
+          ),
         ),
-        loadingBuilder: () => WizardLayout(
-          title: label,
+        loadingBuilder: () => CLLoadingView.wizard(
+          message: label,
           onCancel: () => widget.onDiscard(result: false),
-          child: CLLoader.widget(debugMessage: null),
         ),
         builder: (store) {
           return GetStoreTaskManager(
@@ -102,7 +102,7 @@ class IncomingMediaHandlerState extends State<IncomingMediaHandler> {
                         onCancel: () => onDiscard(result: false),
                       );
               } catch (e) {
-                return CLErrorView(errorMessage: e.toString());
+                return CLErrorView.local(message: e.toString());
               }
               _infoLogger('build IncomingMediaHandler - Done');
               return widget0;

@@ -54,7 +54,7 @@ class _SearchViewState extends State<SearchView> {
               isCollection: true,
               //isHidden: null,
               isDeleted: null,
-              loadingBuilder: () => CLLoader.widget(debugMessage: null),
+              loadingBuilder: () => CLLoadingView.widget(debugMessage: null),
               errorBuilder: (e, st) => WizardError.show(
                 context,
                 e: e,

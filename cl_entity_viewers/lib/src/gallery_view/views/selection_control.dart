@@ -46,7 +46,7 @@ class SelectionContol extends ConsumerWidget {
           initialMediaIndex:
               filterred.indexWhere((e) => e.id == initialMediaIndex),
           errorBuilder: errorBuilder,
-          loadingBuilder: () => CLLoader.widget(
+          loadingBuilder: () => CLLoadingView.widget(
             debugMessage: 'MediaViewService.pageView',
           ),
         ); */

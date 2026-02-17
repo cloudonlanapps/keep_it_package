@@ -95,11 +95,11 @@ class MediaThumbnail extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (media.previewUri == null) {
-      return const BrokenImage();
+      return const CLErrorView.image();
     }
     if (media.mediaUri!.scheme == 'file') {
       if (!File(media.mediaUri!.toFilePath()).existsSync()) {
-        return const BrokenImage();
+        return const CLErrorView.image();
       }
     }
     try {
@@ -111,14 +111,15 @@ class MediaThumbnail extends StatelessWidget {
           heroTag: '/item/${media.id}',
           uri: media.previewUri!,
           mime: 'image/jpeg',
-          errorBuilder: (_, _) => const BrokenImage(),
-          loadingBuilder: () => const GreyShimmer(),
+          errorBuilder: (_, _) => const CLErrorView.image(),
+          loadingBuilder: () =>
+              const CLLoadingView.custom(child: GreyShimmer()),
           fit: BoxFit.cover,
           keepAspectRatio: false,
         ),
       );
     } catch (e) {
-      return const BrokenImage();
+      return const CLErrorView.image();
     }
   }
 }

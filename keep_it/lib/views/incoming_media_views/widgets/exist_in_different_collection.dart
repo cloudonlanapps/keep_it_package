@@ -58,7 +58,7 @@ class ExistInDifferentCollection extends StatelessWidget {
                   errorBuilder: (_, _) {
                     throw UnimplementedError('errorBuilder');
                   },
-                  loadingBuilder: () => CLLoader.widget(
+                  loadingBuilder: () => CLLoadingView.widget(
                     debugMessage: 'GetAllCollection',
                   ),
                   builder: (currCollection) {

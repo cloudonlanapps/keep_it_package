@@ -37,7 +37,7 @@ class MediaEditView extends StatelessWidget {
                   errorBuilder: (_, _) {
                     throw UnimplementedError('errorBuilder');
                   },
-                  loadingBuilder: () => CLLoader.widget(
+                  loadingBuilder: () => CLLoadingView.widget(
                     debugMessage: 'GetMedia',
                   ),
                   builder: (media) {
@@ -51,7 +51,7 @@ class MediaEditView extends StatelessWidget {
                       errorBuilder: (_, _) {
                         throw UnimplementedError('errorBuilder');
                       },
-                      loadingBuilder: () => CLLoader.widget(
+                      loadingBuilder: () => CLLoadingView.widget(
                         debugMessage: 'GetStoreUpdater',
                       ),
                       builder: (theStore) {

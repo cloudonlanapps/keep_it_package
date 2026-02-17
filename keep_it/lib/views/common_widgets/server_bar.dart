@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:colan_services/colan_services.dart';
+import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
@@ -34,8 +35,9 @@ class _ServerBarState extends State<ServerBar> {
   @override
   Widget build(BuildContext context) {
     return GetActiveStore(
-      errorBuilder: (_, _) => const SizedBox.shrink(),
-      loadingBuilder: SizedBox.shrink,
+      errorBuilder: (e, st) => CLErrorView.hidden(debugMessage: e.toString()),
+      loadingBuilder: () =>
+          const CLLoadingView.hidden(debugMessage: 'ServerBar'),
       builder: (activeServer) => ShadBadge(
         padding: const EdgeInsets.only(left: 2, right: 2, top: 2, bottom: 2),
         onPressed: toggle,

@@ -1,3 +1,4 @@
+import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
@@ -14,8 +15,8 @@ class GetAvailableStores extends ConsumerWidget {
   });
 
   final Widget Function(List<CLStore>) builder;
-  final Widget Function(Object, StackTrace) errorBuilder;
-  final Widget Function() loadingBuilder;
+  final CLErrorView Function(Object, StackTrace) errorBuilder;
+  final CLLoadingView Function() loadingBuilder;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

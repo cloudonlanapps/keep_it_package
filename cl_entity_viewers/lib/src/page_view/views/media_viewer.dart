@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:colan_widgets/colan_widgets.dart';
 
 import 'image_viewer.dart';
 import 'video_player.dart';
@@ -32,8 +33,8 @@ class MediaViewer extends StatelessWidget {
 
   final String heroTag;
   final String mime;
-  final Widget Function(Object, StackTrace) errorBuilder;
-  final Widget Function() loadingBuilder;
+  final CLErrorView Function(Object, StackTrace) errorBuilder;
+  final CLLoadingView Function() loadingBuilder;
 
   final bool keepAspectRatio;
   final bool hasGesture;
@@ -45,22 +46,23 @@ class MediaViewer extends StatelessWidget {
       tag: heroTag,
       child: switch (mime) {
         (_) when mime.startsWith('image') => ImageViewer(
-            uri: uri,
-            isLocked: isLocked,
-            onLockPage: onLockPage,
-            keepAspectRatio: keepAspectRatio,
-            errorBuilder: errorBuilder,
-            loadingBuilder: loadingBuilder,
-            hasGesture: hasGesture,
-            fit: fit,
-          ),
+          uri: uri,
+          isLocked: isLocked,
+          onLockPage: onLockPage,
+          keepAspectRatio: keepAspectRatio,
+          errorBuilder: errorBuilder,
+          loadingBuilder: loadingBuilder,
+          hasGesture: hasGesture,
+          fit: fit,
+        ),
         (_) when mime.startsWith('video') => VideoPlayer(
-            uri: uri,
-            keepAspectRatio: keepAspectRatio,
-            errorBuilder: errorBuilder,
-            loadingBuilder: () {
-              if (previewUri != null) {
-                return ImageViewer(
+          uri: uri,
+          keepAspectRatio: keepAspectRatio,
+          errorBuilder: errorBuilder,
+          loadingBuilder: () {
+            if (previewUri != null) {
+              return CLLoadingView.custom(
+                child: ImageViewer(
                   uri: previewUri!,
                   errorBuilder: errorBuilder,
                   loadingBuilder: loadingBuilder,
@@ -69,19 +71,17 @@ class MediaViewer extends StatelessWidget {
                   onLockPage: onLockPage,
                   hasGesture: false,
                   fit: fit,
-                );
-              }
-              return const CircularProgressIndicator(
-                color: Colors.white,
+                ),
               );
-            },
-          ),
-        _ => runZonedGuarded(
-            () {
-              throw Exception('unsupported MIME');
-            },
-            errorBuilder,
-          )!,
+            }
+            return CLLoadingView.custom(
+              child: const CircularProgressIndicator(color: Colors.white),
+            );
+          },
+        ),
+        _ => runZonedGuarded(() {
+          throw Exception('unsupported MIME');
+        }, errorBuilder)!,
       },
     );
   }

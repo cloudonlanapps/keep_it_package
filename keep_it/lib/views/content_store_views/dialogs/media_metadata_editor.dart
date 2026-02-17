@@ -70,36 +70,29 @@ class MediaMetadataEditor extends StatelessWidget {
     );
   }
 
-  Widget loading(BuildContext context, String debugMessage) => ShadSheet(
-    title: const Text('Loading'),
-    description: const Text(
-      'Loading Collection ',
-    ),
-    child: SizedBox(
-      height: 100,
-      child: CLLoader.widget(
-        debugMessage: debugMessage,
-      ),
-    ),
-  );
-  Widget errorBuilder(Object e, StackTrace st) {
-    throw UnimplementedError('errorBuilder');
-  }
-
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 20),
       child: GetEntity(
         id: mediaId,
-        errorBuilder: errorBuilder,
-        loadingBuilder: () => loading(context, 'GetCollection'),
+        loadingBuilder: () => const CLLoadingView.local(
+          debugMessage: 'GetCollection',
+          message: 'Loading Collection ',
+        ),
+        errorBuilder: (e, st) => CLErrorView.local(
+          message: 'Error loading media',
+          details: e.toString(),
+        ),
         builder: (media) {
           if (media == null) {
             try {
               throw Exception("Media can't be null");
-            } catch (e, st) {
-              return errorBuilder(e, st);
+            } catch (e) {
+              return CLErrorView.local(
+                message: "Media can't be null",
+                details: e.toString(),
+              );
             }
           }
           return StatefulMediaEditor(

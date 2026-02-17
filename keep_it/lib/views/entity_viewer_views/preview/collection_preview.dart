@@ -22,8 +22,9 @@ class CollectionPreview extends StatelessWidget {
       builder: (filters) {
         return GetEntities(
           parentId: collection.id,
-          errorBuilder: (_, _) => const BrokenImage(),
-          loadingBuilder: () => const GreyShimmer(),
+          errorBuilder: (_, _) => const CLErrorView.image(),
+          loadingBuilder: () =>
+              const CLLoadingView.custom(child: GreyShimmer()),
           builder: (children) {
             return GetFilterred(
               candidates: children,

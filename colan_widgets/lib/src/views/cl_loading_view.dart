@@ -3,124 +3,238 @@ import 'package:flutter/material.dart';
 import 'package:progress_indicators/progress_indicators.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:shimmer/shimmer.dart';
+
 import '../utils/validate_layout.dart';
 import 'appearance/cl_scaffold.dart';
+import 'wizards/wizard_layout.dart';
 
-enum CLLoaderKind { hidden, widget, shimmer }
+enum CLLoadingViewKind { hidden, widget, shimmer, wizard }
 
-class CLLoader extends StatelessWidget {
-  factory CLLoader.hide({
+abstract class CLLoadingView extends StatelessWidget {
+  const CLLoadingView({super.key});
+
+  const factory CLLoadingView.hidden({
+    required String? debugMessage,
+    Key? key,
+  }) = _CLLoadingViewHidden;
+
+  const factory CLLoadingView.local({
+    String? message,
+    String? debugMessage,
+    Key? key,
+  }) = _CLLoadingViewStandard;
+
+  const factory CLLoadingView.page({
+    String? message,
+    String? debugMessage,
+    Key? key,
+  }) = _CLLoadingViewPage;
+
+  const factory CLLoadingView.shimmer({
+    required String? debugMessage,
+    Widget? child,
+    Key? key,
+  }) = _CLLoadingViewShimmer;
+
+  const factory CLLoadingView.wizard({
+    required String message,
+    String? debugMessage,
+    VoidCallback? onCancel,
+    Key? key,
+  }) = _CLLoadingViewWizard;
+
+  const factory CLLoadingView.custom({
+    required Widget child,
+    Key? key,
+  }) = _CLLoadingViewCustom;
+
+  // Backwards compatibility or internal use
+  factory CLLoadingView.widget({
     required String? debugMessage,
     Key? key,
     String? message,
   }) {
-    return CLLoader._(
+    return _CLLoadingViewStandard(
       key: key,
-      kind: CLLoaderKind.hidden,
       debugMessage: debugMessage,
       message: message,
     );
   }
-  factory CLLoader.widget({
-    required String? debugMessage,
-    Key? key,
-    String? message,
-  }) {
-    return CLLoader._(
-      key: key,
-      kind: CLLoaderKind.widget,
-      debugMessage: debugMessage,
-      message: message,
-    );
-  }
-  factory CLLoader.shimmer({
-    required String? debugMessage,
-    Key? key,
-    String? message,
-  }) {
-    return CLLoader._(
-      key: key,
-      kind: CLLoaderKind.shimmer,
-      debugMessage: debugMessage,
-      message: message,
-    );
-  }
-  const CLLoader._({
-    required this.kind,
+}
+
+class _CLLoadingViewHidden extends CLLoadingView {
+  const _CLLoadingViewHidden({
     required this.debugMessage,
-    required this.message,
     super.key,
   });
-  final CLLoaderKind kind;
+
+  final String? debugMessage;
+
+  @override
+  Widget build(BuildContext context) {
+    return kDebugMode && debugMessage != null
+        ? Center(
+            child: Text(
+              debugMessage!,
+              style: ShadTheme.of(context).textTheme.p,
+            ),
+          )
+        : const SizedBox.shrink();
+  }
+}
+
+class _CLLoadingViewStandard extends CLLoadingView {
+  const _CLLoadingViewStandard({
+    this.message,
+    this.debugMessage,
+    //this.useScaffold = false,
+    super.key,
+  });
+
+  final String? message;
+  final String? debugMessage;
+  //final bool useScaffold;
+
+  @override
+  Widget build(BuildContext context) {
+    return _CLLoadingViewWidget(
+      message: message,
+      debugMessage: debugMessage,
+    );
+  }
+}
+
+class _CLLoadingViewPage extends CLLoadingView {
+  const _CLLoadingViewPage({
+    this.message,
+    this.debugMessage,
+    super.key,
+  });
+
   final String? message;
   final String? debugMessage;
 
   @override
   Widget build(BuildContext context) {
-    return switch (kind) {
-      CLLoaderKind.hidden =>
-        kDebugMode
-            ? CLLoaderWidget(
-                debugMessage: debugMessage,
-                message: null,
-              )
-            : const SizedBox.shrink(),
-      CLLoaderKind.widget => CLLoaderWidget(
+    final Widget child = _CLLoadingViewWidget(
+      message: message,
+      debugMessage: debugMessage,
+    );
+
+    final shouldWrap = !ValidateLayout.isValidLayout(context);
+
+    if (shouldWrap) {
+      return CLScaffold(body: child);
+    }
+    return child;
+  }
+}
+
+class _CLLoadingViewShimmer extends CLLoadingView {
+  const _CLLoadingViewShimmer({
+    required this.debugMessage,
+    this.child,
+    super.key,
+  });
+
+  final String? debugMessage;
+  final Widget? child;
+
+  @override
+  Widget build(BuildContext context) {
+    return _CLShimmerContent(
+      debugMessage: debugMessage,
+      shimmer: child,
+    );
+  }
+}
+
+class _CLLoadingViewWizard extends CLLoadingView {
+  const _CLLoadingViewWizard({
+    required this.message,
+    this.debugMessage,
+    this.onCancel,
+    super.key,
+  });
+
+  final String? message;
+  final String? debugMessage;
+  final VoidCallback? onCancel;
+
+  @override
+  Widget build(BuildContext context) {
+    return WizardLayout(
+      title: message,
+      onCancel: onCancel,
+      child: _CLLoadingViewWidget(
         message: message,
         debugMessage: debugMessage,
       ),
-      CLLoaderKind.shimmer => CLLoaderShimmer(
-        debugMessage: debugMessage,
-      ),
-    };
+    );
   }
 }
 
-class CLLoaderWidget extends StatelessWidget {
-  const CLLoaderWidget({
-    required this.debugMessage,
-    required this.message,
+class _CLLoadingViewCustom extends CLLoadingView {
+  const _CLLoadingViewCustom({
+    required this.child,
     super.key,
+  });
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) => child;
+}
+
+class _CLLoadingViewWidget extends StatelessWidget {
+  const _CLLoadingViewWidget({
+    this.debugMessage,
+    this.message,
   });
   final String? message;
   final String? debugMessage;
   @override
   Widget build(BuildContext context) {
-    final Widget child;
-
     if (kDebugMode && debugMessage != null) {
-      child = Center(
+      return Center(
         child: Text(debugMessage!, style: ShadTheme.of(context).textTheme.p),
       );
     } else {
-      child = Center(child: ScalingText(message ?? 'Loading ...'));
+      return Center(child: ScalingText(message ?? 'Loading ...'));
     }
-    if (ValidateLayout.isValidLayout(context)) {
-      return child;
-    }
-    return CLScaffold(body: child);
   }
 }
 
-class CLLoaderShimmer extends StatelessWidget {
-  const CLLoaderShimmer({required this.debugMessage, super.key});
+class _CLShimmerContent extends StatelessWidget {
+  const _CLShimmerContent({required this.debugMessage, this.shimmer});
   final String? debugMessage;
+  final Widget? shimmer;
 
   @override
   Widget build(BuildContext context) {
-    final Widget content = Shimmer.fromColors(
-      baseColor: Colors.grey[300]!,
-      highlightColor: Colors.grey[100]!,
+    final baseColor = Colors.grey[300]!;
+    final highlightColor = Colors.grey[100]!;
+
+    if (shimmer != null) {
+      return Shimmer.fromColors(
+        baseColor: baseColor,
+        highlightColor: highlightColor,
+        child: shimmer!,
+      );
+    }
+
+    return Shimmer.fromColors(
+      baseColor: baseColor,
+      highlightColor: highlightColor,
       child: Container(
         decoration: BoxDecoration(
           color: Colors.white,
-          //borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
               color: Colors.grey.withValues(alpha: 0.5),
               spreadRadius: 5,
               blurRadius: 7,
-              offset: const Offset(0, 3), // changes position of shadow
+              offset: const Offset(0, 3),
             ),
           ],
         ),
@@ -134,10 +248,5 @@ class CLLoaderShimmer extends StatelessWidget {
             : null,
       ),
     );
-
-    if (ValidateLayout.isValidLayout(context)) {
-      return content;
-    }
-    return CLScaffold(body: content);
   }
 }

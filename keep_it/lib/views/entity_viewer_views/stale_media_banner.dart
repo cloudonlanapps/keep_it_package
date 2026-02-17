@@ -23,8 +23,9 @@ class StaleMediaBanner extends StatelessWidget {
           isHidden: true,
           isCollection: false,
           parentId: 0,
-          errorBuilder: (context, error) => const SizedBox.shrink(),
-          loadingBuilder: () => CLLoader.widget(debugMessage: widgetLabel),
+          errorBuilder: (e, st) =>
+              CLErrorView.hidden(debugMessage: e.toString()),
+          loadingBuilder: () => CLLoadingView.widget(debugMessage: widgetLabel),
           builder: (staleMedia) {
             return CLBanner(
               msg: staleMedia.isEmpty
