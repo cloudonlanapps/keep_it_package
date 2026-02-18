@@ -1,8 +1,10 @@
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
 import '../builders/get_uri_play_status.dart';
+import '../providers/video_player_state.dart';
 import 'video_progress.dart' show MenuBackground2;
 
 class OnTogglePlay extends StatelessWidget {
@@ -17,16 +19,37 @@ class OnTogglePlay extends StatelessWidget {
         child: GetUriPlayStatus(
           uri: uri,
           builder: ([playerControls, playStatus]) {
-            final isPlaying = playStatus?.isPlaying ?? false;
+            return Consumer(
+              builder: (context, ref, child) {
+                final isLoading = ref.watch(videoPlayerProvider).isLoading;
+                final isPlaying = playStatus?.isPlaying ?? false;
+                final isBuffering = playStatus?.isBuffering ?? false;
 
-            return ShadButton.ghost(
-              onPressed: () => {
-                playerControls?.onPlayPause(uri, autoPlay: false, forced: true),
+                return ShadButton.ghost(
+                  onPressed: (isBuffering || isLoading)
+                      ? null
+                      : () => {
+                          playerControls?.onPlayPause(
+                            uri,
+                            autoPlay: false,
+                            forced: true,
+                          ),
+                        },
+                  child: (isBuffering || isLoading)
+                      ? SizedBox(
+                          width: 24,
+                          height: 24,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: ShadTheme.of(context).colorScheme.background,
+                          ),
+                        )
+                      : Icon(
+                          isPlaying ? clIcons.playerPause : clIcons.playerPlay,
+                          color: ShadTheme.of(context).colorScheme.background,
+                        ),
+                );
               },
-              child: Icon(
-                isPlaying ? clIcons.playerPause : clIcons.playerPlay,
-                color: ShadTheme.of(context).colorScheme.background,
-              ),
             );
           },
         ),

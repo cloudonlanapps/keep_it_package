@@ -5,6 +5,7 @@ import 'package:video_player/video_player.dart' as vplayer;
 
 import '../providers/uri_config.dart';
 import '../providers/video_player_state.dart';
+import 'playback_type_badge.dart';
 
 class VideoPlayer extends ConsumerWidget {
   const VideoPlayer({
@@ -28,22 +29,34 @@ class VideoPlayer extends ConsumerWidget {
     return uriConfigAsync.when(
       data: (uriConfig) => controllerAsync.when(
         data: (playControl) {
-          if (playControl.path != uri || playControl.controller == null) {
+          if (playControl.path != uri ||
+              playControl.controller == null ||
+              !playControl.isInitialized ||
+              playControl.isBuffering) {
             return loadingBuilder();
           }
           final controller = playControl.controller!;
-          if (keepAspectRatio) {
-            return AspectRatio(
-              aspectRatio: uriConfig.quarterTurns.isEven
-                  ? controller.value.aspectRatio
-                  : 1 / controller.value.aspectRatio,
-              child: RotatedBox(
-                quarterTurns: uriConfig.quarterTurns,
-                child: vplayer.VideoPlayer(controller),
+          final videoWidget = keepAspectRatio
+              ? AspectRatio(
+                  aspectRatio: uriConfig.quarterTurns.isEven
+                      ? controller.value.aspectRatio
+                      : 1 / controller.value.aspectRatio,
+                  child: RotatedBox(
+                    quarterTurns: uriConfig.quarterTurns,
+                    child: vplayer.VideoPlayer(controller),
+                  ),
+                )
+              : vplayer.VideoPlayer(controller);
+
+          return Stack(
+            children: [
+              videoWidget,
+              const Align(
+                alignment: Alignment.topRight,
+                child: PlaybackTypeBadge(),
               ),
-            );
-          }
-          return vplayer.VideoPlayer(controller);
+            ],
+          );
         },
         error: errorBuilder,
         loading: loadingBuilder,

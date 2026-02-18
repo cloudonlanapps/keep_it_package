@@ -12,6 +12,8 @@ import 'uri_config.dart';
 class VideoPlayerNotifier extends AutoDisposeAsyncNotifier<VideoPlayerState>
     implements VideoPlayerControls {
   VideoPlayerNotifier();
+  VideoPlayerController? _pendingController;
+  int _currentLoadSequence = 0;
 
   @override
   Future<VideoPlayerState> build() async {
@@ -21,10 +23,20 @@ class VideoPlayerNotifier extends AutoDisposeAsyncNotifier<VideoPlayerState>
 
   Future<void> dispose() async {
     final controller = state.value?.controller;
-    if (controller == null) return;
-    await controller.pause();
-    controller.removeListener(timestampUpdater);
-    await controller.dispose();
+    final pending = _pendingController;
+    _pendingController = null;
+
+    if (controller != null) {
+      controller.removeListener(timestampUpdater);
+      controller.removeListener(statusListener);
+      await controller.pause();
+      await controller.dispose();
+    }
+
+    if (pending != null && pending != controller) {
+      await pending.pause();
+      await pending.dispose();
+    }
   }
 
   @override
@@ -41,7 +53,14 @@ class VideoPlayerNotifier extends AutoDisposeAsyncNotifier<VideoPlayerState>
     bool forced = false,
   }) async {
     if (!forced && state.value?.path == uri) return;
-    await removeVideo();
+
+    // Increment sequence to invalidate any previous in-progress loads
+    final sequence = ++_currentLoadSequence;
+
+    // Aggressively cleanup current state and any pending controller from a previous race
+    await _cleanupInternal();
+
+    state = const AsyncValue.loading();
 
     try {
       VideoPlayerController? controller;
@@ -57,17 +76,33 @@ class VideoPlayerNotifier extends AutoDisposeAsyncNotifier<VideoPlayerState>
         controller = VideoPlayerController.networkUrl(
           uri,
           formatHint: VideoFormat.hls,
-          videoPlayerOptions: VideoPlayerOptions(allowBackgroundPlayback: true),
+          videoPlayerOptions: VideoPlayerOptions(
+            allowBackgroundPlayback: false,
+          ),
         );
       } else {
         throw Exception('not supported');
       }
+      if (sequence != _currentLoadSequence) {
+        await controller.dispose();
+        return;
+      }
+
+      _pendingController = controller;
       final universalConfig = await ref.read(universalConfigProvider.future);
       final uriConfig = await ref.read(uriConfigurationProvider(uri).future);
+
       await controller.initialize();
+
+      if (sequence != _currentLoadSequence) {
+        await controller.dispose();
+        return;
+      }
+
       if (!controller.value.isInitialized) {
         throw Exception('Failed to load Video');
       }
+      _pendingController = null;
       debugPrint(
         'VideoPlayer: Setting volume to ${universalConfig.audioVolume}',
       );
@@ -78,44 +113,92 @@ class VideoPlayerNotifier extends AutoDisposeAsyncNotifier<VideoPlayerState>
       if (autoPlay && !universalConfig.isManuallyPaused) {
         await controller.play();
       }
+      final isHls =
+          uri.path.endsWith('.m3u8') ||
+          uri.queryParameters['format'] == 'hls' ||
+          (['http', 'https'].contains(uri.scheme) &&
+              !uri.path.contains('download'));
+
       controller.addListener(timestampUpdater);
+      controller.addListener(statusListener);
       state = AsyncValue.data(
-        VideoPlayerState(controller: controller, path: uri),
+        VideoPlayerState(
+          controller: controller,
+          path: uri,
+          isInitialized: true,
+          isBuffering: controller.value.isBuffering,
+          isHls: isHls,
+        ),
       );
     } catch (error, stackTrace) {
-      state = AsyncValue.error(error, stackTrace);
+      if (sequence == _currentLoadSequence) {
+        state = AsyncValue.error(error, stackTrace);
+      }
+      _pendingController?.dispose();
+      _pendingController = null;
+    }
+  }
+
+  Future<void> _cleanupInternal() async {
+    final controller = state.value?.controller;
+    final pending = _pendingController;
+    _pendingController = null;
+
+    if (controller != null) {
+      controller.removeListener(timestampUpdater);
+      controller.removeListener(statusListener);
+      await controller.pause();
+      await controller.dispose();
+    }
+
+    if (pending != null && pending != controller) {
+      await pending.pause();
+      await pending.dispose();
     }
   }
 
   Future<void> timestampUpdater() async {
-    if (state.value?.path != null && state.value?.controller != null) {
-      final controller = state.value!.controller!;
+    if (state.value == null || state.value!.controller == null) return;
+    final controller = state.value!.controller!;
+    if (!controller.value.isInitialized) return;
 
-      final uri = state.value!.path!;
+    final uri = state.value!.path;
+    if (uri == null) return;
+
+    try {
+      final position = await controller.position;
+      if (position == null) return;
+
       final uriConfig = await ref.read(uriConfigurationProvider(uri).future);
-      await controller.position.then((position) {
-        final laskKnownPosition = uriConfig.lastKnownPlayPosition;
-        final diff = (position! - laskKnownPosition).abs();
-        if (diff > const Duration(seconds: 1)) {
-          ref
-              .read(uriConfigurationProvider(uri).notifier)
-              .onChange(lastKnownPlayPosition: position);
-        }
-      });
+      final lastKnownPosition = uriConfig.lastKnownPlayPosition;
+      final diff = (position - lastKnownPosition).abs();
+
+      if (diff > const Duration(seconds: 1)) {
+        ref
+            .read(uriConfigurationProvider(uri).notifier)
+            .onChange(lastKnownPlayPosition: position);
+      }
+    } catch (e) {
+      debugPrint('VideoPlayer: Error in timestampUpdater: $e');
+    }
+  }
+
+  void statusListener() {
+    if (state.value == null || state.value!.controller == null) return;
+    final controller = state.value!.controller!;
+
+    if (state.value!.isBuffering != controller.value.isBuffering) {
+      state = AsyncValue.data(
+        state.value!.copyWith(isBuffering: controller.value.isBuffering),
+      );
     }
   }
 
   @override
   Future<void> removeVideo() async {
-    final controller = state.value?.controller;
-    state = AsyncData(VideoPlayerState());
+    _currentLoadSequence++; // Invalidate pending loads
+    await _cleanupInternal();
     state = const AsyncValue.loading();
-
-    if (controller != null) {
-      await controller.pause();
-      controller.removeListener(timestampUpdater);
-      await controller.dispose();
-    }
   }
 
   @override
