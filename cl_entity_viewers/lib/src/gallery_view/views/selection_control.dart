@@ -15,13 +15,14 @@ import 'selectable_label.dart';
 import 'selection_banner.dart';
 
 class SelectionContol extends ConsumerWidget {
-  const SelectionContol(
-      {required this.itemBuilder,
-      required this.contextMenuBuilder,
-      required this.onSelectionChanged,
-      super.key,
-      required this.filtersDisabled,
-      required this.whenEmpty});
+  const SelectionContol({
+    required this.itemBuilder,
+    required this.contextMenuBuilder,
+    required this.onSelectionChanged,
+    super.key,
+    required this.filtersDisabled,
+    required this.whenEmpty,
+  });
 
   final bool filtersDisabled;
   final Widget whenEmpty;
@@ -29,7 +30,7 @@ class SelectionContol extends ConsumerWidget {
   final Widget Function(BuildContext, ViewerEntity, ViewerEntities) itemBuilder;
 
   final CLContextMenu Function(BuildContext, ViewerEntities)?
-      contextMenuBuilder;
+  contextMenuBuilder;
   final void Function(ViewerEntities)? onSelectionChanged;
 
   @override
@@ -52,41 +53,42 @@ class SelectionContol extends ConsumerWidget {
         ); */
 
     return GetFilterred(
-        candidates: incoming,
-        isDisabled: filtersDisabled,
-        builder: (filterred) {
-          return CLRawGalleryGridView(
-            galleryIdentifier: filterred.hashCode.toString(),
-            incoming: filterred,
-            bannersBuilder: (context, galleryMap) {
-              return [
-                FilterBanner(filterred: filterred, incoming: incoming),
-                if (incoming.entities.isNotEmpty)
-                  SelectionBanner(
-                    incoming: incoming,
-                    galleryMap: galleryMap,
-                  ),
-              ];
-            },
-            labelBuilder: (context, galleryMap, gallery) => SelectableLabel(
-              gallery: gallery,
-              galleryMap: galleryMap,
-            ),
-            itemBuilder: (context, item, entities) => SelectableItem(
-              item: item,
-              itemBuilder: itemBuilder,
-              entities: entities,
-            ),
-            columns: 3,
-            draggableMenuBuilder: selector.items.isNotEmpty &&
-                    contextMenuBuilder != null
-                ? contextMenuBuilder!(
-                        context, ViewerEntities(selector.items.toList()))
-                    .draggableMenuBuilder(
-                        context, ref.read(selectModeProvider.notifier).disable)
-                : null,
-            whenEmpty: whenEmpty,
-          );
-        });
+      candidates: incoming,
+      isDisabled: filtersDisabled,
+      builder: (filterred) {
+        return CLRawGalleryGridView(
+          galleryIdentifier: filterred.hashCode.toString(),
+          incoming: filterred,
+          bannersBuilder: (context, galleryMap) {
+            return [
+              FilterBanner(filterred: filterred, incoming: incoming),
+              if (incoming.entities.isNotEmpty)
+                SelectionBanner(incoming: incoming, galleryMap: galleryMap),
+            ];
+          },
+          labelBuilder: (context, galleryMap, gallery) =>
+              SelectableLabel(gallery: gallery, galleryMap: galleryMap),
+          itemBuilder: (context, item, entities) => SelectableItem(
+            item: item,
+            itemBuilder: itemBuilder,
+            entities: entities,
+          ),
+          columns: 3,
+          draggableMenuBuilder:
+              selector.items.isNotEmpty && contextMenuBuilder != null
+              ? contextMenuBuilder!(
+                  context,
+                  ViewerEntities(selector.items.toList()),
+                ).draggableMenuBuilder(context, () {
+                  final notifier = ref.read(selectModeProvider.notifier);
+                  if (notifier.mounted) {
+                    notifier.disable();
+                  }
+                })
+              : null,
+          whenEmpty: whenEmpty,
+        );
+      },
+    );
   }
 }
