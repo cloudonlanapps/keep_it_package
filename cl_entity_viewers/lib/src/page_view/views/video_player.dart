@@ -48,14 +48,25 @@ class VideoPlayer extends ConsumerWidget {
                 )
               : vplayer.VideoPlayer(controller);
 
-          return Stack(
-            children: [
-              videoWidget,
-              const Align(
-                alignment: Alignment.topRight,
-                child: PlaybackTypeBadge(),
-              ),
-            ],
+          return GestureDetector(
+            onTap: () {
+              if (controller.value.isPlaying) {
+                controller.pause();
+              } else {
+                controller.play();
+              }
+            },
+            behavior: HitTestBehavior.opaque,
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                videoWidget,
+                const Align(
+                  alignment: Alignment.topRight,
+                  child: PlaybackTypeBadge(),
+                ),
+              ],
+            ),
           );
         },
         error: errorBuilder,

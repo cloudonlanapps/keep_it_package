@@ -42,26 +42,29 @@ class Menu extends StatelessWidget {
                           await e.onTap?.call();
                         }
                       },
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(
-                            e.icon,
-                            size: 20,
-                            color: Theme.of(
-                              context,
-                            ).colorScheme.onPrimaryContainer,
-                          ),
-                          Text(
-                            e.title,
-                            style: TextStyle(
+                      child: FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              e.icon,
+                              size: 20,
                               color: Theme.of(
                                 context,
                               ).colorScheme.onPrimaryContainer,
-                              fontSize: 12,
                             ),
-                          ),
-                        ],
+                            Text(
+                              e.title,
+                              style: TextStyle(
+                                color: Theme.of(
+                                  context,
+                                ).colorScheme.onPrimaryContainer,
+                                fontSize: 12,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),

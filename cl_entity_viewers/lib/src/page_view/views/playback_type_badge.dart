@@ -7,34 +7,34 @@ class PlaybackTypeBadge extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final playerState = ref.watch(videoPlayerProvider);
+    final state = ref.watch(videoPlayerProvider).value;
 
-    return playerState.when(
-      data: (state) {
-        if (!state.isInitialized) return const SizedBox.shrink();
+    if (state == null || !state.isInitialized) {
+      return const SizedBox.shrink();
+    }
 
-        return Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-            decoration: BoxDecoration(
-              color: Colors.black.withAlpha(150),
-              borderRadius: BorderRadius.circular(4),
-              border: Border.all(color: Colors.white24),
-            ),
-            child: Text(
-              state.isHls ? 'STREAM' : 'ORIGINAL',
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 10,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
+    final isHls = state.isHls;
+
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+        decoration: BoxDecoration(
+          color: Colors.black.withAlpha(150),
+          borderRadius: BorderRadius.circular(4),
+          border: Border.all(color: Colors.white24),
+        ),
+        child: Text(
+          !isHls
+              ? 'ORIGINAL'
+              : 'STREAM', // If not HLS, it's ORIGINAL. Otherwise, it's STREAM.
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 10,
+            fontWeight: FontWeight.bold,
           ),
-        );
-      },
-      error: (_, __) => const SizedBox.shrink(),
-      loading: () => const SizedBox.shrink(),
+        ),
+      ),
     );
   }
 }
