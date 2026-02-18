@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:meta/meta.dart';
 
 import 'cl_entity.dart';
@@ -22,6 +23,7 @@ abstract class EntityStore {
   });
 
   Future<bool> delete(CLEntity item);
+  Future<bool> download(CLEntity item, File targetFile);
 
   Uri? mediaUri(CLEntity media);
   Uri? previewUri(CLEntity media);

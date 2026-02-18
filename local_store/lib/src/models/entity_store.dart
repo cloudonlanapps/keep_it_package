@@ -40,6 +40,9 @@ class LocalSQLiteEntityStore extends EntityStore
 
   @override
   Future<bool> delete(CLEntity item) async {
+    // First remove files (to ensure complete removal as requested)
+    await deleteMediaFiles(item);
+
     Future<void> cb(SqliteWriteContext tx) async {
       await dbDelete(tx, agent, item);
     }
@@ -48,6 +51,30 @@ class LocalSQLiteEntityStore extends EntityStore
       await agent.db.writeTransaction(cb);
       return true;
     } catch (e) {
+      return false;
+    }
+  }
+
+  @override
+  Future<bool> download(CLEntity item, File targetFile) async {
+    final sourcePath = absoluteMediaPath(item);
+    if (sourcePath == null) {
+      log('Download failed: Source path is null for entity ${item.id}');
+      return false;
+    }
+
+    final sourceFile = File(sourcePath);
+    if (!sourceFile.existsSync()) {
+      log('Download failed: Source file does not exist at $sourcePath');
+      return false;
+    }
+
+    try {
+      await sourceFile.copy(targetFile.path);
+      log('Downloaded (copied) local file to ${targetFile.path}');
+      return true;
+    } catch (e) {
+      log('Error downloading (copying) file: $e');
       return false;
     }
   }

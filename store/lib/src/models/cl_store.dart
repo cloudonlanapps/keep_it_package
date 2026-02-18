@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:cl_basic_types/cl_basic_types.dart';
 import 'package:cl_extensions/cl_extensions.dart'
-    show CLLogger, TimeStampExtension, UtilExtensionOnFile, ValueGetter;
+    show CLLogger, TimeStampExtension, ValueGetter;
 import 'package:meta/meta.dart';
 
 import 'cl_entity.dart';
@@ -177,30 +177,101 @@ class CLStore with CLLogger {
       ))?.dbSave();
     } else {
       final targetStore = targetCollection.store;
+      final tempFile = File(createTempFile(ext: entity.extension ?? 'bin'));
+      log(
+        'Moving entity ${entity.id} from ${entity.store.label} to ${targetStore.label}',
+      );
 
-      updated = await (await targetStore.createMedia(
-        label: () => entity.label,
-        description: () => entity.description,
-        parentCollection: targetCollection.clEntity,
-        mediaFile: CLMediaFile(
-          path: entity.mediaUri!.toFilePath(),
-          md5: entity.md5!,
-          fileSize: entity.fileSize!,
-          mimeType: entity.mimeType!,
-          type: CLMediaType.fromMIMEType(entity.type!),
-          fileSuffix: entity.extension!,
-          createDate: entity.createDate,
-          height: entity.height,
-          width: entity.width,
-          duration: entity.duration,
-        ),
-        strategy: UpdateStrategy.mergeAppend,
-      ))?.dbSave(entity.mediaUri!.toFilePath());
-      if (updated != null) {
-        final filePath = entity.mediaUri!.toFilePath();
+      StoreEntity? targetEntity;
+      try {
+        // 1. Download source to temp
+        log('Step 1: Downloading content to ${tempFile.path}...');
+        final downloaded = await entity.store.entityStore.download(
+          entity.clEntity,
+          tempFile,
+        );
+        if (!downloaded) {
+          throw Exception('Failed to download content from message source');
+        }
+        log('Download successful.');
 
-        await entity.delete();
-        await File(filePath).deleteIfExists();
+        // 2. Create in target (Upload)
+        try {
+          log('Step 2: Uploading/Creating media in target store...');
+          targetEntity = await (await targetStore.createMedia(
+            label: () => entity.label,
+            description: () => entity.description,
+            parentCollection: targetCollection.clEntity,
+            mediaFile: CLMediaFile(
+              path: tempFile.path,
+              md5: entity.md5!,
+              fileSize: entity.fileSize!,
+              mimeType: entity.mimeType!,
+              type: CLMediaType.fromMIMEType(entity.type!),
+              fileSuffix: entity.extension!,
+              createDate: entity.createDate,
+              height: entity.height,
+              width: entity.width,
+              duration: entity.duration,
+            ),
+            strategy: UpdateStrategy.mergeAppend,
+          ))?.dbSave(tempFile.path);
+        } catch (e) {
+          log(
+            'Create/Upload failed with error: $e. Attempting recovery check...',
+          );
+          // Fallthrough to verification step
+        }
+
+        // 3. Verify
+        if (targetEntity == null) {
+          log(
+            'Target entity is null after creation. Checking if it exists in target store...',
+          );
+          // Recovery check: Look for the entity by MD5 in the target store
+          final existing = await targetStore.get(md5: entity.md5);
+          if (existing != null) {
+            // Validate file size to ensure it's not a partial upload (if possible)
+            // Note: dbSave might not have happened, so we check if the remote entity
+            // *looks* correct.
+            if (existing.fileSize == entity.fileSize) {
+              log(
+                'Recovery successful: Entity found in target store with matching file size.',
+              );
+              targetEntity = existing;
+            } else {
+              log(
+                'Recovery failed: Entity found due to md5 match but file size mismatch '
+                '(${existing.fileSize} vs ${entity.fileSize}).',
+              );
+            }
+          } else {
+            log('Recovery failed: Entity not found in target store.');
+          }
+        }
+
+        // 4. Delete Source & cleanup
+        if (targetEntity != null) {
+          log(
+            'Step 3: Verification successful (new ID: ${targetEntity.id}). Deleting from source...',
+          );
+          await entity.delete();
+          log('Source entity deleted.');
+          updated = targetEntity;
+        } else {
+          throw Exception(
+            'Failed to create entity in target store (Verification failed).',
+          );
+        }
+      } catch (e, st) {
+        log('Error during move: $e\n$st');
+        rethrow;
+      } finally {
+        // 5. Cleanup
+        if (tempFile.existsSync()) {
+          tempFile.deleteSync();
+          log('Temporary file cleaned up.');
+        }
       }
     }
 
