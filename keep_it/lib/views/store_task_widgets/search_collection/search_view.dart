@@ -61,7 +61,7 @@ class _SearchViewState extends State<SearchView> {
                 st: st,
                 onClose: widget.onClose,
               ),
-              builder: (entries) {
+              builder: (entries, {onLoadMore}) {
                 final List<StoreEntity> items;
                 if (searchText.isEmpty) {
                   items = entries.entities.cast<StoreEntity>();

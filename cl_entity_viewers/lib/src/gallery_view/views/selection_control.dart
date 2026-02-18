@@ -22,10 +22,14 @@ class SelectionContol extends ConsumerWidget {
     super.key,
     required this.filtersDisabled,
     required this.whenEmpty,
+    this.onLoadMore,
+    this.hasMore = false,
   });
 
   final bool filtersDisabled;
   final Widget whenEmpty;
+  final Future<void> Function()? onLoadMore;
+  final bool hasMore;
 
   final Widget Function(BuildContext, ViewerEntity, ViewerEntities) itemBuilder;
 
@@ -87,6 +91,8 @@ class SelectionContol extends ConsumerWidget {
                 })
               : null,
           whenEmpty: whenEmpty,
+          onLoadMore: onLoadMore,
+          hasMore: hasMore,
         );
       },
     );

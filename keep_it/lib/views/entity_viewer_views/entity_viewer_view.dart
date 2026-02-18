@@ -103,21 +103,30 @@ class EntitiesView extends StatelessWidget {
           id: id,
           loadingBuilder: loadBuilder,
           errorBuilder: errorBuilder,
-          builder: (entity, children, siblings) {
-            if (entity?.isCollection ?? true) {
-              return KeepItGridView(
-                serverId: registeredURLs.activeConfig.displayName,
-                parent: entity,
-                children: children,
-              );
-            } else {
-              return KeepItPageView(
-                serverId: registeredURLs.activeConfig.displayName,
-                entity: entity!,
-                siblings: siblings,
-              );
-            }
-          },
+          builder:
+              (
+                entity,
+                children,
+                siblings, {
+                onLoadMoreChildren,
+                onLoadMoreSiblings,
+              }) {
+                if (entity?.isCollection ?? true) {
+                  return KeepItGridView(
+                    serverId: registeredURLs.activeConfig.displayName,
+                    parent: entity,
+                    children: children,
+                    onLoadMore: onLoadMoreChildren,
+                  );
+                } else {
+                  return KeepItPageView(
+                    serverId: registeredURLs.activeConfig.displayName,
+                    entity: entity!,
+                    siblings: siblings,
+                    onLoadMore: onLoadMoreSiblings,
+                  );
+                }
+              },
         );
       },
     );

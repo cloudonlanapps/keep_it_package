@@ -159,7 +159,7 @@ class _CollectionMetadataEditorState extends State<CollectionMetadataEditor> {
               debugMessage: 'GetAllCollection',
               message: 'Loading Collection ',
             ),
-            builder: (allCollections) {
+            builder: (allCollections, {onLoadMore}) {
               return Padding(
                 padding: EdgeInsets.only(
                   bottom: MediaQuery.of(context).viewInsets.bottom,

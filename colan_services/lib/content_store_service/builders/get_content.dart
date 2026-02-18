@@ -17,8 +17,10 @@ class GetContent extends ConsumerWidget {
   final Widget Function(
     StoreEntity? entity,
     ViewerEntities children,
-    ViewerEntities siblings,
-  )
+    ViewerEntities siblings, {
+    Future<void> Function()? onLoadMoreChildren,
+    Future<void> Function()? onLoadMoreSiblings,
+  })
   builder;
   final CLLoadingView Function() loadingBuilder;
   final CLErrorView Function(Object, StackTrace) errorBuilder;
@@ -34,16 +36,28 @@ class GetContent extends ConsumerWidget {
           parentId: id,
           errorBuilder: errorBuilder,
           loadingBuilder: loadingBuilder,
-          builder: (children) {
+          builder: (children, {onLoadMore}) {
+            final onLoadMoreChildren = onLoadMore;
             if (entity == null) {
-              return builder(entity, children, const ViewerEntities([]));
+              return builder(
+                entity,
+                children,
+                const ViewerEntities([]),
+                onLoadMoreChildren: onLoadMoreChildren,
+              );
             }
             return GetEntities(
               parentId: entity.parentId,
               errorBuilder: errorBuilder,
               loadingBuilder: loadingBuilder,
-              builder: (siblings) {
-                return builder(entity, children, siblings);
+              builder: (siblings, {onLoadMore}) {
+                return builder(
+                  entity,
+                  children,
+                  siblings,
+                  onLoadMoreChildren: onLoadMoreChildren,
+                  onLoadMoreSiblings: onLoadMore, // on siblings
+                );
               },
             );
           },

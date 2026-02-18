@@ -19,12 +19,14 @@ class KeepItGridView extends StatelessWidget {
     required this.serverId,
     required this.parent,
     required this.children,
+    this.onLoadMore,
     super.key,
   });
 
   final StoreEntity? parent;
   final ViewerEntities children;
   final String serverId;
+  final Future<void> Function()? onLoadMore;
 
   @override
   Widget build(BuildContext context) {
@@ -39,6 +41,7 @@ class KeepItGridView extends StatelessWidget {
           serverId: serverId,
           parent: parent,
           children: children,
+          onLoadMore: onLoadMore,
         ),
       ),
     );
@@ -50,12 +53,14 @@ class KeepItGridView0 extends StatelessWidget {
     required this.serverId,
     required this.parent,
     required this.children,
+    this.onLoadMore,
     super.key,
   });
 
   final StoreEntity? parent;
   final ViewerEntities children;
   final String serverId;
+  final Future<void> Function()? onLoadMore;
 
   @override
   Widget build(BuildContext context) {
@@ -98,6 +103,8 @@ class KeepItGridView0 extends StatelessWidget {
                       incoming: children,
                       filtersDisabled: false,
                       onSelectionChanged: null,
+                      onLoadMore: onLoadMore,
+                      hasMore: children.pagination?.hasNext ?? false,
                       contextMenuBuilder: (context, entities) =>
                           EntityActions.entities(
                             context,

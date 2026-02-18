@@ -78,7 +78,11 @@ class GetEntities extends ConsumerWidget {
     this.hasPin,
     this.store,
   });
-  final Widget Function(ViewerEntities items) builder;
+  final Widget Function(
+    ViewerEntities items, {
+    Future<void> Function()? onLoadMore,
+  })
+  builder;
   final CLErrorView Function(Object, StackTrace) errorBuilder;
   final CLLoadingView Function() loadingBuilder;
   final int? parentId;
@@ -102,7 +106,11 @@ class GetEntities extends ConsumerWidget {
     return dataAsync.when(
       error: errorBuilder,
       loading: loadingBuilder,
-      data: builder,
+      data: (items) => builder(
+        items,
+        onLoadMore: () =>
+            ref.read(entitiesProvider(query).notifier).loadNextPage(),
+      ),
     );
   }
 }

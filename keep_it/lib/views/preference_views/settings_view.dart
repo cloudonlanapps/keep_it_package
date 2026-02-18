@@ -35,7 +35,7 @@ class SettingsView extends StatelessWidget {
             loadingBuilder: () => CLLoadingView.widget(
               debugMessage: 'GetDeletedMedia',
             ),
-            builder: (deletedMedia) {
+            builder: (deletedMedia, {onLoadMore}) {
               return ListView(
                 children: [
                   if (deletedMedia.isNotEmpty)

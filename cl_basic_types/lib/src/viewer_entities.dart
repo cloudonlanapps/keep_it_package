@@ -2,30 +2,39 @@ import 'package:cl_extensions/cl_extensions.dart';
 import 'package:collection/collection.dart';
 import 'package:meta/meta.dart';
 
-import 'viewer_entity_mixin.dart';
+import '../cl_basic_types.dart';
 
 @immutable
 class ViewerEntities {
-  const ViewerEntities(this.entities);
+  const ViewerEntities(this.entities, {this.pagination});
   final List<ViewerEntity> entities;
+  final PaginationMetadata? pagination;
 
-  ViewerEntities copyWith({List<ViewerEntity>? entities}) {
-    return ViewerEntities(entities ?? this.entities);
+  ViewerEntities copyWith({
+    List<ViewerEntity>? entities,
+    PaginationMetadata? pagination,
+  }) {
+    return ViewerEntities(
+      entities ?? this.entities,
+      pagination: pagination ?? this.pagination,
+    );
   }
 
   @override
-  String toString() => 'ViewerEntities(entities: $entities)';
+  String toString() =>
+      'ViewerEntities(entities: $entities, pagination: $pagination)';
 
   @override
   bool operator ==(covariant ViewerEntities other) {
     if (identical(this, other)) return true;
     final listEquals = const DeepCollectionEquality().equals;
 
-    return listEquals(other.entities, entities);
+    return listEquals(other.entities, entities) &&
+        other.pagination == pagination;
   }
 
   @override
-  int get hashCode => entities.hashCode;
+  int get hashCode => entities.hashCode ^ pagination.hashCode;
 
   int get length => entities.length;
 

@@ -27,7 +27,7 @@ class SuggestedCollection extends StatelessWidget {
               CLErrorView.custom(child: CLEntityView(entity: item)),
           loadingBuilder: () =>
               CLLoadingView.custom(child: CLEntityView(entity: item)),
-          builder: (children) {
+          builder: (children, {onLoadMore}) {
             return CLEntityView(entity: item, children: children);
           },
         ),

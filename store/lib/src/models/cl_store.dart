@@ -95,15 +95,15 @@ class CLStore with CLLogger {
 
   Future<ViewerEntities> getAll([StoreQuery<CLEntity>? query]) async {
     try {
-      final entititesFromDB = await entityStore.getAll(query);
+      final pagedResult = await entityStore.getAll(query);
       return ViewerEntities(
-        entititesFromDB
-            .cast<CLEntity>()
+        pagedResult.items
             .map(
               (entityFromDB) =>
                   StoreEntity(clEntity: entityFromDB, clStore: this),
             )
             .toList(),
+        pagination: pagedResult.pagination,
       );
     } catch (e, st) {
       log('$e $st');

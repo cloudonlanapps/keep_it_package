@@ -10,11 +10,14 @@ class CLEntitiesPageView extends ConsumerWidget {
   const CLEntitiesPageView({
     required this.topMenuBuilder,
     required this.bottomMenu,
+    this.onLoadMore,
     super.key,
   });
 
   final CLTopBar Function(ViewerEntity? entity) topMenuBuilder;
   final PreferredSizeWidget bottomMenu;
+  final Future<void> Function()? onLoadMore;
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final showMenu = ref.watch(
@@ -26,13 +29,13 @@ class CLEntitiesPageView extends ConsumerWidget {
     if (showMenu) {
       return CLScaffold(
         topMenu: topMenuBuilder(currentItem),
-        body: SafeArea(child: MediaViewerCore()),
+        body: SafeArea(child: MediaViewerCore(onLoadMore: onLoadMore)),
         bottomMenu: bottomMenu,
       );
     } else {
       return CLScaffold(
         backgroundColor: Colors.black,
-        body: SafeArea(child: MediaViewerCore()),
+        body: SafeArea(child: MediaViewerCore(onLoadMore: onLoadMore)),
       );
     }
   }

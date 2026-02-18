@@ -2,6 +2,7 @@
 
 import 'dart:io';
 
+import 'package:cl_basic_types/cl_basic_types.dart';
 import 'package:cl_extensions/cl_extensions.dart' show CLLogger;
 import 'package:meta/meta.dart';
 import 'package:path/path.dart' as p;
@@ -107,17 +108,47 @@ class LocalSQLiteEntityStore extends EntityStore
   }
 
   @override
-  Future<List<CLEntity>> getAll([StoreQuery<CLEntity>? query]) async {
-    Future<List<CLEntity>> cb(SqliteWriteContext tx) async {
-      return dbGetAll(
+  Future<PagedResult<CLEntity>> getAll([StoreQuery<CLEntity>? query]) async {
+    return agent.db.writeTransaction((tx) async {
+      // 1. Get Total Count
+      // We use a direct query for count since dbGetAll tries to map to CLEntity.
+      final dbQueryForCount = DBQuery.fromStoreQuery(
+        agent.table,
+        agent.validColumns,
+        query,
+        select: 'COUNT(*) as count',
+      );
+      final countRows = await tx.getAll(
+        dbQueryForCount.sql,
+        dbQueryForCount.parameters ?? [],
+      );
+      final totalItems = (countRows.firstOrNull?['count'] as int?) ?? 0;
+
+      // 2. Get Paginated Items
+      final items = await dbGetAll(
         tx,
         agent,
         query,
         select: '*, $_childrenCountSubQuery',
       );
-    }
 
-    return agent.db.writeTransaction(cb);
+      // 3. Construct Metadata
+      final pageSize = query?.pageSize ?? 20;
+      final page = query?.page ?? 1;
+      final totalPages = (totalItems / pageSize).ceil();
+
+      return PagedResult(
+        items: items,
+        pagination: PaginationMetadata(
+          page: page,
+          pageSize: pageSize,
+          totalItems: totalItems,
+          totalPages: totalPages,
+          hasNext: page < totalPages,
+          hasPrev: page > 1,
+        ),
+      );
+    });
   }
 
   String? absoluteMediaPath(CLEntity media) =>

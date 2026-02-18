@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:meta/meta.dart';
 
 import 'cl_entity.dart';
+import 'paged_result.dart';
 import 'service_location.dart';
 import 'store_query.dart';
 
@@ -16,7 +17,7 @@ abstract class EntityStore {
   bool get isAlive;
   Future<CLEntity?> get({String? md5, String? label});
   Future<CLEntity?> getByID(int id);
-  Future<List<CLEntity>> getAll([StoreQuery<CLEntity>? query]);
+  Future<PagedResult<CLEntity>> getAll([StoreQuery<CLEntity>? query]);
   Future<CLEntity?> upsert(
     CLEntity curr, {
     String? path,

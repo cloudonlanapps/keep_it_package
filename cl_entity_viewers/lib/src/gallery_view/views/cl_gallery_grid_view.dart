@@ -9,22 +9,27 @@ import '../providers/selector.dart';
 import 'selection_control.dart';
 
 class CLEntitiesGridView extends StatelessWidget {
-  const CLEntitiesGridView(
-      {required this.incoming,
-      required this.itemBuilder,
-      required this.contextMenuBuilder,
-      required this.filtersDisabled,
-      required this.onSelectionChanged,
-      super.key,
-      required this.whenEmpty});
+  const CLEntitiesGridView({
+    required this.incoming,
+    required this.itemBuilder,
+    required this.contextMenuBuilder,
+    required this.filtersDisabled,
+    required this.onSelectionChanged,
+    super.key,
+    required this.whenEmpty,
+    this.onLoadMore,
+    this.hasMore = false,
+  });
 
   final ViewerEntities incoming;
   final Widget Function(BuildContext, ViewerEntity, ViewerEntities) itemBuilder;
   final CLContextMenu Function(BuildContext, ViewerEntities)?
-      contextMenuBuilder;
+  contextMenuBuilder;
   final void Function(ViewerEntities)? onSelectionChanged;
   final bool filtersDisabled;
   final Widget whenEmpty;
+  final Future<void> Function()? onLoadMore;
+  final bool hasMore;
 
   @override
   Widget build(BuildContext context) {
@@ -32,8 +37,9 @@ class CLEntitiesGridView extends StatelessWidget {
       key: ValueKey("CLEntitiesGridView ${incoming.hashCode}"),
       overrides: [
         selectorProvider.overrideWith((ref) => SelectorNotifier(incoming)),
-        menuPositionNotifierProvider
-            .overrideWith((ref) => MenuPositionNotifier()),
+        menuPositionNotifierProvider.overrideWith(
+          (ref) => MenuPositionNotifier(),
+        ),
       ],
       child: SelectionContol(
         itemBuilder: itemBuilder,
@@ -41,6 +47,8 @@ class CLEntitiesGridView extends StatelessWidget {
         onSelectionChanged: onSelectionChanged,
         filtersDisabled: filtersDisabled,
         whenEmpty: whenEmpty,
+        onLoadMore: onLoadMore,
+        hasMore: hasMore,
       ),
     );
   }

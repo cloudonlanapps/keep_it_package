@@ -8,6 +8,8 @@ environment:
 
 # Add regular dependencies here.
 dependencies:
+  cl_basic_types:
+    path: ../cl_basic_types
   cl_extensions:
     path: ../cl_extensions
   collection: ^1.19.0

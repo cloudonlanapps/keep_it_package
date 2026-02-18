@@ -16,12 +16,14 @@ class KeepItPageView extends StatelessWidget {
     required this.serverId,
     required this.entity,
     required this.siblings,
+    this.onLoadMore,
     super.key,
   });
 
   final StoreEntity entity;
   final ViewerEntities siblings;
   final String serverId;
+  final Future<void> Function()? onLoadMore;
 
   @override
   Widget build(BuildContext context) {
@@ -35,6 +37,7 @@ class KeepItPageView extends StatelessWidget {
         siblings: siblings,
         currentEntity: entity,
         child: CLEntitiesPageView(
+          onLoadMore: onLoadMore,
           topMenuBuilder: (currentEntity) => TopBar(
             serverId: serverId,
             entity: currentEntity as StoreEntity?,

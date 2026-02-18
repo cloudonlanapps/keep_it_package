@@ -8,10 +8,12 @@ import 'media_viewer_core.dart' show ViewMedia;
 class MediaViewerPageView extends ConsumerStatefulWidget {
   const MediaViewerPageView({
     required this.playerControls,
+    this.onLoadMore,
     super.key,
   });
 
   final VideoPlayerControls playerControls;
+  final Future<void> Function()? onLoadMore;
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() =>
@@ -23,8 +25,9 @@ class _MediaViewerPageViewState extends ConsumerState<MediaViewerPageView> {
 
   @override
   void initState() {
-    final currentIndex =
-        ref.read(mediaViewerUIStateProvider.select((e) => e.currentIndex));
+    final currentIndex = ref.read(
+      mediaViewerUIStateProvider.select((e) => e.currentIndex),
+    );
     pageController = PageController(initialPage: currentIndex);
 
     super.initState();
@@ -46,6 +49,12 @@ class _MediaViewerPageViewState extends ConsumerState<MediaViewerPageView> {
       itemCount: s.entities.length,
       onPageChanged: (index) {
         ref.read(mediaViewerUIStateProvider.notifier).currIndex = index;
+        if (widget.onLoadMore != null) {
+          // Load more when within 5 items of the end
+          if (index >= s.entities.length - 5) {
+            widget.onLoadMore?.call();
+          }
+        }
       },
       itemBuilder: (context, index) {
         return ViewMedia(

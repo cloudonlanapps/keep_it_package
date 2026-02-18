@@ -25,7 +25,7 @@ class CollectionPreview extends StatelessWidget {
           errorBuilder: (_, _) => const CLErrorView.image(),
           loadingBuilder: () =>
               const CLLoadingView.custom(child: GreyShimmer()),
-          builder: (children) {
+          builder: (children, {onLoadMore}) {
             return GetFilterred(
               candidates: children,
               builder: (filterredChildren) {

@@ -1,5 +1,5 @@
 import 'package:cl_basic_types/viewer_types.dart';
-import 'package:flutter/widgets.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../providers/grouped_media_provider.dart';
@@ -16,12 +16,16 @@ class CLRawGalleryGridView extends ConsumerStatefulWidget {
     required this.bannersBuilder,
     required this.columns,
     required this.whenEmpty,
+    this.onLoadMore,
+    this.hasMore = false,
     super.key,
     this.draggableMenuBuilder,
   });
   final String galleryIdentifier;
   final ViewerEntities incoming;
   final int columns;
+  final Future<void> Function()? onLoadMore;
+  final bool hasMore;
   final Widget Function(
     BuildContext context,
     ViewerEntity item,
@@ -71,6 +75,14 @@ class CLRawGalleryGridViewState extends ConsumerState<CLRawGalleryGridView> {
           .read(tabScrollPositionProvider(widget.galleryIdentifier).notifier)
           .state = _scrollController
           .offset;
+
+      if (widget.onLoadMore != null) {
+        final maxScroll = _scrollController.position.maxScrollExtent;
+        final currentScroll = _scrollController.offset;
+        if (currentScroll >= (maxScroll - 200)) {
+          widget.onLoadMore?.call();
+        }
+      }
     });
   }
 
@@ -92,6 +104,15 @@ class CLRawGalleryGridViewState extends ConsumerState<CLRawGalleryGridView> {
                 if (groupIndex == galleryGroups.length) {
                   return SizedBox(
                     height: MediaQuery.of(context).padding.bottom + 16,
+                    child: widget.hasMore
+                        ? const Center(
+                            child: SizedBox(
+                              width: 24,
+                              height: 24,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            ),
+                          )
+                        : null,
                   );
                 }
 

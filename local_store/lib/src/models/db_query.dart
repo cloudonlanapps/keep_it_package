@@ -21,9 +21,9 @@ class DBQuery<T> {
     final params = <dynamic>[];
 
     if (query != null) {
-      for (final query in query.map.entries) {
-        final key = query.key;
-        final value = query.value;
+      for (final queryEntry in query.map.entries) {
+        final key = queryEntry.key;
+        final value = queryEntry.value;
         if (validColumns.contains(key)) {
           if (key == 'parentId' && (value == null || value == 0)) {
             whereParts.add('($key IS NULL OR $key = 0)');
@@ -50,7 +50,20 @@ class DBQuery<T> {
     final whereClause = whereParts.isNotEmpty
         ? 'WHERE ${whereParts.join(' AND ')}'
         : '';
-    final sql = 'SELECT $select FROM $table $whereClause';
+
+    var sql = 'SELECT $select FROM $table $whereClause';
+
+    // Add pagination (only if select is '*', meaning it's a data query, not count)
+    // Actually, let's look at the select param. If it's COUNT(*), we ignore pagination.
+    if (query != null && !select.toUpperCase().contains('COUNT')) {
+      final limit = query.pageSize;
+      final offset = (query.page - 1) * query.pageSize;
+      sql += ' LIMIT ? OFFSET ?';
+      params
+        ..add(limit)
+        ..add(offset);
+    }
+
     log('DBQuery.fromStoreQuery: $sql, params: $params');
 
     return DBQuery<T>(

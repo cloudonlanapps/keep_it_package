@@ -18,7 +18,9 @@ import 'on_toggle_play.dart';
 import 'video_progress.dart';
 
 class MediaViewerCore extends ConsumerWidget {
-  const MediaViewerCore({super.key});
+  const MediaViewerCore({this.onLoadMore, super.key});
+
+  final Future<void> Function()? onLoadMore;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -38,7 +40,10 @@ class MediaViewerCore extends ConsumerWidget {
             autoStart: true,
             playerControls: controls,
           ),
-          _ => MediaViewerPageView(playerControls: controls),
+          _ => MediaViewerPageView(
+            playerControls: controls,
+            onLoadMore: onLoadMore,
+          ),
         };
       },
     );

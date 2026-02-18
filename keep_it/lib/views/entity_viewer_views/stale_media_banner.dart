@@ -26,7 +26,7 @@ class StaleMediaBanner extends StatelessWidget {
           errorBuilder: (e, st) =>
               CLErrorView.hidden(debugMessage: e.toString()),
           loadingBuilder: () => CLLoadingView.widget(debugMessage: widgetLabel),
-          builder: (staleMedia) {
+          builder: (staleMedia, {onLoadMore}) {
             return CLBanner(
               msg: staleMedia.isEmpty
                   ? ''
