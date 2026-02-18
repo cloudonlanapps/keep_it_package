@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
 import '../builders/get_uri_play_status.dart';
+import '../providers/ui_state.dart';
 import '../providers/video_player_state.dart';
 import 'video_progress.dart' show MenuBackground2;
 
@@ -28,12 +29,15 @@ class OnTogglePlay extends StatelessWidget {
                 return ShadButton.ghost(
                   onPressed: (isBuffering || isLoading)
                       ? null
-                      : () => {
+                      : () {
+                          ref
+                              .read(mediaViewerUIStateProvider.notifier)
+                              .showPlayerMenu();
                           playerControls?.onPlayPause(
                             uri,
                             autoPlay: false,
                             forced: true,
-                          ),
+                          );
                         },
                   child: (isBuffering || isLoading)
                       ? SizedBox(

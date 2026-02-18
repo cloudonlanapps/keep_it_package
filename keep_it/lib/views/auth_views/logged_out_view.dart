@@ -1,5 +1,4 @@
-import 'dart:developer';
-
+import 'package:cl_extensions/cl_extensions.dart' show CLLogger;
 import 'package:cl_server_dart_client/cl_server_dart_client.dart';
 import 'package:flutter/material.dart';
 
@@ -28,7 +27,7 @@ class LoggedOutView extends StatefulWidget {
   State<LoggedOutView> createState() => _LoggedOutViewState();
 }
 
-class _LoggedOutViewState extends State<LoggedOutView> {
+class _LoggedOutViewState extends State<LoggedOutView> with CLLogger {
   final _formKey = GlobalKey<FormState>();
   final _usernameController = TextEditingController();
   final _passwordController = TextEditingController();
@@ -232,4 +231,7 @@ class _LoggedOutViewState extends State<LoggedOutView> {
       ),
     );
   }
+
+  @override
+  String get logPrefix => 'LoggedOutView';
 }

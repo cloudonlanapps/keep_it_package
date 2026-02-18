@@ -105,7 +105,11 @@ class _CameraScreenState extends State<CameraScreen> {
             onCapture: _onCapture,
             onCancel: () => Navigator.maybePop(context),
             onError: (message, {required error}) {
-              dev.log('Camera error: $message', name: 'CLCameraExample', error: error);
+              dev.log(
+                'Camera error: $message',
+                name: 'CLCameraExample',
+                error: error,
+              );
               ShadToaster.of(context).show(
                 ShadToast.destructive(
                   title: Text(message),

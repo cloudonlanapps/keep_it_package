@@ -1,10 +1,10 @@
-import 'dart:developer' as dev;
-
 import 'package:cl_basic_types/cl_basic_types.dart';
+import 'package:cl_extensions/cl_extensions.dart' show CLLogger;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
-class CapturedMediaNotifier extends StateNotifier<ViewerEntities> {
+class CapturedMediaNotifier extends StateNotifier<ViewerEntities>
+    with CLLogger {
   CapturedMediaNotifier() : super(const ViewerEntities([]));
 
   void add(StoreEntity media) {
@@ -19,23 +19,11 @@ class CapturedMediaNotifier extends StateNotifier<ViewerEntities> {
     state = const ViewerEntities([]);
   }
 
-  void log(
-    String message, {
-    int level = 0,
-    Object? error,
-    StackTrace? stackTrace,
-  }) {
-    dev.log(
-      message,
-      level: level,
-      error: error,
-      stackTrace: stackTrace,
-      name: 'Camera | Captured Media',
-    );
-  }
+  @override
+  String get logPrefix => 'CapturedMediaNotifier';
 }
 
 final capturedMediaProvider =
     StateNotifierProvider<CapturedMediaNotifier, ViewerEntities>((ref) {
-  return CapturedMediaNotifier();
-});
+      return CapturedMediaNotifier();
+    });

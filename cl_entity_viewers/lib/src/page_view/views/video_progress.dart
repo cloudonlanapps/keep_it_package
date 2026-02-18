@@ -9,6 +9,7 @@ import 'package:video_player/video_player.dart';
 
 import '../models/cl_icons.dart';
 import '../builders/get_uri_play_status.dart';
+import '../providers/ui_state.dart';
 import 'on_rotate.dart';
 
 double durationToDouble(Duration duration) => duration.inSeconds.toDouble();
@@ -125,13 +126,26 @@ class _VideoProgressState extends ConsumerState<VideoProgress> {
                                     child: Slider(
                                       max: playStatus.durationInSeconds,
                                       value: playStatus.positionInSeconds,
-                                      onChanged: (double value) =>
-                                          setState(() => seekValue = value),
+                                      onChanged: (double value) {
+                                        setState(() => seekValue = value);
+                                        ref
+                                            .read(
+                                              mediaViewerUIStateProvider
+                                                  .notifier,
+                                            )
+                                            .showPlayerMenu();
+                                      },
                                       onChangeEnd: (double value) {
                                         setState(() => seekValue = null);
                                         playerControls.seekTo(
                                           doubleToDuration(value),
                                         );
+                                        ref
+                                            .read(
+                                              mediaViewerUIStateProvider
+                                                  .notifier,
+                                            )
+                                            .showPlayerMenu();
                                       },
                                     ),
                                   ),
@@ -220,15 +234,13 @@ class MenuBackground2 extends ConsumerWidget {
   final Widget child;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    const foregroundColor = Color.fromARGB(192, 0xFF, 0xFF, 0xFF);
     return Container(
       decoration: BoxDecoration(
-        color: const Color.fromARGB(192, 96, 96, 96),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: foregroundColor),
+        color: Colors.black.withValues(alpha: 0.6),
+        borderRadius: BorderRadius.circular(24),
       ),
       // margin: const EdgeInsets.all(16),
-      padding: const EdgeInsets.all(8),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: child,
     );
   }

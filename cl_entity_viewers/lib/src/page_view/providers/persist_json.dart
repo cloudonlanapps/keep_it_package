@@ -1,5 +1,4 @@
-import 'dart:developer';
-
+import 'package:cl_extensions/cl_extensions.dart' show CLLogger;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
@@ -7,12 +6,13 @@ import 'package:sqlite_async/sqlite_async.dart';
 
 import '../models/persist_json.dart';
 
-final internalJSONStoreprovider =
-    FutureProvider<InternalJSONStore>((ref) async {
+final internalJSONStoreprovider = FutureProvider<InternalJSONStore>((
+  ref,
+) async {
   return InternalJSONStore.create();
 });
 
-class InternalJSONStore implements PersistJson {
+class InternalJSONStore with CLLogger implements PersistJson {
   InternalJSONStore(this.db);
   final SqliteDatabase db;
 
@@ -34,7 +34,7 @@ class InternalJSONStore implements PersistJson {
     final dbpath = p.join(databasesPath.path, dbName);
     final db = SqliteDatabase(path: dbpath);
     await migrations.migrate(db);
-    log('Create a internal DB at $dbpath', name: 'cl_media_viewers_flutter');
+    //log('Create a internal DB at $dbpath');
     return InternalJSONStore(db);
   }
 
@@ -51,8 +51,10 @@ class InternalJSONStore implements PersistJson {
   @override
   Future<String> load(String key, String defaultJson) async {
     try {
-      final result = await db
-          .get('SELECT json FROM CLMediaViewersState WHERE key = ?', [key]);
+      final result = await db.get(
+        'SELECT json FROM CLMediaViewersState WHERE key = ?',
+        [key],
+      );
       if (result.isEmpty) {
         return defaultJson;
       } else {
@@ -72,4 +74,7 @@ class InternalJSONStore implements PersistJson {
       return false;
     }
   }
+
+  @override
+  String get logPrefix => 'InternalJSONStore';
 }
