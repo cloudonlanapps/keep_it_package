@@ -79,6 +79,9 @@ class LocalSQLiteEntityStore extends EntityStore
     }
   }
 
+  static const _childrenCountSubQuery =
+      '(SELECT COUNT(*) FROM Entity E2 WHERE E2.parentId = Entity.id AND E2.isDeleted = 0) as childrenCount';
+
   @override
   Future<CLEntity?> get({int? id, String? md5, String? label}) async {
     Future<CLEntity?> cb(SqliteWriteContext tx) async {
@@ -87,7 +90,12 @@ class LocalSQLiteEntityStore extends EntityStore
         if (md5 != null) 'md5': md5,
         if (label != null) ...{'label': label, 'isCollection': 1},
       });
-      return dbGet(tx, agent, query);
+      return dbGet(
+        tx,
+        agent,
+        query,
+        select: '*, $_childrenCountSubQuery',
+      );
     }
 
     return agent.db.writeTransaction(cb);
@@ -101,7 +109,12 @@ class LocalSQLiteEntityStore extends EntityStore
   @override
   Future<List<CLEntity>> getAll([StoreQuery<CLEntity>? query]) async {
     Future<List<CLEntity>> cb(SqliteWriteContext tx) async {
-      return dbGetAll(tx, agent, query);
+      return dbGetAll(
+        tx,
+        agent,
+        query,
+        select: '*, $_childrenCountSubQuery',
+      );
     }
 
     return agent.db.writeTransaction(cb);
@@ -303,6 +316,7 @@ class LocalSQLiteEntityStore extends EntityStore
         tableName,
         validColumns,
         Shortcuts.mediaQuery('ignore', obj), // We use this inside the server.
+        select: '*, $_childrenCountSubQuery',
       ),
       getUniqueColumns: (obj) {
         return ['id', if (obj.isCollection) 'label' else 'md5'];

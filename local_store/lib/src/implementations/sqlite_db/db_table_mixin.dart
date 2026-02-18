@@ -8,20 +8,30 @@ mixin SQLiteDBTableMixin<T> {
   Future<T?> dbGet(
     SqliteWriteContext tx,
     SQLiteTableAgent<T> agent,
-    StoreQuery<T>? query,
-  ) async {
-    final dbQuery =
-        DBQuery.fromStoreQuery(agent.table, agent.validColumns, query);
+    StoreQuery<T>? query, {
+    String select = '*',
+  }) async {
+    final dbQuery = DBQuery.fromStoreQuery(
+      agent.table,
+      agent.validColumns,
+      query,
+      select: select,
+    );
     return agent.get(tx, dbQuery);
   }
 
   Future<List<T>> dbGetAll(
     SqliteWriteContext tx,
     SQLiteTableAgent<T> agent,
-    StoreQuery<T>? query,
-  ) async {
-    final dbQuery =
-        DBQuery.fromStoreQuery(agent.table, agent.validColumns, query);
+    StoreQuery<T>? query, {
+    String select = '*',
+  }) async {
+    final dbQuery = DBQuery.fromStoreQuery(
+      agent.table,
+      agent.validColumns,
+      query,
+      select: select,
+    );
     return agent.getAll(tx, dbQuery);
   }
 

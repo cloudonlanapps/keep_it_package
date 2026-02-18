@@ -13,9 +13,10 @@ class DBQuery<T> {
   });
   factory DBQuery.fromStoreQuery(
     String table,
-    Set<String> validColumns, [
-    StoreQuery<T>? query,
-  ]) {
+    Set<String> validColumns,
+    StoreQuery<T>? query, {
+    String select = '*',
+  }) {
     final whereParts = <String>[];
     final params = <dynamic>[];
 
@@ -49,7 +50,7 @@ class DBQuery<T> {
     final whereClause = whereParts.isNotEmpty
         ? 'WHERE ${whereParts.join(' AND ')}'
         : '';
-    final sql = 'SELECT * FROM $table $whereClause';
+    final sql = 'SELECT $select FROM $table $whereClause';
     log('DBQuery.fromStoreQuery: $sql, params: $params');
 
     return DBQuery<T>(
