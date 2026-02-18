@@ -9,12 +9,14 @@ class MediaViewerOverlays extends StatelessWidget {
     required this.child,
     required this.mime,
     required this.overlays,
+    this.borderRadius = 12,
     super.key,
   });
   final Uri uri;
   final MediaViewer child;
   final String mime;
   final List<OverlayWidgets> overlays;
+  final double borderRadius;
 
   @override
   Widget build(BuildContext context) {
@@ -23,8 +25,9 @@ class MediaViewerOverlays extends StatelessWidget {
     }
 
     return ClipRRect(
-      borderRadius: BorderRadius.circular(8),
+      borderRadius: BorderRadius.circular(borderRadius),
       child: Stack(
+        fit: StackFit.expand,
         children: [
           Positioned.fill(child: child),
           ...overlays,

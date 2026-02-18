@@ -22,26 +22,38 @@ class MediaPreviewWithOverlays extends StatelessWidget {
     return MediaThumbnail(
       media: media,
       overlays: [
-        OverlayWidgets(
-          heightFactor: 0.2,
-          widthFactor: 0.9,
-          alignment: Alignment.bottomCenter,
-          fit: BoxFit.none,
-          child: Container(
-            alignment: Alignment.center,
-            margin: const EdgeInsets.symmetric(horizontal: 4),
-            color: ShadTheme.of(
-              context,
-            ).colorScheme.foreground.withValues(alpha: 0.5),
-            child: Text(
-              media.label ?? 'Unnamed',
-              textAlign: TextAlign.center,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: ShadTheme.of(context).textTheme.small.copyWith(
-                color: ShadTheme.of(context).colorScheme.background,
+        // Gradient Scrim
+        // Gradient Scrim
+        OverlayWidgets.scrim(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.end,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Container(
+                height: 48,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      Colors.transparent,
+                      Colors.black.withValues(alpha: 0.7),
+                    ],
+                  ),
+                ),
+                alignment: Alignment.bottomCenter,
+                padding: const EdgeInsets.only(bottom: 4, left: 8, right: 8),
+                child: Text(
+                  media.label ?? 'Unnamed',
+                  textAlign: TextAlign.center,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: ShadTheme.of(
+                    context,
+                  ).textTheme.small.copyWith(color: Colors.white),
+                ),
               ),
-            ),
+            ],
           ),
         ),
         if (media.pin != null)
@@ -87,10 +99,16 @@ class MediaPreviewWithOverlays extends StatelessWidget {
 }
 
 class MediaThumbnail extends StatelessWidget {
-  const MediaThumbnail({required this.media, this.overlays, super.key});
+  const MediaThumbnail({
+    required this.media,
+    this.overlays,
+    this.borderRadius = 12,
+    super.key,
+  });
 
   final ViewerEntity media;
   final List<OverlayWidgets>? overlays;
+  final double borderRadius;
 
   @override
   Widget build(BuildContext context) {
@@ -98,7 +116,11 @@ class MediaThumbnail extends StatelessWidget {
       return const CLErrorView.image();
     }
     if (media.mediaUri!.scheme == 'file') {
-      if (!File(media.mediaUri!.toFilePath()).existsSync()) {
+      final fileUri = media.mediaUri!;
+      final filePath = fileUri.hasQuery
+          ? fileUri.replace(queryParameters: {}).toFilePath()
+          : fileUri.toFilePath();
+      if (!File(filePath).existsSync()) {
         return const CLErrorView.image();
       }
     }
@@ -107,6 +129,7 @@ class MediaThumbnail extends StatelessWidget {
         uri: media.previewUri!,
         mime: 'image/jpeg',
         overlays: overlays ?? const <OverlayWidgets>[],
+        borderRadius: borderRadius,
         child: MediaViewer(
           heroTag: '/item/${media.id}',
           uri: media.previewUri!,
@@ -115,6 +138,7 @@ class MediaThumbnail extends StatelessWidget {
           loadingBuilder: () =>
               const CLLoadingView.custom(child: GreyShimmer()),
           fit: BoxFit.cover,
+          hasGesture: false,
           keepAspectRatio: false,
         ),
       );

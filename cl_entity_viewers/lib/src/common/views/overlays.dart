@@ -34,13 +34,27 @@ class OverlayWidgets extends StatelessWidget {
       child: child,
     );
   }
+  factory OverlayWidgets.scrim({
+    required Widget child,
+    Alignment alignment = Alignment.bottomCenter,
+    Key? key,
+  }) {
+    return OverlayWidgets._(
+      alignment: alignment,
+      widthFactor: 1.0,
+      heightFactor: 1.0,
+      key: key,
+      fit: null, // Distinct from contain, means NO fitted box
+      child: child,
+    );
+  }
   const OverlayWidgets._({
     required this.alignment,
     required this.child,
     super.key,
     this.widthFactor,
     this.heightFactor,
-    this.fit,
+    this.fit = BoxFit.contain, // Default for other factories
   });
   final Alignment alignment;
   final Widget child;
@@ -55,7 +69,7 @@ class OverlayWidgets extends StatelessWidget {
         widthFactor: widthFactor,
         heightFactor: heightFactor,
         child: ClipRect(
-          child: FittedBox(fit: fit ?? BoxFit.contain, child: child),
+          child: fit == null ? child : FittedBox(fit: fit!, child: child),
         ),
       ),
     );

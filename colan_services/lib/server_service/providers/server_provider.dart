@@ -130,7 +130,11 @@ class ServerNotifier
             log('Auto-login successful for ${config.label}');
           } catch (e) {
             log('Auto-login failed for ${config.label}: $e', error: e);
-            await _CredentialStorage.clear(keySuffix: _keySuffix);
+            // Do NOT clear credentials on failure.
+            // If it's a network error, we want to retry next time.
+            // If it's an auth error, the user will be prompted to login anyway,
+            // and successful login will overwrite the credentials.
+            // await _CredentialStorage.clear(keySuffix: _keySuffix);
           }
         } else {
           log('No saved credentials found for $_keySuffix');

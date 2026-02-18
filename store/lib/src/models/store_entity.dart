@@ -149,7 +149,19 @@ class StoreEntity implements ViewerEntity {
   @override
   Uri? get mediaUri => store.entityStore.mediaUri(clEntity);
   @override
-  Uri? get previewUri => store.entityStore.previewUri(clEntity);
+  Uri? get previewUri {
+    final uri = store.entityStore.previewUri(clEntity);
+    if (uri == null || uri.scheme == 'file') return uri;
+    if (md5 != null) {
+      return uri.replace(
+        queryParameters: {
+          ...uri.queryParameters,
+          'v': md5,
+        },
+      );
+    }
+    return uri;
+  }
 
   @override
   String toString() => 'StoreEntity(entity: $clEntity, store: $store';

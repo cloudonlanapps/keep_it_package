@@ -109,7 +109,7 @@ class ActiveStoreTask {
       return StoreTaskStep.confirmation;
     }
     // Only proceed to progress if target is confirmed AND collection exists
-    if (targetConfirmed == true && collection != null) {
+    if ((targetConfirmed ?? false) && collection != null) {
       return StoreTaskStep.progress;
     }
     return StoreTaskStep.targetSelection;

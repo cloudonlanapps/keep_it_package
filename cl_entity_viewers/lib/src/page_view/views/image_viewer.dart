@@ -41,7 +41,13 @@ class ImageViewer extends ConsumerWidget {
       data: (uriConfig) {
         return switch (uri.scheme) {
           'file' => ExtendedImage.file(
-            File(uri.toFilePath()),
+            File(
+              uri.hasQuery
+                  ? uri.replace(queryParameters: {}).toFilePath()
+                  : uri.toFilePath(),
+            ),
+            width: double.infinity,
+            height: double.infinity,
             fit: fit,
             mode: mode,
             initGestureConfigHandler: hasGesture
@@ -50,12 +56,14 @@ class ImageViewer extends ConsumerWidget {
           ),
           _ => ExtendedImage.network(
             uri.toString(),
+            width: double.infinity,
+            height: double.infinity,
             fit: fit,
             mode: mode,
             initGestureConfigHandler: hasGesture
                 ? initGestureConfigHandler
                 : null,
-            cache: false,
+            cache: true,
           ),
         };
       },

@@ -48,18 +48,12 @@ class CollectionPreview extends StatelessWidget {
                         )
                       : (collection.childrenCount != null &&
                             collection.childrenCount! > 0)
-                      ? Container(
-                          margin: const EdgeInsets.all(4),
-                          alignment: Alignment.bottomCenter,
-                          child: FittedBox(
-                            child: ShadBadge(
-                              backgroundColor: ShadTheme.of(
-                                context,
-                              ).colorScheme.primary,
-                              child: Text(
-                                '${collection.childrenCount} items',
-                              ),
-                            ),
+                      ? ShadBadge(
+                          backgroundColor: ShadTheme.of(
+                            context,
+                          ).colorScheme.primary,
+                          child: Text(
+                            '${collection.childrenCount} items',
                           ),
                         )
                       : null,
