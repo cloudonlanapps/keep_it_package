@@ -18,3 +18,4 @@ keep_it/ios/build/**
 **/.obsidian/**
 **/ephemeral/.plugin_symlinks/**
 **/generated_plugin*
+**/GeneratedPlugin*

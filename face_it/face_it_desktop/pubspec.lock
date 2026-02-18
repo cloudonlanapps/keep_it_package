@@ -17,14 +17,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "10.0.1"
-  animated_icon:
-    dependency: transitive
-    description:
-      name: animated_icon
-      sha256: "13f7516a20d1ecfc31075ba90a92e969ec43c019fea3463c6e412733a0ad61c5"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.0.9"
   archive:
     dependency: transitive
     description:
@@ -129,6 +121,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.9.23+2"
+  camera_macos_plus:
+    dependency: transitive
+    description:
+      name: camera_macos_plus
+      sha256: dad4f992c6c511e3ceeef49ab1dc999d22135dac462a7fc06c8cfb05632c8f16
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.0.4"
   camera_platform_interface:
     dependency: transitive
     description:
@@ -297,22 +297,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.7.12"
-  dio:
-    dependency: transitive
-    description:
-      name: dio
-      sha256: b9d46faecab38fc8cc286f80bc4d61a3bb5d4ac49e51ed877b4d6706efe57b25
-      url: "https://pub.dev"
-    source: hosted
-    version: "5.9.1"
-  dio_web_adapter:
-    dependency: transitive
-    description:
-      name: dio_web_adapter
-      sha256: "7586e476d70caecaf1686d21eee7247ea43ef5c345eab9e0cc3583ff13378d78"
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.1.1"
   dotted_border:
     dependency: "direct main"
     description:
@@ -459,14 +443,6 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
-  flutter_native_video_trimmer:
-    dependency: transitive
-    description:
-      name: flutter_native_video_trimmer
-      sha256: d31159c34fb4e56fe53919b5b9978f75b5fb4b2934ceb05c6b369929139d3b72
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.1.9"
   flutter_plugin_android_lifecycle:
     dependency: transitive
     description:
@@ -491,14 +467,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.1.3"
-  flutter_speed_dial:
-    dependency: transitive
-    description:
-      name: flutter_speed_dial
-      sha256: "698a037274a66dbae8697c265440e6acb6ab6cae9ac5f95c749e7944d8f28d41"
-      url: "https://pub.dev"
-    source: hosted
-    version: "7.0.0"
   flutter_svg:
     dependency: transitive
     description:
@@ -520,21 +488,6 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
-  form_factory:
-    dependency: transitive
-    description:
-      path: "../../form_factory"
-      relative: true
-    source: path
-    version: "0.0.1"
-  get_thumbnail_video:
-    dependency: transitive
-    description:
-      name: get_thumbnail_video
-      sha256: ff61495b42051765d2a9e93bd14dac7ede5853033837bde71c27575a192c53fc
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.7.3"
   glob:
     dependency: transitive
     description:
@@ -718,14 +671,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.3.0"
-  lottie:
-    dependency: transitive
-    description:
-      name: lottie
-      sha256: "8ae0be46dbd9e19641791dc12ee480d34e1fd3f84c749adc05f3ad9342b71b95"
-      url: "https://pub.dev"
-    source: hosted
-    version: "3.3.2"
   lucide_icons_flutter:
     dependency: transitive
     description:
@@ -766,13 +711,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "4.2906.0"
-  media_editors:
-    dependency: transitive
-    description:
-      path: "../../media_editors"
-      relative: true
-    source: path
-    version: "0.0.1"
   meta:
     dependency: transitive
     description:
@@ -805,14 +743,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "10.11.9"
-  multicast_dns:
-    dependency: transitive
-    description:
-      name: multicast_dns
-      sha256: de72ada5c3db6fdd6ad4ae99452fe05fb403c4bb37c67ceb255ddd37d2b5b1eb
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.3.3"
   mutex:
     dependency: transitive
     description:
@@ -1029,14 +959,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.8.3"
-  pie_chart:
-    dependency: transitive
-    description:
-      name: pie_chart
-      sha256: "58e6a46999ac938bfa1c3e5be414d6e149f037647197dca03ba3614324c12c82"
-      url: "https://pub.dev"
-    source: hosted
-    version: "5.4.0"
   platform:
     dependency: transitive
     description:
@@ -1093,14 +1015,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.2.0"
-  pull_down_button:
-    dependency: transitive
-    description:
-      name: pull_down_button
-      sha256: "12cdd8ff187a3150ebdf075e5074299f085579b158d2b4e655ccbafccf95f25b"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.10.2"
   riverpod:
     dependency: transitive
     description:
@@ -1377,14 +1291,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.4.1"
-  tar:
-    dependency: transitive
-    description:
-      name: tar
-      sha256: b338bacfd24dae6cf527acb4242003a71fc88ce183a9002376fabbc4ebda30c9
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.0.2"
   term_glyph:
     dependency: transitive
     description:
@@ -1409,14 +1315,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "6.0.1"
-  transparent_image:
-    dependency: transitive
-    description:
-      name: transparent_image
-      sha256: e8991d955a2094e197ca24c645efec2faf4285772a4746126ca12875e54ca02f
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.0.1"
   two_dimensional_scrollables:
     dependency: transitive
     description:
@@ -1577,14 +1475,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.4.0"
-  video_trimmer:
-    dependency: transitive
-    description:
-      name: video_trimmer
-      sha256: a7e24512ec6bf47c99e3e192264a1c19a2b30e21d92add1b43ecd0995659a0b4
-      url: "https://pub.dev"
-    source: hosted
-    version: "5.0.0"
   watcher:
     dependency: transitive
     description:
