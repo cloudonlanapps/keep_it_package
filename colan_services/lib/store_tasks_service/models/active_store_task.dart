@@ -5,14 +5,22 @@ import 'package:store/store.dart';
 import 'content_origin.dart';
 import 'store_task.dart';
 
+enum StoreTaskStep {
+  confirmation,
+  targetSelection,
+  progress,
+}
+
 @immutable
 class ActiveStoreTask {
-  const ActiveStoreTask({
+  ActiveStoreTask({
     required this.task,
     required this.selectedMedia,
     required this.itemsConfirmed,
-    required this.targetConfirmed,
-  });
+    bool? targetConfirmed,
+  }) : targetConfirmed = (task.collection != null)
+           ? (targetConfirmed ?? true)
+           : null;
 
   final StoreTask task;
   final List<StoreEntity> selectedMedia;
@@ -27,6 +35,18 @@ class ActiveStoreTask {
     List<StoreEntity>? items,
     ContentOrigin? contentOrigin,
   }) {
+    final updatedCollection = collection != null
+        ? collection()
+        : task.collection;
+
+    // Auto-confirm target if collection is present
+    // Force null if collection is missing
+    final effectiveTargetConfirmed = (updatedCollection != null)
+        ? ((targetConfirmed != null)
+              ? targetConfirmed()
+              : (this.targetConfirmed ?? true))
+        : null;
+
     return ActiveStoreTask(
       task: (items != null) || (contentOrigin != null) || (collection != null)
           ? task.copyWith(
@@ -39,9 +59,7 @@ class ActiveStoreTask {
       itemsConfirmed: itemsConfirmed != null
           ? itemsConfirmed()
           : this.itemsConfirmed,
-      targetConfirmed: targetConfirmed != null
-          ? targetConfirmed()
-          : this.targetConfirmed,
+      targetConfirmed: effectiveTargetConfirmed,
     );
   }
 
@@ -75,14 +93,25 @@ class ActiveStoreTask {
   bool get selectable => (itemsConfirmed == null) && items.length > 1;
 
   String keepActionLabel({required bool selectionMode}) => [
-        contentOrigin.keepActionLabel,
-        if (selectionMode) 'Selected' else items.length > 1 ? 'All' : '',
-      ].join(' ');
+    contentOrigin.keepActionLabel,
+    if (selectionMode) 'Selected' else items.length > 1 ? 'All' : '',
+  ].join(' ');
   String deleteActionLabel({required bool selectionMode}) => [
-        contentOrigin.deleteActionLabel,
-        if (selectionMode) 'Selected' else items.length > 1 ? 'All' : '',
-      ].join(' ');
+    contentOrigin.deleteActionLabel,
+    if (selectionMode) 'Selected' else items.length > 1 ? 'All' : '',
+  ].join(' ');
 
   List<StoreEntity> currEntities({required bool selectionMode}) =>
       (selectionMode ? selectedMedia : items);
+
+  StoreTaskStep get currentStep {
+    if (itemsConfirmed == null) {
+      return StoreTaskStep.confirmation;
+    }
+    // Only proceed to progress if target is confirmed AND collection exists
+    if (targetConfirmed == true && collection != null) {
+      return StoreTaskStep.progress;
+    }
+    return StoreTaskStep.targetSelection;
+  }
 }

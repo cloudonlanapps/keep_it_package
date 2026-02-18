@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:store/store.dart';
 
 class ServerLabel extends StatelessWidget {
@@ -18,9 +17,20 @@ class ServerLabel extends StatelessWidget {
           Colors.green; // FIXME: [LATER] When offline support, change to red
     }
 
-    return Text(
-      store.label,
-      style: ShadTheme.of(context).textTheme.muted.copyWith(color: color),
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(4),
+        border: Border.all(color: color.withOpacity(0.3)),
+      ),
+      child: Text(
+        store.label,
+        style: Theme.of(context).textTheme.labelSmall?.copyWith(
+          color: color,
+          fontWeight: FontWeight.w500,
+        ),
+      ),
     );
   }
 }

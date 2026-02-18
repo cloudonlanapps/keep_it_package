@@ -17,33 +17,41 @@ class PickWizard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(2),
-      child: InputDecorator(
-        decoration: InputDecoration(
-          //isDense: true,
-          contentPadding: const EdgeInsets.fromLTRB(30, 8, 4, 8),
-          labelText: 'Select a collection',
-          labelStyle: Theme.of(context).textTheme.bodyLarge?.copyWith(
-            fontWeight: FontWeight.bold,
-            fontSize: 20,
-          ),
-          enabledBorder: OutlineInputBorder(
-            borderSide: BorderSide(
-              color: ShadTheme.of(context).colorScheme.primary,
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            'Select a collection',
+            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+              fontWeight: FontWeight.bold,
+              fontSize: 20,
             ),
-            //borderSide: const BorderSide(width: 3),
-            borderRadius: BorderRadius.circular(16),
-            gapPadding: 8,
           ),
-          focusColor: ShadTheme.of(context).colorScheme.primary,
-          suffixIcon: menuItem == null
-              ? null
-              : ConfirmCollection(menuItem: menuItem!),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(8),
-          child: child,
-        ),
+          const SizedBox(height: 8),
+          Container(
+            height: 56, // Standard height
+            decoration: BoxDecoration(
+              border: Border.all(
+                color: ShadTheme.of(context).colorScheme.primary,
+              ),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Row(
+              children: [
+                const SizedBox(width: 12),
+                const Icon(Icons.search),
+                const SizedBox(width: 12),
+                Expanded(child: child),
+                if (menuItem != null) ...[
+                  const VerticalDivider(width: 1),
+                  ConfirmCollection(menuItem: menuItem!),
+                ],
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }

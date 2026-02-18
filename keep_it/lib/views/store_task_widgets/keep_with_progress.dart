@@ -20,10 +20,10 @@ class KeepWithProgress extends StatelessWidget implements PreferredSizeWidget {
       stream: moveMultiple(
         items: media2Move,
         newParent: newParent,
-        onDone: ({
-          required mediaMultiple,
-        }) async =>
-            onDone(),
+        onDone:
+            ({
+              required mediaMultiple,
+            }) async => onDone(),
       ),
       builder: (context, snapShot) {
         return ProgressBar(
@@ -38,7 +38,8 @@ class KeepWithProgress extends StatelessWidget implements PreferredSizeWidget {
     required StoreEntity newParent,
     required Future<void> Function({
       required ViewerEntities mediaMultiple,
-    }) onDone,
+    })
+    onDone,
   }) async* {
     final StoreEntity parentCollection;
     if (newParent.id == null) {
@@ -57,7 +58,7 @@ class KeepWithProgress extends StatelessWidget implements PreferredSizeWidget {
 
     final updatedItems = <StoreEntity>[];
     for (final (i, item) in items.entities.cast<StoreEntity>().indexed) {
-      yield Progress(fractCompleted: (i + 1) / items.length, currentItem: '');
+      yield Progress(fractCompleted: i / items.length, currentItem: '');
 
       updatedItems.add(await parentCollection.accept(item));
     }

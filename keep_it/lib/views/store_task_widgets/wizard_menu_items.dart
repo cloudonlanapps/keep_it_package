@@ -21,12 +21,12 @@ class WizardMenuItems {
       type: type,
       option1: CLMenuItem(
         icon: clIcons.save,
-        title: keepActionLabel ?? type.keepActionLabel,
+        title: keepActionLabel ?? type.positiveAction,
         onTap: keepAction == null ? null : () => keepAction(),
       ),
       option2: CLMenuItem(
         icon: clIcons.deleteItem,
-        title: deleteActionLabel ?? type.deleteActionLabel,
+        title: deleteActionLabel ?? type.negativeAction,
         onTap: deleteAction == null ? null : () => deleteAction(),
       ),
     );

@@ -22,33 +22,33 @@ class TextEditBox extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      spacing: 8,
+    return Row(
       children: [
         Expanded(
-          flex: 13,
-          child: Align(
-            alignment: Alignment.bottomCenter,
-            child: TextFormField(
-              controller: controller,
-              focusNode: focusNode,
-              decoration: collection == null
-                  ? InputDecoration(
-                      hintStyle: ShadTheme.of(context).textTheme.muted,
-                      hintText: hintText)
-                  : null,
-              readOnly: onTap != null,
-              showCursor: onTap == null,
-              enableInteractiveSelection: false,
-              onTap: onTap,
+          child: TextFormField(
+            controller: controller,
+            focusNode: focusNode,
+            decoration: InputDecoration(
+              hintStyle: ShadTheme.of(context).textTheme.muted,
+              hintText: collection == null ? hintText : null,
+              border: InputBorder.none,
+              enabledBorder: InputBorder.none,
+              focusedBorder: InputBorder.none,
+              contentPadding: EdgeInsets.zero,
+              isDense: true,
             ),
+            style: Theme.of(context).textTheme.bodyLarge,
+            readOnly: onTap != null,
+            showCursor: onTap == null,
+            enableInteractiveSelection: false,
+            onTap: onTap,
           ),
         ),
-        Expanded(
-          flex: 7,
-          child: Align(alignment: Alignment.centerRight, child: serverWidget),
-        )
+        if (serverWidget != null) ...[
+          const SizedBox(width: 8),
+          serverWidget!,
+          const SizedBox(width: 8),
+        ],
       ],
     );
   }

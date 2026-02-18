@@ -12,12 +12,14 @@ class PickCollection extends StatefulWidget implements PreferredSizeWidget {
   const PickCollection({
     required this.collection,
     required this.onDone,
+    this.actionLabel = 'Keep',
     super.key,
     this.isValidSuggestion,
   });
   final StoreEntity? collection;
   final Future<bool> Function(StoreEntity) onDone;
   final bool Function(StoreEntity collection)? isValidSuggestion;
+  final String actionLabel;
 
   @override
   State<PickCollection> createState() => _PickCollectionState();
@@ -47,10 +49,10 @@ class _PickCollectionState extends State<PickCollection> {
   @override
   Widget build(BuildContext context) {
     final menuItem = CLMenuItem(
-        title: 'Keep',
-        icon: LucideIcons.folderInput,
-        onTap:
-            collection == null ? null : () async => widget.onDone(collection!));
+      title: widget.actionLabel,
+      icon: LucideIcons.folderInput,
+      onTap: collection == null ? null : () async => widget.onDone(collection!),
+    );
     return Hero(
       tag: 'Search bar',
       child: Padding(
@@ -81,17 +83,18 @@ class _PickCollectionState extends State<PickCollection> {
 
   Future<void> getCollection() async {
     final result = await showModalBottomSheet<StoreEntity>(
-        context: context,
-        isScrollControlled: true,
-        shape: const RoundedRectangleBorder(),
-        constraints: const BoxConstraints(),
-        useSafeArea: true,
-        isDismissible: false,
-        builder: (context) {
-          return CollectionSearchView(
-            collection: collection,
-          );
-        });
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(),
+      constraints: const BoxConstraints(),
+      useSafeArea: true,
+      isDismissible: false,
+      builder: (context) {
+        return CollectionSearchView(
+          collection: collection,
+        );
+      },
+    );
 
     if (result != null) {
       setState(() => collection = result);
