@@ -1,3 +1,4 @@
+import 'package:cl_server_dart_client/cl_server_dart_client.dart';
 import 'package:colan_services/colan_services.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
@@ -5,6 +6,7 @@ import 'package:keep_it/views/entity_viewer_views/keep_it_grid_view.dart';
 import 'package:keep_it/views/entity_viewer_views/keep_it_page_view.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
+import '../auth_views/logged_out_view.dart';
 import '../page_manager.dart';
 import 'top_bar.dart';
 
@@ -57,7 +59,7 @@ class EntitiesView extends StatelessWidget {
                         : 'Connection lost. Connect to your homenetwork to access this server',
                 };
 
-                return CLErrorView.page(
+                CLErrorView errorPage() => CLErrorView.page(
                   message: message,
                   topBar: TopBar(
                     serverId: activeConfig.displayName,
@@ -76,6 +78,40 @@ class EntitiesView extends StatelessWidget {
                     }
                   },
                 );
+
+                if (activeConfig is RemoteServiceLocationConfig) {
+                  // For remote stores, we prefer showing the login widget if the user is unauthenticated,
+                  // as most errors in this phase are likely due to lack of credentials.
+                  return CLErrorView.custom(
+                    child: GetAuthStatus(
+                      config: activeConfig,
+                      builder: (authStatus, actions) {
+                        if (!authStatus.isAuthenticated) {
+                          // State-based switch: show login directly instead of the error page.
+                          return CLScaffold(
+                            topMenu: TopBar(
+                              serverId: activeConfig.displayName,
+                              entity: null,
+                              children: null,
+                            ),
+                            body: LoggedOutView(
+                              config: activeConfig,
+                              onLogin: actions.login,
+                            ),
+                          );
+                        }
+                        // If authenticated, we show the original error message (e.g. server error, 404).
+                        return errorPage();
+                      },
+                      loadingBuilder: () =>
+                          CLLoadingView.widget(debugMessage: 'Checking auth'),
+                      // If GetAuthStatus itself fails (e.g. server unreachable), fallback to the original error page.
+                      errorBuilder: (e, st, actions) => errorPage(),
+                    ),
+                  );
+                }
+
+                return errorPage();
               },
         ),
       );
