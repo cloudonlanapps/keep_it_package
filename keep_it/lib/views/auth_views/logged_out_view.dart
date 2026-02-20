@@ -132,7 +132,7 @@ class _LoggedOutViewState extends State<LoggedOutView> with CLLogger {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'Server: ${widget.config!.authUrl}',
+                  'Server: ${widget.config!.displayName}',
                   style: Theme.of(context).textTheme.bodySmall,
                   textAlign: TextAlign.center,
                 ),

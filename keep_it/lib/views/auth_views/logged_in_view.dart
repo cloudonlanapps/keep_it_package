@@ -4,6 +4,7 @@ import 'package:cl_server_dart_client/cl_server_dart_client.dart';
 import 'package:colan_services/colan_services.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
 
 import '../page_manager.dart';
 
@@ -28,10 +29,6 @@ class LoggedInView extends StatelessWidget {
           return const Center(child: CircularProgressIndicator());
         }
 
-        final loginTimeStr = authStatus.loginTime != null
-            ? authStatus.loginTime!.toString().substring(0, 19)
-            : 'Unknown';
-
         return Center(
           child: SingleChildScrollView(
             padding: const EdgeInsets.all(24),
@@ -49,46 +46,69 @@ class LoggedInView extends StatelessWidget {
                   const SizedBox(height: 24),
                   Text(
                     'Signed In',
-                    style: Theme.of(context).textTheme.headlineMedium,
+                    style: ShadTheme.of(context).textTheme.h2,
                     textAlign: TextAlign.center,
                   ),
-                  const SizedBox(height: 32),
-                  _buildInfoCard(
+                  const SizedBox(height: 8),
+                  Text(
+                    'Server: ${config.displayName}',
+                    style: ShadTheme.of(context).textTheme.muted,
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 48),
+                  _buildSimpleInfo(
                     context,
-                    icon: Icons.person,
+                    icon: Icons.person_outline,
                     label: 'Username',
                     value: authStatus.username ?? 'Unknown',
                   ),
-                  const SizedBox(height: 16),
-                  _buildInfoCard(
+                  const Divider(height: 32),
+                  _buildSimpleInfo(
                     context,
-                    icon: Icons.access_time,
-                    label: 'Logged in at',
-                    value: loginTimeStr,
+                    icon: Icons.calendar_today_outlined,
+                    label: 'Member since',
+                    value: authStatus.createdAt != null
+                        ? authStatus.createdAt!.toString().substring(0, 10)
+                        : 'Unknown',
                   ),
-                  const SizedBox(height: 16),
-                  _buildInfoCard(
+                  const Divider(height: 32),
+                  _buildSimpleInfo(
                     context,
-                    icon: Icons.dns,
-                    label: 'Auth Server',
-                    value: authStatus.authUrl,
+                    icon: Icons.admin_panel_settings_outlined,
+                    label: 'Admin Status',
+                    value: authStatus.isAdmin ? 'Yes' : 'No',
                   ),
-                  const SizedBox(height: 32),
-                  ElevatedButton.icon(
+                  const Divider(height: 32),
+                  _buildSimpleInfo(
+                    context,
+                    icon: Icons.playlist_add_check,
+                    label: 'Permissions',
+                    value: authStatus.permissions.isEmpty
+                        ? 'None'
+                        : authStatus.permissions.join(', '),
+                  ),
+                  const SizedBox(height: 48),
+                  ShadButton(
                     onPressed: () => PageManager.of(context).home(),
-                    icon: const Icon(Icons.home),
-                    label: const Text('Go to Home Screen'),
-                    style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 16),
+                    child: const Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.home_outlined, size: 16),
+                        SizedBox(width: 8),
+                        Text('Go to Home Screen'),
+                      ],
                     ),
                   ),
                   const SizedBox(height: 12),
-                  OutlinedButton.icon(
+                  ShadButton.outline(
                     onPressed: () => _handleLogout(context, actions.logout),
-                    icon: const Icon(Icons.logout),
-                    label: const Text('Logout'),
-                    style: OutlinedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 16),
+                    child: const Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.logout_outlined, size: 16),
+                        SizedBox(width: 8),
+                        Text('Logout'),
+                      ],
                     ),
                   ),
                 ],
@@ -107,44 +127,37 @@ class LoggedInView extends StatelessWidget {
     );
   }
 
-  Widget _buildInfoCard(
+  Widget _buildSimpleInfo(
     BuildContext context, {
     required IconData icon,
     required String label,
     required String value,
-    Widget? action,
   }) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        border: Border.all(
-          color: Theme.of(context).dividerColor,
+    return Row(
+      children: [
+        Icon(
+          icon,
+          size: 20,
+          color: ShadTheme.of(context).colorScheme.mutedForeground,
         ),
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Row(
-        children: [
-          Icon(icon, size: 20),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  label,
-                  style: Theme.of(context).textTheme.bodySmall,
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  value,
-                  style: Theme.of(context).textTheme.bodyLarge,
-                ),
-              ],
+        const SizedBox(width: 16),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              label,
+              style: ShadTheme.of(context).textTheme.small.copyWith(
+                color: ShadTheme.of(context).colorScheme.mutedForeground,
+              ),
             ),
-          ),
-          ?action,
-        ],
-      ),
+            const SizedBox(height: 2),
+            Text(
+              value,
+              style: ShadTheme.of(context).textTheme.large,
+            ),
+          ],
+        ),
+      ],
     );
   }
 
@@ -154,15 +167,15 @@ class LoggedInView extends StatelessWidget {
   ) async {
     await showDialog<void>(
       context: context,
-      builder: (context) => AlertDialog(
+      builder: (context) => ShadDialog(
         title: const Text('Logout'),
-        content: const Text('Are you sure you want to logout?'),
+        description: const Text('Are you sure you want to logout?'),
         actions: [
-          TextButton(
+          ShadButton.outline(
             onPressed: () => Navigator.of(context).pop(),
             child: const Text('Cancel'),
           ),
-          ElevatedButton(
+          ShadButton.destructive(
             onPressed: () {
               Navigator.of(context).pop();
               unawaited(logout());

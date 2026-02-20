@@ -6,8 +6,8 @@ import 'package:shadcn_ui/shadcn_ui.dart';
 
 import '../../views/auth_views/logged_in_view.dart';
 import '../../views/auth_views/logged_out_view.dart';
-import '../common_widgets/action_buttons.dart';
-import '../common_widgets/content_source_selector.dart';
+import '../entity_viewer_views/bottom_bar_grid_view.dart';
+import '../entity_viewer_views/top_bar.dart';
 import '../page_manager.dart';
 
 /// Authentication view.
@@ -27,11 +27,14 @@ class AuthView extends StatelessWidget {
         // Only show auth UI for remote stores
         if (locationConfig is! RemoteServiceLocationConfig) {
           return CLScaffold(
-            topMenu: const CLTopBar(
-              actions: [
-                ContentSourceSelector(),
-                ThemeToggleButton(),
-              ],
+            topMenu: TopBar(
+              serverId: locationConfig.displayName,
+              entity: null,
+              children: null,
+            ),
+            bottomMenu: BottomBarGridView(
+              serverId: locationConfig.displayName,
+              entity: null,
             ),
             body: Center(
               child: Column(
@@ -51,7 +54,15 @@ class AuthView extends StatelessWidget {
 
         // Use GetAuthStatus builder to check authentication status
         return CLScaffold(
-          topMenu: const CLTopBar(),
+          topMenu: TopBar(
+            serverId: locationConfig.displayName,
+            entity: null,
+            children: null,
+          ),
+          bottomMenu: BottomBarGridView(
+            serverId: locationConfig.displayName,
+            entity: null,
+          ),
           body: GetAuthStatus(
             config: locationConfig,
             builder: (authStatus, actions) {

@@ -13,12 +13,18 @@ class AuthStatusData {
     required this.username,
     required this.loginTime,
     required this.authUrl,
+    required this.isAdmin,
+    required this.permissions,
+    required this.createdAt,
   });
 
   final bool isAuthenticated;
   final String? username;
   final DateTime? loginTime;
   final String authUrl;
+  final bool isAdmin;
+  final List<String> permissions;
+  final DateTime? createdAt;
 }
 
 /// Immutable class encapsulating authentication actions.
@@ -94,6 +100,9 @@ class GetAuthStatus extends ConsumerWidget {
           username: server.currentUser?.username,
           loginTime: server.loginTimestamp,
           authUrl: config.authUrl,
+          isAdmin: server.currentUser?.isAdmin ?? false,
+          permissions: server.currentUser?.permissions ?? const [],
+          createdAt: server.currentUser?.createdAt,
         );
         return builder(data, actions);
       },
