@@ -18,7 +18,7 @@ class ActiveStoreTask {
     required this.selectedMedia,
     required this.itemsConfirmed,
     bool? targetConfirmed,
-  }) : targetConfirmed = (task.collection != null)
+  }) : targetConfirmed = (task.targetCollection != null)
            ? (targetConfirmed ?? true)
            : null;
 
@@ -37,7 +37,7 @@ class ActiveStoreTask {
   }) {
     final updatedCollection = collection != null
         ? collection()
-        : task.collection;
+        : task.targetCollection;
 
     // Auto-confirm target if collection is present
     // Force null if collection is missing
@@ -88,7 +88,7 @@ class ActiveStoreTask {
 
   List<StoreEntity> get items => task.items;
   ContentOrigin get contentOrigin => task.contentOrigin;
-  StoreEntity? get collection => task.collection;
+  StoreEntity? get collection => task.targetCollection;
 
   bool get selectable => (itemsConfirmed == null) && items.length > 1;
 

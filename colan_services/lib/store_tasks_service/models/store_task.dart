@@ -10,12 +10,12 @@ class StoreTask {
   const StoreTask({
     required this.items,
     required this.contentOrigin,
-    this.collection,
+    this.targetCollection,
   });
 
   final List<StoreEntity> items;
   final ContentOrigin contentOrigin;
-  final StoreEntity? collection;
+  final StoreEntity? targetCollection;
 
   StoreTask copyWith({
     List<StoreEntity>? items,
@@ -25,7 +25,9 @@ class StoreTask {
     return StoreTask(
       items: items ?? this.items,
       contentOrigin: contentOrigin ?? this.contentOrigin,
-      collection: collection != null ? collection.call() : this.collection,
+      targetCollection: collection != null
+          ? collection.call()
+          : this.targetCollection,
     );
   }
 
@@ -36,14 +38,14 @@ class StoreTask {
 
     return listEquals(other.items, items) &&
         other.contentOrigin == contentOrigin &&
-        other.collection == collection;
+        other.targetCollection == targetCollection;
   }
 
   @override
   int get hashCode =>
-      items.hashCode ^ contentOrigin.hashCode ^ collection.hashCode;
+      items.hashCode ^ contentOrigin.hashCode ^ targetCollection.hashCode;
 
   @override
   String toString() =>
-      'StoreTask(items: $items, contentOrigin: $contentOrigin, collection: $collection)';
+      'StoreTask(items: $items, contentOrigin: $contentOrigin, collection: $targetCollection)';
 }

@@ -88,7 +88,7 @@ class IncomingMediaHandlerState extends State<IncomingMediaHandler> {
                       )
                     : DuplicatePage(
                         incomingMedia: duplicateCandidates!,
-                        parentId: widget.incomingMedia.collection?.id,
+                        parentId: widget.incomingMedia.targetCollection?.id,
                         onDone: ({required mg}) {
                           unawaited(
                             onSave(
@@ -130,7 +130,7 @@ class IncomingMediaHandlerState extends State<IncomingMediaHandler> {
     required List<CLMediaContent> invalidContent,
   }) async {
     if (existingEntities
-        .targetMismatch(widget.incomingMedia.collection?.id)
+        .targetMismatch(widget.incomingMedia.targetCollection?.id)
         .isNotEmpty) {
       duplicateCandidates = existingEntities;
       newCandidates = newEntities;
@@ -157,6 +157,7 @@ class IncomingMediaHandlerState extends State<IncomingMediaHandler> {
         StoreTask(
           items: mg.entities.cast<StoreEntity>(),
           contentOrigin: widget.incomingMedia.contentOrigin,
+          targetCollection: widget.incomingMedia.targetCollection,
         ),
       );
       await PageManager.of(

@@ -38,7 +38,7 @@ class IncomingMediaMonitor extends StatelessWidget {
           .toList();
       final sharedMedia = CLMediaFileGroup(
         entries: items,
-        collection: collection,
+        targetCollection: collection,
         contentOrigin: ContentOrigin.filePick,
       );
 

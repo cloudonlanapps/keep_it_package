@@ -9,10 +9,10 @@ class CLMediaFileGroup {
   const CLMediaFileGroup({
     required this.entries,
     required this.contentOrigin,
-    this.collection,
+    this.targetCollection,
   });
   final List<CLMediaContent> entries;
-  final StoreEntity? collection;
+  final StoreEntity? targetCollection;
   final ContentOrigin contentOrigin;
 
   bool get isEmpty => entries.isEmpty;

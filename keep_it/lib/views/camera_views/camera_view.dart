@@ -67,7 +67,7 @@ class CameraService extends StatelessWidget {
                         StoreTask(
                           items: mediaList.entities.cast<StoreEntity>(),
                           contentOrigin: ContentOrigin.camera,
-                          collection: collection,
+                          targetCollection: collection,
                         ),
                       );
                       await PageManager.of(
