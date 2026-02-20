@@ -6,6 +6,7 @@ import 'package:shadcn_ui/shadcn_ui.dart';
 
 import '../../views/auth_views/logged_in_view.dart';
 import '../../views/auth_views/logged_out_view.dart';
+import '../common_widgets/server_bar.dart';
 import '../entity_viewer_views/bottom_bar_grid_view.dart';
 import '../entity_viewer_views/top_bar.dart';
 import '../page_manager.dart';
@@ -14,8 +15,15 @@ import '../page_manager.dart';
 ///
 /// Displays login form when user is not authenticated,
 /// and user info with logout option when authenticated.
-class AuthView extends StatelessWidget {
+class AuthView extends StatefulWidget {
   const AuthView({super.key});
+
+  @override
+  State<AuthView> createState() => _AuthViewState();
+}
+
+class _AuthViewState extends State<AuthView> {
+  final _serverBarKey = GlobalKey<ServerBarState>();
 
   @override
   Widget build(BuildContext context) {
@@ -28,13 +36,13 @@ class AuthView extends StatelessWidget {
         if (locationConfig is! RemoteServiceLocationConfig) {
           return CLScaffold(
             topMenu: TopBar(
-              serverId: locationConfig.displayName,
               entity: null,
               children: null,
             ),
             bottomMenu: BottomBarGridView(
               serverId: locationConfig.displayName,
               entity: null,
+              serverBarKey: _serverBarKey,
             ),
             body: Center(
               child: Column(
@@ -55,13 +63,13 @@ class AuthView extends StatelessWidget {
         // Use GetAuthStatus builder to check authentication status
         return CLScaffold(
           topMenu: TopBar(
-            serverId: locationConfig.displayName,
             entity: null,
             children: null,
           ),
           bottomMenu: BottomBarGridView(
             serverId: locationConfig.displayName,
             entity: null,
+            serverBarKey: _serverBarKey,
           ),
           body: GetAuthStatus(
             config: locationConfig,

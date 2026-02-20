@@ -30,6 +30,7 @@ abstract class CLLoadingView extends StatelessWidget {
     String? message,
     String? debugMessage,
     CLTopBar? topBar,
+    PreferredSizeWidget? bottomMenu,
     VoidCallback? onSwipe,
     List<Widget>? actions,
     Key? key,
@@ -114,6 +115,7 @@ class _CLLoadingViewPage extends CLLoadingView {
     this.message,
     this.debugMessage,
     this.topBar,
+    this.bottomMenu,
     this.onSwipe,
     this.actions,
     super.key,
@@ -122,6 +124,7 @@ class _CLLoadingViewPage extends CLLoadingView {
   final String? message;
   final String? debugMessage;
   final CLTopBar? topBar;
+  final PreferredSizeWidget? bottomMenu;
   final VoidCallback? onSwipe;
   final List<Widget>? actions;
 
@@ -142,9 +145,10 @@ class _CLLoadingViewPage extends CLLoadingView {
         child: content,
       );
     }
-    if (shouldWrap || topBar != null) {
+    if (shouldWrap || topBar != null || bottomMenu != null) {
       return CLScaffold(
         topMenu: topBar,
+        bottomMenu: bottomMenu,
         body: content,
       );
     }

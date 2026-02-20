@@ -7,27 +7,23 @@ import 'package:keep_it/views/common_widgets/action_buttons.dart';
 
 import 'package:store/store.dart';
 
-import '../common_widgets/content_source_selector.dart';
 import 'media_title.dart';
 import 'popover_menu.dart';
 
 class TopBar extends CLTopBar {
   TopBar({
-    required String? serverId,
     required StoreEntity? entity,
     required ViewerEntities? children,
     super.key,
   }) : super(
          title: MediaTitle(entity: entity),
          actions: [
-           if (entity == null) const ContentSourceSelector(),
            if (entity == null)
              if (!ColanPlatformSupport.isMobilePlatform)
                GetReload(
                  builder: (reload) =>
                      ReloadButton(onReload: () async => reload()),
                ),
-           if (serverId != null) const UserAccountButton(),
            const ThemeToggleButton(),
            const SettingsButton(),
          ],

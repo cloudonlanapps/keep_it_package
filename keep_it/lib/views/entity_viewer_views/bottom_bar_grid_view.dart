@@ -16,11 +16,13 @@ class BottomBarGridView extends StatelessWidget implements PreferredSizeWidget {
   const BottomBarGridView({
     required this.serverId,
     required this.entity,
+    this.serverBarKey,
     super.key,
   });
 
   final StoreEntity? entity;
   final String serverId;
+  final GlobalKey<ServerBarState>? serverBarKey;
 
   @override
   Widget build(BuildContext context) {
@@ -37,7 +39,7 @@ class BottomBarGridView extends StatelessWidget implements PreferredSizeWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const ServerBar(),
+            ServerBar(key: serverBarKey),
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
               crossAxisAlignment: CrossAxisAlignment.end,

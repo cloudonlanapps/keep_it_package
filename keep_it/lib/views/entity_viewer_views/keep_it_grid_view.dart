@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 
 import 'package:store/store.dart';
 
+import '../common_widgets/server_bar.dart';
 import '../content_store_views/models/entity_actions.dart';
 import '../page_manager.dart';
 import 'bottom_bar_grid_view.dart';
@@ -20,6 +21,7 @@ class KeepItGridView extends StatelessWidget {
     required this.parent,
     required this.children,
     this.onLoadMore,
+    this.serverBarKey,
     super.key,
   });
 
@@ -27,6 +29,7 @@ class KeepItGridView extends StatelessWidget {
   final ViewerEntities children;
   final String serverId;
   final Future<void> Function()? onLoadMore;
+  final GlobalKey<ServerBarState>? serverBarKey;
 
   @override
   Widget build(BuildContext context) {
@@ -42,6 +45,7 @@ class KeepItGridView extends StatelessWidget {
           parent: parent,
           children: children,
           onLoadMore: onLoadMore,
+          serverBarKey: serverBarKey,
         ),
       ),
     );
@@ -54,6 +58,7 @@ class KeepItGridView0 extends StatelessWidget {
     required this.parent,
     required this.children,
     this.onLoadMore,
+    this.serverBarKey,
     super.key,
   });
 
@@ -61,11 +66,11 @@ class KeepItGridView0 extends StatelessWidget {
   final ViewerEntities children;
   final String serverId;
   final Future<void> Function()? onLoadMore;
+  final GlobalKey<ServerBarState>? serverBarKey;
 
   @override
   Widget build(BuildContext context) {
     final topMenu = TopBar(
-      serverId: serverId,
       entity: parent,
       children: children,
     );
@@ -78,6 +83,7 @@ class KeepItGridView0 extends StatelessWidget {
     final bottomMenu = BottomBarGridView(
       entity: parent,
       serverId: serverId,
+      serverBarKey: serverBarKey,
     );
 
     return GetReload(

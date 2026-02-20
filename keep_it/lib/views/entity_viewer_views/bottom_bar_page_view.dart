@@ -30,16 +30,18 @@ class BottomBarPageView extends StatelessWidget implements PreferredSizeWidget {
                   reload: reload,
                 );
                 return Row(
-                  children: bottomMenu.actions
-                      .map(
-                        (e) => Expanded(
-                          child: ShadButton.ghost(
-                            onPressed: e.onTap,
-                            child: e.icon.iconFormatted(),
-                          ),
+                  children: [
+                    //const ServerBar(),
+                    //const SizedBox(width: 8),
+                    ...bottomMenu.actions.map(
+                      (e) => Expanded(
+                        child: ShadButton.ghost(
+                          onPressed: e.onTap,
+                          child: e.icon.iconFormatted(),
                         ),
-                      )
-                      .toList(),
+                      ),
+                    ),
+                  ],
                 );
               },
             );

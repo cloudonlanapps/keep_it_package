@@ -29,18 +29,6 @@ class ThemeToggleButton extends StatelessWidget {
   }
 }
 
-class UserAccountButton extends StatelessWidget {
-  const UserAccountButton({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return ShadButton.ghost(
-      onPressed: () => PageManager.of(context).openAuthenticator(),
-      child: const Icon(LucideIcons.user, size: 25),
-    );
-  }
-}
-
 class SettingsButton extends StatelessWidget {
   const SettingsButton({super.key});
 

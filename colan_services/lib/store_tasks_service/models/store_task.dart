@@ -27,7 +27,7 @@ class StoreTask {
       contentOrigin: contentOrigin ?? this.contentOrigin,
       targetCollection: collection != null
           ? collection.call()
-          : this.targetCollection,
+          : targetCollection,
     );
   }
 

@@ -7,10 +7,12 @@ import 'package:keep_it/views/entity_viewer_views/keep_it_page_view.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
 import '../auth_views/logged_out_view.dart';
+import '../common_widgets/server_bar.dart';
 import '../page_manager.dart';
+import 'bottom_bar_grid_view.dart';
 import 'top_bar.dart';
 
-class EntitiesView extends StatelessWidget {
+class EntitiesView extends StatefulWidget {
   const EntitiesView({
     required this.serverId,
     required this.id,
@@ -20,12 +22,23 @@ class EntitiesView extends StatelessWidget {
   final int? id;
 
   @override
+  State<EntitiesView> createState() => _EntitiesViewState();
+}
+
+class _EntitiesViewState extends State<EntitiesView> {
+  final _serverBarKey = GlobalKey<ServerBarState>();
+
+  @override
   Widget build(BuildContext context) {
     CLLoadingView loadBuilder() => CLLoadingView.page(
       topBar: TopBar(
-        serverId: null,
         entity: null,
         children: null,
+      ),
+      bottomMenu: BottomBarGridView(
+        serverId: widget.serverId,
+        entity: null,
+        serverBarKey: _serverBarKey,
       ),
       onSwipe: () {
         if (PageManager.of(context).canPop()) {
@@ -62,9 +75,13 @@ class EntitiesView extends StatelessWidget {
                 CLErrorView errorPage() => CLErrorView.page(
                   message: message,
                   topBar: TopBar(
-                    serverId: activeConfig.displayName,
                     entity: null,
                     children: null,
+                  ),
+                  bottomMenu: BottomBarGridView(
+                    serverId: activeConfig.displayName,
+                    entity: null,
+                    serverBarKey: _serverBarKey,
                   ),
                   actions: [
                     ShadButton.outline(
@@ -90,9 +107,13 @@ class EntitiesView extends StatelessWidget {
                           // State-based switch: show login directly instead of the error page.
                           return CLScaffold(
                             topMenu: TopBar(
-                              serverId: activeConfig.displayName,
                               entity: null,
                               children: null,
+                            ),
+                            bottomMenu: BottomBarGridView(
+                              serverId: activeConfig.displayName,
+                              entity: null,
+                              serverBarKey: _serverBarKey,
                             ),
                             body: LoggedOutView(
                               config: activeConfig,
@@ -121,9 +142,9 @@ class EntitiesView extends StatelessWidget {
       loadingBuilder: loadBuilder,
       errorBuilder: errorBuilder,
       builder: (registeredURLs, _) {
-        if (id != null) {
+        if (widget.id != null) {
           try {
-            if (registeredURLs.activeConfig.displayName != serverId) {
+            if (registeredURLs.activeConfig.displayName != widget.serverId) {
               WidgetsBinding.instance.addPostFrameCallback((_) {
                 PageManager.of(context).home();
               });
@@ -136,7 +157,7 @@ class EntitiesView extends StatelessWidget {
           }
         }
         return GetContent(
-          id: id,
+          id: widget.id,
           loadingBuilder: loadBuilder,
           errorBuilder: errorBuilder,
           builder:
@@ -153,6 +174,7 @@ class EntitiesView extends StatelessWidget {
                     parent: entity,
                     children: children,
                     onLoadMore: onLoadMoreChildren,
+                    serverBarKey: _serverBarKey,
                   );
                 } else {
                   return KeepItPageView(
