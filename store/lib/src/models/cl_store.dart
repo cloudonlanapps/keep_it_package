@@ -603,7 +603,8 @@ class CLStore with CLLogger {
 
   String createTempFile({required String ext}) {
     final fileBasename = 'keep_it_temp_${DateTime.now().utcTimeStamp}';
+    final extension = ext.startsWith('.') ? ext : '.$ext';
 
-    return '$tempFilePath/$fileBasename.$ext';
+    return '$tempFilePath/$fileBasename$extension';
   }
 }
