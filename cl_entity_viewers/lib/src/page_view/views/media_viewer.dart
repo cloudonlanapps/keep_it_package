@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 
@@ -79,9 +77,10 @@ class MediaViewer extends StatelessWidget {
             );
           },
         ),
-        _ => runZonedGuarded(() {
-          throw Exception('unsupported MIME');
-        }, errorBuilder)!,
+        _ => errorBuilder(
+          Exception('unsupported MIME: $mime'),
+          StackTrace.current,
+        ),
       },
     );
   }
