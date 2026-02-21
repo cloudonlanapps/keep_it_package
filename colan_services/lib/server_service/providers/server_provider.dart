@@ -59,29 +59,13 @@ class ServerNotifier
   @override
   String get logPrefix => 'ServerNotifier';
 
-  Timer? _healthCheckTimer;
   Timer? _tokenRefreshTimer;
 
   String get _keySuffix => arg.identity;
 
-  void _setupListeners() {
-    // Listen to network scanner to trigger health check refresh
-    ref.listen(networkScannerProvider, (prev, next) {
-      final isAvailable = next.servers.any((s) => s.identity == arg.identity);
-      final wasAvailable =
-          prev?.servers.any((s) => s.identity == arg.identity) ?? false;
-
-      if (isAvailable && !wasAvailable) {
-        log('Server ${arg.label} detected by scanner, refreshing health check');
-        ref.invalidate(serverHealthCheckProvider(arg));
-      }
-    });
-  }
-
   @override
   FutureOr<CLServer> build(RemoteServiceLocationConfig arg) async {
     log('Building ServerNotifier for ${arg.label} (identity: $_keySuffix)');
-    _setupListeners();
     try {
       final config = arg;
 
@@ -102,27 +86,30 @@ class ServerNotifier
         ourHealthCheckPassed: ourHealthCheckPassed,
       );
 
-      // Log if server is unhealthy
-      if (!healthStatus.isHealthy) {
-        if (healthStatus.hasBroadcastIssues) {
-          log(
-            'Server ${config.label} reports unhealthy status: '
-            'status=${healthStatus.broadcastStatus}, '
-            'errors=${healthStatus.broadcastErrors}',
-          );
-        }
-        if (!ourHealthCheckPassed) {
-          log('Server ${config.label} failed our health check');
-        }
+      // Log health status
+      if (healthStatus.hasBroadcastIssues) {
+        log(
+          'Server ${config.label} reports broadcast issues: '
+          'status=${healthStatus.broadcastStatus}, '
+          'errors=${healthStatus.broadcastErrors}',
+        );
+      }
+      if (!ourHealthCheckPassed) {
+        log('Server ${config.label} failed our health check');
+      } else {
+        log('Server ${config.label} passed health check');
       }
 
-      // Auth state (only if server is healthy)
+      // Auth state (only if our direct health check passed)
+      // Note: We use ourHealthCheckPassed instead of healthStatus.isHealthy
+      // because broadcast issues (like m_insight/worker problems) shouldn't
+      // block authentication - the auth, store, and compute services are still usable
       SessionManager? sessionManager;
       UserResponse? currentUser;
       DateTime? loginTimestamp;
       StoreManager? storeManager;
 
-      if (healthStatus.isHealthy) {
+      if (ourHealthCheckPassed) {
         // Try auto-login from saved credentials
         log('Attempting auto-login for $_keySuffix...');
         final credentials = await _CredentialStorage.load(
@@ -155,7 +142,7 @@ class ServerNotifier
           log('No saved credentials found for $_keySuffix');
         }
       } else {
-        log('Server ${config.label} is unhealthy, skipping auth');
+        log('Server ${config.label} health check failed, skipping auth');
       }
 
       // Create CLServer with all state
@@ -170,8 +157,7 @@ class ServerNotifier
       );
 
       ref.onDispose(() async {
-        _healthCheckTimer?.cancel();
-        _tokenRefreshTimer?.cancel();
+        _stopTokenRefreshTimer();
         await storeManager?.close(); // Cleanup StoreManager
       });
 

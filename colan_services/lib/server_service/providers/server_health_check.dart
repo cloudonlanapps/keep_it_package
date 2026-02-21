@@ -25,11 +25,35 @@ class ServerHealthCheckNotifier
   String get logPrefix => 'ServerHealthCheck';
 
   static const Duration healthCheckTimeout = Duration(seconds: 5);
+  static const Duration healthCheckInterval = Duration(seconds: 15);
+
+  Timer? _periodicTimer;
 
   @override
   FutureOr<bool> build(RemoteServiceLocationConfig arg) async {
+    // Cancel any existing timer
+    _periodicTimer?.cancel();
+
+    // Register cleanup
+    ref.onDispose(() {
+      _periodicTimer?.cancel();
+      _periodicTimer = null;
+    });
+
+    // Start periodic health check timer
+    _startPeriodicHealthCheck();
+
     // Perform health check on build
     return await checkAllServices(arg);
+  }
+
+  /// Start periodic health check that refreshes this provider.
+  void _startPeriodicHealthCheck() {
+    _periodicTimer = Timer.periodic(healthCheckInterval, (_) {
+      // Use invalidateSelf to trigger a rebuild with fresh health check
+      // This is safe because we're just scheduling a rebuild
+      ref.invalidateSelf();
+    });
   }
 
   Future<bool> checkAllServices(RemoteServiceLocationConfig config) async {
