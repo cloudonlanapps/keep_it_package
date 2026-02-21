@@ -11,12 +11,18 @@ class CLEntitiesPageView extends ConsumerWidget {
     required this.topMenuBuilder,
     required this.bottomMenu,
     this.onLoadMore,
+    this.faceOverlayBuilder,
     super.key,
   });
 
   final CLTopBar Function(ViewerEntity? entity) topMenuBuilder;
   final PreferredSizeWidget bottomMenu;
   final Future<void> Function()? onLoadMore;
+
+  /// Optional builder for face overlay.
+  /// Called with the current entity to build a face overlay widget.
+  /// The overlay is positioned on top of the media viewer.
+  final Widget Function(ViewerEntity entity)? faceOverlayBuilder;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -29,13 +35,23 @@ class CLEntitiesPageView extends ConsumerWidget {
     if (showMenu) {
       return CLScaffold(
         topMenu: topMenuBuilder(currentItem),
-        body: SafeArea(child: MediaViewerCore(onLoadMore: onLoadMore)),
+        body: SafeArea(
+          child: MediaViewerCore(
+            onLoadMore: onLoadMore,
+            faceOverlayBuilder: faceOverlayBuilder,
+          ),
+        ),
         bottomMenu: bottomMenu,
       );
     } else {
       return CLScaffold(
         backgroundColor: Colors.black,
-        body: SafeArea(child: MediaViewerCore(onLoadMore: onLoadMore)),
+        body: SafeArea(
+          child: MediaViewerCore(
+            onLoadMore: onLoadMore,
+            faceOverlayBuilder: faceOverlayBuilder,
+          ),
+        ),
       );
     }
   }

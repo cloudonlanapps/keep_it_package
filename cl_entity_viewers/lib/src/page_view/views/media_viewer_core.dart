@@ -18,9 +18,16 @@ import 'on_toggle_play.dart';
 import 'video_progress.dart';
 
 class MediaViewerCore extends ConsumerWidget {
-  const MediaViewerCore({this.onLoadMore, super.key});
+  const MediaViewerCore({
+    this.onLoadMore,
+    this.faceOverlayBuilder,
+    super.key,
+  });
 
   final Future<void> Function()? onLoadMore;
+
+  /// Optional builder for face overlay.
+  final Widget Function(ViewerEntity entity)? faceOverlayBuilder;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -33,7 +40,7 @@ class MediaViewerCore extends ConsumerWidget {
 
     return GetVideoPlayerControls(
       builder: (controls) {
-        return switch (length) {
+        final mediaContent = switch (length) {
           0 => Container(),
           1 => ViewMedia(
             currentItem: currentItem,
@@ -43,8 +50,23 @@ class MediaViewerCore extends ConsumerWidget {
           _ => MediaViewerPageView(
             playerControls: controls,
             onLoadMore: onLoadMore,
+            faceOverlayBuilder: faceOverlayBuilder,
           ),
         };
+
+        // For single item, add face overlay on top if provided
+        if (length == 1 &&
+            faceOverlayBuilder != null &&
+            currentItem.mediaType == CLMediaType.image) {
+          return Stack(
+            children: [
+              mediaContent,
+              Positioned.fill(child: faceOverlayBuilder!(currentItem)),
+            ],
+          );
+        }
+
+        return mediaContent;
       },
     );
   }

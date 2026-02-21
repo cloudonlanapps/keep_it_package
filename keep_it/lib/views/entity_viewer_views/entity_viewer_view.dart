@@ -177,11 +177,16 @@ class _EntitiesViewState extends State<EntitiesView> {
                     serverBarKey: _serverBarKey,
                   );
                 } else {
+                  // Pass config for face detection on remote servers
+                  final config = registeredURLs.activeConfig;
                   return KeepItPageView(
-                    serverId: registeredURLs.activeConfig.displayName,
+                    serverId: config.displayName,
                     entity: entity!,
                     siblings: siblings,
                     onLoadMore: onLoadMoreSiblings,
+                    config: config is RemoteServiceLocationConfig
+                        ? config
+                        : null,
                   );
                 }
               },

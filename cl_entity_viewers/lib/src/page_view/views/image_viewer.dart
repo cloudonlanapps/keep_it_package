@@ -36,6 +36,8 @@ class ImageViewer extends ConsumerWidget {
     final mode = hasGesture
         ? ExtendedImageMode.gesture
         : ExtendedImageMode.none;
+    // Default to BoxFit.contain to ensure consistent scaling with overlays
+    final effectiveFit = fit ?? BoxFit.contain;
 
     return uriConfigAsync.when(
       data: (uriConfig) {
@@ -48,7 +50,7 @@ class ImageViewer extends ConsumerWidget {
             ),
             width: double.infinity,
             height: double.infinity,
-            fit: fit,
+            fit: effectiveFit,
             mode: mode,
             initGestureConfigHandler: hasGesture
                 ? initGestureConfigHandler
@@ -58,7 +60,7 @@ class ImageViewer extends ConsumerWidget {
             uri.toString(),
             width: double.infinity,
             height: double.infinity,
-            fit: fit,
+            fit: effectiveFit,
             mode: mode,
             initGestureConfigHandler: hasGesture
                 ? initGestureConfigHandler
@@ -109,10 +111,13 @@ class ImageFromState extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    // Default to BoxFit.contain to ensure consistent scaling with overlays
+    final effectiveFit = fit ?? BoxFit.contain;
+
     if (!keepAspectRatio) {
       return ExtendedImage(
         image: state.imageProvider,
-        fit: fit,
+        fit: effectiveFit,
         mode: mode,
         initGestureConfigHandler: initGestureConfigHandler,
       );
@@ -128,7 +133,7 @@ class ImageFromState extends ConsumerWidget {
         quarterTurns: uriConfig.quarterTurns,
         child: ExtendedImage(
           image: state.imageProvider,
-          fit: fit,
+          fit: effectiveFit,
           mode: mode,
           initGestureConfigHandler: initGestureConfigHandler,
         ),

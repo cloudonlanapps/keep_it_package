@@ -21,6 +21,12 @@ abstract class ViewerEntity {
   bool get isHidden;
   int? get childrenCount;
 
+  /// Width of the media in pixels (for images/videos).
+  int? get width;
+
+  /// Height of the media in pixels (for images/videos).
+  int? get height;
+
   String? get dateString;
   Future<ViewerEntity?> updateWith({
     CLMediaFile? mediaFile,

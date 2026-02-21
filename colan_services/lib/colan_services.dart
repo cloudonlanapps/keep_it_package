@@ -10,6 +10,7 @@ export 'init_service/models/app_descriptor.dart'
     show AppDescriptor, CLAppInitializer, CLRedirector, CLTransitionBuilder;
 export 'init_service/models/cl_route_descriptor.dart' show CLRouteDescriptor;
 export 'init_service/models/platform_support.dart' show ColanPlatformSupport;
+export 'intelligence_service/intelligence_service.dart';
 export 'preference_service/preference_service.dart';
 export 'server_service/server_service.dart';
 export 'storage_service/storage_service.dart';

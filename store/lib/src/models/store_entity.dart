@@ -209,7 +209,9 @@ class StoreEntity implements ViewerEntity {
   String? get extension => clEntity.extension;
   bool get isDeleted => clEntity.isDeleted;
 
+  @override
   int? get height => clEntity.height;
+  @override
   int? get width => clEntity.width;
   double? get duration => clEntity.duration;
 

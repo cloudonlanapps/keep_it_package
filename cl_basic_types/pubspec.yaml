@@ -9,6 +9,8 @@ publish_to: none
 dependencies:
   cl_extensions:
     path: ../cl_extensions
+  cl_server_dart_client:
+    path: ../../../sdks/dartsdk
   collection: ^1.19.1
   meta: ^1.16.0
 

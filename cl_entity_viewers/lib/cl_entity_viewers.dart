@@ -24,3 +24,9 @@ export 'src/common/views/preview/collection_preview_raw.dart' show CLEntityView;
 export 'src/gallery_view/views/cl_grid.dart' show CLGrid;
 export 'src/common/views/overlays.dart' show OverlayIcon, OverlayWidgets;
 export 'src/common/views/preview/collection_folder_item.dart' show FolderItem;
+
+// Face overlay exports (FaceData is exported from cl_basic_types)
+export 'src/page_view/views/face_overlay/face_box_overlay.dart'
+    show FaceBoxOverlay;
+export 'src/page_view/views/face_overlay/faces_overlay_layer.dart'
+    show FacesOverlayLayer;
