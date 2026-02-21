@@ -40,6 +40,9 @@ class ServerHealthCheckNotifier
         isServiceHealthy(config.computeUrl),
       ]);
 
+      log(
+        'Health check results for ${config.label}: Auth: ${results[0]}, Store: ${results[1]}, Compute: ${results[2]}',
+      );
       final allHealthy = results.every((healthy) => healthy);
 
       if (!allHealthy) {
