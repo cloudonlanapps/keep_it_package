@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:cl_extensions/cl_extensions.dart' show CLLogger;
+import 'package:cl_server_dart_client/cl_server_dart_client.dart';
 import 'package:colan_services/server_service/server_service.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:local_store/local_store.dart';
@@ -37,16 +38,39 @@ class RegisteredServiceLocationsNotifier
           ...scanner.remoteConfigs.where((e) => e.isRepoServer),
       ];
 
+      // When the list of available stores changes (e.g. after a network scan),
+      // try to preserve the currently active store selection.
+      final previousState = state.valueOrNull;
+      var activeIndex = 0; // Default to Primary Collection
+
+      if (previousState != null) {
+        final currentActiveIdentity = previousState.activeConfig.identity;
+        final foundIndex = configs.indexWhere(
+          (c) => c.identity == currentActiveIdentity,
+        );
+
+        if (foundIndex != -1) {
+          activeIndex = foundIndex;
+        } else {
+          log(
+            'Active store ${previousState.activeConfig.label} is no longer available. Reverting to default.',
+          );
+        }
+      }
+
       final registered = RegisteredServiceLocations(
         availableConfigs: configs,
-        activeIndex: 0,
+        activeIndex: activeIndex,
       );
 
+      // Listen to active store health
       ref.listen(storeProvider(registered.activeConfig), (prev, next) {
         next.whenData((store) {
           if (!store.entityStore.isAlive) {
-            // assuming 0 is always available
-            activeConfig = registered.availableConfigs[0];
+            log(
+              'Active store ${registered.activeConfig.label} is no longer alive, switching to default',
+            );
+            activeConfig = configs[0];
           }
         });
       });
@@ -59,8 +83,15 @@ class RegisteredServiceLocationsNotifier
   }
 
   ServiceLocationConfig get activeConfig => state.value!.activeConfig;
-  set activeConfig(ServiceLocationConfig config) =>
-      state = AsyncValue.data(state.value!.setActiveConfig(config));
+  set activeConfig(ServiceLocationConfig config) {
+    if (config is RemoteServiceLocationConfig) {
+      log('Switching to remote server ${config.label}, invalidating providers');
+      ref
+        ..invalidate(serverHealthCheckProvider(config))
+        ..invalidate(storeProvider(config));
+    }
+    state = AsyncValue.data(state.value!.setActiveConfig(config));
+  }
 }
 
 final registeredServiceLocationsProvider =

@@ -9,6 +9,8 @@ import 'package:flutter/material.dart';
 import 'package:path/path.dart' as p;
 import 'package:store/store.dart';
 
+import '../common_widgets/keep_it_error_view.dart';
+import '../common_widgets/keep_it_loading_view.dart';
 import '../page_manager.dart';
 import 'preview.dart';
 
@@ -26,12 +28,14 @@ class CameraService extends StatelessWidget {
     return CLScaffold(
       onSwipe: () => PageManager.of(context).pop(),
       body: GetDefaultStore(
-        errorBuilder: (e, st) => CLErrorView.page(
-          message: 'Failed to access store',
-          details: e.toString(),
+        errorBuilder: (e, st) => KeepItErrorView(
+          error: e,
+          serverId: serverId,
+          includeBottomBar: false,
         ),
-        loadingBuilder: () => CLLoadingView.widget(
-          debugMessage: 'GetStoreUpdater',
+        loadingBuilder: () => KeepItLoadingView(
+          serverId: serverId,
+          includeBottomBar: false,
         ),
         builder: (theStore) {
           return GetStoreTaskManager(

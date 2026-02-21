@@ -1,17 +1,22 @@
+import 'package:cl_server_dart_client/cl_server_dart_client.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
+import '../../server_service/providers/server_health_check.dart';
 import '../providers/registerred_urls.dart';
+import '../providers/store_provider.dart';
 
 @immutable
 class RegisteredServiceLocationsActions {
   const RegisteredServiceLocationsActions({
     required this.setActiveConfig,
+    required this.invalidateStore,
   });
 
   final void Function(ServiceLocationConfig) setActiveConfig;
+  final void Function(ServiceLocationConfig) invalidateStore;
 }
 
 /// Builder widget for accessing registered service locations
@@ -38,6 +43,12 @@ class GetRegisteredServiceLocations extends ConsumerWidget {
       setActiveConfig: (config) =>
           ref.read(registeredServiceLocationsProvider.notifier).activeConfig =
               config,
+      invalidateStore: (config) {
+        if (config is RemoteServiceLocationConfig) {
+          ref.invalidate(serverHealthCheckProvider(config));
+        }
+        ref.invalidate(storeProvider(config));
+      },
     );
 
     return locationsAsync.when(

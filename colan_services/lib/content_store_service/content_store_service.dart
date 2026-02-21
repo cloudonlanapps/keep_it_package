@@ -13,6 +13,7 @@ export 'builders/get_reload.dart';
 export 'builders/get_reload.dart' show GetReload;
 export 'builders/get_store.dart';
 export 'builders/get_store_status.dart';
+export 'builders/on_store_error.dart';
 // Export providers (for services needing direct access)
 export 'providers/active_store_provider.dart' show activeStoreProvider;
 export 'providers/refresh_cache.dart' show reloadProvider;

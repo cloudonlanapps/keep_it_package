@@ -64,9 +64,24 @@ class ServerNotifier
 
   String get _keySuffix => arg.identity;
 
+  void _setupListeners() {
+    // Listen to network scanner to trigger health check refresh
+    ref.listen(networkScannerProvider, (prev, next) {
+      final isAvailable = next.servers.any((s) => s.identity == arg.identity);
+      final wasAvailable =
+          prev?.servers.any((s) => s.identity == arg.identity) ?? false;
+
+      if (isAvailable && !wasAvailable) {
+        log('Server ${arg.label} detected by scanner, refreshing health check');
+        ref.invalidate(serverHealthCheckProvider(arg));
+      }
+    });
+  }
+
   @override
   FutureOr<CLServer> build(RemoteServiceLocationConfig arg) async {
     log('Building ServerNotifier for ${arg.label} (identity: $_keySuffix)');
+    _setupListeners();
     try {
       final config = arg;
 

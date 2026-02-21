@@ -7,6 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:store/store.dart';
 
+import '../common_widgets/keep_it_error_view.dart';
+import '../common_widgets/keep_it_loading_view.dart';
 import '../page_manager.dart';
 import 'widgets/step1_analyse.dart';
 import 'widgets/step2_duplicates.dart';
@@ -42,16 +44,21 @@ class IncomingMediaHandlerState extends State<IncomingMediaHandler> {
     return CLScaffold(
       onSwipe: () => widget.onDiscard(result: false),
       body: GetDefaultStore(
-        errorBuilder: (e, st) => CLErrorView.custom(
-          child: WizardLayout(
-            title: '$label Error',
-            onCancel: () => widget.onDiscard(result: false),
-            child: CLErrorView.local(message: e.toString()),
-          ),
+        errorBuilder: (e, st) => KeepItErrorView(
+          error: e,
+          serverId: label,
+          includeBottomBar: false,
+          actions: [
+            ShadButton.outline(
+              onPressed: () => widget.onDiscard(result: false),
+              child: const Text('Cancel'),
+            ),
+          ],
         ),
-        loadingBuilder: () => CLLoadingView.wizard(
+        loadingBuilder: () => KeepItLoadingView(
+          serverId: label,
           message: label,
-          onCancel: () => widget.onDiscard(result: false),
+          includeBottomBar: false,
         ),
         builder: (store) {
           return GetStoreTaskManager(
