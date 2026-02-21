@@ -1,7 +1,10 @@
 import 'dart:developer' as dev;
+import 'dart:io';
 
 import 'package:cl_basic_types/viewer_types.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../models/video_player_controls.dart';
@@ -30,6 +33,7 @@ class MediaViewerPageView extends ConsumerStatefulWidget {
 
 class _MediaViewerPageViewState extends ConsumerState<MediaViewerPageView> {
   late final PageController pageController;
+  final FocusNode focusNode = FocusNode();
 
   @override
   void initState() {
@@ -39,20 +43,45 @@ class _MediaViewerPageViewState extends ConsumerState<MediaViewerPageView> {
     pageController = PageController(initialPage: currentIndex);
 
     super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      focusNode.requestFocus();
+    });
   }
 
   @override
   void dispose() {
     pageController.dispose();
+    focusNode.dispose();
     super.dispose();
+  }
+
+  void _previousPage() {
+    if (pageController.page! > 0) {
+      pageController.previousPage(
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+      );
+    }
+  }
+
+  void _nextPage() {
+    final s = ref.read(mediaViewerUIStateProvider);
+    if (pageController.page! < s.entities.length - 1) {
+      pageController.nextPage(
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+      );
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     final s = ref.watch(mediaViewerUIStateProvider);
+    final isDesktop =
+        kIsWeb || Platform.isMacOS || Platform.isWindows || Platform.isLinux;
 
-    return PageView.builder(
-      physics: s.showMenu ? null : NeverScrollableScrollPhysics(),
+    final pageView = PageView.builder(
+      physics: s.showMenu ? null : const NeverScrollableScrollPhysics(),
       controller: pageController,
       itemCount: s.entities.length,
       onPageChanged: (index) {
@@ -99,6 +128,61 @@ class _MediaViewerPageViewState extends ConsumerState<MediaViewerPageView> {
 
         return mediaWidget;
       },
+    );
+
+    return KeyboardListener(
+      focusNode: focusNode,
+      autofocus: true,
+      onKeyEvent: (event) {
+        if (event is KeyDownEvent) {
+          if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
+            _previousPage();
+          } else if (event.logicalKey == LogicalKeyboardKey.arrowRight) {
+            _nextPage();
+          }
+        }
+      },
+      child: Stack(
+        children: [
+          pageView,
+          if (s.showMenu || isDesktop) ...[
+            // Previous button
+            if (s.currentIndex > 0)
+              Positioned(
+                left: 16,
+                top: 0,
+                bottom: 0,
+                child: Center(
+                  child: IconButton(
+                    onPressed: _previousPage,
+                    icon: const Icon(
+                      Icons.arrow_back_ios,
+                      color: Colors.white,
+                      shadows: [Shadow(blurRadius: 10, color: Colors.black)],
+                    ),
+                  ),
+                ),
+              ),
+            // Next button
+            if (s.currentIndex < s.entities.length - 1)
+              Positioned(
+                right: 16,
+                top: 0,
+                bottom: 0,
+                child: Center(
+                  child: IconButton(
+                    onPressed: _nextPage,
+                    icon: const Icon(
+                      Icons.arrow_forward_ios,
+                      color: Colors.white,
+                      shadows: [Shadow(blurRadius: 10, color: Colors.black)],
+                    ),
+                  ),
+                ),
+              ),
+          ],
+        ],
+      ),
     );
   }
 }
