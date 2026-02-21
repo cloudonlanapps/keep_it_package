@@ -20,6 +20,7 @@ class ImageViewer extends ConsumerWidget {
     required this.keepAspectRatio,
     super.key,
     this.fit,
+    this.onImageLoaded,
   });
 
   final Uri uri;
@@ -30,6 +31,9 @@ class ImageViewer extends ConsumerWidget {
   final bool keepAspectRatio;
   final BoxFit? fit;
   final bool hasGesture;
+
+  /// Callback when image has finished loading.
+  final VoidCallback? onImageLoaded;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -67,6 +71,8 @@ class ImageViewer extends ConsumerWidget {
             initGestureConfigHandler: hasGesture
                 ? initGestureConfigHandler
                 : null,
+            loadStateChanged: (state) =>
+                _buildLoadStateWidget(state, effectiveFit, mode),
           ),
           _ => ExtendedImage.network(
             uri.toString(),
@@ -78,6 +84,8 @@ class ImageViewer extends ConsumerWidget {
                 ? initGestureConfigHandler
                 : null,
             cache: true,
+            loadStateChanged: (state) =>
+                _buildLoadStateWidget(state, effectiveFit, mode),
           ),
         };
       },
@@ -97,6 +105,31 @@ class ImageViewer extends ConsumerWidget {
         onLockPage?.call(lock: details!.totalScale! > 1.0);
       },
     );
+  }
+
+  Widget? _buildLoadStateWidget(
+    ExtendedImageState state,
+    BoxFit effectiveFit,
+    ExtendedImageMode mode,
+  ) {
+    switch (state.extendedImageLoadState) {
+      case LoadState.loading:
+        return loadingBuilder();
+      case LoadState.completed:
+        // Notify that image is loaded
+        if (onImageLoaded != null) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            onImageLoaded!();
+          });
+        }
+        // Return null to use the default completed widget
+        return null;
+      case LoadState.failed:
+        return errorBuilder(
+          state.lastException ?? Exception('Failed to load image'),
+          state.lastStack ?? StackTrace.current,
+        );
+    }
   }
 }
 

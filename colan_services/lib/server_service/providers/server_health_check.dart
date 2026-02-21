@@ -47,12 +47,28 @@ class ServerHealthCheckNotifier
     return await checkAllServices(arg);
   }
 
-  /// Start periodic health check that refreshes this provider.
+  /// Start periodic health check that only updates state if result changes.
   void _startPeriodicHealthCheck() {
-    _periodicTimer = Timer.periodic(healthCheckInterval, (_) {
-      // Use invalidateSelf to trigger a rebuild with fresh health check
-      // This is safe because we're just scheduling a rebuild
-      ref.invalidateSelf();
+    _periodicTimer = Timer.periodic(healthCheckInterval, (_) async {
+      try {
+        // Check health without triggering full rebuild
+        final newHealthy = await checkAllServices(arg);
+        final currentHealthy = state.valueOrNull;
+
+        // Only update state if health status actually changed
+        if (currentHealthy != newHealthy) {
+          log(
+            'Health status changed: $currentHealthy -> $newHealthy',
+          );
+          state = AsyncValue.data(newHealthy);
+        }
+      } catch (e) {
+        log('Periodic health check error: $e');
+        // If we were healthy and now errored, update state
+        if (state.valueOrNull == true) {
+          state = const AsyncValue.data(false);
+        }
+      }
     });
   }
 

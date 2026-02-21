@@ -7,6 +7,7 @@ import 'package:cl_server_dart_client/cl_server_dart_client.dart'
 import 'package:colan_services/colan_services.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
 import '../page_manager.dart';
@@ -65,7 +66,7 @@ class KeepItPageView extends StatelessWidget {
 }
 
 /// Internal widget that builds face overlay for an entity.
-class _FaceOverlayBuilder extends StatelessWidget {
+class _FaceOverlayBuilder extends ConsumerWidget {
   const _FaceOverlayBuilder({
     required this.entity,
     required this.config,
@@ -75,7 +76,7 @@ class _FaceOverlayBuilder extends StatelessWidget {
   final RemoteServiceLocationConfig config;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final entityId = entity.id;
     if (entityId == null) {
       return const SizedBox.shrink();
@@ -135,7 +136,7 @@ class _FaceOverlayBuilder extends StatelessWidget {
               imageHeight: imageHeight,
               showBoxes: settings.showBoxes,
               showLandmarks: settings.showLandmarks,
-              onFaceTapped: _onFaceTapped,
+              onFaceTapped: (face) => _onFaceTapped(face, ref),
             );
           },
           loadingBuilder: () =>
@@ -147,8 +148,8 @@ class _FaceOverlayBuilder extends StatelessWidget {
     );
   }
 
-  /// Handle face tap - log face info.
-  void _onFaceTapped(FaceData face) {
+  /// Handle face tap - log face info and toggle menu.
+  void _onFaceTapped(FaceData face, WidgetRef ref) {
     dev.log(
       'Face tapped: '
       'id=${face.id}, '
@@ -158,5 +159,8 @@ class _FaceOverlayBuilder extends StatelessWidget {
       'knownPersonId=${face.knownPersonId ?? "unknown"}',
       name: 'FaceOverlay',
     );
+
+    // Toggle menu (same behavior as tapping on image)
+    ref.read(mediaViewerUIStateProvider.notifier).toggleMenu();
   }
 }

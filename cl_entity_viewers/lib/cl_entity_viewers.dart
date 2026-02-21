@@ -30,3 +30,6 @@ export 'src/page_view/views/face_overlay/face_box_overlay.dart'
     show FaceBoxOverlay;
 export 'src/page_view/views/face_overlay/faces_overlay_layer.dart'
     show FacesOverlayLayer;
+
+// UI state provider for menu toggle
+export 'src/page_view/providers/ui_state.dart' show mediaViewerUIStateProvider;

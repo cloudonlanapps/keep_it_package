@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../models/video_player_controls.dart';
+import '../providers/image_load_state.dart';
 import '../providers/ui_state.dart' show mediaViewerUIStateProvider;
 import 'media_viewer_core.dart' show ViewMedia;
 
@@ -86,7 +87,12 @@ class _MediaViewerPageViewState extends ConsumerState<MediaViewerPageView> {
           return Stack(
             children: [
               mediaWidget,
-              Positioned.fill(child: widget.faceOverlayBuilder!(entity)),
+              Positioned.fill(
+                child: _FaceOverlayWithLoadCheck(
+                  entityId: entity.id!,
+                  builder: () => widget.faceOverlayBuilder!(entity),
+                ),
+              ),
             ],
           );
         }
@@ -94,5 +100,29 @@ class _MediaViewerPageViewState extends ConsumerState<MediaViewerPageView> {
         return mediaWidget;
       },
     );
+  }
+}
+
+/// Widget that only shows face overlay after the image has finished loading.
+class _FaceOverlayWithLoadCheck extends ConsumerWidget {
+  const _FaceOverlayWithLoadCheck({
+    required this.entityId,
+    required this.builder,
+  });
+
+  final int entityId;
+  final Widget Function() builder;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final isLoaded = ref.watch(
+      imageLoadStateProvider.select((state) => state[entityId] ?? false),
+    );
+
+    if (!isLoaded) {
+      return const SizedBox.shrink();
+    }
+
+    return builder();
   }
 }

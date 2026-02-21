@@ -12,6 +12,7 @@ import 'package:shadcn_ui/shadcn_ui.dart';
 import '../models/cl_icons.dart';
 import '../models/video_player_controls.dart';
 import '../builders/get_video_player_controls.dart';
+import '../providers/image_load_state.dart';
 import '../providers/ui_state.dart' show mediaViewerUIStateProvider;
 import 'media_viewer.dart';
 import 'media_viewer_page_view.dart' show MediaViewerPageView;
@@ -63,7 +64,12 @@ class MediaViewerCore extends ConsumerWidget {
           return Stack(
             children: [
               mediaContent,
-              Positioned.fill(child: faceOverlayBuilder!(currentItem)),
+              Positioned.fill(
+                child: _FaceOverlayWithLoadCheck(
+                  entityId: currentItem.id!,
+                  builder: () => faceOverlayBuilder!(currentItem),
+                ),
+              ),
             ],
           );
         }
@@ -130,6 +136,12 @@ class ViewMedia extends ConsumerWidget {
       loadingBuilder: () => const CLLoadingView.custom(child: GreyShimmer()),
       keepAspectRatio: stateManager.showMenu || isPlayable,
       hasGesture: !stateManager.showMenu,
+      onImageLoaded: () {
+        // Mark image as loaded for face overlay timing
+        if (currentItem.id != null) {
+          ref.read(imageLoadStateProvider.notifier).setLoaded(currentItem.id!);
+        }
+      },
     );
     if (!isPlayable) {
       return GestureDetector(
@@ -216,5 +228,29 @@ class ViewMedia extends ConsumerWidget {
     } else {
       return player;
     }
+  }
+}
+
+/// Widget that only shows face overlay after the image has finished loading.
+class _FaceOverlayWithLoadCheck extends ConsumerWidget {
+  const _FaceOverlayWithLoadCheck({
+    required this.entityId,
+    required this.builder,
+  });
+
+  final int entityId;
+  final Widget Function() builder;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final isLoaded = ref.watch(
+      imageLoadStateProvider.select((state) => state[entityId] ?? false),
+    );
+
+    if (!isLoaded) {
+      return const SizedBox.shrink();
+    }
+
+    return builder();
   }
 }

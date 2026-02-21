@@ -20,6 +20,7 @@ class MediaViewer extends StatelessWidget {
     this.previewUri,
     this.hasGesture = true,
     this.fit,
+    this.onImageLoaded,
   });
 
   final void Function({required bool lock})? onLockPage;
@@ -38,6 +39,9 @@ class MediaViewer extends StatelessWidget {
   final bool hasGesture;
   final BoxFit? fit;
 
+  /// Callback when image has finished loading.
+  final VoidCallback? onImageLoaded;
+
   @override
   Widget build(BuildContext context) {
     return Hero(
@@ -52,6 +56,7 @@ class MediaViewer extends StatelessWidget {
           loadingBuilder: loadingBuilder,
           hasGesture: hasGesture,
           fit: fit,
+          onImageLoaded: onImageLoaded,
         ),
         (_) when mime.startsWith('video') => VideoPlayer(
           uri: uri,
