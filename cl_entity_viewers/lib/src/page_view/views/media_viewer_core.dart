@@ -1,3 +1,5 @@
+import 'dart:developer' as dev;
+
 import 'package:cl_basic_types/viewer_types.dart';
 
 import 'package:colan_widgets/colan_widgets.dart'
@@ -94,6 +96,19 @@ class ViewMedia extends ConsumerWidget {
         currentItem.mediaType == CLMediaType.video &&
         currentItem.mediaUri != null;
 
+    // Debug logging to verify which entity's image is being displayed
+    dev.log(
+      '========== ViewMedia ==========\n'
+      '  ENTITY ID: ${currentItem.id}\n'
+      '  mediaUri: $uri\n'
+      '  previewUri: ${currentItem.previewUri}\n'
+      '  dimensions: ${currentItem.width}x${currentItem.height}\n'
+      '  mimeType: ${currentItem.mimeType}\n'
+      '  autoStart: $autoStart\n'
+      '================================',
+      name: 'MediaViewer',
+    );
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (isPlayable) {
         playerControls.setVideo(uri);
@@ -123,7 +138,10 @@ class ViewMedia extends ConsumerWidget {
         // this dummy container
         child: Container(
           decoration: BoxDecoration(),
-          child: Center(child: mediaViewer),
+          // Note: Do NOT wrap mediaViewer in Center - ExtendedImage with
+          // BoxFit.contain already handles centering. Adding Center causes
+          // double-centering which breaks face overlay positioning.
+          child: mediaViewer,
         ),
       );
     }
@@ -144,26 +162,16 @@ class ViewMedia extends ConsumerWidget {
       ),
       child: Stack(
         children: [
-          if (stateManager.showMenu)
-            GestureDetector(
-              onTap: () {
-                ref.read(mediaViewerUIStateProvider.notifier).showPlayerMenu();
-                playerControls.onPlayPause(uri);
-              },
-              child: mediaViewer,
-            )
-          else
-            Center(
-              child: GestureDetector(
-                onTap: () {
-                  ref
-                      .read(mediaViewerUIStateProvider.notifier)
-                      .showPlayerMenu();
-                  playerControls.onPlayPause(uri);
-                },
-                child: mediaViewer,
-              ),
-            ),
+          // Note: Do NOT wrap mediaViewer in Center - ExtendedImage with
+          // BoxFit.contain already handles centering. Adding Center causes
+          // double-centering which breaks face overlay positioning.
+          GestureDetector(
+            onTap: () {
+              ref.read(mediaViewerUIStateProvider.notifier).showPlayerMenu();
+              playerControls.onPlayPause(uri);
+            },
+            child: mediaViewer,
+          ),
           Positioned(
             top: 0,
             right: 0,

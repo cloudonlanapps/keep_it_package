@@ -1,3 +1,5 @@
+import 'dart:developer' as dev;
+
 import 'package:cl_basic_types/viewer_types.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -63,6 +65,15 @@ class _MediaViewerPageViewState extends ConsumerState<MediaViewerPageView> {
       },
       itemBuilder: (context, index) {
         final entity = s.entities.entities[index];
+
+        // Debug: Log which entity is at which index
+        dev.log(
+          'PageView itemBuilder: index=$index, '
+          'entityId=${entity.id}, '
+          'dimensions=${entity.width}x${entity.height}',
+          name: 'PageViewBuilder',
+        );
+
         final mediaWidget = ViewMedia(
           currentItem: entity,
           autoStart: index == s.currentIndex,

@@ -107,10 +107,18 @@ class EntityFacesNotifier
           'Step 5: Successfully retrieved ${faces.length} faces '
           'for entity $entityId',
         );
+
+        // VERIFY: Check that all returned faces belong to this entity
         for (var i = 0; i < faces.length; i++) {
           final face = faces[i];
+          if (face.entityId != entityId) {
+            log(
+              'ERROR: Face ${face.id} has entityId=${face.entityId} '
+              'but we requested entityId=$entityId! SERVER DATA MISMATCH!',
+            );
+          }
           log(
-            '  Face[$i] id=${face.id}:\n'
+            '  Face[$i] id=${face.id}, entityId=${face.entityId}:\n'
             '    confidence: ${face.confidence.toStringAsFixed(3)}\n'
             '    bbox: (${face.bbox.x1.toStringAsFixed(3)}, '
             '${face.bbox.y1.toStringAsFixed(3)}) -> '

@@ -1,3 +1,4 @@
+import 'dart:developer' as dev;
 import 'dart:io';
 
 import 'package:extended_image/extended_image.dart';
@@ -39,8 +40,19 @@ class ImageViewer extends ConsumerWidget {
     // Default to BoxFit.contain to ensure consistent scaling with overlays
     final effectiveFit = fit ?? BoxFit.contain;
 
+    dev.log(
+      '[ImageViewer] Loading image:\n'
+      '  uri: $uri\n'
+      '  scheme: ${uri.scheme}',
+      name: 'ImageViewer',
+    );
+
     return uriConfigAsync.when(
       data: (uriConfig) {
+        dev.log(
+          '[ImageViewer] uriConfig ready, rendering image: $uri',
+          name: 'ImageViewer',
+        );
         return switch (uri.scheme) {
           'file' => ExtendedImage.file(
             File(

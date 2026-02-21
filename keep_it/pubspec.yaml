@@ -25,6 +25,7 @@ dependencies:
     path: ../colan_services
   colan_widgets:
     path: ../colan_widgets
+  extended_image: ^10.0.1
   flutter:
     sdk: flutter
   form_factory:

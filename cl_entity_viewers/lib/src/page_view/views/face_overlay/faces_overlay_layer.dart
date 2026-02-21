@@ -15,6 +15,7 @@ class FacesOverlayLayer extends StatelessWidget {
     required this.faces,
     required this.imageWidth,
     required this.imageHeight,
+    required this.entityId,
     this.showBoxes = true,
     this.showLandmarks = true,
     this.boxColor = Colors.green,
@@ -24,6 +25,9 @@ class FacesOverlayLayer extends StatelessWidget {
     this.onFaceTapped,
     super.key,
   });
+
+  /// Entity ID this overlay belongs to (for debugging and widget keying).
+  final int entityId;
 
   /// List of faces to display.
   final List<FaceData> faces;
@@ -83,7 +87,7 @@ class FacesOverlayLayer extends StatelessWidget {
         final displaySize = Size(displayWidth, displayHeight);
 
         dev.log(
-          'FacesOverlayLayer:\n'
+          'FacesOverlayLayer for ENTITY $entityId:\n'
           '  containerSize: $containerSize\n'
           '  imageSize: $imageSize (original: ${imageWidth}x$imageHeight)\n'
           '  scale: $scale (scaleX=$scaleX, scaleY=$scaleY)\n'

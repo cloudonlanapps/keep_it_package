@@ -1,3 +1,5 @@
+import 'dart:developer' as dev;
+
 import 'package:cl_basic_types/cl_basic_types.dart';
 import 'package:cl_extensions/cl_extensions.dart' show ValueGetter;
 import 'package:intl/intl.dart';
@@ -147,7 +149,34 @@ class StoreEntity implements ViewerEntity {
   int? get parentId => clEntity.parentId;
 
   @override
-  Uri? get mediaUri => store.entityStore.mediaUri(clEntity);
+  Uri? get mediaUri {
+    final uri = store.entityStore.mediaUri(clEntity);
+    if (uri == null || uri.scheme == 'file') return uri;
+    // Add cache-busting parameter for remote URIs to prevent ExtendedImage
+    // from serving cached images from different entities
+    if (md5 != null) {
+      final result = uri.replace(
+        queryParameters: {
+          ...uri.queryParameters,
+          'v': md5,
+        },
+      );
+      dev.log(
+        '[StoreEntity] mediaUri for entity $id:\n'
+        '  base: $uri\n'
+        '  md5: $md5\n'
+        '  result: $result',
+        name: 'StoreEntity',
+      );
+      return result;
+    }
+    dev.log(
+      '[StoreEntity] mediaUri for entity $id: $uri (no md5)',
+      name: 'StoreEntity',
+    );
+    return uri;
+  }
+
   @override
   Uri? get previewUri {
     final uri = store.entityStore.previewUri(clEntity);

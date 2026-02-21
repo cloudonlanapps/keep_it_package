@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:colan_services/colan_services.dart';
+import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:keep_it/views/auth_views/auth_view.dart' show AuthView;
 import 'package:keep_it/views/preference_views/settings_view.dart';
@@ -18,6 +19,10 @@ class KeepItApp implements AppDescriptor {
 
   @override
   CLAppInitializer get appInitializer => (ref) async {
+    // Clear ExtendedImage cache on app start to ensure fresh images.
+    // TODO(developer): Remove this after confirming cache-busting fix works.
+    await clearDiskCachedImages();
+    clearMemoryImageCache();
     return true;
   };
 

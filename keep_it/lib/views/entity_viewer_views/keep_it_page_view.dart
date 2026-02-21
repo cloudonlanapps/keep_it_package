@@ -82,6 +82,8 @@ class _FaceOverlayBuilder extends StatelessWidget {
     }
 
     return GetFaceOverlaySettings(
+      // Key ensures settings widget rebuilds when entity changes
+      key: ValueKey('face_settings_$entityId'),
       builder: (settings, _) {
         // Don't render if overlay is disabled
         if (!settings.isEnabled) {
@@ -89,12 +91,32 @@ class _FaceOverlayBuilder extends StatelessWidget {
         }
 
         return GetEntityFaces(
+          // Key ensures widget rebuilds when entity changes
+          key: ValueKey('get_faces_$entityId'),
           entityId: entityId,
           config: config,
           builder: (faces) {
             if (faces.isEmpty) {
               return const SizedBox.shrink();
             }
+
+            // VERIFY: Check that all returned faces belong to this entity
+            for (final face in faces) {
+              if (face.entityId != entityId) {
+                dev.log(
+                  'WARNING: Face ${face.id} has entityId=${face.entityId} '
+                  'but we requested entityId=$entityId! Data mismatch!',
+                  name: 'FaceOverlay',
+                );
+              }
+            }
+
+            dev.log(
+              'Building face overlay for entity $entityId: '
+              '${faces.length} faces, '
+              'faceIds=${faces.map((f) => f.id).join(", ")}',
+              name: 'FaceOverlay',
+            );
 
             // Convert FaceResponse to FaceData using factory constructor
             final faceDataList =
@@ -105,6 +127,9 @@ class _FaceOverlayBuilder extends StatelessWidget {
             final imageHeight = entity.height ?? 1080;
 
             return FacesOverlayLayer(
+              // Use ValueKey to ensure widget rebuilds when entity changes
+              key: ValueKey('face_overlay_$entityId'),
+              entityId: entityId,
               faces: faceDataList,
               imageWidth: imageWidth,
               imageHeight: imageHeight,
