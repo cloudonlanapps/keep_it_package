@@ -1,0 +1,22 @@
+name: cl_media_viewer_example
+description: Example app demonstrating the cl_media_viewer package.
+
+publish_to: none
+
+environment:
+  sdk: ^3.9.2
+  flutter: '>=3.22.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cl_media_viewer:
+    path: ../
+  cl_basic_types:
+    path: ../../cl_basic_types
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/images/
+    - assets/faces/
