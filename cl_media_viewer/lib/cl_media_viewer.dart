@@ -1,6 +1,6 @@
 /// A standalone, self-contained interactive image viewer with face overlay support.
 ///
-/// This package provides widgets for displaying images with interactive face
+/// This package provides a widget for displaying images with interactive face
 /// bounding boxes that track with zoom/pan transformations.
 ///
 /// ## Usage
@@ -16,8 +16,8 @@
 ///     faces: [
 ///       InteractiveFace(
 ///         data: faceData,
-///         onTap: () => print('Face tapped'),
-///         onLongPress: () => print('Face long-pressed'),
+///         onTap: (position) => print('Face tapped at $position'),
+///         onLongPress: (position) => print('Face long-pressed'),
 ///       ),
 ///     ],
 ///   ),
@@ -32,5 +32,3 @@ export 'src/models/interactive_face.dart'
 
 // Widgets
 export 'src/widgets/interactive_image_viewer.dart' show InteractiveImageViewer;
-export 'src/widgets/interactive_face_box.dart' show InteractiveFaceBox;
-export 'src/widgets/face_landmarks_painter.dart' show FaceLandmarksPainter;
