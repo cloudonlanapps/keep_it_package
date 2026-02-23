@@ -1,5 +1,5 @@
 name: cl_media_viewer
-description: Standalone interactive image viewer with face bounding box overlay support.
+description: Standalone interactive media viewer with face overlays (images) and playback controls (videos).
 version: 1.0.0
 
 environment:
@@ -14,6 +14,7 @@ dependencies:
     path: ../cl_basic_types
   extended_image: ^9.0.8
   meta: ^1.16.0
+  video_player: ^2.9.5
 
 dev_dependencies:
   flutter_test:

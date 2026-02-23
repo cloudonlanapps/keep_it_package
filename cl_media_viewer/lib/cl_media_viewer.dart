@@ -1,9 +1,9 @@
-/// A standalone, self-contained interactive image viewer with face overlay support.
+/// A standalone, self-contained media viewer package with interactive overlays.
 ///
-/// This package provides a widget for displaying images with interactive face
-/// bounding boxes that track with zoom/pan transformations.
+/// This package provides widgets for displaying images and videos with interactive
+/// features like face bounding boxes (for images) and playback controls (for videos).
 ///
-/// ## Usage
+/// ## Image Viewer
 ///
 /// ```dart
 /// import 'package:cl_media_viewer/cl_media_viewer.dart';
@@ -24,11 +24,35 @@
 ///   onTap: () => print('Image tapped'),
 /// )
 /// ```
-library cl_media_viewer;
+///
+/// ## Video Viewer
+///
+/// ```dart
+/// import 'package:cl_media_viewer/cl_media_viewer.dart';
+///
+/// final controller = DefaultVideoViewerController();
+/// await controller.initialize(Uri.parse('asset:assets/video.mp4'));
+///
+/// InteractiveVideoViewer(
+///   controller: controller,
+///   showControls: true,
+///   onTap: () => print('Video tapped'),
+/// )
+/// ```
+library;
 
-// Models
-export 'src/models/interactive_face.dart'
+// Image viewer - models
+export 'src/image/models/interactive_face.dart'
     show InteractiveFace, InteractiveImageData, GesturePositionCallback;
 
-// Widgets
-export 'src/widgets/interactive_image_viewer.dart' show InteractiveImageViewer;
+// Image viewer - widgets
+export 'src/image/widgets/interactive_image_viewer.dart'
+    show InteractiveImageViewer;
+
+// Video viewer - models
+export 'src/video/models/video_viewer_controller.dart'
+    show VideoViewerController, DefaultVideoViewerController;
+
+// Video viewer - widgets
+export 'src/video/widgets/interactive_video_viewer.dart'
+    show InteractiveVideoViewer;

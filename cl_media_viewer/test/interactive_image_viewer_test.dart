@@ -1,8 +1,8 @@
 import 'package:cl_basic_types/cl_basic_types.dart';
 import 'package:cl_media_viewer/cl_media_viewer.dart';
 // Internal widgets for testing only
-import 'package:cl_media_viewer/src/widgets/face_landmarks_painter.dart';
-import 'package:cl_media_viewer/src/widgets/interactive_face_box.dart';
+import 'package:cl_media_viewer/src/image/widgets/face_landmarks_painter.dart';
+import 'package:cl_media_viewer/src/image/widgets/interactive_face_box.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';

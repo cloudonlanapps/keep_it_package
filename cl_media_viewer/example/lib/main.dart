@@ -5,6 +5,8 @@ import 'package:cl_media_viewer/cl_media_viewer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import 'video_example.dart';
+
 void main() {
   runApp(const MyApp());
 }
@@ -15,7 +17,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Interactive Image Viewer Example',
+      title: 'Media Viewer Example',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
         useMaterial3: true,
@@ -27,7 +29,51 @@ class MyApp extends StatelessWidget {
         ),
         useMaterial3: true,
       ),
-      home: const ImageListScreen(),
+      home: const HomeScreen(),
+    );
+  }
+}
+
+/// Home screen with bottom navigation for Images and Videos.
+class HomeScreen extends StatefulWidget {
+  const HomeScreen({super.key});
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  int _selectedIndex = 0;
+
+  static const List<Widget> _pages = [
+    ImageListScreen(),
+    VideoListScreen(),
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: _pages[_selectedIndex],
+      bottomNavigationBar: NavigationBar(
+        selectedIndex: _selectedIndex,
+        onDestinationSelected: (index) {
+          setState(() {
+            _selectedIndex = index;
+          });
+        },
+        destinations: const [
+          NavigationDestination(
+            icon: Icon(Icons.image_outlined),
+            selectedIcon: Icon(Icons.image),
+            label: 'Images',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.video_library_outlined),
+            selectedIcon: Icon(Icons.video_library),
+            label: 'Videos',
+          ),
+        ],
+      ),
     );
   }
 }
@@ -113,16 +159,11 @@ class ImageWithFaces {
 }
 
 /// Screen showing a list of available images.
-class ImageListScreen extends StatefulWidget {
+class ImageListScreen extends StatelessWidget {
   const ImageListScreen({super.key});
 
-  @override
-  State<ImageListScreen> createState() => _ImageListScreenState();
-}
-
-class _ImageListScreenState extends State<ImageListScreen> {
   // List of available image names
-  final List<String> _imageNames = [
+  static const List<String> _imageNames = [
     '2.jpg',
     '3.jpg',
     '4.jpg',
@@ -145,7 +186,7 @@ class _ImageListScreenState extends State<ImageListScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Interactive Image Viewer'),
+        title: const Text('Image Examples'),
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
       ),
       body: ListView.builder(
@@ -154,34 +195,56 @@ class _ImageListScreenState extends State<ImageListScreen> {
         itemBuilder: (context, index) {
           final imageName = _imageNames[index];
           return Card(
-            margin: const EdgeInsets.only(bottom: 16),
+            margin: const EdgeInsets.only(bottom: 8),
             clipBehavior: Clip.antiAlias,
             child: InkWell(
               onTap: () => _openImageViewer(context, imageName),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  AspectRatio(
-                    aspectRatio: 16 / 9,
-                    child: Image.asset(
-                      'assets/images/$imageName',
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stack) => Container(
-                        color: Colors.grey[300],
-                        child: const Center(
-                          child: Icon(Icons.image_not_supported, size: 64),
+              child: Padding(
+                padding: const EdgeInsets.all(12),
+                child: Row(
+                  children: [
+                    // Thumbnail preview
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(8),
+                      child: SizedBox(
+                        width: 80,
+                        height: 60,
+                        child: Image.asset(
+                          'assets/images/$imageName',
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stack) => Container(
+                            color: Colors.grey[300],
+                            child: const Icon(
+                              Icons.image_not_supported,
+                              size: 32,
+                              color: Colors.grey,
+                            ),
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Text(
-                      imageName,
-                      style: Theme.of(context).textTheme.titleMedium,
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            imageName,
+                            style: Theme.of(context).textTheme.titleMedium,
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            'assets/images/$imageName',
+                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                  color: Colors.grey[600],
+                                ),
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                ],
+                    const Icon(Icons.chevron_right),
+                  ],
+                ),
               ),
             ),
           );
