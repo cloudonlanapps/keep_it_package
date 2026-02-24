@@ -20,11 +20,7 @@ import 'on_toggle_play.dart';
 import 'video_progress.dart';
 
 class MediaViewerCore extends ConsumerWidget {
-  const MediaViewerCore({
-    this.onLoadMore,
-    this.imageDataWrapper,
-    super.key,
-  });
+  const MediaViewerCore({this.onLoadMore, this.imageDataWrapper, super.key});
 
   final Future<void> Function()? onLoadMore;
 
@@ -59,6 +55,20 @@ class MediaViewerCore extends ConsumerWidget {
     ViewerEntity currentItem,
     VideoPlayerControls controls,
   ) {
+    // Single item: drive setVideo/removeVideo here since there's no
+    // PageView onPageChanged. This is safe — only one ViewMedia alive.
+    final isVideo =
+        currentItem.mediaType == CLMediaType.video &&
+        currentItem.mediaUri != null;
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (isVideo) {
+        controls.setVideo(currentItem.mediaUri!);
+      } else {
+        controls.removeVideo();
+      }
+    });
+
     // For images with imageDataWrapper, wrap with the data provider
     if (imageDataWrapper != null &&
         currentItem.mediaType == CLMediaType.image) {
@@ -122,13 +132,12 @@ class ViewMedia extends ConsumerWidget {
       name: 'MediaViewer',
     );
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (isPlayable) {
-        playerControls.setVideo(uri);
-      } else {
-        playerControls.removeVideo();
-      }
-    });
+    // NOTE: setVideo/removeVideo is NOT called here.
+    // ViewMedia only renders the media. Navigation-driven video control
+    // is handled by MediaViewerPageView, which calls setVideo/removeVideo
+    // exactly once per page change. Calling it here causes races when
+    // multiple adjacent PageView pages all schedule addPostFrameCallback
+    // in the same frame.
 
     final mediaViewer = MediaViewer(
       heroTag: '/item/${currentItem.id}',
@@ -149,10 +158,7 @@ class ViewMedia extends ConsumerWidget {
     if (!isPlayable) {
       return GestureDetector(
         onTap: ref.read(mediaViewerUIStateProvider.notifier).toggleMenu,
-        child: Container(
-          decoration: BoxDecoration(),
-          child: mediaViewer,
-        ),
+        child: Container(decoration: BoxDecoration(), child: mediaViewer),
       );
     }
 

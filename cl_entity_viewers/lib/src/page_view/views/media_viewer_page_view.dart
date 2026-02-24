@@ -50,6 +50,8 @@ class _MediaViewerPageViewState extends ConsumerState<MediaViewerPageView> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       focusNode.requestFocus();
+      // Trigger video control for the initially visible page
+      _updateVideoForIndex(currentIndex);
       // Precache adjacent images after first frame
       _precacheAdjacentImages(currentIndex);
     });
@@ -105,17 +107,16 @@ class _MediaViewerPageViewState extends ConsumerState<MediaViewerPageView> {
       }
 
       if (provider != null) {
-        precacheImage(provider, context).then((_) {
-          dev.log(
-            'Precached image: $uri',
-            name: 'ImagePrecache',
-          );
-        }).catchError((e) {
-          dev.log(
-            'Failed to precache image: $uri - $e',
-            name: 'ImagePrecache',
-          );
-        });
+        precacheImage(provider, context)
+            .then((_) {
+              dev.log('Precached image: $uri', name: 'ImagePrecache');
+            })
+            .catchError((e) {
+              dev.log(
+                'Failed to precache image: $uri - $e',
+                name: 'ImagePrecache',
+              );
+            });
       }
     } catch (e) {
       dev.log(
@@ -144,6 +145,23 @@ class _MediaViewerPageViewState extends ConsumerState<MediaViewerPageView> {
     }
   }
 
+  /// Single source of truth for video control.
+  /// Called when the active page changes — sets or removes the video
+  /// based on whether the newly-active entity is a video.
+  /// This replaces the addPostFrameCallback in ViewMedia to avoid races.
+  void _updateVideoForIndex(int index) {
+    final s = ref.read(mediaViewerUIStateProvider);
+    if (index >= s.entities.length) return;
+    final entity = s.entities.entities[index];
+    final isVideo =
+        entity.mediaType == CLMediaType.video && entity.mediaUri != null;
+    if (isVideo) {
+      widget.playerControls.setVideo(entity.mediaUri!);
+    } else {
+      widget.playerControls.removeVideo();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final s = ref.watch(mediaViewerUIStateProvider);
@@ -156,6 +174,11 @@ class _MediaViewerPageViewState extends ConsumerState<MediaViewerPageView> {
       itemCount: s.entities.length,
       onPageChanged: (index) {
         ref.read(mediaViewerUIStateProvider.notifier).currIndex = index;
+
+        // Update video playback for the new page — single source of truth.
+        // Do NOT let ViewMedia widgets schedule this via addPostFrameCallback
+        // as that causes races when multiple pages are alive simultaneously.
+        _updateVideoForIndex(index);
 
         // Precache adjacent images for smooth transitions
         _precacheAdjacentImages(index);
