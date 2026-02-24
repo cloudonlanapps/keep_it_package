@@ -29,6 +29,7 @@ class MyApp extends StatelessWidget {
         ),
         useMaterial3: true,
       ),
+      debugShowCheckedModeBanner: false,
       home: const HomeScreen(),
     );
   }
@@ -45,10 +46,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
 
-  static const List<Widget> _pages = [
-    ImageListScreen(),
-    VideoListScreen(),
-  ];
+  static const List<Widget> _pages = [ImageListScreen(), VideoListScreen()];
 
   @override
   Widget build(BuildContext context) {
@@ -235,9 +233,8 @@ class ImageListScreen extends StatelessWidget {
                           const SizedBox(height: 4),
                           Text(
                             'assets/images/$imageName',
-                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                  color: Colors.grey[600],
-                                ),
+                            style: Theme.of(context).textTheme.bodySmall
+                                ?.copyWith(color: Colors.grey[600]),
                           ),
                         ],
                       ),
@@ -264,10 +261,7 @@ class ImageListScreen extends StatelessWidget {
 
 /// Screen showing the interactive image viewer.
 class ImageViewerScreen extends StatefulWidget {
-  const ImageViewerScreen({
-    required this.imageName,
-    super.key,
-  });
+  const ImageViewerScreen({required this.imageName, super.key});
 
   final String imageName;
 
@@ -349,9 +343,7 @@ class _ImageViewerScreenState extends State<ImageViewerScreen> {
     }
 
     if (_imageData == null) {
-      return const Center(
-        child: CircularProgressIndicator(),
-      );
+      return const Center(child: CircularProgressIndicator());
     }
 
     final imageData = _imageData!;
@@ -409,20 +401,26 @@ class _ImageViewerScreenState extends State<ImageViewerScreen> {
           children: [
             Text('Confidence: ${(face.confidence * 100).toStringAsFixed(1)}%'),
             Text(
-                'Bounding box: (${face.bbox.x1.toStringAsFixed(3)}, ${face.bbox.y1.toStringAsFixed(3)}) - '
-                '(${face.bbox.x2.toStringAsFixed(3)}, ${face.bbox.y2.toStringAsFixed(3)})'),
+              'Bounding box: (${face.bbox.x1.toStringAsFixed(3)}, ${face.bbox.y1.toStringAsFixed(3)}) - '
+              '(${face.bbox.x2.toStringAsFixed(3)}, ${face.bbox.y2.toStringAsFixed(3)})',
+            ),
             Text('Width: ${(face.width * 100).toStringAsFixed(1)}%'),
             Text('Height: ${(face.height * 100).toStringAsFixed(1)}%'),
             if (face.landmarks != null) ...[
               const SizedBox(height: 8),
-              const Text('Landmarks:',
-                  style: TextStyle(fontWeight: FontWeight.bold)),
+              const Text(
+                'Landmarks:',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
               Text(
-                  'Left eye: (${face.landmarks!.leftEye.x.toStringAsFixed(3)}, ${face.landmarks!.leftEye.y.toStringAsFixed(3)})'),
+                'Left eye: (${face.landmarks!.leftEye.x.toStringAsFixed(3)}, ${face.landmarks!.leftEye.y.toStringAsFixed(3)})',
+              ),
               Text(
-                  'Right eye: (${face.landmarks!.rightEye.x.toStringAsFixed(3)}, ${face.landmarks!.rightEye.y.toStringAsFixed(3)})'),
+                'Right eye: (${face.landmarks!.rightEye.x.toStringAsFixed(3)}, ${face.landmarks!.rightEye.y.toStringAsFixed(3)})',
+              ),
               Text(
-                  'Nose: (${face.landmarks!.noseTip.x.toStringAsFixed(3)}, ${face.landmarks!.noseTip.y.toStringAsFixed(3)})'),
+                'Nose: (${face.landmarks!.noseTip.x.toStringAsFixed(3)}, ${face.landmarks!.noseTip.y.toStringAsFixed(3)})',
+              ),
             ],
           ],
         ),
@@ -446,19 +444,13 @@ class _ImageViewerScreenState extends State<ImageViewerScreen> {
         position.dy,
       ),
       items: [
-        const PopupMenuItem(
-          value: 'select',
-          child: Text('Select face'),
-        ),
-        const PopupMenuItem(
-          value: 'details',
-          child: Text('View details'),
-        ),
+        const PopupMenuItem(value: 'select', child: Text('Select face')),
+        const PopupMenuItem(value: 'details', child: Text('View details')),
         PopupMenuItem(
           value: 'landmarks',
-          child: Text(_selectedFaceId == face.id
-              ? 'Hide landmarks'
-              : 'Show landmarks'),
+          child: Text(
+            _selectedFaceId == face.id ? 'Hide landmarks' : 'Show landmarks',
+          ),
         ),
       ],
     ).then((value) {
