@@ -34,6 +34,7 @@ class InteractiveImageViewer extends StatefulWidget {
     this.onScaleChanged,
     this.errorBuilder,
     this.loadingBuilder,
+    this.onImageLoaded,
     super.key,
   });
 
@@ -73,6 +74,9 @@ class InteractiveImageViewer extends StatefulWidget {
 
   /// Builder for loading state.
   final Widget Function()? loadingBuilder;
+
+  /// Callback when image has finished loading.
+  final VoidCallback? onImageLoaded;
 
   @override
   State<InteractiveImageViewer> createState() => _InteractiveImageViewerState();
@@ -189,10 +193,7 @@ class _InteractiveImageViewerState extends State<InteractiveImageViewer> {
     );
 
     // Wrap in FittedBox to maintain aspect ratio
-    composite = FittedBox(
-      fit: BoxFit.contain,
-      child: composite,
-    );
+    composite = FittedBox(fit: BoxFit.contain, child: composite);
 
     // Wrap in InteractiveViewer for zoom/pan
     if (widget.enableZoom) {
@@ -259,9 +260,7 @@ class _InteractiveImageViewerState extends State<InteractiveImageViewer> {
         if (widget.loadingBuilder != null) {
           return widget.loadingBuilder!();
         }
-        return const Center(
-          child: CircularProgressIndicator(),
-        );
+        return const Center(child: CircularProgressIndicator());
 
       case LoadState.completed:
         // Image loaded - mark state and show faces
@@ -271,14 +270,14 @@ class _InteractiveImageViewerState extends State<InteractiveImageViewer> {
               setState(() {
                 _imageLoaded = true;
               });
+              widget.onImageLoaded?.call();
             }
           });
         }
         return null; // Use the default completed widget
 
       case LoadState.failed:
-        final error =
-            state.lastException ?? Exception('Failed to load image');
+        final error = state.lastException ?? Exception('Failed to load image');
         if (widget.errorBuilder != null) {
           return widget.errorBuilder!(error);
         }

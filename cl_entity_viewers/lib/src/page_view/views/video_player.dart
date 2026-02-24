@@ -72,12 +72,13 @@ class _VideoPlayerState extends ConsumerState<VideoPlayer> {
             children: [
               InteractiveVideoViewer(
                 controller: _adapter!,
-                showControls: false, // Controls managed separately by cl_entity_viewers
+                showControls:
+                    false, // Controls managed separately by cl_entity_viewers
                 keepAspectRatio: widget.keepAspectRatio,
                 quarterTurns: uriConfig.quarterTurns,
               ),
               const Align(
-                alignment: Alignment.topRight,
+                alignment: Alignment.bottomLeft,
                 child: PlaybackTypeBadge(),
               ),
             ],

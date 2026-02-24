@@ -1,8 +1,6 @@
 import '../../common/views/overlays.dart' show OverlayWidgets;
 import 'package:flutter/material.dart';
 
-import 'media_viewer.dart';
-
 class MediaViewerOverlays extends StatelessWidget {
   const MediaViewerOverlays({
     required this.uri,
@@ -13,7 +11,7 @@ class MediaViewerOverlays extends StatelessWidget {
     super.key,
   });
   final Uri uri;
-  final MediaViewer child;
+  final Widget child;
   final String mime;
   final List<OverlayWidgets> overlays;
   final double borderRadius;

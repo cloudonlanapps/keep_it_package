@@ -9,7 +9,7 @@ import '../../common/views/overlays.dart';
 import 'package:flutter/material.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
-import 'media_viewer.dart';
+import 'image_viewer.dart';
 import 'media_viewer_overlays.dart';
 
 class MediaPreviewWithOverlays extends StatelessWidget {
@@ -130,15 +130,16 @@ class MediaThumbnail extends StatelessWidget {
         mime: 'image/jpeg',
         overlays: overlays ?? const <OverlayWidgets>[],
         borderRadius: borderRadius,
-        child: MediaViewer(
-          heroTag: '/item/${media.id}',
-          uri: media.previewUri!,
-          mime: 'image/jpeg',
-          errorBuilder: (_, _) => const CLErrorView.image(),
-          loadingBuilder: () =>
-              const CLLoadingView.custom(child: GreyShimmer()),
-          hasGesture: false,
-          keepAspectRatio: false,
+        child: Hero(
+          tag: '/item/${media.id}',
+          child: ImageViewer(
+            uri: media.previewUri!,
+            errorBuilder: (_, _) => const CLErrorView.image(),
+            loadingBuilder: () =>
+                const CLLoadingView.custom(child: GreyShimmer()),
+            onImageLoaded: null,
+            fit: BoxFit.cover,
+          ),
         ),
       );
     } catch (e) {

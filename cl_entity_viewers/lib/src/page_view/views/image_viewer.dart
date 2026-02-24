@@ -1,25 +1,26 @@
-import 'package:cl_media_viewer/cl_media_viewer.dart';
+import 'dart:io';
+
 import 'package:colan_widgets/colan_widgets.dart';
+import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 
-/// Widget for viewing images with optional face overlays.
+/// Widget for viewing images using [ExtendedImage] for thumbnail/grid rendering.
 ///
-/// This widget wraps [InteractiveImageViewer] from cl_media_viewer,
-/// providing integration with the page view system.
+/// This widget provides local rendering with support for file, asset, and network schemes.
+/// It is intended for use in grid views and simple previews where interactive features
+/// like zoom and face overlays are not required.
 class ImageViewer extends StatelessWidget {
   const ImageViewer({
-    required this.imageData,
+    required this.uri,
     required this.errorBuilder,
     required this.loadingBuilder,
-    this.onLockPage,
-    this.hasGesture = true,
-    this.onTap,
     this.onImageLoaded,
+    this.fit = BoxFit.contain,
     super.key,
   });
 
-  /// The image data including URI, dimensions, and optional faces.
-  final InteractiveImageData imageData;
+  /// The URI of the image to display.
+  final Uri uri;
 
   /// Builder for error state.
   final CLErrorView Function(Object, StackTrace) errorBuilder;
@@ -27,32 +28,60 @@ class ImageViewer extends StatelessWidget {
   /// Builder for loading state.
   final CLLoadingView Function() loadingBuilder;
 
-  /// Called when zoom scale changes (scale > 1 means zoomed in).
-  /// Used to lock page swiping when zoomed.
-  final void Function({required bool lock})? onLockPage;
-
-  /// Whether to enable zoom/pan gestures.
-  final bool hasGesture;
-
-  /// Called when the image area is tapped.
-  final VoidCallback? onTap;
-
   /// Callback when image has finished loading.
   final VoidCallback? onImageLoaded;
 
+  /// How to fit the image into the available space.
+  final BoxFit fit;
+
   @override
   Widget build(BuildContext context) {
-    return InteractiveImageViewer(
-      imageData: imageData,
-      enableZoom: hasGesture,
-      minScale: 1.0,
-      maxScale: 10.0,
-      onTap: onTap,
-      onScaleChanged: onLockPage != null
-          ? (scale) => onLockPage!(lock: scale > 1.0)
-          : null,
-      errorBuilder: (error) => errorBuilder(error, StackTrace.current),
-      loadingBuilder: loadingBuilder,
-    );
+    if (uri.scheme == 'file') {
+      final filePath = uri.hasQuery
+          ? uri.replace(queryParameters: {}).toFilePath()
+          : uri.toFilePath();
+      return ExtendedImage.file(
+        File(filePath),
+        fit: fit,
+        mode: ExtendedImageMode.none,
+        loadStateChanged: (state) => _buildLoadStateWidget(context, state),
+      );
+    } else if (uri.scheme == 'asset' || uri.scheme.isEmpty) {
+      final assetPath = uri.scheme == 'asset' ? uri.path : uri.toString();
+      return ExtendedImage.asset(
+        assetPath,
+        fit: fit,
+        mode: ExtendedImageMode.none,
+        loadStateChanged: (state) => _buildLoadStateWidget(context, state),
+      );
+    } else {
+      return ExtendedImage.network(
+        uri.toString(),
+        fit: fit,
+        mode: ExtendedImageMode.none,
+        loadStateChanged: (state) => _buildLoadStateWidget(context, state),
+        cache: true,
+      );
+    }
+  }
+
+  Widget? _buildLoadStateWidget(
+    BuildContext context,
+    ExtendedImageState state,
+  ) {
+    switch (state.extendedImageLoadState) {
+      case LoadState.loading:
+        return loadingBuilder();
+      case LoadState.completed:
+        if (onImageLoaded != null) {
+          WidgetsBinding.instance.addPostFrameCallback((_) => onImageLoaded!());
+        }
+        return null;
+      case LoadState.failed:
+        return errorBuilder(
+          state.lastException ?? Exception('Failed to load image'),
+          StackTrace.current,
+        );
+    }
   }
 }

@@ -51,12 +51,13 @@ class MediaViewer extends StatelessWidget {
     return Hero(
       tag: heroTag,
       child: switch (mime) {
-        (_) when mime.startsWith('image') => ImageViewer(
+        (_) when mime.startsWith('image') => InteractiveImageViewer(
           imageData: imageData ?? InteractiveImageData(uri: uri),
-          onLockPage: onLockPage,
-          errorBuilder: errorBuilder,
+          onScaleChanged: (scale) => onLockPage?.call(lock: scale > 1.0),
+          errorBuilder: (error) => errorBuilder(error, StackTrace.current),
           loadingBuilder: loadingBuilder,
-          hasGesture: hasGesture,
+          enableZoom: hasGesture,
+          onTap: null, // Tap handled by outer layers if needed
           onImageLoaded: onImageLoaded,
         ),
         (_) when mime.startsWith('video') => VideoPlayer(
@@ -67,11 +68,14 @@ class MediaViewer extends StatelessWidget {
             if (previewUri != null) {
               // Preview image for video - no faces, no gestures
               return CLLoadingView.custom(
-                child: ImageViewer(
-                  imageData: InteractiveImageData(uri: previewUri!),
-                  errorBuilder: errorBuilder,
-                  loadingBuilder: loadingBuilder,
-                  hasGesture: false,
+                child: SizedBox.expand(
+                  child: ImageViewer(
+                    uri: previewUri!,
+                    errorBuilder: errorBuilder,
+                    loadingBuilder: loadingBuilder,
+                    onImageLoaded: null,
+                    fit: BoxFit.cover,
+                  ),
                 ),
               );
             }
