@@ -13,7 +13,8 @@ export 'src/page_view/builders/get_current_entity.dart' show GetCurrentEntity;
 
 export 'src/gallery_view/views/cl_gallery_grid_view.dart'
     show CLEntitiesGridView;
-export 'src/page_view/cl_media_viewer.dart' show CLEntitiesPageView;
+export 'src/page_view/cl_media_viewer.dart'
+    show CLEntitiesPageView, ImageDataWrapper;
 export 'src/gallery_view/views/cl_entities_grid_view_scope.dart'
     show CLEntitiesGridViewScope;
 export 'src/page_view/views/cl_entities_page_view_scope.dart'
@@ -25,11 +26,9 @@ export 'src/gallery_view/views/cl_grid.dart' show CLGrid;
 export 'src/common/views/overlays.dart' show OverlayIcon, OverlayWidgets;
 export 'src/common/views/preview/collection_folder_item.dart' show FolderItem;
 
-// Face overlay exports (FaceData is exported from cl_basic_types)
-export 'src/page_view/views/face_overlay/face_box_overlay.dart'
-    show FaceBoxOverlay;
-export 'src/page_view/views/face_overlay/faces_overlay_layer.dart'
-    show FacesOverlayLayer;
+// Re-export cl_media_viewer types for convenience
+export 'package:cl_media_viewer/cl_media_viewer.dart'
+    show InteractiveImageData, InteractiveFace, GesturePositionCallback;
 
 // UI state provider for menu toggle
 export 'src/page_view/providers/ui_state.dart' show mediaViewerUIStateProvider;

@@ -351,8 +351,8 @@ class _ImageViewerScreenState extends State<ImageViewerScreen> {
     return InteractiveImageViewer(
       imageData: InteractiveImageData(
         uri: Uri.parse('asset:${imageData.assetPath}'),
-        width: imageData.width,
-        height: imageData.height,
+        width: imageData.width.toDouble(),
+        height: imageData.height.toDouble(),
         faces: imageData.faces.map((faceData) {
           return InteractiveFace(
             data: faceData,

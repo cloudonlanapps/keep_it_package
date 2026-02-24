@@ -12,6 +12,8 @@ dependencies:
     path: ../cl_basic_types
   cl_extensions:
     path: ../cl_extensions
+  cl_media_viewer:
+    path: ../cl_media_viewer
   colan_widgets:
     path: ../colan_widgets
   collection: ^1.19.0

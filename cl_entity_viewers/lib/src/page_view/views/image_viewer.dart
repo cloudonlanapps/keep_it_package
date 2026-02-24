@@ -1,188 +1,58 @@
-import 'dart:developer' as dev;
-import 'dart:io';
-
-import 'package:extended_image/extended_image.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:cl_media_viewer/cl_media_viewer.dart';
 import 'package:colan_widgets/colan_widgets.dart';
+import 'package:flutter/material.dart';
 
-import '../models/uri_config.dart';
-import '../providers/uri_config.dart';
-
-class ImageViewer extends ConsumerWidget {
+/// Widget for viewing images with optional face overlays.
+///
+/// This widget wraps [InteractiveImageViewer] from cl_media_viewer,
+/// providing integration with the page view system.
+class ImageViewer extends StatelessWidget {
   const ImageViewer({
-    required this.uri,
-    required this.isLocked,
-    required this.onLockPage,
-    required this.hasGesture,
+    required this.imageData,
     required this.errorBuilder,
     required this.loadingBuilder,
-    required this.keepAspectRatio,
-    super.key,
-    this.fit,
+    this.onLockPage,
+    this.hasGesture = true,
+    this.onTap,
     this.onImageLoaded,
+    super.key,
   });
 
-  final Uri uri;
-  final void Function({required bool lock})? onLockPage;
-  final bool isLocked;
+  /// The image data including URI, dimensions, and optional faces.
+  final InteractiveImageData imageData;
+
+  /// Builder for error state.
   final CLErrorView Function(Object, StackTrace) errorBuilder;
+
+  /// Builder for loading state.
   final CLLoadingView Function() loadingBuilder;
-  final bool keepAspectRatio;
-  final BoxFit? fit;
+
+  /// Called when zoom scale changes (scale > 1 means zoomed in).
+  /// Used to lock page swiping when zoomed.
+  final void Function({required bool lock})? onLockPage;
+
+  /// Whether to enable zoom/pan gestures.
   final bool hasGesture;
+
+  /// Called when the image area is tapped.
+  final VoidCallback? onTap;
 
   /// Callback when image has finished loading.
   final VoidCallback? onImageLoaded;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final uriConfigAsync = ref.watch(uriConfigurationProvider(uri));
-    final mode = hasGesture
-        ? ExtendedImageMode.gesture
-        : ExtendedImageMode.none;
-    // Default to BoxFit.contain to ensure consistent scaling with overlays
-    final effectiveFit = fit ?? BoxFit.contain;
-
-    dev.log(
-      '[ImageViewer] Loading image:\n'
-      '  uri: $uri\n'
-      '  scheme: ${uri.scheme}',
-      name: 'ImageViewer',
-    );
-
-    return uriConfigAsync.when(
-      data: (uriConfig) {
-        dev.log(
-          '[ImageViewer] uriConfig ready, rendering image: $uri',
-          name: 'ImageViewer',
-        );
-        return switch (uri.scheme) {
-          'file' => ExtendedImage.file(
-            File(
-              uri.hasQuery
-                  ? uri.replace(queryParameters: {}).toFilePath()
-                  : uri.toFilePath(),
-            ),
-            width: double.infinity,
-            height: double.infinity,
-            fit: effectiveFit,
-            mode: mode,
-            initGestureConfigHandler: hasGesture
-                ? initGestureConfigHandler
-                : null,
-            loadStateChanged: (state) =>
-                _buildLoadStateWidget(state, effectiveFit, mode),
-          ),
-          _ => ExtendedImage.network(
-            uri.toString(),
-            width: double.infinity,
-            height: double.infinity,
-            fit: effectiveFit,
-            mode: mode,
-            initGestureConfigHandler: hasGesture
-                ? initGestureConfigHandler
-                : null,
-            cache: true,
-            loadStateChanged: (state) =>
-                _buildLoadStateWidget(state, effectiveFit, mode),
-          ),
-        };
-      },
-      error: errorBuilder,
-      loading: loadingBuilder,
-    );
-  }
-
-  GestureConfig initGestureConfigHandler(ExtendedImageState state) {
-    return GestureConfig(
-      inPageView: true,
-      animationMaxScale: 10,
-      minScale: 1,
-      maxScale: 10,
-      gestureDetailsIsChanged: (details) {
-        if (details?.totalScale == null) return;
-        onLockPage?.call(lock: details!.totalScale! > 1.0);
-      },
-    );
-  }
-
-  Widget? _buildLoadStateWidget(
-    ExtendedImageState state,
-    BoxFit effectiveFit,
-    ExtendedImageMode mode,
-  ) {
-    switch (state.extendedImageLoadState) {
-      case LoadState.loading:
-        return loadingBuilder();
-      case LoadState.completed:
-        // Notify that image is loaded
-        if (onImageLoaded != null) {
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            onImageLoaded!();
-          });
-        }
-        // Return null to use the default completed widget
-        return null;
-      case LoadState.failed:
-        return errorBuilder(
-          state.lastException ?? Exception('Failed to load image'),
-          state.lastStack ?? StackTrace.current,
-        );
-    }
-  }
-}
-
-class ImageFromState extends ConsumerWidget {
-  const ImageFromState(
-    this.state, {
-    required this.errorBuilder,
-    required this.loadingBuilder,
-    required this.keepAspectRatio,
-    required this.uriConfig,
-    required this.mode,
-    super.key,
-    this.initGestureConfigHandler,
-    this.fit,
-  });
-  final ExtendedImageState state;
-  final CLErrorView Function(Object, StackTrace) errorBuilder;
-  final CLLoadingView Function() loadingBuilder;
-  final bool keepAspectRatio;
-  final UriConfig uriConfig;
-  final ExtendedImageMode mode;
-  final BoxFit? fit;
-  final GestureConfig Function(ExtendedImageState)? initGestureConfigHandler;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    // Default to BoxFit.contain to ensure consistent scaling with overlays
-    final effectiveFit = fit ?? BoxFit.contain;
-
-    if (!keepAspectRatio) {
-      return ExtendedImage(
-        image: state.imageProvider,
-        fit: effectiveFit,
-        mode: mode,
-        initGestureConfigHandler: initGestureConfigHandler,
-      );
-    }
-    final imageInfo = state.extendedImageInfo;
-    final width = imageInfo?.image.width.toDouble() ?? 1;
-    final height = imageInfo?.image.height.toDouble() ?? 1;
-    final aspectRatio = width / height;
-
-    return AspectRatio(
-      aspectRatio: aspectRatio,
-      child: RotatedBox(
-        quarterTurns: uriConfig.quarterTurns,
-        child: ExtendedImage(
-          image: state.imageProvider,
-          fit: effectiveFit,
-          mode: mode,
-          initGestureConfigHandler: initGestureConfigHandler,
-        ),
-      ),
+  Widget build(BuildContext context) {
+    return InteractiveImageViewer(
+      imageData: imageData,
+      enableZoom: hasGesture,
+      minScale: 1.0,
+      maxScale: 10.0,
+      onTap: onTap,
+      onScaleChanged: onLockPage != null
+          ? (scale) => onLockPage!(lock: scale > 1.0)
+          : null,
+      errorBuilder: (error) => errorBuilder(error, StackTrace.current),
+      loadingBuilder: loadingBuilder,
     );
   }
 }

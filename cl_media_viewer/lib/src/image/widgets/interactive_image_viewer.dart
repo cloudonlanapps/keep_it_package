@@ -17,6 +17,9 @@ import 'interactive_face_box.dart';
 ///
 /// Everything inside [InteractiveViewer] transforms together, ensuring faces
 /// always align with the image during zoom and pan operations.
+///
+/// Face boxes are only shown after the image has finished loading to prevent
+/// visual glitches where boxes appear before the image.
 class InteractiveImageViewer extends StatefulWidget {
   const InteractiveImageViewer({
     required this.imageData,
@@ -28,6 +31,7 @@ class InteractiveImageViewer extends StatefulWidget {
     this.faceBoxWidth = 2.0,
     this.selectedFaceId,
     this.onTap,
+    this.onScaleChanged,
     this.errorBuilder,
     this.loadingBuilder,
     super.key,
@@ -60,6 +64,10 @@ class InteractiveImageViewer extends StatefulWidget {
   /// Called when the image is tapped (not on a face).
   final VoidCallback? onTap;
 
+  /// Called when the zoom scale changes.
+  /// Useful for locking page swiping when zoomed in.
+  final void Function(double scale)? onScaleChanged;
+
   /// Builder for error state.
   final Widget Function(Object error)? errorBuilder;
 
@@ -74,12 +82,47 @@ class _InteractiveImageViewerState extends State<InteractiveImageViewer> {
   final TransformationController _transformationController =
       TransformationController();
   final FocusNode _focusNode = FocusNode();
+  double _lastScale = 1.0;
+
+  /// Tracks whether the image has finished loading.
+  /// Face boxes are only shown when this is true.
+  bool _imageLoaded = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _transformationController.addListener(_onTransformChanged);
+  }
+
+  @override
+  void didUpdateWidget(InteractiveImageViewer oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // Reset load state when image URI changes
+    if (oldWidget.imageData.uri != widget.imageData.uri) {
+      _imageLoaded = false;
+    }
+  }
 
   @override
   void dispose() {
+    _transformationController.removeListener(_onTransformChanged);
     _transformationController.dispose();
     _focusNode.dispose();
     super.dispose();
+  }
+
+  void _onTransformChanged() {
+    if (widget.onScaleChanged == null) return;
+
+    // Extract the scale from the transformation matrix
+    final matrix = _transformationController.value;
+    final scale = matrix.getMaxScaleOnAxis();
+
+    // Only notify if scale has changed
+    if (scale != _lastScale) {
+      _lastScale = scale;
+      widget.onScaleChanged!(scale);
+    }
   }
 
   /// Handle keyboard events for face selection (1-9 keys).
@@ -125,21 +168,22 @@ class _InteractiveImageViewerState extends State<InteractiveImageViewer> {
           // Image fills the entire SizedBox
           Positioned.fill(child: imageWidget),
 
-          // Face overlay boxes
-          ...imageData.faces.asMap().entries.map((entry) {
-            final index = entry.key;
-            final face = entry.value;
-            return InteractiveFaceBox(
-              key: ValueKey(face.id),
-              face: face,
-              index: index,
-              imageSize: imageSize,
-              defaultBoxColor: widget.defaultFaceBoxColor,
-              boxWidth: widget.faceBoxWidth,
-              isSelected: face.id == widget.selectedFaceId,
-              showFaceNumber: widget.showFaceNumbers,
-            );
-          }),
+          // Face overlay boxes - only shown after image loads
+          if (_imageLoaded)
+            ...imageData.faces.asMap().entries.map((entry) {
+              final index = entry.key;
+              final face = entry.value;
+              return InteractiveFaceBox(
+                key: ValueKey(face.id),
+                face: face,
+                index: index,
+                imageSize: imageSize,
+                defaultBoxColor: widget.defaultFaceBoxColor,
+                boxWidth: widget.faceBoxWidth,
+                isSelected: face.id == widget.selectedFaceId,
+                showFaceNumber: widget.showFaceNumbers,
+              );
+            }),
         ],
       ),
     );
@@ -211,6 +255,7 @@ class _InteractiveImageViewerState extends State<InteractiveImageViewer> {
   Widget? _buildLoadStateWidget(ExtendedImageState state) {
     switch (state.extendedImageLoadState) {
       case LoadState.loading:
+        // Image is loading - faces should not be shown
         if (widget.loadingBuilder != null) {
           return widget.loadingBuilder!();
         }
@@ -219,6 +264,16 @@ class _InteractiveImageViewerState extends State<InteractiveImageViewer> {
         );
 
       case LoadState.completed:
+        // Image loaded - mark state and show faces
+        if (!_imageLoaded) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (mounted) {
+              setState(() {
+                _imageLoaded = true;
+              });
+            }
+          });
+        }
         return null; // Use the default completed widget
 
       case LoadState.failed:

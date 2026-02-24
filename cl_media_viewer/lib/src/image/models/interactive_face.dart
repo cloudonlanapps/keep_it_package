@@ -83,8 +83,8 @@ class InteractiveFace {
 class InteractiveImageData {
   const InteractiveImageData({
     required this.uri,
-    required this.width,
-    required this.height,
+    this.width = 1920,
+    this.height = 1080,
     this.faces = const [],
   });
 
@@ -92,10 +92,12 @@ class InteractiveImageData {
   final Uri uri;
 
   /// Original width of the image in pixels.
-  final int width;
+  /// Defaults to 1920 if not specified.
+  final double width;
 
   /// Original height of the image in pixels.
-  final int height;
+  /// Defaults to 1080 if not specified.
+  final double height;
 
   /// List of faces to overlay on the image.
   final List<InteractiveFace> faces;
@@ -104,9 +106,9 @@ class InteractiveImageData {
   double get aspectRatio => width / height;
 
   /// Size as a Flutter Size object.
-  Size get size => Size(width.toDouble(), height.toDouble());
+  Size get size => Size(width, height);
 
   @override
   String toString() => 'InteractiveImageData(uri: $uri, '
-      'size: ${width}x$height, faces: ${faces.length})';
+      'size: ${width.toInt()}x${height.toInt()}, faces: ${faces.length})';
 }

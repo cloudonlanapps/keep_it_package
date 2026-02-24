@@ -1,3 +1,4 @@
+import 'package:cl_media_viewer/cl_media_viewer.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -6,12 +7,45 @@ import 'package:cl_basic_types/viewer_types.dart';
 import 'providers/ui_state.dart';
 import 'views/media_viewer_core.dart';
 
+/// Callback type for building media viewer with face data.
+///
+/// The [entity] is the current entity being viewed.
+/// The [mediaBuilder] should be called with the [InteractiveImageData]
+/// that includes any face overlays.
+///
+/// Example usage in keep_it:
+/// ```dart
+/// imageDataWrapper: (entity, mediaBuilder) {
+///   return GetEntityFaces(
+///     entityId: entity.id,
+///     builder: (faces) {
+///       final imageData = InteractiveImageData(
+///         uri: entity.mediaUri!,
+///         width: entity.width ?? 1920,
+///         height: entity.height ?? 1080,
+///         faces: faces.map(_toInteractiveFace).toList(),
+///       );
+///       return mediaBuilder(imageData);
+///     },
+///     loadingBuilder: () => mediaBuilder(InteractiveImageData(
+///       uri: entity.mediaUri!,
+///       width: entity.width ?? 1920,
+///       height: entity.height ?? 1080,
+///     )),
+///   );
+/// }
+/// ```
+typedef ImageDataWrapper = Widget Function(
+  ViewerEntity entity,
+  Widget Function(InteractiveImageData imageData) mediaBuilder,
+);
+
 class CLEntitiesPageView extends ConsumerWidget {
   const CLEntitiesPageView({
     required this.topMenuBuilder,
     required this.bottomMenu,
     this.onLoadMore,
-    this.faceOverlayBuilder,
+    this.imageDataWrapper,
     super.key,
   });
 
@@ -19,10 +53,14 @@ class CLEntitiesPageView extends ConsumerWidget {
   final PreferredSizeWidget bottomMenu;
   final Future<void> Function()? onLoadMore;
 
-  /// Optional builder for face overlay.
-  /// Called with the current entity to build a face overlay widget.
-  /// The overlay is positioned on top of the media viewer.
-  final Widget Function(ViewerEntity entity)? faceOverlayBuilder;
+  /// Optional wrapper for providing image data with faces.
+  ///
+  /// When provided, this wrapper is called for each image entity.
+  /// The wrapper should fetch face data asynchronously and call
+  /// the [mediaBuilder] with the complete [InteractiveImageData].
+  ///
+  /// If not provided, images are shown without face overlays.
+  final ImageDataWrapper? imageDataWrapper;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -38,7 +76,7 @@ class CLEntitiesPageView extends ConsumerWidget {
         body: SafeArea(
           child: MediaViewerCore(
             onLoadMore: onLoadMore,
-            faceOverlayBuilder: faceOverlayBuilder,
+            imageDataWrapper: imageDataWrapper,
           ),
         ),
         bottomMenu: bottomMenu,
@@ -49,7 +87,7 @@ class CLEntitiesPageView extends ConsumerWidget {
         body: SafeArea(
           child: MediaViewerCore(
             onLoadMore: onLoadMore,
-            faceOverlayBuilder: faceOverlayBuilder,
+            imageDataWrapper: imageDataWrapper,
           ),
         ),
       );

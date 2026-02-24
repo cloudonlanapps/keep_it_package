@@ -1,18 +1,17 @@
 import 'dart:developer' as dev;
 
 import 'package:cl_basic_types/viewer_types.dart';
-
+import 'package:cl_media_viewer/cl_media_viewer.dart';
 import 'package:colan_widgets/colan_widgets.dart'
     show CLErrorView, CLLoadingView, GreyShimmer, SvgIcon, SvgIcons;
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
+import '../cl_media_viewer.dart' show ImageDataWrapper;
 import '../models/cl_icons.dart';
 import '../models/video_player_controls.dart';
 import '../builders/get_video_player_controls.dart';
-import '../providers/image_load_state.dart';
 import '../providers/ui_state.dart' show mediaViewerUIStateProvider;
 import 'media_viewer.dart';
 import 'media_viewer_page_view.dart' show MediaViewerPageView;
@@ -23,14 +22,14 @@ import 'video_progress.dart';
 class MediaViewerCore extends ConsumerWidget {
   const MediaViewerCore({
     this.onLoadMore,
-    this.faceOverlayBuilder,
+    this.imageDataWrapper,
     super.key,
   });
 
   final Future<void> Function()? onLoadMore;
 
-  /// Optional builder for face overlay.
-  final Widget Function(ViewerEntity entity)? faceOverlayBuilder;
+  /// Optional wrapper for providing image data with faces.
+  final ImageDataWrapper? imageDataWrapper;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -43,39 +42,42 @@ class MediaViewerCore extends ConsumerWidget {
 
     return GetVideoPlayerControls(
       builder: (controls) {
-        final mediaContent = switch (length) {
+        return switch (length) {
           0 => Container(),
-          1 => ViewMedia(
-            currentItem: currentItem,
-            autoStart: true,
-            playerControls: controls,
-          ),
+          1 => _buildSingleItemView(currentItem, controls),
           _ => MediaViewerPageView(
             playerControls: controls,
             onLoadMore: onLoadMore,
-            faceOverlayBuilder: faceOverlayBuilder,
+            imageDataWrapper: imageDataWrapper,
           ),
         };
-
-        // For single item, add face overlay on top if provided
-        if (length == 1 &&
-            faceOverlayBuilder != null &&
-            currentItem.mediaType == CLMediaType.image) {
-          return Stack(
-            children: [
-              mediaContent,
-              Positioned.fill(
-                child: _FaceOverlayWithLoadCheck(
-                  entityId: currentItem.id!,
-                  builder: () => faceOverlayBuilder!(currentItem),
-                ),
-              ),
-            ],
-          );
-        }
-
-        return mediaContent;
       },
+    );
+  }
+
+  Widget _buildSingleItemView(
+    ViewerEntity currentItem,
+    VideoPlayerControls controls,
+  ) {
+    // For images with imageDataWrapper, wrap with the data provider
+    if (imageDataWrapper != null &&
+        currentItem.mediaType == CLMediaType.image) {
+      return imageDataWrapper!(
+        currentItem,
+        (imageData) => ViewMedia(
+          currentItem: currentItem,
+          autoStart: true,
+          playerControls: controls,
+          imageData: imageData,
+        ),
+      );
+    }
+
+    // Default: no face data
+    return ViewMedia(
+      currentItem: currentItem,
+      autoStart: true,
+      playerControls: controls,
     );
   }
 }
@@ -84,13 +86,18 @@ class ViewMedia extends ConsumerWidget {
   const ViewMedia({
     required this.currentItem,
     required this.playerControls,
-    super.key,
+    this.imageData,
     this.autoStart = false,
+    super.key,
   });
 
   final ViewerEntity currentItem;
   final VideoPlayerControls playerControls;
   final bool autoStart;
+
+  /// Optional image data with faces.
+  /// If provided, faces will be displayed on the image.
+  final InteractiveImageData? imageData;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -98,7 +105,6 @@ class ViewMedia extends ConsumerWidget {
     final uri = currentItem.mediaUri!;
     final isPlayable =
         autoStart &&
-        /* widget.playerControls.uri != widget.currentItem.mediaUri && */
         currentItem.mediaType == CLMediaType.video &&
         currentItem.mediaUri != null;
 
@@ -111,6 +117,7 @@ class ViewMedia extends ConsumerWidget {
       '  dimensions: ${currentItem.width}x${currentItem.height}\n'
       '  mimeType: ${currentItem.mimeType}\n'
       '  autoStart: $autoStart\n'
+      '  hasFaces: ${imageData?.faces.isNotEmpty ?? false}\n'
       '================================',
       name: 'MediaViewer',
     );
@@ -128,31 +135,22 @@ class ViewMedia extends ConsumerWidget {
       uri: currentItem.mediaUri!,
       previewUri: currentItem.previewUri,
       mime: currentItem.mimeType!,
+      imageData: imageData,
       onLockPage: ({required bool lock}) {},
       isLocked: false,
       autoStart: autoStart,
-      autoPlay: true, // Fixme
+      autoPlay: true,
       errorBuilder: (_, _) => const CLErrorView.image(),
       loadingBuilder: () => const CLLoadingView.custom(child: GreyShimmer()),
       keepAspectRatio: stateManager.showMenu || isPlayable,
       hasGesture: !stateManager.showMenu,
-      onImageLoaded: () {
-        // Mark image as loaded for face overlay timing
-        if (currentItem.id != null) {
-          ref.read(imageLoadStateProvider.notifier).setLoaded(currentItem.id!);
-        }
-      },
     );
+
     if (!isPlayable) {
       return GestureDetector(
         onTap: ref.read(mediaViewerUIStateProvider.notifier).toggleMenu,
-        // To get the gesture for the entire region, we need
-        // this dummy container
         child: Container(
           decoration: BoxDecoration(),
-          // Note: Do NOT wrap mediaViewer in Center - ExtendedImage with
-          // BoxFit.contain already handles centering. Adding Center causes
-          // double-centering which breaks face overlay positioning.
           child: mediaViewer,
         ),
       );
@@ -174,9 +172,6 @@ class ViewMedia extends ConsumerWidget {
       ),
       child: Stack(
         children: [
-          // Note: Do NOT wrap mediaViewer in Center - ExtendedImage with
-          // BoxFit.contain already handles centering. Adding Center causes
-          // double-centering which breaks face overlay positioning.
           GestureDetector(
             onTap: () {
               ref.read(mediaViewerUIStateProvider.notifier).showPlayerMenu();
@@ -223,34 +218,11 @@ class ViewMedia extends ConsumerWidget {
         ],
       ),
     );
+
     if (stateManager.showMenu) {
       return Center(child: player);
     } else {
       return player;
     }
-  }
-}
-
-/// Widget that only shows face overlay after the image has finished loading.
-class _FaceOverlayWithLoadCheck extends ConsumerWidget {
-  const _FaceOverlayWithLoadCheck({
-    required this.entityId,
-    required this.builder,
-  });
-
-  final int entityId;
-  final Widget Function() builder;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final isLoaded = ref.watch(
-      imageLoadStateProvider.select((state) => state[entityId] ?? false),
-    );
-
-    if (!isLoaded) {
-      return const SizedBox.shrink();
-    }
-
-    return builder();
   }
 }

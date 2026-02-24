@@ -53,10 +53,11 @@ class KeepItPageView extends StatelessWidget {
           bottomMenu: BottomBarPageView(
             serverId: serverId,
           ),
-          faceOverlayBuilder: config != null
-              ? (entity) => _FaceOverlayBuilder(
+          imageDataWrapper: config != null
+              ? (entity, mediaBuilder) => _ImageDataWrapper(
                     entity: entity,
                     config: config!,
+                    mediaBuilder: mediaBuilder,
                   )
               : null,
         ),
@@ -65,43 +66,53 @@ class KeepItPageView extends StatelessWidget {
   }
 }
 
-/// Internal widget that builds face overlay for an entity.
-class _FaceOverlayBuilder extends ConsumerWidget {
-  const _FaceOverlayBuilder({
+/// Internal widget that provides image data with faces for an entity.
+///
+/// This widget watches the faces provider directly and always shows the media.
+/// When faces are loaded, it rebuilds with the face data included.
+class _ImageDataWrapper extends ConsumerWidget {
+  const _ImageDataWrapper({
     required this.entity,
     required this.config,
+    required this.mediaBuilder,
   });
 
   final ViewerEntity entity;
   final RemoteServiceLocationConfig config;
+  final Widget Function(InteractiveImageData imageData) mediaBuilder;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final entityId = entity.id;
+
+    // Build default image data without faces
+    final defaultImageData = InteractiveImageData(
+      uri: entity.mediaUri!,
+      width: (entity.width ?? 1920).toDouble(),
+      height: (entity.height ?? 1080).toDouble(),
+    );
+
+    // If no entity ID, show without faces
     if (entityId == null) {
-      return const SizedBox.shrink();
+      return mediaBuilder(defaultImageData);
     }
 
+    // Check face overlay settings first
     return GetFaceOverlaySettings(
-      // Key ensures settings widget rebuilds when entity changes
       key: ValueKey('face_settings_$entityId'),
       builder: (settings, _) {
-        // Don't render if overlay is disabled
+        // If overlay is disabled, show without faces
         if (!settings.isEnabled) {
-          return const SizedBox.shrink();
+          return mediaBuilder(defaultImageData);
         }
 
-        return GetEntityFaces(
-          // Key ensures widget rebuilds when entity changes
-          key: ValueKey('get_faces_$entityId'),
-          entityId: entityId,
-          config: config,
-          builder: (faces) {
-            if (faces.isEmpty) {
-              return const SizedBox.shrink();
-            }
+        // Watch the faces provider directly
+        final facesKey = (entityId: entityId, config: config);
+        final facesAsync = ref.watch(entityFacesProvider(facesKey));
 
-            // VERIFY: Check that all returned faces belong to this entity
+        return facesAsync.when(
+          data: (faces) {
+            // Verify faces belong to this entity
             for (final face in faces) {
               if (face.entityId != entityId) {
                 dev.log(
@@ -112,46 +123,55 @@ class _FaceOverlayBuilder extends ConsumerWidget {
               }
             }
 
+            if (faces.isNotEmpty) {
+              dev.log(
+                'Building image data for entity $entityId: '
+                '${faces.length} faces, '
+                'faceIds=${faces.map((f) => f.id).join(", ")}',
+                name: 'FaceOverlay',
+              );
+            }
+
+            // Convert FaceResponse to InteractiveFace
+            final interactiveFaces = faces.map((faceResponse) {
+              final faceData = FaceData.fromFaceResponse(faceResponse);
+              return InteractiveFace(
+                data: faceData,
+                onTap: settings.showBoxes
+                    ? (position) => _onFaceTapped(faceData, position, ref)
+                    : null,
+              );
+            }).toList();
+
+            // Build image data with faces
+            final imageData = InteractiveImageData(
+              uri: entity.mediaUri!,
+              width: (entity.width ?? 1920).toDouble(),
+              height: (entity.height ?? 1080).toDouble(),
+              faces: interactiveFaces,
+            );
+
+            return mediaBuilder(imageData);
+          },
+          // While loading, show media without faces
+          loading: () => mediaBuilder(defaultImageData),
+          // On error, show media without faces
+          error: (error, stackTrace) {
             dev.log(
-              'Building face overlay for entity $entityId: '
-              '${faces.length} faces, '
-              'faceIds=${faces.map((f) => f.id).join(", ")}',
+              'Failed to load faces for entity $entityId: $error',
               name: 'FaceOverlay',
             );
-
-            // Convert FaceResponse to FaceData using factory constructor
-            final faceDataList =
-                faces.map(FaceData.fromFaceResponse).toList();
-
-            // Get image dimensions from entity
-            final imageWidth = entity.width ?? 1920;
-            final imageHeight = entity.height ?? 1080;
-
-            return FacesOverlayLayer(
-              // Use ValueKey to ensure widget rebuilds when entity changes
-              key: ValueKey('face_overlay_$entityId'),
-              entityId: entityId,
-              faces: faceDataList,
-              imageWidth: imageWidth,
-              imageHeight: imageHeight,
-              showBoxes: settings.showBoxes,
-              showLandmarks: settings.showLandmarks,
-              onFaceTapped: (face) => _onFaceTapped(face, ref),
-            );
+            return mediaBuilder(defaultImageData);
           },
-          loadingBuilder: () =>
-              const CLLoadingView.hidden(debugMessage: 'Loading faces'),
-          errorBuilder: (error, stackTrace) =>
-              const CLErrorView.hidden(debugMessage: 'Failed to load faces'),
         );
       },
     );
   }
 
   /// Handle face tap - log face info and toggle menu.
-  void _onFaceTapped(FaceData face, WidgetRef ref) {
+  void _onFaceTapped(FaceData face, Offset position, WidgetRef ref) {
     dev.log(
-      'Face tapped: '
+      'Face tapped at $position: '
       'id=${face.id}, '
       'confidence=${face.confidence.toStringAsFixed(3)}, '
       'bbox=(${face.bbox.x1.toStringAsFixed(3)}, ${face.bbox.y1.toStringAsFixed(3)}, '

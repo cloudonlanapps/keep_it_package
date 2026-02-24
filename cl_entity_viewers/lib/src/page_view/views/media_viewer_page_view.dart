@@ -2,13 +2,15 @@ import 'dart:developer' as dev;
 import 'dart:io';
 
 import 'package:cl_basic_types/viewer_types.dart';
+import 'package:cl_media_viewer/cl_media_viewer.dart';
+import 'package:extended_image/extended_image.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../cl_media_viewer.dart' show ImageDataWrapper;
 import '../models/video_player_controls.dart';
-import '../providers/image_load_state.dart';
 import '../providers/ui_state.dart' show mediaViewerUIStateProvider;
 import 'media_viewer_core.dart' show ViewMedia;
 
@@ -16,15 +18,15 @@ class MediaViewerPageView extends ConsumerStatefulWidget {
   const MediaViewerPageView({
     required this.playerControls,
     this.onLoadMore,
-    this.faceOverlayBuilder,
+    this.imageDataWrapper,
     super.key,
   });
 
   final VideoPlayerControls playerControls;
   final Future<void> Function()? onLoadMore;
 
-  /// Optional builder for face overlay.
-  final Widget Function(ViewerEntity entity)? faceOverlayBuilder;
+  /// Optional wrapper for providing image data with faces.
+  final ImageDataWrapper? imageDataWrapper;
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() =>
@@ -34,6 +36,9 @@ class MediaViewerPageView extends ConsumerStatefulWidget {
 class _MediaViewerPageViewState extends ConsumerState<MediaViewerPageView> {
   late final PageController pageController;
   final FocusNode focusNode = FocusNode();
+
+  /// Track which images have been precached to avoid redundant calls
+  final Set<int> _precachedIndices = {};
 
   @override
   void initState() {
@@ -45,6 +50,8 @@ class _MediaViewerPageViewState extends ConsumerState<MediaViewerPageView> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       focusNode.requestFocus();
+      // Precache adjacent images after first frame
+      _precacheAdjacentImages(currentIndex);
     });
   }
 
@@ -53,6 +60,69 @@ class _MediaViewerPageViewState extends ConsumerState<MediaViewerPageView> {
     pageController.dispose();
     focusNode.dispose();
     super.dispose();
+  }
+
+  /// Precache images adjacent to the given index for smoother transitions.
+  void _precacheAdjacentImages(int currentIndex) {
+    final entities = ref.read(mediaViewerUIStateProvider).entities;
+    final indicesToPrecache = <int>[
+      currentIndex - 1,
+      currentIndex,
+      currentIndex + 1,
+    ].where((i) => i >= 0 && i < entities.length);
+
+    for (final index in indicesToPrecache) {
+      if (_precachedIndices.contains(index)) continue;
+
+      final entity = entities.entities[index];
+      if (entity.mediaType != CLMediaType.image) continue;
+
+      final uri = entity.mediaUri;
+      if (uri == null) continue;
+
+      _precacheImage(uri);
+      _precachedIndices.add(index);
+    }
+  }
+
+  /// Precache a single image by URI.
+  void _precacheImage(Uri uri) {
+    if (!mounted) return;
+
+    try {
+      ImageProvider? provider;
+
+      if (uri.scheme == 'file') {
+        final path = uri.hasQuery
+            ? uri.replace(queryParameters: {}).toFilePath()
+            : uri.toFilePath();
+        provider = ExtendedFileImageProvider(File(path));
+      } else if (uri.scheme == 'asset' || uri.scheme.isEmpty) {
+        final assetPath = uri.scheme == 'asset' ? uri.path : uri.toString();
+        provider = ExtendedAssetImageProvider(assetPath);
+      } else if (uri.scheme == 'http' || uri.scheme == 'https') {
+        provider = ExtendedNetworkImageProvider(uri.toString(), cache: true);
+      }
+
+      if (provider != null) {
+        precacheImage(provider, context).then((_) {
+          dev.log(
+            'Precached image: $uri',
+            name: 'ImagePrecache',
+          );
+        }).catchError((e) {
+          dev.log(
+            'Failed to precache image: $uri - $e',
+            name: 'ImagePrecache',
+          );
+        });
+      }
+    } catch (e) {
+      dev.log(
+        'Error setting up precache for: $uri - $e',
+        name: 'ImagePrecache',
+      );
+    }
   }
 
   void _previousPage() {
@@ -86,6 +156,10 @@ class _MediaViewerPageViewState extends ConsumerState<MediaViewerPageView> {
       itemCount: s.entities.length,
       onPageChanged: (index) {
         ref.read(mediaViewerUIStateProvider.notifier).currIndex = index;
+
+        // Precache adjacent images for smooth transitions
+        _precacheAdjacentImages(index);
+
         if (widget.onLoadMore != null) {
           // Load more when within 5 items of the end
           if (index >= s.entities.length - 5) {
@@ -104,29 +178,7 @@ class _MediaViewerPageViewState extends ConsumerState<MediaViewerPageView> {
           name: 'PageViewBuilder',
         );
 
-        final mediaWidget = ViewMedia(
-          currentItem: entity,
-          autoStart: index == s.currentIndex,
-          playerControls: widget.playerControls,
-        );
-
-        // Add face overlay for images if builder is provided
-        if (widget.faceOverlayBuilder != null &&
-            entity.mediaType == CLMediaType.image) {
-          return Stack(
-            children: [
-              mediaWidget,
-              Positioned.fill(
-                child: _FaceOverlayWithLoadCheck(
-                  entityId: entity.id!,
-                  builder: () => widget.faceOverlayBuilder!(entity),
-                ),
-              ),
-            ],
-          );
-        }
-
-        return mediaWidget;
+        return _buildMediaWidget(entity, index == s.currentIndex);
       },
     );
 
@@ -185,28 +237,27 @@ class _MediaViewerPageViewState extends ConsumerState<MediaViewerPageView> {
       ),
     );
   }
-}
 
-/// Widget that only shows face overlay after the image has finished loading.
-class _FaceOverlayWithLoadCheck extends ConsumerWidget {
-  const _FaceOverlayWithLoadCheck({
-    required this.entityId,
-    required this.builder,
-  });
-
-  final int entityId;
-  final Widget Function() builder;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final isLoaded = ref.watch(
-      imageLoadStateProvider.select((state) => state[entityId] ?? false),
-    );
-
-    if (!isLoaded) {
-      return const SizedBox.shrink();
+  Widget _buildMediaWidget(ViewerEntity entity, bool autoStart) {
+    // For images with imageDataWrapper, wrap with the data provider
+    if (widget.imageDataWrapper != null &&
+        entity.mediaType == CLMediaType.image) {
+      return widget.imageDataWrapper!(
+        entity,
+        (InteractiveImageData imageData) => ViewMedia(
+          currentItem: entity,
+          autoStart: autoStart,
+          playerControls: widget.playerControls,
+          imageData: imageData,
+        ),
+      );
     }
 
-    return builder();
+    // Default: no face data
+    return ViewMedia(
+      currentItem: entity,
+      autoStart: autoStart,
+      playerControls: widget.playerControls,
+    );
   }
 }

@@ -12,7 +12,7 @@ dependencies:
     sdk: flutter
   cl_basic_types:
     path: ../cl_basic_types
-  extended_image: ^9.0.8
+  extended_image: ^10.0.1
   meta: ^1.16.0
   video_player: ^2.9.5
 

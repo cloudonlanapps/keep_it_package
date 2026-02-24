@@ -137,7 +137,6 @@ class MediaThumbnail extends StatelessWidget {
           errorBuilder: (_, _) => const CLErrorView.image(),
           loadingBuilder: () =>
               const CLLoadingView.custom(child: GreyShimmer()),
-          fit: BoxFit.cover,
           hasGesture: false,
           keepAspectRatio: false,
         ),

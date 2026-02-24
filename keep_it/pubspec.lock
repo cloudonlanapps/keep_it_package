@@ -196,6 +196,13 @@ packages:
       relative: true
     source: path
     version: "0.0.1"
+  cl_media_viewer:
+    dependency: transitive
+    description:
+      path: "../cl_media_viewer"
+      relative: true
+    source: path
+    version: "1.0.0"
   cl_server_dart_client:
     dependency: "direct main"
     description:

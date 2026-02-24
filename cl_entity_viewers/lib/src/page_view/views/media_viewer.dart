@@ -1,5 +1,6 @@
-import 'package:flutter/material.dart';
+import 'package:cl_media_viewer/cl_media_viewer.dart';
 import 'package:colan_widgets/colan_widgets.dart';
+import 'package:flutter/material.dart';
 
 import 'image_viewer.dart';
 import 'video_player.dart';
@@ -12,15 +13,15 @@ class MediaViewer extends StatelessWidget {
     required this.errorBuilder,
     required this.loadingBuilder,
     required this.keepAspectRatio,
+    this.imageData,
     this.onLockPage,
     this.autoStart = false,
     this.autoPlay = false,
     this.isLocked = true,
-    super.key,
     this.previewUri,
     this.hasGesture = true,
-    this.fit,
     this.onImageLoaded,
+    super.key,
   });
 
   final void Function({required bool lock})? onLockPage;
@@ -37,7 +38,10 @@ class MediaViewer extends StatelessWidget {
 
   final bool keepAspectRatio;
   final bool hasGesture;
-  final BoxFit? fit;
+
+  /// Optional image data with faces for image viewing.
+  /// If not provided, a default InteractiveImageData is created from the URI.
+  final InteractiveImageData? imageData;
 
   /// Callback when image has finished loading.
   final VoidCallback? onImageLoaded;
@@ -48,14 +52,11 @@ class MediaViewer extends StatelessWidget {
       tag: heroTag,
       child: switch (mime) {
         (_) when mime.startsWith('image') => ImageViewer(
-          uri: uri,
-          isLocked: isLocked,
+          imageData: imageData ?? InteractiveImageData(uri: uri),
           onLockPage: onLockPage,
-          keepAspectRatio: keepAspectRatio,
           errorBuilder: errorBuilder,
           loadingBuilder: loadingBuilder,
           hasGesture: hasGesture,
-          fit: fit,
           onImageLoaded: onImageLoaded,
         ),
         (_) when mime.startsWith('video') => VideoPlayer(
@@ -64,16 +65,13 @@ class MediaViewer extends StatelessWidget {
           errorBuilder: errorBuilder,
           loadingBuilder: () {
             if (previewUri != null) {
+              // Preview image for video - no faces, no gestures
               return CLLoadingView.custom(
                 child: ImageViewer(
-                  uri: previewUri!,
+                  imageData: InteractiveImageData(uri: previewUri!),
                   errorBuilder: errorBuilder,
                   loadingBuilder: loadingBuilder,
-                  keepAspectRatio: keepAspectRatio,
-                  isLocked: true,
-                  onLockPage: onLockPage,
                   hasGesture: false,
-                  fit: fit,
                 ),
               );
             }
